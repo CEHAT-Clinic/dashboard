@@ -8,8 +8,11 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 //import {Link} from 'react-router-dom'
 import {Menu} from 'semantic-ui-react'
 
-const About = lazy(() => import("./../pages/About"));    //lazy imports to save on load time
-const Home = lazy(() => import("./../pages/Home"));      //lazy imports to save on load time
+const Health = lazy(() => import("../pages/Health"));      //lazy imports to save on load time
+const About = lazy(() => import("../pages/About"));    //lazy imports to save on load time
+const Home = lazy(() => import("../pages/Home"));      //lazy imports to save on load time
+const Admin = lazy(() => import("../pages/Admin"));      //lazy imports to save on load time
+const Involved = lazy(() => import("../pages/Involved"));      //lazy imports to save on load time
 
 const NavigationWrapper = styled.nav`
     background-color: #f895a0;
@@ -17,7 +20,7 @@ const NavigationWrapper = styled.nav`
     margin: 24px auto 16px;
     justify-content:space-between;
     `
-const NavigationBar = () => (
+const NavigationBar1 = () => (
     <NavigationWrapper>
         <Link className = "navLink" href="/home">Home</Link>
         <Link className = "navLink" href="/about">About</Link>
@@ -28,29 +31,4 @@ const NavigationBar = () => (
     </NavigationWrapper>
 )
 
-
-
-
-// var myMenu = ['Home',"About"];
-// function NavigationBar(){
-//     return(
-
-//     // <NavigationWrapper>
-//     //     <Link className = "navLink" href="/home">Home</Link>
-//     //     <Link className = "navLink" href="/about">About</Link>
-//     //     <Link className = "navLink" href="/about">Health Information</Link>
-//     // </NavigationWrapper>
-
-//     <div>
-//     <button className='hamburger'>m</button>
-//     <ul className='menu'>
-//         {myMenu.map(item => {
-//         return <Menu.Item key={item} text={item}/>
-//         })}
-//     </ul>
-//     </div>  
-//     )
-// }  
-
-
-export default NavigationBar;
+export default NavigationBar1;
