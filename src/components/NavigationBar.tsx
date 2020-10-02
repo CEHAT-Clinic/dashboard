@@ -3,16 +3,8 @@ import React, {lazy} from 'react'
 import styled from 'styled-components'
 import {Link} from 'react-navi'
 import './NavigationBar.css'
-import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import Routes from "./Routes"
 
-//import {Link} from 'react-router-dom'
-import {Menu} from 'semantic-ui-react'
-
-const Health = lazy(() => import("../pages/Health"));      //lazy imports to save on load time
-const About = lazy(() => import("../pages/About"));    //lazy imports to save on load time
-const Home = lazy(() => import("../pages/Home"));      //lazy imports to save on load time
-const Admin = lazy(() => import("../pages/Admin"));      //lazy imports to save on load time
-const Involved = lazy(() => import("../pages/Involved"));      //lazy imports to save on load time
 
 const NavigationWrapper = styled.nav`
     background-color: #f895a0;
@@ -20,15 +12,17 @@ const NavigationWrapper = styled.nav`
     margin: 24px auto 16px;
     justify-content:space-between;
     `
-const NavigationBar1 = () => (
-    <NavigationWrapper>
-        <Link className = "navLink" href="/home">Home</Link>
-        <Link className = "navLink" href="/about">About</Link>
-        <Link className = "navLink" href="/health">Health Information</Link>
-        <Link className = "navLink" href="/involved">Get Involved</Link>
-        <Link className = "navLink" href="/admin">Admin</Link>
-
-    </NavigationWrapper>
+const NavigationBar = () => (
+    <div>
+        <NavigationWrapper>
+            <Link className = "navLink" href="/home">Home</Link>
+            <Link className = "navLink" href="/about">About</Link>
+            <Link className = "navLink" href="/health">Health Information</Link>
+            <Link className = "navLink" href="/involved">Get Involved</Link>
+            <Link className = "navLink" href="/admin">Admin</Link>
+        </NavigationWrapper>
+        <Routes/>
+    </div>
 )
 
-export default NavigationBar1;
+export default NavigationBar;
