@@ -1,56 +1,70 @@
-.navLink {
-    background-color: #f895a0;
-    text-transform: capitalize;
+.Navigation_Header {
+    display:grid;
+    grid-template-areas: "logo nav";
+    background-color: #32bfd1;
     color: white;
-    min-width: 20px;
-    text-align:center;
+}
+  
+.Logo {
+    grid-area: logo;
+    height: 70px;
+  }
+  
+.Nav {
+    display: grid;
+    grid-area: nav;
+    grid-template-columns: repeat(5, auto);
+    align-items: center;
+    justify-items: center;
+  }
+
+/* Style for navigation links*/
+.Nav a {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 500;
+    transition: 0.5s;
     text-decoration: none;
-    padding: 16px;
-}
+  }
 
+/* Text gets larger when you hover*/
+.Nav a:hover {
+    transform: scale(1.1);
+  }
 
-ul.menu {
-    position: absolute;
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-}
-
-li.menu-item{
-    flex: 1 0 auto;
-    padding: 10px;
-    margin: 2px;
-    background-color: grey;
-    text-align: center;
-}
-
-li.menu-item:hover{
-    background-color: blue;
-}
-
-button.hamburger {
+.Burger {
     display: none;
-    padding: 10px;
-    margin: 2px;
-    background-color: grey;
-}
+    grid-area: burger;
+    margin: 0 20px 0 0;
+    padding: 0;
+    justify-self: end;
+    font-size: 40px;
+    border: none;
+    background: none;
+    outline: none;
+    transition: 0.1s;
+  }
 
-@media screen and (max-width : 760px) {
-    ul.menu{
-        flex-direction: column;
-        display: none;
+/* WHEN IN A SMALL SCREEN (LIKE MOBILE) */
+@media (max-width: 700px) {
+    .Navigation_Header {
+      grid-template-areas: "logo burger" "nav nav";
     }
-
-    li.menu-item{
-        background-color: orange;
+    /* Drop down Menu Options*/
+    .Nav {
+      grid-template-rows: repeat(5, auto);
+      grid-template-columns: none;
+      grid-row-gap: 20px;
+  
+      padding: 30px 0 30px;
+      background: rgba(40, 44, 47, 0.95);
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+      border-bottom-left-radius: 10px;
+      border-bottom-right-radius: 10px;
     }
-
-    button.hamburger{
-        display: block;
-        position: absolute;
+    /* Menu button options */
+    .Burger {
+      display: inline;
     }
-
-    button.hamburger:focus + ul.menu{
-        display: flex;
-    }
-}
+  }
+  

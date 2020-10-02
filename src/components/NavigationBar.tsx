@@ -1,28 +1,56 @@
 import { findByLabelText } from '@testing-library/react'
-import React, {lazy} from 'react'
-import styled from 'styled-components'
-import {Link} from 'react-navi'
+import React, {useState, useEffect} from 'react'
 import './NavigationBar.css'
 import Routes from "./Routes"
 
 
-const NavigationWrapper = styled.nav`
-    background-color: #f895a0;
-    display: flex;
-    margin: 24px auto 16px;
-    justify-content:space-between;
-    `
-const NavigationBar = () => (
+
+
+function NavigationBar() {
+    const [isNavVisible, setIsNavVisible] = useState(true);
+    const [isSmallScreen, setIsSmallScreen] = useState(false)
+
+    useEffect(() => {
+        const mediaQuery = window.matchMedia("(max-width: 700px)");
+        mediaQuery.addEventListener("change",handleMediaQueryChange);
+
+        return () => {
+            mediaQuery.removeEventListener("change",handleMediaQueryChange);
+        };
+    }, []);
+
+    const handleMediaQueryChange = (mediaQuery: { matches: any; }) => {
+        if (mediaQuery.matches){
+            setIsSmallScreen(true);
+        } else{
+            setIsSmallScreen(false)
+        }
+    }
+
+    const toggleNav = () => {
+        setIsNavVisible(!isNavVisible);
+    };
+
+    return(
     <div>
-        <NavigationWrapper>
-            <Link className = "navLink" href="/home">Home</Link>
-            <Link className = "navLink" href="/about">About</Link>
-            <Link className = "navLink" href="/health">Health Information</Link>
-            <Link className = "navLink" href="/involved">Get Involved</Link>
-            <Link className = "navLink" href="/admin">Admin</Link>
-        </NavigationWrapper>
+        <header className = "Navigation_Header">
+            <img src ={require ("./logo192.png")} className= "Logo" alt= "logo" />
+            {(!isSmallScreen || isNavVisible) && (
+            <nav className = "Nav">
+                <a href ="home">Home</a>
+                <a href="/about">About</a>
+                <a href="/health">Health Information</a>
+                <a href="/involved">Get Involved</a>
+                <a href="/admin">Admin</a>
+            </nav>
+            )}
+            <button onClick={toggleNav} className="Burger">
+                *
+            </button>
+        </header>
         <Routes/>
     </div>
-)
+    )
+}
 
 export default NavigationBar;
