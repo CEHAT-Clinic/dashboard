@@ -2,9 +2,55 @@
     background-color: #f895a0;
     text-transform: capitalize;
     color: white;
-    min-width: 150px;
+    min-width: 20px;
     text-align:center;
     text-decoration: none;
     padding: 16px;
-    border-radius: 32px;
+}
+
+
+ul.menu {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+
+li.menu-item{
+    flex: 1 0 auto;
+    padding: 10px;
+    margin: 2px;
+    background-color: grey;
+    text-align: center;
+}
+
+li.menu-item:hover{
+    background-color: blue;
+}
+
+button.hamburger {
+    display: none;
+    padding: 10px;
+    margin: 2px;
+    background-color: grey;
+}
+
+@media screen and (max-width : 760px) {
+    ul.menu{
+        flex-direction: column;
+        display: none;
+    }
+
+    li.menu-item{
+        background-color: orange;
+    }
+
+    button.hamburger{
+        display: block;
+        position: absolute;
+    }
+
+    button.hamburger:focus + ul.menu{
+        display: flex;
+    }
 }
