@@ -6,8 +6,8 @@ import * as  admin from 'firebase-admin'
 admin.initializeApp();
 const db = admin.firestore();
 
-const THINGSPEAK_URL_TEMPLATE: string = "https://api.thingspeak.com/channels/<channel_id>/feeds.json";
-const CHANNEL_FIELD: string = "<channel_id>";
+const THINGSPEAK_URL_TEMPLATE = "https://api.thingspeak.com/channels/<channel_id>/feeds.json";
+const CHANNEL_FIELD = "<channel_id>";
 
 exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onRun(async (context) => {
     const sensorList =  (await db.collection("/sensors").get()).docs;
@@ -39,7 +39,7 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
 
 
 async function getThingspeakKeysFromPurpleAir(purpleAirId: string): Promise<PurpleAirResponse> {
-    const PURPLE_AIR_API_ADDRESS: string = "https://www.purpleair.com/json";
+    const PURPLE_AIR_API_ADDRESS = "https://www.purpleair.com/json";
 
     const purpleAirApiResponse = await axios({
         url: PURPLE_AIR_API_ADDRESS,
