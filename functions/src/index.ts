@@ -2,6 +2,7 @@ import * as functions from 'firebase-functions';
 import axios from 'axios';
 import PurpleAirResponse from './purple-air-response';
 import * as  admin from 'firebase-admin'
+import SensorReading from './sensor-reading';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -15,25 +16,23 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
         knownSensor.data
         const thingspeakInfo: PurpleAirResponse  = await getThingspeakKeysFromPurpleAir(knownSensor.data()["purpleAirId"]);
     
-        const primary_res = await axios({
-            url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.thingspeakPrimaryId),
+        const channelAPrimaryData = await axios({
+            url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.channelAPrimaryId),
             params: {
-                api_key: thingspeakInfo.thingspeakPrimaryKey,
+                api_key: thingspeakInfo.channelAPrimaryKey,
                 results: 1
             }
         })
-        const secondary_res = await axios({
-            url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.thingspeakSecondaryId),
+        const channelBPrimaryData = await axios({
+            url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.channelBPrimaryId),
             params: {
-                api_key: thingspeakInfo.thingspeakSecondaryKey,
+                api_key: thingspeakInfo.channelBPrimaryKey,
                 results: 1
             }
-        }) //TODO: Make this better by using an actual class here
-  //      console.log(primary_res);
-        console.log(primary_res.data.feeds);
-
-    //    console.log(secondary_res);
-        console.log(secondary_res.data.feeds)
+        })
+        
+        const reading = new SensorReading(channelAPrimaryData,channelBPrimaryData, thingspeakInfo);
+        console.log(reading);
     }
 });
 
