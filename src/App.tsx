@@ -1,5 +1,4 @@
-import React, {lazy, Suspense} from 'react';
-import {BrowserRouter as Router, Switch, Route,Link, NavLink} from "react-router-dom";
+import React from 'react';
 import './App.css';
 import  NavigationBar from './components/NavigationBar';
 
