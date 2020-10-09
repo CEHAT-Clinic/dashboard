@@ -4,7 +4,7 @@ import Routes from "./Routes"
 
 
 function NavigationBar() {
-    //When isNavVisible is true, the full navigation options are displayed (only relevant for small windows)
+    // State of nav bar (always visible in large screen)
     const [isNavVisible, setIsNavVisible] = useState(true); 
 
     // Updates the state and the dom when the window size is changed
@@ -33,7 +33,8 @@ function NavigationBar() {
     return(
     <div>
         <header className = "Navigation_Header">
-            <img src ={require ("./CEHAT_logo.png")} className= "Logo" alt= "logo" />  {/* cehat logo */}
+            <img src ={require ("./CEHAT_logo.png")} 
+                className= "Logo" alt= "logo" />  {/* cehat logo */}
             {isNavVisible && (
             <nav className = "Nav">
                 <a href ="/home">Home</a>
@@ -44,7 +45,8 @@ function NavigationBar() {
             </nav>
             )}
             <button onClick={toggleNav} className="Burger">
-                <img src={require ("./menu-icon.png")} className= "menu-icon" alt="menu button"/>
+                <img src={require ("./menu-icon.png")} 
+                    className= "menu-icon" alt="menu button"/>
             </button>
         </header>
         <Routes/>
