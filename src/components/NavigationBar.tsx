@@ -4,8 +4,8 @@ import Routes from "./Routes"
 
 
 function NavigationBar() {
-    const [isNavVisible, setIsNavVisible] = useState(true); //When isNavVisible is true, the full navigation options are displayed (only relevant for small windows)
-    const [isSmallScreen, setIsSmallScreen] = useState(false) //when on mobile or a small web browser window
+    //When isNavVisible is true, the full navigation options are displayed (only relevant for small windows)
+    const [isNavVisible, setIsNavVisible] = useState(true); 
 
     // Updates the state and the dom when the window size is changed
     useEffect(() => {
@@ -17,13 +17,10 @@ function NavigationBar() {
         };
     }, []);
 
-
     const handleScreenChange = (screenSize: { matches: any; }) => {
         if (screenSize.matches){
-            setIsSmallScreen(true);
             setIsNavVisible(false);
         } else{
-            setIsSmallScreen(false)
             setIsNavVisible(true);
         }
     }
