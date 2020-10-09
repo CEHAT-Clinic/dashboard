@@ -1,3 +1,7 @@
+/* This file contains all the styling for the Navigation Bar
+All conditional formatting for small/big screens is in this file */
+
+/* Style for navigation bar*/
 .Navigation_Header {
     display:grid;
     grid-template-areas: "logo nav";
@@ -5,11 +9,13 @@
     color: white;
 }
   
+/* Style for CEHAT logo in top right of nav bar */
 .Logo {
     grid-area: logo;
     height: 70px;
   }
-  
+
+/* Arranges links in the navigation bar w*/
 .Nav {
     display: grid;
     grid-area: nav;
@@ -27,11 +33,12 @@
     text-decoration: none;
   }
 
-/* Text gets larger when you hover*/
+/* Navigable link text gets larger when you hover*/
 .Nav a:hover {
     transform: scale(1.1);
   }
 
+/* Formatting for burger menu in small screen */
 .Burger {
     display: none;
     grid-area: burger;
@@ -45,7 +52,7 @@
     transition: 0.1s;
   }
 
-/* WHEN IN A SMALL SCREEN (LIKE MOBILE) */
+/* Conditional formatting for small screens */
 @media (max-width: 700px) {
     .Navigation_Header {
       grid-template-areas: "logo burger" "nav nav";

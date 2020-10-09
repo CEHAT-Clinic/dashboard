@@ -14,13 +14,13 @@ const Routes = () => {
     return(
         <Router>
             <Suspense fallback={<div>Loading...</div>}>
-            <Switch>
-                <Route path="/about" component={About} />
-                <Route path="/health" component = {Health}/> 
-                <Route path="/involved" component = {Involved}/>
-                <Route path="/admin" component={Admin} />
-                <Route path={["/home","/"]} component = {Home}/>
-            </Switch>
+                <Switch>
+                    <Route path="/about" component={About} />
+                    <Route path="/health" component = {Health}/> 
+                    <Route path="/involved" component = {Involved}/>
+                    <Route path="/admin" component={Admin} />
+                    <Route path={["/home","/"]} component = {Home}/>
+                </Switch>
             </Suspense>
         </Router>
     )
