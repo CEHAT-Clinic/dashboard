@@ -10,6 +10,9 @@ const db = admin.firestore();
 const THINGSPEAK_URL_TEMPLATE = "https://api.thingspeak.com/channels/<channel_id>/feeds.json";
 const CHANNEL_FIELD = "<channel_id>";
 
+const READINGS_SUBCOLLECTION_TEMPLATE = "/sensors/<doc_id>/readings";
+const DOC_ID_FIELD = "<doc_id>";
+
 async function getThingspeakKeysFromPurpleAir(purpleAirId: string): Promise<PurpleAirResponse> {
     const PURPLE_AIR_API_ADDRESS = "https://www.purpleair.com/json";
 
@@ -42,7 +45,12 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
             }
         })
         
-        const reading = new SensorReading(channelAPrimaryData,channelBPrimaryData, thingspeakInfo);
-        console.log(reading);
+        const reading = new SensorReading(channelAPrimaryData, channelBPrimaryData, thingspeakInfo);
+        
+        const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(DOC_ID_FIELD, knownSensor.id);
+        // Firebase doesn't support objects crerated using new
+        const firestoreSafeReading = Object.assign({}, reading)
+        await db.collection(resolvedPath).add(firestoreSafeReading);
+
     }
 });
