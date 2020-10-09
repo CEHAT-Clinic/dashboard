@@ -1,0 +1,10 @@
+# Configures Dependabot to scan our project for dependencies that need upgrading for security or usability reasons.
+# Documentation for all configuration options can be found:
+# https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
+
+version: 2
+updates:
+  - package-ecosystem: "npm" # See documentation for possible values
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "daily"
