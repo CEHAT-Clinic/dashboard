@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import './NavigationBar.css'
-import Routes from "./Routes"
-
+import Routes from ".././Routes"
 
 function NavigationBar() {
     // State of nav bar (always visible in large screen)
