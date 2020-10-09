@@ -21,8 +21,10 @@ function NavigationBar() {
     const handleScreenChange = (screenSize: { matches: any; }) => {
         if (screenSize.matches){
             setIsSmallScreen(true);
+            setIsNavVisible(false);
         } else{
             setIsSmallScreen(false)
+            setIsNavVisible(true);
         }
     }
 
@@ -35,7 +37,7 @@ function NavigationBar() {
     <div>
         <header className = "Navigation_Header">
             <img src ={require ("./CEHAT_logo.png")} className= "Logo" alt= "logo" />  {/* cehat logo */}
-            {(isNavVisible || !isSmallScreen) && (
+            {isNavVisible && (
             <nav className = "Nav">
                 <a href ="/home">Home</a>
                 <a href="/about">About</a>
