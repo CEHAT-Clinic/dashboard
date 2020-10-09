@@ -30,14 +30,14 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
         const channelAPrimaryData = await axios({
             url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.channelAPrimaryId),
             params: {
-                api_key: thingspeakInfo.channelAPrimaryKey,
+                api_key: thingspeakInfo.channelAPrimaryKey, //eslint-disable-line @typescript-eslint/camelcase
                 results: 1
             }
         })
         const channelBPrimaryData = await axios({
             url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.channelBPrimaryId),
             params: {
-                api_key: thingspeakInfo.channelBPrimaryKey,
+                api_key: thingspeakInfo.channelBPrimaryKey, //eslint-disable-line @typescript-eslint/camelcase
                 results: 1
             }
         })
