@@ -23,23 +23,21 @@ async function getThingspeakKeysFromPurpleAir(purpleAirId: string): Promise<Purp
     return new PurpleAirResponse(purpleAirApiResponse);    
 }
 
-exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onRun(async (context) => {
+exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onRun(async () => {
     const sensorList =  (await db.collection("/sensors").get()).docs;
     for (const knownSensor of sensorList) {
-        knownSensor.data
         const thingspeakInfo: PurpleAirResponse  = await getThingspeakKeysFromPurpleAir(knownSensor.data()["purpleAirId"]);
-    
         const channelAPrimaryData = await axios({
             url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.channelAPrimaryId),
             params: {
-                apiKey: thingspeakInfo.channelAPrimaryKey,
+                api_key: thingspeakInfo.channelAPrimaryKey,
                 results: 1
             }
         })
         const channelBPrimaryData = await axios({
             url: THINGSPEAK_URL_TEMPLATE.replace(CHANNEL_FIELD, thingspeakInfo.channelBPrimaryId),
             params: {
-                apiKey: thingspeakInfo.channelBPrimaryKey,
+                api_key: thingspeakInfo.channelBPrimaryKey,
                 results: 1
             }
         })
