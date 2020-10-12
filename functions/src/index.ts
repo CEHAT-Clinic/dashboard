@@ -49,8 +49,10 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
         
         const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(DOC_ID_FIELD, knownSensor.id);
         // Firebase doesn't support objects crerated using new
-        const firestoreSafeReading = Object.assign({}, reading)
-        await db.collection(resolvedPath).add(firestoreSafeReading);
+        if((await db.collection(resolvedPath).where("timestamp", "==", reading.timestamp).get()).empty) {
 
+            const firestoreSafeReading = Object.assign({}, reading)
+            await db.collection(resolvedPath).add(firestoreSafeReading);
+        }
     }
 });
