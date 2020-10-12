@@ -1,3 +1,4 @@
+# CD script to deploy project to Firebase on push to main branch
 name: Firebase Continuous Deployment
 
 on:
@@ -6,6 +7,7 @@ on:
     
 jobs:
   deploy:
+    # Ubuntu is cheaper to use than Windows or macOS
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@master
@@ -14,6 +16,7 @@ jobs:
       node-version: 10
     - run: npm ci
     - run: npm run build
+      # Exisiting Action that acts as library for Firebase
     - uses: w9jds/firebase-action@master
       with:
         args: deploy
