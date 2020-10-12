@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "South Gate Air Quality",
+  "name": "South Gate Air Quality Dashboard",
   "icons": [
     {
       "src": "favicon.ico",

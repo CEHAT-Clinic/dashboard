@@ -2,8 +2,10 @@ import React from 'react';
 import { render } from '@testing-library/react';
 import App from './App';
 
-test('renders learn react link', () => {
-  const { getByText } = render(<App />);
-  const linkElement = getByText(/learn react/i);
-  expect(linkElement).toBeInTheDocument();
-});
+// Temporary test to have at least one test
+// Checks if "Home" appears in the app
+test("South Gate shows up on page" ,() => {
+  const {getByText} = render (<App/>);
+  const home = getByText("Home");
+  expect(home).toBeInTheDocument();
+})
