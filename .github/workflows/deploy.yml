@@ -10,8 +10,8 @@ jobs:
     # Ubuntu is cheaper to use than Windows or macOS
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@master
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
       with:
         node-version: 10
     - run: |
