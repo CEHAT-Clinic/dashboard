@@ -18,7 +18,10 @@ jobs:
         npm ci
         cd functions
         npm ci
-    - run: npm run build
+    - run: |
+        npm run build
+        cd functions
+        npm run build
       # Exisiting Action that acts as library for Firebase
     - uses: w9jds/firebase-action@master
       with:
