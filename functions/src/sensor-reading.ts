@@ -9,7 +9,7 @@ export default class SensorReading {
     latitude: string;
     longitude: string;
 
-    static parseResponses(channelAPrimaryResponse: AxiosResponse, channelBPrimaryResponse: AxiosResponse, purpleAirResponse: PurpleAirResponse) : SensorReading {
+    static parseResponses(channelAPrimaryResponse: AxiosResponse, channelBPrimaryResponse: AxiosResponse, purpleAirResponse: PurpleAirResponse): SensorReading {
         const latitude = purpleAirResponse.latitude;
         const longitude = purpleAirResponse.longitude;
 
