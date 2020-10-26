@@ -11,6 +11,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "strictNullChecks": false,      // Added for HERE map
     "forceConsistentCasingInFileNames": true,
     "module": "esnext",
     "moduleResolution": "node",
