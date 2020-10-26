@@ -68,7 +68,7 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
  * @param docId Firestore document id for the sensor to be getting averages for
  * @param purpleAirId PurpleAir ID for the sensor
  */
-async function getHourlyAverages(docId: string) : Promise<SensorReading[]> {
+async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
     const LOOKBACK_PERIOD_HOURS = 12;
     const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
     const now: Date = new Date();
