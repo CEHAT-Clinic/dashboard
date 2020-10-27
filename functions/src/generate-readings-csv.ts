@@ -6,24 +6,43 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
+type DocData = FirebaseFirestore.DocumentData;
+type DocDataSnapshot = FirebaseFirestore.QueryDocumentSnapshot<DocData>;
+type QuerySnapshot = FirebaseFirestore.QuerySnapshot<DocData>
+
 const db = admin.firestore();
 
 export const generateReadingsCsv = functions.region('us-central1').pubsub
   .topic("generate-readings-csv")
-  .onPublish(async message => {
+  .onPublish(async () => {
+    const sensorsSnapshot = await db.collection("sensors").get();
 
-    // gets the documents from the firestore collection
-    const sensorsSnapshot = await db
-      .collection("sensors")
-      .get();
-    
-    const readings = sensorsSnapshot.docs.map(
-      sensorDoc => getReadings(sensorDoc)
-    );
+    // Initialize array to hold all readings from all sensors
+    const readings: DocData[] = [];
 
-    function getReadings(sensorDoc) {
-      return sensorDoc.collection('readings').docs.map(reading => reading.data())
+    // Gets snapshot of readings for a sensor from its sensor doc
+    async function getReadingsSnapshot(
+      sensorDoc: DocDataSnapshot
+      ): Promise<QuerySnapshot> {
+      const TEMPLATE = "sensors/<doc_id>/readings";
+      const DOC_ID_FIELD = "<doc_id>";
+      const resolvedPath = TEMPLATE.replace(DOC_ID_FIELD, sensorDoc.id);
+      return db.collection(resolvedPath).get();
     }
+
+    // Adds readings from a sensor to the complete readings array
+    async function addReadings(sensorDoc: DocDataSnapshot): Promise<void> {
+      const readingsSnapshot = getReadingsSnapshot(sensorDoc);
+
+      const newReadings = (await readingsSnapshot)
+        .docs
+        .map(reading => reading.data());
+
+      readings.push(newReadings)
+    }
+
+    // Fill readings array with readings for all sensors
+    sensorsSnapshot.forEach(sensorDoc => addReadings(sensorDoc));
 
     // csv field headers
     const fields = [
@@ -55,7 +74,7 @@ export const generateReadingsCsv = functions.region('us-central1').pubsub
 
         // upload the file into the current firebase project default bucket
         bucket
-           .upload(tempLocalFile, {
+          .upload(tempLocalFile, {
             // Workaround: firebase console not generating token for files
             // uploaded via Firebase Admin SDK
             // https://github.com/firebase/firebase-admin-node/issues/694
@@ -66,7 +85,7 @@ export const generateReadingsCsv = functions.region('us-central1').pubsub
             },
           })
           .then(() => resolve())
-          .catch(errorr => reject(errorr));
+          .catch(error => reject(error));
       });
     });
   });
