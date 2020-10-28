@@ -9,10 +9,6 @@ import * as fs from "fs";
 import * as path from "path";
 import * as os from "os";
 
-type DocData = FirebaseFirestore.DocumentData;
-type DocDataSnapshot = FirebaseFirestore.QueryDocumentSnapshot<DocData>;
-type QuerySnapshot = FirebaseFirestore.QuerySnapshot<DocData>
-
 admin.initializeApp();
 const db = admin.firestore();
 
@@ -58,7 +54,7 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
         const reading = new SensorReading(channelAPrimaryData, channelBPrimaryData, thingspeakInfo);
 
         const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(DOC_ID_FIELD, knownSensor.id);
-        // Firebase doesn't support objects crerated using new
+        // Firebase doesn't support objects created using new
         if ((await db.collection(resolvedPath).where("timestamp", "==", reading.timestamp).get()).empty) {
 
             const firestoreSafeReading = Object.assign({}, reading)
@@ -67,32 +63,22 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
     }
 });
 
-exports.generateReadingsCsv = functions.region('us-central1').pubsub
+exports.generateReadingsCsv = functions.pubsub
     .topic("generate-readings-csv")
     .onPublish(async () => {
-        const sensorsSnapshot = await db.collection("sensors").get();
-
         // Initialize array to hold all readings from all sensors
-        const readings: DocData[] = [];
+        const readings: FirebaseFirestore.DocumentData[] = [];
 
-        // Adds readings from a sensor to the complete readings array
-        async function addReadings(sensorDoc: DocDataSnapshot): Promise<void> {
-            const readingsSnapshot = db.collection(
-                READINGS_SUBCOLLECTION_TEMPLATE
-                .replace(DOC_ID_FIELD, sensorDoc.id))
-                .get();
+        const sensorList = (await db.collection("/sensors").get()).docs;
 
-            const newReadings = (await readingsSnapshot)
-                .docs
-                .map(reading => reading.data());
+        for (const knownSensor of sensorList) {
+            const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(DOC_ID_FIELD, knownSensor.id);
+            const readingsSnapshot = await db.collection(resolvedPath).get();
+            const sensorReadings = readingsSnapshot.docs.map(doc => doc.data());
 
-            readings.push(newReadings)
+            // Need better way to combine readings
+            readings.push(sensorReadings);
         }
-
-        // Fill readings array with readings for all sensors
-        sensorsSnapshot.forEach(sensorDoc => addReadings(sensorDoc));
-
-        console.log(readings);
 
         // csv field headers
         const fields = [
