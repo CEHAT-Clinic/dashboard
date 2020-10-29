@@ -72,16 +72,17 @@ exports.thingspeakToFirestore = functions.pubsub
                 DOC_ID_FIELD,
                 knownSensor.id
             );
-
+            
             // Only add data if not already present in database.
             // This happens if a sensor is down, so only old data is returned.
-            if ((await db
-                .collection(resolvedPath)
+            const readingsRef =  db.collection(resolvedPath);
+            if ((await readingsRef
                 .where("timestamp", "==", reading.timestamp)
                 .get())
                 .empty) {
+
                 const firestoreSafeReading = Object.assign({}, reading)
-                await db.collection(resolvedPath).add(firestoreSafeReading);
+                await readingsRef.add(firestoreSafeReading);
             }
         }
     });
