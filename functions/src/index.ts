@@ -98,65 +98,32 @@ exports.generateReadingsCsv = functions.pubsub
             "latitude, " +
             "longitude\n";
 
-        const readings: string[] = [];
         const sensorList = (await db.collection("/sensors").get()).docs;
-        for (const knownSensor of sensorList) {
+        const readingsArrays = new Array<Array<string>>(sensorList.length);
+        for (let sensorIndex = 0; 
+             sensorIndex < sensorList.length; 
+             sensorIndex++) {
+            // Get readings subcollection path
             const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE
-                .replace(
-                    DOC_ID_FIELD,
-                    knownSensor.id
-                );
+                .replace(DOC_ID_FIELD, sensorList[sensorIndex].id);
         
-            // Add all readings for a sensor to the CSV
-            const sensorReadings = db.collection(resolvedPath)
-                .get()
-                .then(querySnapshot => {
-                    querySnapshot.forEach(
-                    readingDoc => {
-                    const reading = 
-                        SensorReading.fromFirestore(readingDoc.data());
-                    return reading.toCsvLine();
-                })
-            })
-            .catch(error => console.log("Error getting readings: ", error))
-            readings.concat(sensorReadings);
+            const readingsList = (await db.collection(resolvedPath).get()).docs;
+            const readingsArray = new Array<string>(readingsList.length);
+
+            for (let readingIndex = 0; 
+                 readingIndex < readingsList.length; 
+                 readingIndex++) {
+                const reading = SensorReading.fromFirestore(
+                    readingsList[readingIndex].data()
+                    );
+                readingsArray[readingIndex] = reading.toCsvLine();
+            }
+
+            readingsArrays[sensorIndex] = readingsArray;
         }
-
-        // const readings = (await db.collection("/sensors").get()).docs.map(
-        //     // .then(sensorSnapshot => {
-        //     //     sensorSnapshot.forEach(
-        //             async sensorDoc => {
-        //             const resolvedPath = 
-        //                 READINGS_SUBCOLLECTION_TEMPLATE
-        //                     .replace(
-        //                         DOC_ID_FIELD,
-        //                         sensorDoc.id
-        //                     );
         
-        //             // Add all readings for a sensor to the CSV
-        //             const sensorReadings = (await db.collection(resolvedPath).get()).docs.map(
-        //                 // .then(querySnapshot => {
-        //                 //     querySnapshot.forEach(
-        //                         readingDoc => {
-        //                         const reading = 
-        //                             SensorReading.fromFirestore(
-        //                                 readingDoc.data()
-        //                                 );
-        //                         return reading.toCsvLine();
-        
-        //                         // toCsvLine is expected to return data in the
-        //                         // order specified by the headers, at 
-        //                         // readingsCsv's initialization.
-
-        //                         // readingsCsv += reading.toCsvLine();
-        //                     // });
-        //                 })
-        //                 // .catch(error => console.log("Error getting readings: ", error));
-        //             return sensorReadings.join("")
-        //             })
-        //     // })
-        //     //.catch(error => console.log("Error getting sensors: ", error))
-
+        // Combine the data into one string
+        const readings = readingsArrays.map((strArray) => strArray.join(""));
         const readingsCsv = headings + readings.join("");
 
         // generate filename
@@ -164,9 +131,6 @@ exports.generateReadingsCsv = functions.pubsub
         const filename = `pm_readings_${dateTime}.csv`;
 
         const tempLocalFile = path.join(os.tmpdir(), filename);
-
-        console.log("Readings: ")
-        console.log(readingsCsv);
 
         return new Promise((resolve, reject) => {
             // write contents of csv into the temp file
