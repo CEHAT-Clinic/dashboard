@@ -10,7 +10,6 @@ import * as os from "os";
 admin.initializeApp();
 const db = admin.firestore();
 
-
 const THINGSPEAK_URL_TEMPLATE = 
     "https://api.thingspeak.com/channels/<channel_id>/feeds.json";
 const CHANNEL_FIELD = "<channel_id>";
