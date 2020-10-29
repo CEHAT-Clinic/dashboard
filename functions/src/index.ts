@@ -10,16 +10,17 @@ import * as os from "os";
 admin.initializeApp();
 const db = admin.firestore();
 
-const THINGSPEAK_URL_TEMPLATE = "https://api.thingspeak.com/channels/"
-                                        + "<channel_id>/feeds.json";
+
+const THINGSPEAK_URL_TEMPLATE = 
+    "https://api.thingspeak.com/channels/<channel_id>/feeds.json";
 const CHANNEL_FIELD = "<channel_id>";
 
 const READINGS_SUBCOLLECTION_TEMPLATE = "/sensors/<doc_id>/readings";
 const DOC_ID_FIELD = "<doc_id>";
 
 async function getThingspeakKeysFromPurpleAir(
-    purpleAirId: string
-): Promise<PurpleAirResponse> {
+      purpleAirId: string
+    ): Promise<PurpleAirResponse> {
     const PURPLE_AIR_API_ADDRESS = "https://www.purpleair.com/json";
 
     const purpleAirApiResponse = await axios({
@@ -35,11 +36,11 @@ async function getThingspeakKeysFromPurpleAir(
 exports.thingspeakToFirestore = functions.pubsub
     .schedule("every 2 minutes")
     .onRun(async () => {
-        const sensorList = (await db.collection("/sensors").get()).docs;
+        const sensorList =  (await db.collection("/sensors").get()).docs;
         for (const knownSensor of sensorList) {
-            const thingspeakInfo: PurpleAirResponse =
+            const thingspeakInfo: PurpleAirResponse = 
                 await getThingspeakKeysFromPurpleAir(
-                    knownSensor.data()["purpleAirId"]
+                      knownSensor.data()["purpleAirId"]
                     );
             const channelAPrimaryData = await axios({
                 url: THINGSPEAK_URL_TEMPLATE.replace(
@@ -61,7 +62,6 @@ exports.thingspeakToFirestore = functions.pubsub
                     results: 1
                 }
             })
-
             const reading = SensorReading.fromPurpleAir(
                 channelAPrimaryData,
                 channelBPrimaryData,
