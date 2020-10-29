@@ -116,6 +116,9 @@ exports.generateReadingsCsv = functions.pubsub
                 const reading = SensorReading.fromFirestore(
                     readingsList[readingIndex].data()
                     );
+                
+                // toCsvLine generates the values in the same order as the
+                // headings variable.
                 readingsArray[readingIndex] = reading.toCsvLine();
             }
 
