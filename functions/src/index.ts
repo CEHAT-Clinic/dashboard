@@ -84,4 +84,6 @@ exports.thingspeakToFirestore = functions.pubsub
 
 exports.generateReadingsCsv = functions.pubsub
     .topic("generate-readings-csv")
-    .onPublish(async () => {});
+    .onPublish(() => {
+        console.log("Generate readings CSV function called");
+    });
