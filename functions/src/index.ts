@@ -130,21 +130,21 @@ exports.generateReadingsCsv = functions.pubsub
         const readings = readingsArrays.map((strArray) => strArray.join(""));
         const readingsCsv = headings + readings.join("");
 
-        // generate filename
+        // Generate filename
         const dateTime = new Date().toISOString().replace(/\W/g, "");
         const filename = `pm_readings_${dateTime}.csv`;
 
         const tempLocalFile = path.join(os.tmpdir(), filename);
 
         return new Promise((resolve, reject) => {
-            // write contents of csv into the temp file
+            // Write contents of csv into the temp file
             fs.writeFile(tempLocalFile, readingsCsv, error => {
                 if (error) {
                     reject(error);
                     return;
                 }
 
-                // upload file into current Firebase project default bucket
+                // Upload file into current Firebase project default bucket
                 admin
                     .storage()
                     .bucket()
