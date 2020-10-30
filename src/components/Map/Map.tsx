@@ -13,31 +13,29 @@ export default class Map extends React.Component {
 
   componentDidMount() { 
 
-    const H = (window as any).H;        // H is used to make API calls
+    const H = (window as any).H;              // H is used to make API calls
     var platform = new H.service.Platform({ 
-        //apikey: "{HERE-API-KEY}"      // default HERE credentials
+        apikey: process.env.REACT_APP_HERE_API_KEY, 
     });
 
     var defaultLayers = platform.createDefaultLayers();
 
-    var sgMarker = new H.map.Marker({lat:33.9575, lng:-118.2106 }) // Marker for south gate
+
 
     // Create an instance of the map
     var map = new H.Map(
-      this.mapRef.current,                  // Reference for Map
+      this.mapRef.current,                      // Reference for Map
       defaultLayers.vector.normal.map, 
       {
-        zoom: 2,
-        // center: { lat: 52.5, lng: 13.4 },             //Europe
-        // zoom: 3,
-        center: { lat: 33.9575, lng: -118.2106 },    //South Gate
+        zoom: 13,
+        center: { lat: 33.945, lng: -118.2106 },    //South Gate
         pixelRatio: window.devicePixelRatio || 1
       }
     );
-    //window.addEventListener('resize', () => map.getViewPort().resize());
  
+    //South Gate Marker
+    var sgMarker = new H.map.Marker({lat:33.9575, lng:-118.2106 })
     map.addObject(sgMarker);
-    map.setZoom(10);
 
     // const test = H.ui.createDefault(map,defaultLayers);
 
@@ -53,9 +51,8 @@ export default class Map extends React.Component {
 
   render() {
     return (
-      // Set a height on the map so it will display
       <div>
-        <div ref={this.mapRef} style={{ height: "400px", width: "800px" }} className = "here-maps"/>
+        <div ref={this.mapRef} style={{ height: "400px", width: "800px" }}/>
       </div>
     );
   }
