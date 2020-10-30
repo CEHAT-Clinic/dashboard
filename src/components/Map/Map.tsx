@@ -1,5 +1,7 @@
 // src/DisplayMapClass.js
 import * as React from 'react';
+import Helmet from 'react-helmet';
+import "./Map.css";
 
 export default class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
@@ -9,28 +11,36 @@ export default class Map extends React.Component {
     map: null as any
   };
 
-  componentDidMount() {
+  componentDidMount() { 
 
     const H = (window as any).H;        // H is used to make API calls
-    const platform = new H.service.Platform({ 
-        apikey: "{HERE-API-KEY}"      // default HERE credentials
-        //apikey: process.env.REACT_APP_HERE_API_KEY  // our HERE credentials
+    var platform = new H.service.Platform({ 
+        //apikey: "{HERE-API-KEY}"      // default HERE credentials
     });
 
-    const defaultLayers = platform.createDefaultLayers();
+    var defaultLayers = platform.createDefaultLayers();
+
+    var sgMarker = new H.map.Marker({lat:33.9575, lng:-118.2106 }) // Marker for south gate
 
     // Create an instance of the map
-    const map = new H.Map(
-      this.mapRef.current,
-      defaultLayers.vector.normal.map,
+    var map = new H.Map(
+      this.mapRef.current,                  // Reference for Map
+      defaultLayers.vector.normal.map, 
       {
-        // This map is centered over Europe
-        center: { lat: 33.9575, lng: -118.2106 },
         zoom: 2,
+        // center: { lat: 52.5, lng: 13.4 },             //Europe
+        // zoom: 3,
+        center: { lat: 33.9575, lng: -118.2106 },    //South Gate
         pixelRatio: window.devicePixelRatio || 1
       }
     );
+    //window.addEventListener('resize', () => map.getViewPort().resize());
  
+    map.addObject(sgMarker);
+    map.setZoom(10);
+
+    // const test = H.ui.createDefault(map,defaultLayers);
+
     this.setState({ map });
   }
 
@@ -44,7 +54,9 @@ export default class Map extends React.Component {
   render() {
     return (
       // Set a height on the map so it will display
-      <div ref={this.mapRef} style={{ height: "400px", width: "400px" }} />
+      <div>
+        <div ref={this.mapRef} style={{ height: "400px", width: "800px" }} className = "here-maps"/>
+      </div>
     );
   }
 }
