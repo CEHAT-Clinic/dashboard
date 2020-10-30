@@ -2,38 +2,38 @@ import React, {useState, useEffect} from 'react';
 import './NavigationBar.css';
 import Routes from '.././Routes';
 
-function NavigationBar() {
+function NavigationBar(): JSX.Element {
   // State of nav bar (always visible in large screen)
   const [isNavVisible, setIsNavVisible] = useState(true);
 
-  const handleScreenChange = (screenSize: {matches: any}) => {
-    if (screenSize.matches) {
+  function handleScreenChange(this: MediaQueryList): void {
+    if (this.matches) {
       setIsNavVisible(false);
     } else {
       setIsNavVisible(true);
     }
-  };
+  }
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
     const screenSize = window.matchMedia('(max-width: 700px)');
     screenSize.addEventListener('change', handleScreenChange);
 
-    return () => {
+    return function (): void {
       screenSize.removeEventListener('change', handleScreenChange);
     };
   }, []);
 
   // toggles the navigation
-  const toggleNav = () => {
+  function toggleNav(): void {
     setIsNavVisible(!isNavVisible);
-  };
+  }
 
   return (
     <div>
       <header className="Navigation_Header">
         <img src={require('./CEHAT_logo.png')} className="Logo" alt="logo" />{' '}
-        {/* cehat logo */}
+        {/* CEHAT logo */}
         {isNavVisible && (
           <nav className="Nav">
             <a href="/home">Home</a>

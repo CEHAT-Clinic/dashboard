@@ -8,7 +8,7 @@ const Health = lazy(() => import('../pages/Health')); //lazy imports to save on 
 const Admin = lazy(() => import('../pages/Admin')); //lazy imports to save on load time
 const Involved = lazy(() => import('../pages/Involved')); //lazy imports to save on load time
 
-const Routes = () => {
+function Routes(): JSX.Element {
   return (
     <Router>
       <Suspense fallback={<div>Loading...</div>}>
@@ -22,6 +22,6 @@ const Routes = () => {
       </Suspense>
     </Router>
   );
-};
+}
 
 export default Routes;
