@@ -3,6 +3,7 @@ import axios from 'axios';
 import PurpleAirResponse from './purple-air-response';
 import * as  admin from 'firebase-admin'
 import SensorReading from './sensor-reading';
+import CleanedReadings from './cleaned-reading';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -48,9 +49,8 @@ exports.thingspeakToFirestore = functions.pubsub.schedule("every 2 minutes").onR
         const reading = SensorReading.parseResponses(channelAPrimaryData, channelBPrimaryData, thingspeakInfo);
         
         const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(DOC_ID_FIELD, knownSensor.id);
-        // Firebase doesn't support objects crerated using new
         if((await db.collection(resolvedPath).where("timestamp", "==", reading.timestamp).get()).empty) {
-
+            // Firebase doesn't support objects crerated using new
             const firestoreSafeReading = Object.assign({}, reading)
             await db.collection(resolvedPath).add(firestoreSafeReading);
         }
@@ -80,7 +80,9 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
     const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(DOC_ID_FIELD, docId);
 
     for (let i = 0; i < averages.length; i++) {
-        const readings = (await db.collection(resolvedPath).where("timestamp", ">", previousTime.toISOString()).where("timestamp", "<=", currentTime.toISOString()).get()).docs;
+        const readings = (await db.collection(resolvedPath)
+                            .where("timestamp", ">", previousTime.toISOString())
+                            .where("timestamp", "<=", currentTime.toISOString()).get()).docs;
         // 90% of 1 reading every two minutes for an hour
         // Expressed this way to avoid imprecision of floating point arithmetic
         const MEASUREMENT_COUNT_THRESHOLD = 27;
@@ -103,15 +105,22 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
  * @param averages array containing sensor readings representing hourly averages
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
  */
-function cleanAverages(averages: SensorReading[]): number[] {
+function cleanAverages(averages: SensorReading[]): CleanedReadings {
     const RAW_THRESHOLD = 5;
     const PERCENT_THRESHOLD = 0.70;
     
     const cleanedAverages = new Array<number>(averages.length);
-    
+    let latitude = "";
+    let longitude = "";
     for(let i = 0; i < cleanedAverages.length; i++) {
         const reading = averages[i];
         if(reading != undefined) {
+            // Use first hour's location
+            if(latitude == "" || longitude == "") {
+                latitude = reading.latitude;
+                longitude = reading.longitude;
+            }
+
             const averageChannels = (reading.channelAPmReading + reading.channelBPmReading) / 2
             const difference = Math.abs(reading.channelAPmReading - reading.channelBPmReading);
             if (!(difference > RAW_THRESHOLD && (difference /averageChannels) > PERCENT_THRESHOLD)) {
@@ -120,19 +129,34 @@ function cleanAverages(averages: SensorReading[]): number[] {
             }
         }
     }
-    return cleanedAverages;
+    return new CleanedReadings(latitude, longitude, cleanedAverages);
 }
 
-exports.calculateAqi = functions.pubsub.schedule("every 10 minutes").onRun(async (context) => {
+exports.calculateAqi = functions.pubsub.schedule("every 10 minutes").onRun(async () => {
     const sensorList =  (await db.collection("/sensors").get()).docs;
+    const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
         const docId = knownSensor.id;
-
         const hourlyAverages = await getHourlyAverages(docId);
         const cleanedAverages = cleanAverages(hourlyAverages);
-        console.log(cleanedAverages);
+        
+        //TODO: Start using AQI not PM2.5
+        
+        const containsInfo = cleanedAverages.readings.some((reading) => reading !== undefined);
+        if (containsInfo) {
+            const purpleAirId = knownSensor.data()["purpleAirId"] as string;
+            currentData[purpleAirId] = Object.assign({}, cleanedAverages);
+        }
+    }
 
-        // Calculate AQI NEXT!
+    const currentReadingDb = (await db.collection("current-reading").get()).docs;
+    if(currentReadingDb.length !== 0) {
+        const currentReadingDocId = currentReadingDb[0].id;
+
+        await db.collection("current-reading").doc(currentReadingDocId).set({
+            lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+            data: currentData
+        });
     }
 });
 

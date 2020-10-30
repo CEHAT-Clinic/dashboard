@@ -12,7 +12,6 @@ export default class SensorReading {
     static parseResponses(channelAPrimaryResponse: AxiosResponse, channelBPrimaryResponse: AxiosResponse, purpleAirResponse: PurpleAirResponse): SensorReading {
         const latitude = purpleAirResponse.latitude;
         const longitude = purpleAirResponse.longitude;
-
         const channelAData = channelAPrimaryResponse.data.feeds[0];
         const timestamp = channelAData.created_at;
         const humidity = +channelAData.field7;
