@@ -1,12 +1,12 @@
 import React, {lazy, Suspense} from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
 
-// Import Pages
-const About = lazy(() => import('../pages/About')); //lazy imports to save on load time
-const Home = lazy(() => import('../pages/Home')); //lazy imports to save on load time
-const Health = lazy(() => import('../pages/Health')); //lazy imports to save on load time
-const Admin = lazy(() => import('../pages/Admin')); //lazy imports to save on load time
-const Involved = lazy(() => import('../pages/Involved')); //lazy imports to save on load time
+// Import Pages: lazy imports to save on load time
+const About = lazy(() => import('../pages/About'));
+const Home = lazy(() => import('../pages/Home'));
+const Health = lazy(() => import('../pages/Health'));
+const Admin = lazy(() => import('../pages/Admin'));
+const Involved = lazy(() => import('../pages/Involved'));
 
 function Routes(): JSX.Element {
   return (
