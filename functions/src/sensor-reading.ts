@@ -63,6 +63,9 @@ export default class SensorReading {
     );
   }
 
+  // Creates single line of CSV code, used for exporting data.
+  // WARNING: If you change this code, also update the generateReadingsCSV
+  // headings variable, so the CSV headings match with the data.
   toCsvLine(): string {
     return (
       `${this.timestamp}, ` +

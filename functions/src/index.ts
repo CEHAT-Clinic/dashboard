@@ -3,6 +3,9 @@ import axios from 'axios';
 import PurpleAirResponse from './purple-air-response';
 import * as admin from 'firebase-admin';
 import SensorReading from './sensor-reading';
+import * as fs from 'fs';
+import * as path from 'path';
+import * as os from 'os';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -57,7 +60,6 @@ exports.thingspeakToFirestore = functions.pubsub
           results: 1,
         },
       });
-
       const reading = SensorReading.fromPurpleAir(
         channelAPrimaryData,
         channelBPrimaryData,
@@ -68,7 +70,9 @@ exports.thingspeakToFirestore = functions.pubsub
         DOC_ID_FIELD,
         knownSensor.id
       );
-      // Firebase doesn't support objects crerated using new
+
+      // Only add data if not already present in database.
+      // This happens if a sensor is down, so only old data is returned.
       const readingsRef = db.collection(resolvedPath);
       if (
         (await readingsRef.where('timestamp', '==', reading.timestamp).get())
@@ -82,6 +86,70 @@ exports.thingspeakToFirestore = functions.pubsub
 
 exports.generateReadingsCsv = functions.pubsub
   .topic('generate-readings-csv')
-  .onPublish(() => {
-    console.log('Generate readings CSV function called');
+  .onPublish(async () => {
+    // Initialize csv with headers
+    const headings =
+      'timestamp, ' +
+      'channelAPmReading, ' +
+      'channelBPmReading, ' +
+      'humidity, ' +
+      'latitude, ' +
+      'longitude\n';
+
+    const sensorList = (await db.collection('/sensors').get()).docs;
+    const readingsArrays = new Array<Array<string>>(sensorList.length);
+    for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
+      // Get readings subcollection path
+      const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
+        DOC_ID_FIELD,
+        sensorList[sensorIndex].id
+      );
+
+      const readingsList = (await db.collection(resolvedPath).get()).docs;
+      const readingsArray = new Array<string>(readingsList.length);
+
+      for (
+        let readingIndex = 0;
+        readingIndex < readingsList.length;
+        readingIndex++
+      ) {
+        const reading = SensorReading.fromFirestore(
+          readingsList[readingIndex].data()
+        );
+
+        // toCsvLine generates the values in the same order as the
+        // headings variable.
+        readingsArray[readingIndex] = reading.toCsvLine();
+      }
+
+      readingsArrays[sensorIndex] = readingsArray;
+    }
+
+    // Combine the data into one string
+    const readings = readingsArrays.map(strArray => strArray.join(''));
+    const readingsCsv = headings + readings.join('');
+
+    // Generate filename
+    const dateTime = new Date().toISOString().replace(/\W/g, '');
+    const filename = `pm_readings_${dateTime}.csv`;
+
+    const tempLocalFile = path.join(os.tmpdir(), filename);
+
+    return new Promise((resolve, reject) => {
+      // Write contents of csv into the temp file
+      fs.writeFile(tempLocalFile, readingsCsv, error => {
+        if (error) {
+          reject(error);
+          return;
+        }
+
+        // Upload file into current Firebase project default bucket
+        admin
+          .storage()
+          .bucket()
+          .upload(tempLocalFile)
+          .then(() => resolve())
+          .catch(error => reject(error));
+      });
+    });
   });
