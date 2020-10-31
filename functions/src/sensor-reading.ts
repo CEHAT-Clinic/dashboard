@@ -76,7 +76,7 @@ export default class SensorReading {
     );
   }
 
-  static fromPurpleAir(
+  static fromThingspeak(
     channelAPrimaryResponse: AxiosResponse,
     channelBPrimaryResponse: AxiosResponse,
     purpleAirResponse: PurpleAirResponse
