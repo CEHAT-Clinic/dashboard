@@ -9,19 +9,19 @@ const Admin = lazy(() => import('../pages/Admin')); //lazy imports to save on lo
 const Involved = lazy(() => import('../pages/Involved')); //lazy imports to save on load time
 
 function Routes(): JSX.Element {
-  return (
-    <Router>
-      <Suspense fallback={<div>Loading...</div>}>
-        <Switch>
-          <Route path="/about" component={About} />
-          <Route path="/health" component={Health} />
-          <Route path="/involved" component={Involved} />
-          <Route path="/admin" component={Admin} />
-          <Route path={['/home', '/']} component={Home} />
-        </Switch>
-      </Suspense>
-    </Router>
-  );
+    return (
+        <Router>
+            <Suspense fallback={<div>Loading...</div>}>
+                <Switch>
+                    <Route path="/about" component={About} />
+                    <Route path="/health" component={Health} />
+                    <Route path="/involved" component={Involved} />
+                    <Route path="/admin" component={Admin} />
+                    <Route path={['/home', '/']} component={Home} />
+                </Switch>
+            </Suspense>
+        </Router>
+    );
 }
 
 export default Routes;
