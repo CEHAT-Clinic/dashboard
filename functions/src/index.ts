@@ -61,7 +61,7 @@ exports.thingspeakToFirestore = functions.pubsub
           results: 1,
         },
       });
-      const reading = SensorReading.fromPurpleAir(
+      const reading = SensorReading.fromThingspeak(
         channelAPrimaryData,
         channelBPrimaryData,
         thingspeakInfo
