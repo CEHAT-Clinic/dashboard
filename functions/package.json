@@ -7,7 +7,10 @@
     "start": "npm run shell",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log",
-    "lint": "eslint . --ext .ts"
+    "lint": "gts lint",
+    "clean": "gts clean",
+    "compile": "tsc",
+    "fix": "gts fix"
   },
   "engines": {
     "node": "10"
@@ -22,6 +25,7 @@
   "devDependencies": {
     "typescript": "^4.0.5",
     "firebase-functions-test": "^0.2.3",
+    "gts": "^3.0.2",
     "@types/node": "^14.11.2"
   },
   "private": true

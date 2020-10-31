@@ -1,3 +1,4 @@
-node_modules
-dist
-functions
+build/
+node_modules/
+functions/
+dist/

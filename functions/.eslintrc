@@ -5,8 +5,14 @@
         "@typescript-eslint"
     ],
     "extends": [
+        "./node_modules/gts/",
         "eslint:recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended"
-    ]
+    ],
+    "rules": {
+        "prettier/prettier": ["error", {
+         "endOfLine":"auto"
+        }]
+    }
 }
