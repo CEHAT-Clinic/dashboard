@@ -90,9 +90,10 @@ exports.thingspeakToFirestore = functions.pubsub
  * 90% of the readings are available for a time period, it leaves the data for that hour
  * as undefined per the EPA guidance to ignore hours without 90% of the data.
  *
- * Note: In the event that a sensor is moved, the numbers reported by this
- * function for the averages in all times where the look-back period includes
- * both locations, the information reported here is meaningless.
+ * Note: In the event that a sensor is moved, this function will report meaningless data for
+ * the twelve hour period after the sensor is moved. This is because data from both locations
+ * will be treated as if they came from the same location because the function assumes a sensor
+ * is stationary.
  *
  * @param docId Firestore document id for the sensor to be getting averages for
  * @param purpleAirId PurpleAir ID for the sensor
@@ -143,10 +144,9 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
  */
 function cleanAverages(averages: SensorReading[]): CleanedReadings {
-  // These threshold for the EPA indicate when diverging sensor readings
-  // indicate malfulnction. They require that both the raw difference and
-  // the percent difference be above the below thresholds to declare a sensor
-  // malfunctioning
+  // These thresholds for the EPA indicate when diverging sensor readings
+  // indicate malfulnction. The EPA requires that the raw difference between
+  // the readings be less than 5 and the percent difference be less than 70%
   const RAW_THRESHOLD = 5;
   const PERCENT_THRESHOLD = 0.7;
 
