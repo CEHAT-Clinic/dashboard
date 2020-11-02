@@ -186,7 +186,7 @@ exports.calculateAqi = functions.pubsub
   .onRun(async () => {
     // If an hour does not have data that meets EPA requirements, the value
     // for that hour is undefined. By default, Firestore will reject API calls
-    // with undefined values. This setting changes the default to ignore those 
+    // with undefined values. This setting changes the default to ignore those
     // values instead
     db.settings({ignoreUndefinedProperties: true});
     const sensorList = (await db.collection('/sensors').get()).docs;
@@ -209,8 +209,9 @@ exports.calculateAqi = functions.pubsub
 
     // Note: There is only one document in this database, but we still get it back in
     // an array
-    const currentReadingDocuments = (await db.collection('current-reading').get())
-      .docs;
+    const currentReadingDocuments = (
+      await db.collection('current-reading').get()
+    ).docs;
     if (currentReadingDocuments.length !== 0) {
       const currentReadingDocId = currentReadingDocuments[0].id;
 
