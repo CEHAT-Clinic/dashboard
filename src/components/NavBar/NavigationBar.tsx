@@ -22,7 +22,9 @@ function NavigationBar(): JSX.Element {
     }
 
     return function (): void {
-      screenSize.removeEventListener('change', handleScreenChange);
+      if (screenSize) {
+        screenSize.removeEventListener('change', handleScreenChange);
+      }
     };
   }, []);
 
