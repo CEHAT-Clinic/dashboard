@@ -151,7 +151,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
     const reading = averages[i];
     if (reading !== undefined) {
       // Use first hour's location
-      if (latitude === NaN || longitude === NaN) {
+      if (isNaN(latitude) || isNaN(longitude)) {
         latitude = reading.latitude;
         longitude = reading.longitude;
       }
