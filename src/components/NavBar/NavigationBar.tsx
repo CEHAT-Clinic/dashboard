@@ -17,10 +17,14 @@ function NavigationBar(): JSX.Element {
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
     const screenSize = window.matchMedia('(max-width: 700px)');
-    screenSize.addEventListener('change', handleScreenChange);
+    if (screenSize) {
+      screenSize.addEventListener('change', handleScreenChange);
+    }
 
     return function (): void {
-      screenSize.removeEventListener('change', handleScreenChange);
+      if (screenSize) {
+        screenSize.removeEventListener('change', handleScreenChange);
+      }
     };
   }, []);
 
