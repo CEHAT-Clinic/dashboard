@@ -179,6 +179,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
+    db.settings({ignoreUndefinedProperties: true});
     const sensorList = (await db.collection('/sensors').get()).docs;
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
