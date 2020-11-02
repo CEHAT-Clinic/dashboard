@@ -100,11 +100,9 @@ exports.thingspeakToFirestore = functions.pubsub
 async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const LOOKBACK_PERIOD_HOURS = 12;
   const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
-  const now: Date = new Date();
-
-  const currentTime = now;
-  const previousTime = new Date(currentTime);
-  previousTime.setUTCHours(previousTime.getUTCHours() - 1);
+  const currentTime: Date = new Date();
+  const previousHour = new Date(currentTime);
+  previousHour.setUTCHours(previousHour.getUTCHours() - 1);
 
   const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
     DOC_ID_FIELD,
@@ -115,11 +113,14 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
     const readings = (
       await db
         .collection(resolvedPath)
-        .where('timestamp', '>', previousTime.toISOString())
+        .where('timestamp', '>', previousHour.toISOString())
         .where('timestamp', '<=', currentTime.toISOString())
         .get()
     ).docs;
-    // 90% of 1 reading every two minutes for an hour
+
+    // If we have 1 reading every two minutes, there are 30 readings in an hour
+    // 90% of 30 readings is 27 readings. We must have 90% of the readings from
+    // a given hour in order to compute the AQI per the EPA
     // Expressed this way to avoid imprecision of floating point arithmetic
     const MEASUREMENT_COUNT_THRESHOLD = 27;
     if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
@@ -128,7 +129,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
     }
 
     currentTime.setUTCHours(currentTime.getUTCHours() - 1);
-    previousTime.setUTCHours(previousTime.getUTCHours() - 1);
+    previousHour.setUTCHours(previousHour.getUTCHours() - 1);
   }
 
   return averages;
