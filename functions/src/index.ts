@@ -87,7 +87,8 @@ exports.thingspeakToFirestore = functions.pubsub
 
 /**
  * Gets the hourly averages for the past 12 hours for a single sensor. If less than
- * 90% of the readings are available for a time period,
+ * 90% of the readings are available for a time period, it leaves the data for that hour
+ * as undefined per the EPA guidance to ignore hours without 90% of the data.
  *
  * Note: In the event that a sensor is moved, the numbers reported by this
  * function for the averages in all times where the look-back period includes
@@ -134,13 +135,17 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 }
 
 /**
- * Cleans hourly averages of PM2.5 readings using the published EPA formula, excluding thosesd data points
+ * Cleans hourly averages of PM2.5 readings using the published EPA formula, excluding thoses data points
  * that indicate sensor malfunction. Those datapoints are represented by the undefined value.
  *
  * @param averages array containing sensor readings representing hourly averages
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
  */
 function cleanAverages(averages: SensorReading[]): CleanedReadings {
+  // These threshold for the EPA indicate when diverging sensor readings
+  // indicate malfulnction. They require that both the raw difference and
+  // the percent difference be above the below thresholds to declare a sensor
+  // malfunctioning
   const RAW_THRESHOLD = 5;
   const PERCENT_THRESHOLD = 0.7;
 
@@ -156,7 +161,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
         longitude = reading.longitude;
       }
 
-      const averageChannels =
+      const averagePmReading =
         (reading.channelAPmReading + reading.channelBPmReading) / 2;
       const difference = Math.abs(
         reading.channelAPmReading - reading.channelBPmReading
@@ -164,12 +169,12 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
       if (
         !(
           difference > RAW_THRESHOLD &&
-          difference / averageChannels > PERCENT_THRESHOLD
+          difference / averagePmReading > PERCENT_THRESHOLD
         )
       ) {
-        // Formula from https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
+        // Formula from EPA to correct PurpleAir PM 2.5 readings
         cleanedAverages[i] =
-          0.534 * averageChannels - 0.0844 * reading.humidity + 5.604;
+          0.534 * averagePmReading - 0.0844 * reading.humidity + 5.604;
       }
     }
   }
@@ -179,6 +184,10 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
+    // If an hour does not have data that meets EPA requirements, the value
+    // for that hour is undefined. By default, Firestore will reject API calls
+    // with undefined values. This setting changes the default to ignore those 
+    // values instead
     db.settings({ignoreUndefinedProperties: true});
     const sensorList = (await db.collection('/sensors').get()).docs;
     const currentData = Object.create(null);
@@ -198,10 +207,12 @@ exports.calculateAqi = functions.pubsub
       }
     }
 
-    const currentReadingDb = (await db.collection('current-reading').get())
+    // Note: There is only one document in this database, but we still get it back in
+    // an array
+    const currentReadingDocuments = (await db.collection('current-reading').get())
       .docs;
-    if (currentReadingDb.length !== 0) {
-      const currentReadingDocId = currentReadingDb[0].id;
+    if (currentReadingDocuments.length !== 0) {
+      const currentReadingDocId = currentReadingDocuments[0].id;
 
       await db.collection('current-reading').doc(currentReadingDocId).set({
         lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
