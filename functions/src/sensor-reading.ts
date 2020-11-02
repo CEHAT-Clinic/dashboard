@@ -6,16 +6,16 @@ export default class SensorReading {
   channelAPmReading: number;
   channelBPmReading: number;
   humidity: number;
-  latitude: string;
-  longitude: string;
+  latitude: number;
+  longitude: number;
 
   constructor(
     timestamp: Date,
     channelAPmReading: number,
     channelBPmReading: number,
     humidity: number,
-    latitude: string,
-    longitude: string
+    latitude: number,
+    longitude: number
   ) {
     this.timestamp = timestamp;
     this.channelAPmReading = channelAPmReading;
@@ -98,8 +98,8 @@ export default class SensorReading {
       Math.max(channelAAtmPm, channelACf1Pm),
       Math.max(channelBAtmPm, channelBCf1Pm),
       humidity,
-      purpleAirResponse.latitude,
-      purpleAirResponse.longitude
+      +purpleAirResponse.latitude,
+      +purpleAirResponse.longitude
     );
   }
 

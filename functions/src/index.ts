@@ -145,13 +145,13 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
   const PERCENT_THRESHOLD = 0.7;
 
   const cleanedAverages = new Array<number>(averages.length);
-  let latitude = '';
-  let longitude = '';
+  let latitude = NaN;
+  let longitude = NaN;
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
     if (reading !== undefined) {
       // Use first hour's location
-      if (latitude === '' || longitude === '') {
+      if (latitude === NaN || longitude === NaN) {
         latitude = reading.latitude;
         longitude = reading.longitude;
       }
