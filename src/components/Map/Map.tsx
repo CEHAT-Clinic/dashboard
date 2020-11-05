@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, {useState,useEffect} from 'react';
 import { db } from "../../firebase";
 
 export default class Map extends React.Component {
@@ -9,16 +9,18 @@ export default class Map extends React.Component {
     map: null as any
   };
 
-
-
+  // This fires every time the page is refreshed
   componentDidMount() { 
 
-    const H = (window as any).H;              // H is used to make API calls
+    const H = (window as any).H;            // H is used to make HERE API calls
+    
+    // register our API key
     var platform = new H.service.Platform({ 
         apikey: process.env.REACT_APP_HERE_API_KEY, 
     });
 
     var defaultLayers = platform.createDefaultLayers();
+    
     // Create an instance of the map
     var map = new H.Map(
       this.mapRef.current,                      // Reference for Map
@@ -30,22 +32,24 @@ export default class Map extends React.Component {
       }
     );
 
+    // This function creates the Icon for a particular sensor given the label
+    // for the sensor (i.e. the current reading at that sensor)
     function createIcon(label: string){
       //svg Marker Image
-      var svgMarkup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="black" ' +  
-      'width="60px" height="60px"><path d="M0 0h24v24H0z" fill="none"/><path ' +
-      'd="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7' +
-      '-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 ' +
-      '2.5-2.5 2.5z"/><text x="12" y="18" font-size="4pt" ' +
-      'font-family="Arial" font-weight="bold" text-anchor="middle" ' +
-      'fill="white">' + label + '</text></svg>'
+      var svgMarkup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
+      ' 0 24 24" fill="black" width="60px" height="60px"><path d="M0 0h24v'+
+      '24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7'+
+      ' 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1'+
+      '.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><text x="12" y='+
+      '"18" font-size="4pt" font-family="Arial" font-weight="bold" text-anch'+
+      'or="middle" fill="white">' + label + '</text></svg>'
 
       var icon = new H.map.Icon(svgMarkup)
       return icon
     }
 
 
-    // Add the Sensor Markers
+    // Add the Sensor Markers to the map
     db.collection("current-reading")
     .limit(1) // Only one doc stored in current-readings
     .get()
@@ -56,9 +60,9 @@ export default class Map extends React.Component {
             // Map of sensorID to readings and properties stored in data field
             const sensorMap = doc.data().data;
   
-            for (const sensorID in sensorMap) {
+            for (const sensorID in sensorMap) {   // for each sensor
               const sensorVal = sensorMap[sensorID];
-              // make icon for marker
+              // make icon for this marker
               const label :string = String(sensorVal.readings[0]).split(".")[0];
               const icon = createIcon(label)
 
@@ -68,12 +72,11 @@ export default class Map extends React.Component {
                   lat: sensorVal.latitude,
                   lng: sensorVal.longitude
                 }, {icon: icon})
-                //marker
               )
             }
   
           } else {
-              // doc.data() will be undefined in this case
+              // If doc.data() is undefined
               console.log("Error: current readings doc not found");
           }
         }
@@ -88,7 +91,7 @@ export default class Map extends React.Component {
   }
 
   componentWillUnmount() {
-    // Cleanup after the map to avoid memory leaks when this component exits the page
+    // Cleanup state
     if(this.state.map != null){
         this.state.map.dispose();
     }
@@ -97,7 +100,8 @@ export default class Map extends React.Component {
   render() {
     return (
       <div>
-        <div ref={this.mapRef} style={{ height: "400px", width: "800px" }}/>
+        <div ref={this.mapRef} style={{ height: "400px", 
+                                        width: window.innerWidth + "px" }}/>
       </div>
     );
   }
