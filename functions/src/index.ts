@@ -32,6 +32,26 @@ async function getThingspeakKeysFromPurpleAir(
   return new PurpleAirResponse(purpleAirApiResponse);
 }
 
+function uploadCsvToFirebaseBucket(tempLocalFilename: string, data: string) {
+  new Promise((resolve, reject) => {
+    // Write contents of csv into the temp file
+    fs.writeFile(tempLocalFilename, readingsCsv, error => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      // Upload file into current Firebase project default bucket
+      admin
+        .storage()
+        .bucket()
+        .upload(tempLocalFilename)
+        .then(() => resolve())
+        .catch(error => reject(error));
+    });
+  });
+}
+
 exports.thingspeakToFirestore = functions.pubsub
   .schedule('every 2 minutes')
   .onRun(async () => {
@@ -79,6 +99,14 @@ exports.thingspeakToFirestore = functions.pubsub
           .empty
       ) {
         const firestoreSafeReading = Object.assign({}, reading);
+        const firestoreReading = {
+          timestamp: reading.timestamp,
+          channelAPmReading: reading.channelAPmReading,
+          channelBPmReading: reading.channelBPmReading,
+          humidity: reading.humidity,
+          latitude: reading.latitude,
+          longitude: reading.longitude,
+        };
         await readingsRef.add(firestoreSafeReading);
       }
     }
@@ -152,4 +180,58 @@ exports.generateReadingsCsv = functions.pubsub
           .catch(error => reject(error));
       });
     });
+  });
+
+exports.generateAverageReadingsCsv = functions.pubsub
+  .topic('generate-average-readings-csv')
+  .onPublish(async () => {
+    // Initialize csv with headers
+    const headings =
+      'timestamp, ' +
+      'channelAPmReading, ' +
+      'channelBPmReading, ' +
+      'humidity, ' +
+      'latitude, ' +
+      'longitude\n';
+
+    const sensorList = (await db.collection('/sensors').get()).docs;
+    const readingsArrays = new Array<Array<string>>(sensorList.length);
+    for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
+      // Get readings subcollection path
+      const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
+        DOC_ID_FIELD,
+        sensorList[sensorIndex].id
+      );
+
+      const readingsList = (await db.collection(resolvedPath).get()).docs;
+      const readingsArray = new Array<string>(readingsList.length);
+
+      for (
+        let readingIndex = 0;
+        readingIndex < readingsList.length;
+        readingIndex++
+      ) {
+        const reading = SensorReading.fromFirestore(
+          readingsList[readingIndex].data()
+        );
+
+        // toCsvLine generates the values in the same order as the
+        // headings variable.
+        readingsArray[readingIndex] = reading.toCsvLine();
+      }
+
+      readingsArrays[sensorIndex] = readingsArray;
+    }
+
+    // Combine the data into one string
+    const readings = readingsArrays.map(strArray => strArray.join(''));
+    const readingsCsv = headings + readings.join('');
+
+    // Generate filename
+    const dateTime = new Date().toISOString().replace(/\W/g, '');
+    const filename = `pm_readings_${dateTime}.csv`;
+
+    const tempLocalFile = path.join(os.tmpdir(), filename);
+
+    return 
   });
