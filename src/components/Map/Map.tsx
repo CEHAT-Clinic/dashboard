@@ -83,19 +83,6 @@ export default class Map extends React.Component {
       console.log("Error getting document:", error);
     })
 
-    // THIS IS AN ATTEMPT TO GET THE ZOOM BUTTONS ON THE SCREEN
-    // Create the default UI:
-    const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-    var ui = H.ui.UI.createDefault(map, defaultLayers);
-
-    // var mapSettings = ui.getControl('mapsettings');
-    // var zoom = ui.getControl('zoom');
-    // var scalebar = ui.getControl('scalebar');
-
-    // mapSettings.setAlignment('top-left');
-    // zoom.setAlignment('top-left');
-    // scalebar.setAlignment('top-left');
-    // //ui.getControl('zoom').setDisabled(true)
 
     this.setState({ map });
   }
