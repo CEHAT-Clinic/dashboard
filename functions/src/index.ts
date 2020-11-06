@@ -32,6 +32,27 @@ async function getThingspeakKeysFromPurpleAir(
   return new PurpleAirResponse(purpleAirApiResponse);
 }
 
+function uploadFileToFirebaseBucket(filename: string, data: string) {
+  const tempLocalFile = path.join(os.tmpdir(), filename);
+  return new Promise((resolve, reject) => {
+    // Write data into the temp file
+    fs.writeFile(tempLocalFile, data, error => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      // Upload file into current Firebase project default bucket
+      admin
+        .storage()
+        .bucket()
+        .upload(tempLocalFile)
+        .then(() => resolve())
+        .catch(error => reject(error));
+    });
+  });
+}
+
 exports.thingspeakToFirestore = functions.pubsub
   .schedule('every 2 minutes')
   .onRun(async () => {
@@ -130,26 +151,39 @@ exports.generateReadingsCsv = functions.pubsub
     const readingsCsv = headings + readings.join('');
 
     // Generate filename
-    const dateTime = new Date().toISOString().replace(/\W/g, '');
-    const filename = `pm_readings_${dateTime}.csv`;
+    // Put timestamp into human-readable, computer friendly for
+    // Regex removes all non-word characters in the date string
+    const dateTime = new Date().toISOString().replace(/\W/g, '_');
+    const filename = `pm25_readings_${dateTime}.csv`;
 
-    const tempLocalFile = path.join(os.tmpdir(), filename);
+    return uploadFileToFirebaseBucket(filename, readingsCsv);
+  });
 
-    return new Promise((resolve, reject) => {
-      // Write contents of csv into the temp file
-      fs.writeFile(tempLocalFile, readingsCsv, error => {
-        if (error) {
-          reject(error);
-          return;
-        }
+exports.generateAverageReadingsCsv = functions.pubsub
+  .topic('generate-average-readings-csv')
+  .onPublish(async () => {
+    // Initialize csv with headers
+    let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';
 
-        // Upload file into current Firebase project default bucket
-        admin
-          .storage()
-          .bucket()
-          .upload(tempLocalFile)
-          .then(() => resolve())
-          .catch(error => reject(error));
-      });
-    });
+    // current-reading collection has single doc
+    const currentReadingDoc = (await db.collection('/current-reading').get())
+      .docs[0];
+    const sensorMap = currentReadingDoc.data().data;
+    for (const sensorId in sensorMap) {
+      const sensorData = sensorMap[sensorId];
+      // Only get most recently calculated average
+      const reading = sensorData.readings[0];
+      csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${reading}\n`;
+    }
+
+    // Generate filename
+    const timestamp: FirebaseFirestore.Timestamp = currentReadingDoc.data()
+      .lastUpdated;
+
+    // Put timestamp into human-readable, computer friendly form
+    // Regex removes all non-word characters in the date string
+    const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
+    const filename = `hour_averages_pm25_${dateTime}.csv`;
+
+    return uploadFileToFirebaseBucket(filename, csvData);
   });
