@@ -121,6 +121,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
   const currentHour: Date = new Date();
   const previousHour = new Date(currentHour);
+  // Only modifies the hour field, keeps minutes field constant
   previousHour.setUTCHours(previousHour.getUTCHours() - 1);
 
   const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
@@ -198,6 +199,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
         )
       ) {
         // Formula from EPA to correct PurpleAir PM 2.5 readings
+        // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
         cleanedAverages[i] =
           0.534 * averagePmReading - 0.0844 * reading.humidity + 5.604;
       }
