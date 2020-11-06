@@ -170,8 +170,8 @@ exports.generateAverageReadingsCsv = functions.pubsub
     for (const sensorId in sensorMap) {
       const sensorData = sensorMap[sensorId];
       // Only get most recently calculated average
-      const currentReading = sensorData.readings[0];
-      csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${currentReading}\n`;
+      const reading = sensorData.readings[0];
+      csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${reading}\n`;
     }
 
     // Generate filename
