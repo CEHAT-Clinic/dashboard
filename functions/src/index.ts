@@ -32,10 +32,10 @@ async function getThingspeakKeysFromPurpleAir(
   return new PurpleAirResponse(purpleAirApiResponse);
 }
 
-function uploadCsvToFirebaseBucket(filename: string, data: string) {
+function uploadFileToFirebaseBucket(filename: string, data: string) {
   const tempLocalFile = path.join(os.tmpdir(), filename);
   return new Promise((resolve, reject) => {
-    // Write contents of csv into the temp file
+    // Write data into the temp file
     fs.writeFile(tempLocalFile, data, error => {
       if (error) {
         reject(error);
@@ -151,17 +151,17 @@ exports.generateReadingsCsv = functions.pubsub
     const readingsCsv = headings + readings.join('');
 
     // Generate filename
-    const dateTime = new Date().toISOString().replace(/\W/g, '');
+    const dateTime = new Date().toISOString().replace(/\W/g, '_');
     const filename = `pm_readings_${dateTime}.csv`;
 
-    return uploadCsvToFirebaseBucket(filename, readingsCsv);
+    return uploadFileToFirebaseBucket(filename, readingsCsv);
   });
 
 exports.generateAverageReadingsCsv = functions.pubsub
   .topic('generate-average-readings-csv')
   .onPublish(async () => {
     // Initialize csv with headers
-    let csv = 'latitude, longitude, corrected_hour_average_pm25 \n';
+    let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';
 
     // current-reading collection has single doc
     const currentReadingDoc = (await db.collection('/current-reading').get())
@@ -171,12 +171,14 @@ exports.generateAverageReadingsCsv = functions.pubsub
       const sensorData = sensorMap[sensorId];
       // Only get most recently calculated average
       const currentReading = sensorData.readings[0];
-      csv += `${sensorData.latitude}, ${sensorData.longitude}, ${currentReading}\n`;
+      csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${currentReading}\n`;
     }
 
     // Generate filename
-    const dateTime = currentReadingDoc.data().lastUpdated;
+    const timestamp: FirebaseFirestore.Timestamp = currentReadingDoc.data()
+      .lastUpdated;
+    const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
     const filename = `hour_averages_${dateTime}.csv`;
 
-    return uploadCsvToFirebaseBucket(filename, csv);
+    return uploadFileToFirebaseBucket(filename, csvData);
   });
