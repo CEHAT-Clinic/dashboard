@@ -61,7 +61,10 @@ exports.thingspeakToFirestore = functions.pubsub
           results: 1,
         },
       });
-      const [channelAPrimaryData, channelBPrimaryData] = await Promise.all([channelAPrimaryRequest, channelBPrimaryRequest]);
+      const [channelAPrimaryData, channelBPrimaryData] = await Promise.all([
+        channelAPrimaryRequest,
+        channelBPrimaryRequest,
+      ]);
       const reading = SensorReading.fromThingspeak(
         channelAPrimaryData,
         channelBPrimaryData,
