@@ -1,1 +1,1 @@
-declare module 'react-script-tag'
+declare module 'react-script-tag';
