@@ -10,12 +10,18 @@ jobs:
     # Ubuntu is cheaper to use than Windows or macOS
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - uses: actions/setup-node@master
+    - uses: actions/checkout@v2
+    - uses: actions/setup-node@v1
       with:
         node-version: 10
-    - run: npm ci
-    - run: npm run build
+    - run: |
+        npm ci
+        cd functions
+        npm ci
+    - run: |
+        npm run build
+        cd functions
+        npm run build
       # Exisiting Action that acts as library for Firebase
     - uses: w9jds/firebase-action@master
       with:

@@ -11,19 +11,23 @@ on:
 
 jobs:
   build:
-
+    # Ubuntu is cheaper to use than Windows or macOS
     runs-on: ubuntu-latest
-
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x, 14.x]
-
     steps:
     - uses: actions/checkout@v2
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
+    - uses: actions/setup-node@v1
       with:
-        node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run build --if-present
+        node-version: 10
+    - run: |
+            npm ci
+            cd functions
+            npm ci
+    - run: |
+            npm run lint
+            cd functions
+            npm run lint
+    - run: |
+            npm run build --if-present
+            cd functions
+            npm run build --if-present
     - run: npm test
