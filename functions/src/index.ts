@@ -151,8 +151,10 @@ exports.generateReadingsCsv = functions.pubsub
     const readingsCsv = headings + readings.join('');
 
     // Generate filename
+    // Put timestamp into human-readable, computer friendly for
+    // Regex removes all non-word characters in the date string
     const dateTime = new Date().toISOString().replace(/\W/g, '_');
-    const filename = `pm_readings_${dateTime}.csv`;
+    const filename = `pm25_readings_${dateTime}.csv`;
 
     return uploadFileToFirebaseBucket(filename, readingsCsv);
   });
@@ -177,8 +179,11 @@ exports.generateAverageReadingsCsv = functions.pubsub
     // Generate filename
     const timestamp: FirebaseFirestore.Timestamp = currentReadingDoc.data()
       .lastUpdated;
+    
+    // Put timestamp into human-readable, computer friendly form
+    // Regex removes all non-word characters in the date string
     const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
-    const filename = `hour_averages_${dateTime}.csv`;
+    const filename = `hour_averages_pm25_${dateTime}.csv`;
 
     return uploadFileToFirebaseBucket(filename, csvData);
   });
