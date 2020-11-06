@@ -179,7 +179,7 @@ exports.generateAverageReadingsCsv = functions.pubsub
     // Generate filename
     const timestamp: FirebaseFirestore.Timestamp = currentReadingDoc.data()
       .lastUpdated;
-    
+
     // Put timestamp into human-readable, computer friendly form
     // Regex removes all non-word characters in the date string
     const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
