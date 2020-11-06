@@ -1,16 +1,19 @@
-import React, {useState,useEffect} from 'react';
+import React, {useState,useLayoutEffect} from 'react';
 import { db } from "../../firebase";
 
-export default class Map extends React.Component {
+class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
 
   state = {
     // The map instance to use during cleanup
-    map: null as any
+    map: null as any,
+    screen_size: window.innerWidth 
   };
+
 
   // This fires every time the page is refreshed
   componentDidMount() { 
+    console.log("Firing component did mount")
 
     const H = (window as any).H;            // H is used to make HERE API calls
     
@@ -35,7 +38,12 @@ export default class Map extends React.Component {
     // This function creates the Icon for a particular sensor given the label
     // for the sensor (i.e. the current reading at that sensor)
     function createIcon(label: string){
+
       //svg Marker Image
+
+      // var svgMarkup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
+      // ' 0 24 24" fill="black" width="60px" height="60px"></svg>'
+      
       var svgMarkup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
       ' 0 24 24" fill="black" width="60px" height="60px"><path d="M0 0h24v'+
       '24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7'+
@@ -86,6 +94,9 @@ export default class Map extends React.Component {
       console.log("Error getting document:", error);
     })
 
+    // Create the default UI:
+    const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+    var ui = H.ui.UI.createDefault(map, defaultLayers);
 
     this.setState({ map });
   }
@@ -101,8 +112,10 @@ export default class Map extends React.Component {
     return (
       <div>
         <div ref={this.mapRef} style={{ height: "400px", 
-                                        width: window.innerWidth + "px" }}/>
+                                        width: "100%" }}/>
       </div>
     );
   }
 }
+
+export default Map;
