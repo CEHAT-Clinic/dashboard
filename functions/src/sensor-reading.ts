@@ -3,23 +3,23 @@ import PurpleAirResponse from './purple-air-response';
 
 export default class SensorReading {
   timestamp: Date;
-  channelAPmReading: number;
-  channelBPmReading: number;
+  channelAPm25: number;
+  channelBPm25: number;
   humidity: number;
   latitude: number;
   longitude: number;
 
   constructor(
     timestamp: Date,
-    channelAPmReading: number,
-    channelBPmReading: number,
+    channelAPm25: number,
+    channelBPm25: number,
     humidity: number,
     latitude: number,
     longitude: number
   ) {
     this.timestamp = timestamp;
-    this.channelAPmReading = channelAPmReading;
-    this.channelBPmReading = channelBPmReading;
+    this.channelAPm25 = channelAPm25;
+    this.channelBPm25 = channelBPm25;
     this.humidity = humidity;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -109,8 +109,8 @@ export default class SensorReading {
   toCsvLine(): string {
     return (
       `${this.timestamp}, ` +
-      `${this.channelAPmReading}, ` +
-      `${this.channelBPmReading}, ` +
+      `${this.channelAPm25}, ` +
+      `${this.channelBPm25}, ` +
       `${this.humidity}, ` +
       `${this.latitude}, ` +
       `${this.longitude}\n`

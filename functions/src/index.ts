@@ -76,10 +76,24 @@ exports.thingspeakToFirestore = functions.pubsub
       // This happens if a sensor is down, so only old data is returned.
       const readingsRef = db.collection(resolvedPath);
       if (
-        (await readingsRef.where('timestamp', '==', reading.timestamp).get())
-          .empty
+        (
+          await readingsRef
+            .where(
+              'timestamp',
+              '==',
+              FirebaseFirestore.Timestamp.fromDate(reading.timestamp)
+            )
+            .get()
+        ).empty
       ) {
-        const firestoreSafeReading = Object.assign({}, reading);
+        const firestoreSafeReading = {
+          timestamp: FirebaseFirestore.Timestamp.fromDate(reading.timestamp),
+          channelAPm25: reading.channelAPm25,
+          channelBPm25: reading.channelBPm25,
+          humidity: reading.humidity,
+          latitude: reading.latitude,
+          longitude: reading.longitude,
+        };
         await readingsRef.add(firestoreSafeReading);
       }
     }
@@ -101,8 +115,8 @@ exports.thingspeakToFirestore = functions.pubsub
 async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const LOOKBACK_PERIOD_HOURS = 12;
   const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
-  const currentTime: Date = new Date();
-  const previousHour = new Date(currentTime);
+  const currentHour: Date = new Date();
+  const previousHour = new Date(currentHour);
   previousHour.setUTCHours(previousHour.getUTCHours() - 1);
 
   const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
@@ -114,8 +128,16 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
     const readings = (
       await db
         .collection(resolvedPath)
-        .where('timestamp', '>', previousHour.toISOString())
-        .where('timestamp', '<=', currentTime.toISOString())
+        .where(
+          'timestamp',
+          '>',
+          FirebaseFirestore.Timestamp.fromDate(previousHour)
+        )
+        .where(
+          'timestamp',
+          '<=',
+          FirebaseFirestore.Timestamp.fromDate(currentHour)
+        )
         .get()
     ).docs;
 
@@ -129,7 +151,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
       averages[i] = reading;
     }
 
-    currentTime.setUTCHours(currentTime.getUTCHours() - 1);
+    currentHour.setUTCHours(currentHour.getUTCHours() - 1);
     previousHour.setUTCHours(previousHour.getUTCHours() - 1);
   }
 
@@ -163,10 +185,8 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
       }
 
       const averagePmReading =
-        (reading.channelAPmReading + reading.channelBPmReading) / 2;
-      const difference = Math.abs(
-        reading.channelAPmReading - reading.channelBPmReading
-      );
+        (reading.channelAPm25 + reading.channelBPm25) / 2;
+      const difference = Math.abs(reading.channelAPm25 - reading.channelBPm25);
       if (
         !(
           difference > RAW_THRESHOLD &&
