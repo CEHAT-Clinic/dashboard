@@ -1,5 +1,6 @@
 import React, {useState, useLayoutEffect} from 'react';
 import {db} from '../../firebase';
+import './Map.css';
 
 class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
@@ -7,11 +8,20 @@ class Map extends React.Component {
   state = {
     // The map instance to use during cleanup
     map: null as any,
-    screen_size: window.innerWidth,
+    screen_width: window.innerWidth,
   };
 
-  // This fires every time the page is refreshed
+  //This function handles a screen resize (updates state)
+  handleResize = () =>
+    this.setState({
+      map: this.state.map,
+      screen_width: window.innerWidth,
+    });
+
+  //This fires every time the page is refreshed
   componentDidMount() {
+    this.handleResize();
+    window.addEventListener('resize', this.handleResize);
     console.log('Firing component did mount');
 
     const H = (window as any).H; // H is used to make HERE API calls
@@ -34,14 +44,10 @@ class Map extends React.Component {
       }
     );
 
-    // This function creates the Icon for a particular sensor given the label
+    //This function creates the Icon for a particular sensor given the label
     // for the sensor (i.e. the current reading at that sensor)
     function createIcon(label: string) {
       //svg Marker Image
-
-      // var svgMarkup = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
-      // ' 0 24 24" fill="black" width="60px" height="60px"></svg>'
-
       const svgMarkup =
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
         ' 0 24 24" fill="black" width="60px" height="60px"><path d="M0 0h24v' +
@@ -108,6 +114,7 @@ class Map extends React.Component {
   }
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
     // Cleanup state
     if (this.state.map !== null) {
       this.state.map.dispose();
@@ -117,7 +124,14 @@ class Map extends React.Component {
   render() {
     return (
       <div>
-        <div ref={this.mapRef} style={{height: '400px', width: '100%'}} />
+        <h1 className="header"> Screen Width: {this.state.screen_width}</h1>
+        <div
+          ref={this.mapRef}
+          style={{
+            height: '400px',
+            width: String(this.state.screen_width) + 'px',
+          }}
+        />
       </div>
     );
   }
