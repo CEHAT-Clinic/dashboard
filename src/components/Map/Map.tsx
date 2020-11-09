@@ -1,27 +1,20 @@
-import React, {useState, useLayoutEffect} from 'react';
+import React from 'react';
 import {db} from '../../firebase';
-import './Map.css';
+
+// Map Style
+const mapStyle = {
+  height: '400px',
+};
 
 class Map extends React.Component {
-  mapRef = React.createRef<HTMLDivElement>();
+  mapRef = React.createRef<HTMLDivElement>(); // reference for div element
 
   state = {
-    // The map instance to use during cleanup
     map: null as any,
-    screen_width: window.innerWidth,
   };
 
-  //This function handles a screen resize (updates state)
-  handleResize = () =>
-    this.setState({
-      map: this.state.map,
-      screen_width: window.innerWidth,
-    });
-
-  //This fires every time the page is refreshed
-  componentDidMount() {
-    this.handleResize();
-    window.addEventListener('resize', this.handleResize);
+  // This fires every time the page is refreshed
+  componentDidMount(): void {
     console.log('Firing component did mount');
 
     const H = (window as any).H; // H is used to make HERE API calls
@@ -39,23 +32,23 @@ class Map extends React.Component {
       defaultLayers.vector.normal.map,
       {
         zoom: 13,
-        center: {lat: 33.945, lng: -118.2106}, //South Gate
+        center: {lat: 33.945, lng: -118.2106}, // South Gate coordinates
         pixelRatio: window.devicePixelRatio || 1,
       }
     );
 
-    //This function creates the Icon for a particular sensor given the label
+    // Creates the svg icon for a particular sensor given the label
     // for the sensor (i.e. the current reading at that sensor)
     function createIcon(label: string) {
-      //svg Marker Image
+      //svg Marker Image (TODO: replace with better svg image)
       const svgMarkup =
         '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
         ' 0 24 24" fill="black" width="60px" height="60px"><path d="M0 0h24v' +
         '24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7' +
         ' 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1' +
-        '.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><text x="12" y=' +
-        '"18" font-size="4pt" font-family="Arial" font-weight="bold" text-anch' +
-        'or="middle" fill="white">' +
+        '.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><text x="12"' +
+        ' y="18" font-size="4pt" font-family="Arial" font-weight="bold" ' +
+        'text-anchor="middle" fill="white">' +
         label +
         '</text></svg>';
 
@@ -76,9 +69,8 @@ class Map extends React.Component {
               const sensorMap = doc.data().data;
 
               for (const sensorID in sensorMap) {
-                // for each sensor
                 const sensorVal = sensorMap[sensorID];
-                // make icon for this marker
+                // create label and icon for this marker
                 const label: string = String(sensorVal.readings[0]).split(
                   '.'
                 )[0];
@@ -106,32 +98,27 @@ class Map extends React.Component {
         console.log('Error getting document:', error);
       });
 
-    // Create the default UI:
+    // Create the default UI which allows for zooming
     const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
     const ui = H.ui.UI.createDefault(map, defaultLayers);
+
+    // Resize map on screen resize
+    window.addEventListener('resize', () => map.getViewPort().resize());
 
     this.setState({map});
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.handleResize);
+  componentWillUnmount(): void {
     // Cleanup state
     if (this.state.map !== null) {
       this.state.map.dispose();
     }
   }
 
-  render() {
+  render(): JSX.Element {
     return (
       <div>
-        <h1 className="header"> Screen Width: {this.state.screen_width}</h1>
-        <div
-          ref={this.mapRef}
-          style={{
-            height: '400px',
-            width: String(this.state.screen_width) + 'px',
-          }}
-        />
+        <div ref={this.mapRef} style={mapStyle} />
       </div>
     );
   }
