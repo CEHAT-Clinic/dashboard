@@ -159,7 +159,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
  * datapoints are represented by NaN.
  *
  * @param averages array containing sensor readings representing hourly averages
- * @returns an array of numbers representing the corrected PM2.5 values pursuant 
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant
  *          to the EPA formula
  */
 function cleanAverages(averages: SensorReading[]): CleanedReadings {
