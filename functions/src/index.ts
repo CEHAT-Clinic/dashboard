@@ -158,8 +158,8 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 
     // If we have 1 reading every two minutes, there are 30 readings in an hour
     // 90% of 30 readings is 27 readings. We must have 90% of the readings from
-    // a given hour in order to compute the AQI per the EPA
-    // Expressed this way to avoid imprecision of floating point arithmetic
+    // a given hour in order to compute the AQI per the EPA.
+    // Expressed this way to avoid imprecision of floating point arithmetic.
     const MEASUREMENT_COUNT_THRESHOLD = 27;
     if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
       const reading = SensorReading.averageDocuments(readings);
@@ -174,11 +174,13 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 }
 
 /**
- * Cleans hourly averages of PM2.5 readings using the published EPA formula, excluding thoses data points
- * that indicate sensor malfunction. Those datapoints are represented by the undefined value.
+ * Cleans hourly averages of PM2.5 readings using the published EPA formula,
+ * excluding thoses data points that indicate sensor malfunction. Those
+ * datapoints are represented by NaN.
  *
  * @param averages array containing sensor readings representing hourly averages
- * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant
+ *          to the EPA formula
  */
 function cleanAverages(averages: SensorReading[]): CleanedReadings {
   // These thresholds for the EPA indicate when diverging sensor readings
@@ -212,7 +214,14 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
         // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
         cleanedAverages[i] =
           0.534 * averagePmReading - 0.0844 * reading.humidity + 5.604;
+      } else {
+        // If reading exceeds thresholds above
+        cleanedAverages[i] = Number.NaN;
       }
+    } else {
+      // If less than 27 datapoints were available for that hour, the reading
+      // would have been undefined
+      cleanedAverages[i] = Number.NaN;
     }
   }
   return new CleanedReadings(latitude, longitude, cleanedAverages);
@@ -221,11 +230,6 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
-    // If an hour does not have data that meets EPA requirements, the value
-    // for that hour is undefined. By default, Firestore will reject API calls
-    // with undefined values. This setting changes the default to ignore those
-    // values instead
-    db.settings({ignoreUndefinedProperties: true});
     const sensorList = (await db.collection('/sensors').get()).docs;
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
@@ -236,7 +240,7 @@ exports.calculateAqi = functions.pubsub
       //TODO: Start using AQI not PM2.5
 
       const containsInfo = cleanedAverages.readings.some(
-        reading => reading !== undefined
+        reading => !Number.isNaN(reading)
       );
       if (containsInfo) {
         const purpleAirId = knownSensor.data()['purpleAirId'] as string;
@@ -265,8 +269,8 @@ exports.generateReadingsCsv = functions.pubsub
     // Initialize csv with headers
     const headings =
       'timestamp, ' +
-      'channelAPmReading, ' +
-      'channelBPmReading, ' +
+      'channelAPm25, ' +
+      'channelBPm25, ' +
       'humidity, ' +
       'latitude, ' +
       'longitude\n';
