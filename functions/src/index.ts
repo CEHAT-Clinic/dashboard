@@ -1,5 +1,4 @@
 import * as functions from 'firebase-functions';
-import 'firebase/firestore';
 import axios from 'axios';
 import PurpleAirResponse from './purple-air-response';
 import * as admin from 'firebase-admin';
