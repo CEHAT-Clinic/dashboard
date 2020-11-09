@@ -96,7 +96,6 @@ exports.thingspeakToFirestore = functions.pubsub
           latitude: reading.latitude,
           longitude: reading.longitude,
         };
-        console.log(firestoreSafeReading);
         await readingsRef.add(firestoreSafeReading);
       }
     }
