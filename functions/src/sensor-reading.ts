@@ -40,15 +40,16 @@ export default class SensorReading {
 
     // Guaranteed to be okay because this function should only be called with >= 27 items
     const firstReadingData = readings[0].data();
-    const latitude = firstReadingData['latitude'];
-    const longitude = firstReadingData['longitude'];
-    const timestamp = firstReadingData['timestamp'];
+    const latitude: number = firstReadingData['latitude'];
+    const longitude: number = firstReadingData['longitude'];
+    const timestamp: FirebaseFirestore.Timestamp =
+      firstReadingData['timestamp'];
 
     for (const reading of readings) {
       const data = reading.data();
 
-      channelAPmReadingSum += data['channelAPmReading'];
-      channelBPmReadingSum += data['channelBPmReading'];
+      channelAPmReadingSum += data['channelAPm25'];
+      channelBPmReadingSum += data['channelBPm25'];
       humiditySum += data['humidity'];
     }
 
@@ -57,7 +58,7 @@ export default class SensorReading {
     const humidityAverage = humiditySum / readings.length;
 
     return new this(
-      timestamp,
+      timestamp.toDate(),
       channelAPmReadingAverage,
       channelBPmReadingAverage,
       humidityAverage,
@@ -67,9 +68,9 @@ export default class SensorReading {
   }
   static fromFirestore(data: FirebaseFirestore.DocumentData): SensorReading {
     return new this(
-      data.timestamp,
-      data.channelAPmReading,
-      data.channelBPmReading,
+      data.timestamp.toDate(),
+      data.channelAPm25,
+      data.channelBPm25,
       data.humidity,
       data.latitude,
       data.longitude

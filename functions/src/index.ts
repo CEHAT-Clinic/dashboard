@@ -249,8 +249,8 @@ exports.generateReadingsCsv = functions.pubsub
     // Initialize csv with headers
     const headings =
       'timestamp, ' +
-      'channelAPmReading, ' +
-      'channelBPmReading, ' +
+      'channelAPm25, ' +
+      'channelBPm25, ' +
       'humidity, ' +
       'latitude, ' +
       'longitude\n';
