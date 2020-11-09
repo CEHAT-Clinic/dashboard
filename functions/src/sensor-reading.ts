@@ -94,8 +94,10 @@ export default class SensorReading {
 
     const humidity = +channelAData.field7;
 
+    const timestamp = new Date(channelAData.created_at);
+
     return new this(
-      channelAData.created_at,
+      timestamp,
       Math.max(channelAAtmPm, channelACf1Pm),
       Math.max(channelBAtmPm, channelBCf1Pm),
       humidity,
