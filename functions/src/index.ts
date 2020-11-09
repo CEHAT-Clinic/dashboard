@@ -1,4 +1,5 @@
 import * as functions from 'firebase-functions';
+import 'firebase/firestore';
 import axios from 'axios';
 import PurpleAirResponse from './purple-air-response';
 import * as admin from 'firebase-admin';
@@ -10,6 +11,7 @@ import * as os from 'os';
 
 admin.initializeApp();
 const db = admin.firestore();
+const Timestamp = admin.firestore.Timestamp;
 
 const THINGSPEAK_URL_TEMPLATE =
   'https://api.thingspeak.com/channels/<channel_id>/feeds.json';
@@ -103,16 +105,12 @@ exports.thingspeakToFirestore = functions.pubsub
       if (
         (
           await readingsRef
-            .where(
-              'timestamp',
-              '==',
-              FirebaseFirestore.Timestamp.fromDate(reading.timestamp)
-            )
+            .where('timestamp', '==', Timestamp.fromDate(reading.timestamp))
             .get()
         ).empty
       ) {
         const firestoreSafeReading = {
-          timestamp: FirebaseFirestore.Timestamp.fromDate(reading.timestamp),
+          timestamp: Timestamp.fromDate(reading.timestamp),
           channelAPm25: reading.channelAPm25,
           channelBPm25: reading.channelBPm25,
           humidity: reading.humidity,
@@ -154,16 +152,8 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
     const readings = (
       await db
         .collection(resolvedPath)
-        .where(
-          'timestamp',
-          '>',
-          FirebaseFirestore.Timestamp.fromDate(previousHour)
-        )
-        .where(
-          'timestamp',
-          '<=',
-          FirebaseFirestore.Timestamp.fromDate(currentHour)
-        )
+        .where('timestamp', '>', Timestamp.fromDate(previousHour))
+        .where('timestamp', '<=', Timestamp.fromDate(currentHour))
         .get()
     ).docs;
 
