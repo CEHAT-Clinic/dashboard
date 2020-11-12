@@ -55,10 +55,17 @@ function uploadFileToFirebaseBucket(filename: string, data: string) {
   });
 }
 
-exports.thingspeakToFirestore = functions.pubsub
-  .schedule('every 2 minutes')
+const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
+  timeoutSeconds: 120,
+};
+
+exports.thingspeakToFirestore = functions
+  .runWith(thingspeakToFirestoreRuntimeOpts)
+  .pubsub.schedule('every 2 minutes')
   .onRun(async () => {
     const sensorList = (await db.collection('/sensors').get()).docs;
+    // Allocates up to a minute of the two minute runtime for delaying
+    const delayBetweenSensors = 60000 / sensorList.length;
     for (const knownSensor of sensorList) {
       const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
         knownSensor.data()['purpleAirId']
@@ -114,6 +121,10 @@ exports.thingspeakToFirestore = functions.pubsub
         };
         await readingsRef.add(firestoreSafeReading);
       }
+
+      // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
+      // our program from getting blocked
+      await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
     }
   });
 
