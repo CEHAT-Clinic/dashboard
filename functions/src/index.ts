@@ -63,7 +63,7 @@ exports.thingspeakToFirestore = functions.pubsub
       const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
         knownSensor.data()['purpleAirId']
       );
-      const channelAPrimaryRequest = axios({
+      const channelAPrimaryData = await axios({
         url: THINGSPEAK_URL_TEMPLATE.replace(
           CHANNEL_FIELD,
           thingspeakInfo.channelAPrimaryId
@@ -73,7 +73,7 @@ exports.thingspeakToFirestore = functions.pubsub
           results: 1,
         },
       });
-      const channelBPrimaryRequest = axios({
+      const channelBPrimaryData = await axios({
         url: THINGSPEAK_URL_TEMPLATE.replace(
           CHANNEL_FIELD,
           thingspeakInfo.channelBPrimaryId
@@ -83,10 +83,6 @@ exports.thingspeakToFirestore = functions.pubsub
           results: 1,
         },
       });
-      const [channelAPrimaryData, channelBPrimaryData] = await Promise.all([
-        channelAPrimaryRequest,
-        channelBPrimaryRequest,
-      ]);
       const reading = SensorReading.fromThingspeak(
         channelAPrimaryData,
         channelBPrimaryData,
