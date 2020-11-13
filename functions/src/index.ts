@@ -7,6 +7,7 @@ import CleanedReadings from './cleaned-reading';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
+import NowCastConcentration from './nowcast-concentration';
 
 admin.initializeApp();
 const db = admin.firestore();
@@ -238,13 +239,30 @@ exports.calculateAqi = functions.pubsub
       const cleanedAverages = cleanAverages(hourlyAverages);
 
       //TODO: Start using AQI not PM2.5
-
-      const containsInfo = cleanedAverages.readings.some(
-        reading => !Number.isNaN(reading)
-      );
-      if (containsInfo) {
+      let validEntriesLastThreeHours = 0;
+      const THREE_HOURS = 3;
+      for (
+        let i = 0;
+        i < Math.min(THREE_HOURS, cleanedAverages.readings.length);
+        i++
+      ) {
+        if (!Number.isNaN(cleanedAverages.readings[i])) {
+          validEntriesLastThreeHours++;
+        }
+      }
+      const NOWCAST_RECENT_DATA_THRESHOLD = 2;
+      const containsEnoughInfo =
+        validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
+      if (containsEnoughInfo) {
         const purpleAirId = knownSensor.data()['purpleAirId'] as string;
-        currentData[purpleAirId] = Object.assign({}, cleanedAverages);
+        const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
+          cleanedAverages
+        );
+        currentData[purpleAirId] = {
+          latitude: nowcastPm25.latitude,
+          longitude: nowcastPm25.longitude,
+          nowCastPm25: nowcastPm25.reading,
+        };
       }
     }
 
