@@ -40,7 +40,6 @@ export default class NowCastConcentration {
     let weightedAverageSum = 0;
     let weightSum = 0;
 
-    // Apply weight factor in place
     for (let i = 0; i < cleanedAverages.readings.length; i++) {
       if (!Number.isNaN(cleanedAverages.readings[i])) {
         const hourScaledWeightFactor = Math.pow(weightFactor, i);
