@@ -10,14 +10,14 @@ class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>(); // reference for div element
 
   state = {
-    map: null as any,
+    map: null as H.Map,
   };
 
   // This fires every time the page is refreshed
   componentDidMount(): void {
     console.log('Firing component did mount');
 
-    const H = (window as any).H; // H is used to make HERE API calls
+    const H = window.H; // H is used to make HERE API calls
 
     // register our API key
     const platform = new H.service.Platform({
@@ -99,8 +99,8 @@ class Map extends React.Component {
       });
 
     // Create the default UI which allows for zooming
-    const behavior = new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-    const ui = H.ui.UI.createDefault(map, defaultLayers);
+    new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
+    H.ui.UI.createDefault(map, defaultLayers);
 
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
