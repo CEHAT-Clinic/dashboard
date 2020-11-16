@@ -33,7 +33,7 @@ jobs:
         npm run build
         cd functions
         npm run build
-      # Exisiting Action that acts as library for Firebase
+      # Existing Action that acts as library for Firebase
     - uses: w9jds/firebase-action@master
       with:
         args: deploy
