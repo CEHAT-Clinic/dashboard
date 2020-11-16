@@ -5,7 +5,7 @@ import {createIcon} from './marker_style';
 class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
 
-  //state contains the instance of the HERE map to display
+  // State contains the instance of the HERE map to display
   state = {
     map: null as H.Map | null,
   };
@@ -21,10 +21,10 @@ class Map extends React.Component {
 
     const defaultLayers = platform.createDefaultLayers();
 
-    // Create a safe map reference that is guaranteed to not be null
+    // Create a safe map reference (if it is null, throw an error)
     const safeMapRef = this.mapRef.current ? this.mapRef.current : null;
     if (safeMapRef === null) {
-      throw new Error('map reference is null');
+      throw new Error('Map reference is null');
     }
 
     // Create an instance of the map
