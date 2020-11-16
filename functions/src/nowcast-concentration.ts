@@ -42,17 +42,17 @@ export default class NowCastConcentration {
 
     let weightedAverageSum = 0;
     let weightSum = 0;
-    let hourWeight = 1;
+    let currentHourWeight = 1;
     // Most recent hour has index 0, older readings have larger indices
     // Formula from the EPA at
     // https://www.airnow.gov/faqs/how-nowcast-algorithm-used-report/
     for (let i = 0; i < cleanedAverages.readings.length; i++) {
       if (!Number.isNaN(cleanedAverages.readings[i])) {
-        weightedAverageSum += hourWeight * cleanedAverages.readings[i];
-        weightSum += hourWeight;
+        weightedAverageSum += currentHourWeight * cleanedAverages.readings[i];
+        weightSum += currentHourWeight;
 
         // Implement power function without recalculating each iteration
-        hourWeight *= weightFactor;
+        currentHourWeight *= weightFactor;
       }
     }
 
