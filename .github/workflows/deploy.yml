@@ -14,6 +14,17 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: 10
+    - name: Create environment file
+      run: |
+        touch .env
+        echo REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }} >> .env
+        echo REACT_APP_FIREBASE_AUTH_DOMAIN=${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }} >> .env
+        echo REACT_APP_FIREBASE_DATABASE_URL=${{ secrets.REACT_APP_FIREBASE_DATABASE_URL }} >> .env
+        echo REACT_APP_FIREBASE_PROJECT_ID=${{ secrets.REACT_APP_FIREBASE_PROJECT_ID }} >> .env
+        echo REACT_APP_FIREBASE_STORAGE_BUCKET=${{ secrets.REACT_APP_FIREBASE_STORAGE_BUCKET }} >> .env
+        echo REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }} >> .env
+        echo REACT_APP_FIREBASE_APP_ID=${{ secrets.REACT_APP_FIREBASE_APP_ID }} >> .env
+        echo REACT_APP_HERE_API_KEY=${{ secrets.REACT_APP_HERE_API_KEY }} >> .env
     - run: |
         npm ci
         cd functions
@@ -22,7 +33,7 @@ jobs:
         npm run build
         cd functions
         npm run build
-      # Exisiting Action that acts as library for Firebase
+      # Existing Action that acts as library for Firebase
     - uses: w9jds/firebase-action@master
       with:
         args: deploy
