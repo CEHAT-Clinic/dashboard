@@ -14,8 +14,8 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: 10
-- name: Create environment file
-  run: |
+    - name: Create environment file
+      run: |
         touch .env
         echo REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }} >> .env
         echo REACT_APP_FIREBASE_AUTH_DOMAIN=${{ secrets.REACT_APP_FIREBASE_AUTH_DOMAIN }} >> .env
@@ -25,7 +25,6 @@ jobs:
         echo REACT_APP_FIREBASE_MESSAGING_SENDER_ID=${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }} >> .env
         echo REACT_APP_FIREBASE_APP_ID=${{ secrets.REACT_APP_FIREBASE_APP_ID }} >> .env
         echo REACT_APP_HERE_API_KEY=${{ secrets.REACT_APP_HERE_API_KEY }} >> .env
-        cat .env
     - run: |
         npm ci
         cd functions
