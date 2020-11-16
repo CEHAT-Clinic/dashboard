@@ -12,7 +12,7 @@ export default class NowCastConcentration {
   }
 
   /**
-   * Applies the NowCast PM conversion algorithm from the EPA to hourly PM readings
+   * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
    * @param cleanedAverages A CleanedReadings object representing 12 hours of data,
    *                        where at least two of the last three hours are valid data
    *                        points
@@ -32,6 +32,9 @@ export default class NowCastConcentration {
 
     const scaledRateOfChange = (maximum - minimum) / maximum;
     const MINIMUM_WEIGHT_FACTOR = 0.5;
+    // Base weight factor to apply to each hour's reading
+    // which will be raised to the power of the number of hours
+    // ago the measurement is from, reducing the weight of later hours
     const weightFactor = Math.max(
       MINIMUM_WEIGHT_FACTOR,
       1 - scaledRateOfChange
@@ -39,13 +42,17 @@ export default class NowCastConcentration {
 
     let weightedAverageSum = 0;
     let weightSum = 0;
-
+    let hourWeight = 1;
+    // Most recent hour has index 0, older readings have larger indices
+    // Formula from the EPA at
+    // https://www.airnow.gov/faqs/how-nowcast-algorithm-used-report/
     for (let i = 0; i < cleanedAverages.readings.length; i++) {
       if (!Number.isNaN(cleanedAverages.readings[i])) {
-        const hourScaledWeightFactor = Math.pow(weightFactor, i);
-        weightedAverageSum +=
-          hourScaledWeightFactor * cleanedAverages.readings[i];
-        weightSum += hourScaledWeightFactor;
+        weightedAverageSum += hourWeight * cleanedAverages.readings[i];
+        weightSum += hourWeight;
+
+        // Implement power function without recalculating each iteration
+        hourWeight *= weightFactor;
       }
     }
 

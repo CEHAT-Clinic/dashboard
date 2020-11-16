@@ -239,6 +239,9 @@ exports.calculateAqi = functions.pubsub
       const cleanedAverages = cleanAverages(hourlyAverages);
 
       //TODO: Start using AQI not PM2.5
+
+      // NowCast formula from the EPA requires 2 out of the last 3 hours
+      // to be available
       let validEntriesLastThreeHours = 0;
       const THREE_HOURS = 3;
       for (
@@ -254,7 +257,7 @@ exports.calculateAqi = functions.pubsub
       const containsEnoughInfo =
         validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
       if (containsEnoughInfo) {
-        const purpleAirId = knownSensor.data()['purpleAirId'] as string;
+        const purpleAirId: string = knownSensor.data()['purpleAirId'];
         const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
           cleanedAverages
         );
