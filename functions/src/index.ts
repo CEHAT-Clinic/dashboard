@@ -256,7 +256,7 @@ exports.calculateAqi = functions.pubsub
       const NOWCAST_RECENT_DATA_THRESHOLD = 2;
       const containsEnoughInfo =
         validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
-      // If there is not enough info, the sensor's data is not reported  
+      // If there is not enough info, the sensor's data is not reported
       if (containsEnoughInfo) {
         const purpleAirId: string = knownSensor.data()['purpleAirId'];
         const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
