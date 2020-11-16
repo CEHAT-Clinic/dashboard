@@ -39,45 +39,41 @@ class Map extends React.Component {
     );
 
     // Add the Sensor Markers to the map
-    db.collection('current-reading')
-      .limit(1) // Only one doc stored in current-readings
-      .get()
-      .then(querySnapshot =>
-        querySnapshot.forEach(
-          // Get doc from query
-          doc => {
-            if (doc.exists) {
-              // Map of sensorID to readings and properties stored in data field
-              const sensorMap = doc.data().data;
+    const docRef = db.collection('current-reading').doc('pm25');
+    docRef.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        if (data) {
+          // Map of sensorID to readings and properties stored in data field
+          const sensorMap = data.data;
 
-              for (const sensorID in sensorMap) {
-                const sensorVal = sensorMap[sensorID];
-                // The label for this sensor is the most recent hour average
-                // We strip to round to the ones place
-                const label = sensorVal.readings[0].toString().split('.')[0];
-                const icon = createIcon(label);
+          for (const sensorID in sensorMap) {
+            const sensorVal = sensorMap[sensorID];
+            // The label for this sensor is the most recent hour average
+            // We strip to round to the ones place
+            const label = sensorVal.readings[0].toString().split('.')[0];
+            const icon = createIcon(label);
 
-                // Create marker
-                const marker = new H.map.Marker(
-                  {
-                    lat: sensorVal.latitude,
-                    lng: sensorVal.longitude,
-                  },
-                  {icon: icon}
-                );
-                // Add marker to the map
-                map.addObject(marker);
-              }
-            } else {
-              // If doc.data() is undefined
-              console.log('Error: current readings doc not found');
-            }
+            // Create marker
+            const marker = new H.map.Marker(
+              {
+                lat: sensorVal.latitude,
+                lng: sensorVal.longitude,
+              },
+              {icon: icon}
+            );
+            // Add marker to the map
+            map.addObject(marker);
           }
-        )
-      )
-      .catch(error => {
-        console.log('Error getting document:', error);
-      });
+        } else {
+          // If doc.data() does not exist
+          throw new Error('No data in the pm25 document');
+        }
+      } else {
+        // If doc does not exist
+        throw new Error('No pm25 document in current-reading collection');
+      }
+    });
 
     // Create the default UI which allows for zooming
     new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
