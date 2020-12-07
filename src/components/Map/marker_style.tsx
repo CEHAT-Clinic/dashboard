@@ -2,17 +2,31 @@
 // for the sensor (i.e. the current reading at that sensor)
 
 export function createIcon(label: string): H.map.Icon {
+  let color = '"white"'; // initialize color
+  const aqi = Number(label);
+  if (aqi < 50) {
+    color = '"#3AD03A"'; // green
+  } else if (aqi < 100) {
+    color = '"#F5E931"'; // yellow
+  } else if (aqi < 150) {
+    color = '"#F5AE31"'; // orange
+  } else if (aqi < 200) {
+    color = '"#F54331"'; // red
+  } else {
+    color = '"#A843F7"'; // purple
+  }
+
   //svg Marker Image
   const svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0' +
-    ' 0 24 24" fill="black" width="60px" height="60px"><path d="M0 0h24v' +
-    '24H0z" fill="none"/><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7' +
-    ' 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1' +
-    '.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/><text x="12"' +
-    ' y="18" font-size="4pt" font-family="Arial" font-weight="bold" ' +
-    'text-anchor="middle" fill="white">' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
+    '<circle cx="20" cy="20" r="20" fill=' +
+    color +
+    '/>' +
+    '<text x="20" y="20" alignment-baseline="middle" text-anchor="middle"' +
+    ' font-size="20" font-family="Arial" >' +
     label +
-    '</text></svg>';
+    '</text>' +
+    '</svg>';
 
   const icon = new H.map.Icon(svgMarkup);
   return icon;
