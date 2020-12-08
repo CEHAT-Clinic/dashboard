@@ -1,16 +1,29 @@
-// Creates the svg icon for a particular sensor given the label
-// for the sensor (i.e. the current reading at that sensor)
+/**
+ * Creates the svg icon for a particular sensor given the aqi reading
+ * @param aqiReading
+ *
+ * Divisions for
+ */
 
 export function createSensorIcon(aqiReading: string): H.map.Icon {
+  /** Thresholds for AQI categories are taken
+   * from https://www.purpleair.com/map. Anything above 250 is considered a
+   * "Health Alert"
+   */
+  const satisfactory = 50; // air quality is satisfactory for all groups
+  const moderateConcern = 100; // moderate health concern
+  const sensitiveGroups = 150; // health risk for sensitive groups
+  const healthRiskForAll = 200; // health risk for all individuals
+
   let color = '"white"'; // initialize color
   const aqi = Number(aqiReading);
-  if (aqi < 50) {
+  if (aqi < satisfactory) {
     color = '"#1B8DFF"'; // light blue
-  } else if (aqi < 100) {
+  } else if (aqi < moderateConcern) {
     color = '"#304ACC"'; // dark blue
-  } else if (aqi < 150) {
+  } else if (aqi < sensitiveGroups) {
     color = '"#852199"'; // purple
-  } else if (aqi < 200) {
+  } else if (aqi < healthRiskForAll) {
     color = '"#CC244B"'; // pink-ish red
   } else {
     color = '"#FF3628"'; //red
@@ -23,10 +36,9 @@ export function createSensorIcon(aqiReading: string): H.map.Icon {
     color +
     '/>' +
     '<text x="20" y="20" alignment-baseline="middle" text-anchor="middle"' +
-    ' font-size="20" font-family="Arial" >' +
+    ' font-size="20" font-family="Arial">' +
     aqiReading +
-    '</text>' +
-    '</svg>';
+    '</text></svg>';
 
   const icon = new H.map.Icon(svgMarkup);
   return icon;
