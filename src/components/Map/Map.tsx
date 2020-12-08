@@ -2,17 +2,26 @@ import React from 'react';
 import {db} from '../../firebase';
 import {createIcon} from './marker_style';
 
-// This funciton restricts the movement of the map so that it is always
-// centered around South Gate
-function restrictMovement(map: H.Map) {
+/**
+ * This function restricts the movement of the map so that it is always
+ * centered around the rectangle specified by the top and bottom latitudes
+ * and the left and right longitudes
+ */
+function restrictMovement(
+  map: H.Map,
+  top: number,
+  left: number,
+  bottom: number,
+  right: number
+) {
   // Center bounds: 4 corners of rectangle that must contain the center
-  const bounds = new H.geo.Rect(33.974, -118.288, 33.92, -118.165);
+  const bounds = new H.geo.Rect(top, left, bottom, right);
 
   map.getViewModel().addEventListener('sync', () => {
     const center = map.getCenter();
 
+    // if center is out of bounds
     if (!bounds.containsPoint(center)) {
-      // if center is out of bounds
       if (center.lat > bounds.getTop()) {
         center.lat = bounds.getTop(); // move center down
       } else if (center.lat < bounds.getBottom()) {
@@ -28,8 +37,11 @@ function restrictMovement(map: H.Map) {
   });
 }
 
-// Map class, generates HERE map
 class Map extends React.Component {
+  /**
+   * Generates a HERE map centered around South Gate with restricted movement
+   * and markers for each of the sensors in the database
+   */
   mapRef = React.createRef<HTMLDivElement>();
 
   // State contains the instance of the HERE map to display
@@ -47,8 +59,10 @@ class Map extends React.Component {
     });
 
     const defaultLayers = platform.createDefaultLayers();
-    defaultLayers.vector.normal.map.setMin(13); // restrict minimum zoom
-    defaultLayers.vector.normal.map.setMax(16); // restrict maximum zoom
+    const minZoom = 13; // restricts zoom out to >= minZoom
+    const maxZoom = 16; // restricts zoom in to <= maxZoom
+    defaultLayers.vector.normal.map.setMin(minZoom); // restrict minimum zoom
+    defaultLayers.vector.normal.map.setMax(maxZoom); // restrict maximum zoom
 
     // Create a safe map reference (if it is null, throw an error)
     const safeMapRef = this.mapRef.current ? this.mapRef.current : null;
@@ -112,8 +126,9 @@ class Map extends React.Component {
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
 
+    //const bounds = new H.geo.Rect(33.974, -118.288, 33.92, -118.165);
     // Restrict map movement
-    restrictMovement(map);
+    restrictMovement(map, 33.974, -118.288, 33.92, -118.165);
 
     // Update state of React component to contain our map instead of null
     this.setState({map});
