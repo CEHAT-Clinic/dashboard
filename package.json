@@ -10,7 +10,7 @@
     "@types/jest": "^26.0.15",
     "@types/node": "^14.14.7",
     "@types/react": "^16.9.56",
-    "@types/react-dom": "^16.9.9",
+    "@types/react-dom": "^17.0.0",
     "@types/react-router-dom": "^5.1.5",
     "firebase": "^8.0.2",
     "navi": "^0.14.0",
