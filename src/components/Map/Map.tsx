@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from '../../firebase';
-import {createIcon} from './marker_style';
+import {createSensorIcon} from './marker_style';
 
 class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
@@ -52,7 +52,7 @@ class Map extends React.Component {
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
             const label = sensorVal.nowCastPm25.toString().split('.')[0];
-            const icon = createIcon(label);
+            const icon = createSensorIcon(label);
 
             // Create marker
             const marker = new H.map.Marker(

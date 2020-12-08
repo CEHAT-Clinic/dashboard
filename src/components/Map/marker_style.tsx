@@ -1,19 +1,19 @@
 // Creates the svg icon for a particular sensor given the label
 // for the sensor (i.e. the current reading at that sensor)
 
-export function createIcon(label: string): H.map.Icon {
+export function createSensorIcon(aqiReading: string): H.map.Icon {
   let color = '"white"'; // initialize color
-  const aqi = Number(label);
+  const aqi = Number(aqiReading);
   if (aqi < 50) {
-    color = '"#3AD03A"'; // green
+    color = '"#1B8DFF"'; // light blue
   } else if (aqi < 100) {
-    color = '"#F5E931"'; // yellow
+    color = '"#304ACC"'; // dark blue
   } else if (aqi < 150) {
-    color = '"#F5AE31"'; // orange
+    color = '"#852199"'; // purple
   } else if (aqi < 200) {
-    color = '"#F54331"'; // red
+    color = '"#CC244B"'; // pink-ish red
   } else {
-    color = '"#A843F7"'; // purple
+    color = '"#FF3628"'; //red
   }
 
   //svg Marker Image
@@ -24,7 +24,7 @@ export function createIcon(label: string): H.map.Icon {
     '/>' +
     '<text x="20" y="20" alignment-baseline="middle" text-anchor="middle"' +
     ' font-size="20" font-family="Arial" >' +
-    label +
+    aqiReading +
     '</text>' +
     '</svg>';
 
