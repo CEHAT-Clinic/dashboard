@@ -2,6 +2,33 @@ import React from 'react';
 import {db} from '../../firebase';
 import {createIcon} from './marker_style';
 
+// This funciton restricts the movement of the map so that it is always
+// centered around South Gate
+function restrictMovement(map: H.Map) {
+  // Center bounds: 4 corners of rectangle that must contain the center
+  const bounds = new H.geo.Rect(33.974, -118.288, 33.92, -118.165);
+
+  map.getViewModel().addEventListener('sync', () => {
+    const center = map.getCenter();
+
+    if (!bounds.containsPoint(center)) {
+      // if center is out of bounds
+      if (center.lat > bounds.getTop()) {
+        center.lat = bounds.getTop(); // move center down
+      } else if (center.lat < bounds.getBottom()) {
+        center.lat = bounds.getBottom(); // move center up
+      }
+      if (center.lng < bounds.getLeft()) {
+        center.lng = bounds.getLeft(); // move center right
+      } else if (center.lng > bounds.getRight()) {
+        center.lng = bounds.getRight(); // move center left
+      }
+      map.setCenter(center);
+    }
+  });
+}
+
+// Map class, generates HERE map
 class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
 
@@ -20,6 +47,8 @@ class Map extends React.Component {
     });
 
     const defaultLayers = platform.createDefaultLayers();
+    defaultLayers.vector.normal.map.setMin(13); // restrict minimum zoom
+    defaultLayers.vector.normal.map.setMax(16); // restrict maximum zoom
 
     // Create a safe map reference (if it is null, throw an error)
     const safeMapRef = this.mapRef.current ? this.mapRef.current : null;
@@ -33,7 +62,7 @@ class Map extends React.Component {
       defaultLayers.vector.normal.map,
       {
         zoom: 13,
-        center: {lat: 33.945, lng: -118.2106}, // South Gate coordinates
+        center: {lat: 33.957, lng: -118.2106}, // South Gate coordinates
         pixelRatio: window.devicePixelRatio || 1,
       }
     );
@@ -81,6 +110,9 @@ class Map extends React.Component {
 
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
+
+    // Restrict map movement
+    restrictMovement(map);
 
     // Update state of React component to contain our map instead of null
     this.setState({map});
