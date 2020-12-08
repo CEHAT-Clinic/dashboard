@@ -106,7 +106,8 @@ class Map extends React.Component {
 
     // Create the default UI which allows for zooming
     new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-    H.ui.UI.createDefault(map, defaultLayers);
+    const ui = H.ui.UI.createDefault(map, defaultLayers);
+    ui.getControl('mapsettings').setDisabled(true); // remove traffic options
 
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
