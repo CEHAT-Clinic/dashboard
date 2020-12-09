@@ -37,11 +37,11 @@ function restrictMovement(
   });
 }
 
+/**
+ * Generates a HERE map centered around South Gate with restricted movement
+ * and markers for each of the sensors in the database
+ */
 class Map extends React.Component {
-  /**
-   * Generates a HERE map centered around South Gate with restricted movement
-   * and markers for each of the sensors in the database
-   */
   mapRef = React.createRef<HTMLDivElement>();
 
   // State contains the instance of the HERE map to display
@@ -75,7 +75,7 @@ class Map extends React.Component {
       safeMapRef, // Reference for Map
       defaultLayers.vector.normal.map,
       {
-        zoom: 13,
+        zoom: minZoom,
         center: {lat: 33.957, lng: -118.2106}, // South Gate coordinates
         pixelRatio: window.devicePixelRatio || 1,
       }
@@ -126,7 +126,6 @@ class Map extends React.Component {
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
 
-    //const bounds = new H.geo.Rect(33.974, -118.288, 33.92, -118.165);
     // Restrict map movement
     restrictMovement(map, 33.974, -118.288, 33.92, -118.165);
 
