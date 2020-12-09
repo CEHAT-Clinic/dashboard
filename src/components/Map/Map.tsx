@@ -126,9 +126,9 @@ class Map extends React.Component {
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
 
-    // Restrict map movement: lattitude and longitude coordinates are specific 
+    // Restrict map movement: lattitude and longitude coordinates are specific
     // to the boundaries of South Gate
-    restrictMovement(map, 33.974, -118.288, 33.92, -118.165); 
+    restrictMovement(map, 33.974, -118.288, 33.92, -118.165);
 
     // Update state of React component to contain our map instead of null
     this.setState({map});
