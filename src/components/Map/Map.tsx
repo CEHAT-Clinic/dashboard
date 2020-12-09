@@ -2,6 +2,45 @@ import React from 'react';
 import {db} from '../../firebase';
 import {createIcon} from './marker_style';
 
+/**
+ * This function restricts the movement of the map so that it is always
+ * centered around the rectangle specified by the top and bottom latitudes
+ * and the left and right longitudes
+ */
+function restrictMovement(
+  map: H.Map,
+  top: number,
+  left: number,
+  bottom: number,
+  right: number
+) {
+  // Center bounds: 4 corners of rectangle that must contain the center
+  const bounds = new H.geo.Rect(top, left, bottom, right);
+
+  map.getViewModel().addEventListener('sync', () => {
+    const center = map.getCenter();
+
+    // if center is out of bounds
+    if (!bounds.containsPoint(center)) {
+      if (center.lat > bounds.getTop()) {
+        center.lat = bounds.getTop(); // move center down
+      } else if (center.lat < bounds.getBottom()) {
+        center.lat = bounds.getBottom(); // move center up
+      }
+      if (center.lng < bounds.getLeft()) {
+        center.lng = bounds.getLeft(); // move center right
+      } else if (center.lng > bounds.getRight()) {
+        center.lng = bounds.getRight(); // move center left
+      }
+      map.setCenter(center);
+    }
+  });
+}
+
+/**
+ * Generates a HERE map centered around South Gate with restricted movement
+ * and markers for each of the sensors in the database
+ */
 class Map extends React.Component {
   mapRef = React.createRef<HTMLDivElement>();
 
@@ -20,6 +59,10 @@ class Map extends React.Component {
     });
 
     const defaultLayers = platform.createDefaultLayers();
+    const minZoom = 13; // restricts zoom out to >= minZoom
+    const maxZoom = 16; // restricts zoom in to <= maxZoom
+    defaultLayers.vector.normal.map.setMin(minZoom); // restrict minimum zoom
+    defaultLayers.vector.normal.map.setMax(maxZoom); // restrict maximum zoom
 
     // Create a safe map reference (if it is null, throw an error)
     const safeMapRef = this.mapRef.current ? this.mapRef.current : null;
@@ -32,8 +75,8 @@ class Map extends React.Component {
       safeMapRef, // Reference for Map
       defaultLayers.vector.normal.map,
       {
-        zoom: 13,
-        center: {lat: 33.945, lng: -118.2106}, // South Gate coordinates
+        zoom: minZoom,
+        center: {lat: 33.957, lng: -118.2106}, // South Gate coordinates
         pixelRatio: window.devicePixelRatio || 1,
       }
     );
@@ -77,10 +120,15 @@ class Map extends React.Component {
 
     // Create the default UI which allows for zooming
     new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
-    H.ui.UI.createDefault(map, defaultLayers);
+    const ui = H.ui.UI.createDefault(map, defaultLayers);
+    ui.getControl('mapsettings').setDisabled(true); // remove traffic options
 
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
+
+    // Restrict map movement: lattitude and longitude coordinates are specific
+    // to the boundaries of South Gate
+    restrictMovement(map, 33.974, -118.288, 33.92, -118.165);
 
     // Update state of React component to contain our map instead of null
     this.setState({map});
