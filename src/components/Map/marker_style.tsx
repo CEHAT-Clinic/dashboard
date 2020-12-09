@@ -1,10 +1,7 @@
 /**
- * Creates the svg icon for a particular sensor given the aqi reading
+ * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading
- *
- * Divisions for
  */
-
 export function createSensorIcon(aqiReading: string): H.map.Icon {
   /** Thresholds for AQI categories are taken
    * from https://www.purpleair.com/map. Anything above 250 is considered a
