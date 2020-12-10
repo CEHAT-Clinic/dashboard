@@ -3,6 +3,13 @@ import {db} from '../../firebase';
 import {createSensorIcon} from './marker_style';
 
 /**
+ * Interface for the props of the Map component
+ */
+interface MapProps {
+  updateSensor: (sensorID: string) => void;
+}
+
+/**
  * This function restricts the movement of the map so that it is always
  * centered around the rectangle specified by the top and bottom latitudes
  * and the left and right longitudes
@@ -41,7 +48,7 @@ function restrictMovement(
  * Generates a HERE map centered around South Gate with restricted movement
  * and markers for each of the sensors in the database
  */
-class Map extends React.Component {
+class Map extends React.Component<MapProps> {
   mapRef = React.createRef<HTMLDivElement>();
 
   // State contains the instance of the HERE map to display
@@ -81,6 +88,10 @@ class Map extends React.Component {
       }
     );
 
+    const registerClick = (evt: any) => {
+      this.props.updateSensor(evt.target.getData()); //update state of home
+    };
+
     // Add the Sensor Markers to the map
     const docRef = db.collection('current-reading').doc('pm25');
     docRef.get().then(doc => {
@@ -105,6 +116,8 @@ class Map extends React.Component {
               },
               {icon: icon}
             );
+            marker.setData(label); //data to be read by home component
+            marker.addEventListener('tap', registerClick);
             // Add marker to the map
             map.addObject(marker);
           }
