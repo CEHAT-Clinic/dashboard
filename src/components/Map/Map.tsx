@@ -157,7 +157,7 @@ class Map extends React.Component<MapProps> {
   render(): JSX.Element {
     return (
       <div>
-        <div ref={this.mapRef} style={{height: '400px'}} />
+        <div ref={this.mapRef} style={{height: '500px'}} />
       </div>
     );
   }

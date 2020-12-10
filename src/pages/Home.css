@@ -1,0 +1,13 @@
+/* Style sheet for the Home screen component */
+.Map_Wrapper {
+    height: 100%;
+    width: 60%;
+}
+
+/* Conditional formatting for small screens */
+@media (max-width: 700px) {
+    .Map_Wrapper {
+        height: 100%;
+        width: 100%;
+    }
+  }

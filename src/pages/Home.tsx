@@ -1,5 +1,6 @@
 import React from 'react';
 import Map from '../components/Map/Map';
+import './Home.css';
 
 /**
  * Interface for the state of the home screen component
@@ -42,7 +43,9 @@ class Home extends React.Component<unknown, HomeState> {
           NOTE: This Website Is Under Construction. Check Back in Spring 2021
         </h2>
         <p>Current Sensor Reading: {this.state.currentSensor}</p>
-        <Map updateSensor={this.updateState} />
+        <div className="Map_Wrapper">
+          <Map updateSensor={this.updateState} />
+        </div>
       </div>
     );
   }
