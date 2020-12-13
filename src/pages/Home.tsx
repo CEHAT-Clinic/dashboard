@@ -42,9 +42,20 @@ class Home extends React.Component<unknown, HomeState> {
         <h2>
           NOTE: This Website Is Under Construction. Check Back in Spring 2021
         </h2>
-        <p>Current Sensor Reading: {this.state.currentSensor}</p>
-        <div className="Map_Wrapper">
-          <Map updateSensor={this.updateState} />
+        <div className="Content_Wrapper">
+          <div className="Map_Wrapper">
+            <Map updateSensor={this.updateState} />
+          </div>
+          <div className="Side_Widgets">
+            <div className="Dial">
+              <h2>The Dial Will Go Here</h2>
+              <text>Current Sensor Reading: {this.state.currentSensor}</text>
+            </div>
+            <div className="Multi_Purpose_Box">
+              <h2>The Multi Purpose Box Will Go Here</h2>
+              <text> Hello World</text>
+            </div>
+          </div>
         </div>
       </div>
     );

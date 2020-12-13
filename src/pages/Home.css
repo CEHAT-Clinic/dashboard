@@ -1,13 +1,29 @@
 /* Style sheet for the Home screen component */
-.Map_Wrapper {
-    height: 100%;
-    width: 60%;
+@media(min-width: 700px){
+    .Content_Wrapper {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+    .Map_Wrapper {
+        flex: 2;
+    }
 }
 
-/* Conditional formatting for small screens */
-@media (max-width: 700px) {
-    .Map_Wrapper {
-        height: 100%;
-        width: 100%;
-    }
-  }
+.Side_Widgets {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+    justify-content: space-evenly;
+}
+
+.Dial {
+    border: 1px #ccc solid;
+    padding: 10px;
+}
+
+.Multi_Purpose_Box {
+    border: 1px #ccc solid;
+    padding: 10px;
+}
