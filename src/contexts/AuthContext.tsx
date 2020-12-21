@@ -5,8 +5,8 @@ import {Props} from './AppProviders';
  * Interface for the auth context that defines the values contained by Auth
  */
 interface AuthInterface {
-  authenticated: boolean;
-  setAuthenticated(authenticated: boolean): void;
+  isAuthenticated: boolean;
+  setIsAuthenticated(isAuthenticated: boolean): void;
 }
 
 /**
@@ -19,14 +19,16 @@ const AuthContext = createContext<AuthInterface>({} as AuthInterface);
  * @param props child React components that will consume the context
  */
 const AuthProvider: React.FC<Props> = ({children}: Props) => {
-  const defaultIsAuthorized = false;
-  const [authorized, setAuthorized] = useState(defaultIsAuthorized);
+  const defaultIsAuthenticated = false;
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    defaultIsAuthenticated
+  );
 
   return (
     <AuthContext.Provider
       value={{
-        authenticated: authorized,
-        setAuthenticated: setAuthorized,
+        isAuthenticated: isAuthenticated,
+        setIsAuthenticated: setIsAuthenticated,
       }}
     >
       {children}
