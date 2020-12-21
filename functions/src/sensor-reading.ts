@@ -30,9 +30,7 @@ export default class SensorReading {
    * @param readings Array of documents containing readings from Firestore
    */
   static averageDocuments(
-    readings: FirebaseFirestore.QueryDocumentSnapshot<
-      FirebaseFirestore.DocumentData
-    >[]
+    readings: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]
   ): SensorReading {
     let channelAPmReadingSum = 0;
     let channelBPmReadingSum = 0;
