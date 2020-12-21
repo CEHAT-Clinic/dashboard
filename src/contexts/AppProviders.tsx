@@ -2,7 +2,7 @@ import {ChakraProvider} from '@chakra-ui/react';
 import React from 'react';
 
 /**
- * Interface to type the children components of the User Provider.
+ * Interface to type the children components of the Providers.
  * Used for type safety of parameters of React.FC
  */
 interface Props {
