@@ -37,7 +37,7 @@ async function getThingspeakKeysFromPurpleAir(
 
 function uploadFileToFirebaseBucket(filename: string, data: string) {
   const tempLocalFile = path.join(os.tmpdir(), filename);
-  return new Promise((resolve, reject) => {
+  return new Promise<void>((resolve, reject) => {
     // Write data into the temp file
     fs.writeFile(tempLocalFile, data, error => {
       if (error) {
