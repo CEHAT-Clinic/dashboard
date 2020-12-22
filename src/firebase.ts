@@ -17,13 +17,11 @@ const config = {
 if (!firebase.apps.length) {
   firebase.initializeApp(config);
 } else {
-  // Use app if Fireabse already initialized
+  // Use existing app if Firebase already initialized
   firebase.app();
 }
 
-const firestore = firebase.firestore();
-const firebaseAuth = firebase.auth();
+export const firestore = firebase.firestore();
+export const firebaseAuth = firebase.auth();
 
-export {firestore};
-export {firebaseAuth};
 export default firebase;
