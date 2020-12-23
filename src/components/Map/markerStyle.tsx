@@ -21,12 +21,13 @@ export function createSensorIcon(aqiReading: string): H.map.Icon {
   } else if (aqi < sensitiveGroups) {
     color = '"#852199"'; // Purple
   } else if (aqi < healthRiskForAll) {
-    color = '"#CC244B"'; // Pink-ish red
+    color = '"#CC244B"'; // Pink-red
   } else {
     color = '"#FF3628"'; // Red
   }
 
   // SVG Marker Image
+  /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
     '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
     '<circle cx="20" cy="20" r="20" fill=' +
@@ -36,6 +37,7 @@ export function createSensorIcon(aqiReading: string): H.map.Icon {
     ' font-size="20" font-family="Arial">' +
     aqiReading +
     '</text></svg>';
+  /* eslint-enable spellcheck/spell-checker */
 
   const icon = new H.map.Icon(svgMarkup);
   return icon;

@@ -62,7 +62,36 @@
     "require-await": "error",
     "camelcase": "warn",
     "eol-last": "error",
-    "sort-vars": "warn"
+    "sort-vars": "warn",
+    "spellcheck/spell-checker": [
+      "warn",
+      {
+        "skipWordIfMatch": [
+          "aqi",
+          "resize",
+          "Resize",
+          "mapevents",
+          "mapsettings",
+          "cehat",
+          "dom",
+          "firebase",
+          "firestore",
+          "localhost",
+          "Localhost",
+          "href",
+          "unregister",
+          "javascript",
+          "svg",
+          "geo",
+          "Rect",
+          "Unmount",
+          "matchers"
+        ],
+        "skipWords": [
+          "Pv"
+        ]
+      }
+    ]
   },
   "env": {
     "browser": true,
@@ -73,7 +102,8 @@
   "plugins": [
     "react",
     "@typescript-eslint",
-    "tsdoc"
+    "tsdoc",
+    "spellcheck"
   ],
   "settings": {
     "react": {

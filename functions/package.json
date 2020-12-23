@@ -19,6 +19,7 @@
   "dependencies": {
     "axios": "^0.21.1",
     "eslint": "^7.16.0",
+    "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.10",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.0"

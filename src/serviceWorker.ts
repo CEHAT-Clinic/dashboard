@@ -18,11 +18,13 @@ function registerValidSW(swUrl: string, config?: Config): void {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration): void => {
+      // eslint-disable-next-line spellcheck/spell-checker
       registration.onupdatefound = function (): void {
         const installingWorker = registration.installing;
         if (installingWorker === null) {
           return;
         }
+        // eslint-disable-next-line spellcheck/spell-checker
         installingWorker.onstatechange = function (): void {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
@@ -39,9 +41,7 @@ function registerValidSW(swUrl: string, config?: Config): void {
                 config.onUpdate(registration);
               }
             } else {
-              // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
+              // Everything has been pre-cached for offline use
               console.log('Content is cached for offline use.');
 
               // Execute callback
