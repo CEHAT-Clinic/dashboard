@@ -1,6 +1,6 @@
 import React from 'react';
 import {db} from '../../firebase';
-import {createSensorIcon} from './marker_style';
+import {createSensorIcon} from './markerStyle';
 
 /**
  * This function restricts the movement of the map so that it is always
@@ -71,13 +71,14 @@ class Map extends React.Component {
     }
 
     // Create an instance of the map
+    const defaultPixelRatio = 1;
     const map = new H.Map(
       safeMapRef, // Reference for Map
       defaultLayers.vector.normal.map,
       {
         zoom: minZoom,
         center: {lat: 33.957, lng: -118.2106}, // South Gate coordinates
-        pixelRatio: window.devicePixelRatio || 1,
+        pixelRatio: window.devicePixelRatio || defaultPixelRatio,
       }
     );
 
@@ -94,6 +95,7 @@ class Map extends React.Component {
             const sensorVal = sensorMap[sensorID];
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
+            // eslint-disable-next-line no-magic-numbers
             const label = sensorVal.nowCastPm25.toString().split('.')[0];
             const icon = createSensorIcon(label);
 
@@ -126,9 +128,17 @@ class Map extends React.Component {
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
 
-    // Restrict map movement: lattitude and longitude coordinates are specific
+    // Restrict map movement: latitude and longitude coordinates are specific
     // To the boundaries of South Gate
-    restrictMovement(map, 33.974, -118.288, 33.92, -118.165);
+    /* eslint-disable no-magic-numbers */
+    const [topLat, leftLong, bottomLat, rightLong] = [
+      33.974,
+      -118.288,
+      33.92,
+      -118.165,
+    ];
+    /* eslint-enable no-magic-numbers */
+    restrictMovement(map, topLat, leftLong, bottomLat, rightLong);
 
     // Update state of React component to contain our map instead of null
     this.setState({map});
