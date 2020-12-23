@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import './NavigationBar.css';
 import Routes from '.././Routes';
-import cehat_logo from './CEHAT_logo.png';
-import menu_icon from './menu-icon.png';
+import cehatLogo from './CEHATLogo.png';
+import menuIcon from './menuIcon.png';
 
 function NavigationBar(): JSX.Element {
   // State of nav bar (always visible in large screen)
@@ -38,7 +38,7 @@ function NavigationBar(): JSX.Element {
   return (
     <div>
       <header className="Navigation_Header">
-        <img src={cehat_logo} className="Logo" alt="logo" />
+        <img src={cehatLogo} className="Logo" alt="logo" />
         {/* CEHAT logo */}
         {isNavVisible && (
           <nav className="Nav">
@@ -50,7 +50,7 @@ function NavigationBar(): JSX.Element {
           </nav>
         )}
         <button onClick={toggleNav} className="Burger">
-          <img src={menu_icon} className="menu-icon" alt="menu button" />
+          <img src={menuIcon} className="menu-icon" alt="menu button" />
         </button>
       </header>
       <Routes />

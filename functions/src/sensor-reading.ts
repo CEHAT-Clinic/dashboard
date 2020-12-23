@@ -27,7 +27,7 @@ export default class SensorReading {
   /**
    * Computes an average reading for the time block provided by the first element
    *
-   * @param readings Array of documents containing readings from Firestore
+   * @param readings - Array of documents containing readings from Firestore
    */
   static averageDocuments(
     readings: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]
@@ -37,7 +37,7 @@ export default class SensorReading {
     let humiditySum = 0;
 
     // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0].data();
+    const firstReadingData = readings[0].data(); // eslint-disable-line no-magic-numbers
     const latitude: number = firstReadingData['latitude'];
     const longitude: number = firstReadingData['longitude'];
     const timestamp: FirebaseFirestore.Timestamp =
@@ -64,6 +64,11 @@ export default class SensorReading {
       longitude
     );
   }
+
+  /**
+   * Creates a SensorReading object from a Firestore reading doc
+   * @param data - Firestore document from sensors/sensorDocId/readings collection
+   */
   static fromFirestore(data: FirebaseFirestore.DocumentData): SensorReading {
     return new this(
       data.timestamp.toDate(),
@@ -75,6 +80,14 @@ export default class SensorReading {
     );
   }
 
+  /**
+   * Creates a SensorReading object from Thingspeak response
+   * @param channelAPrimaryResponse - Channel A response from ThingSpeak
+   * @param channelBPrimaryResponse - Channel B response from ThingSpeak
+   * @param purpleAirResponse - PurpleAirResponse metadata
+   *
+   * @returns SensorReading object
+   */
   static fromThingspeak(
     channelAPrimaryResponse: AxiosResponse,
     channelBPrimaryResponse: AxiosResponse,
@@ -82,11 +95,11 @@ export default class SensorReading {
   ): SensorReading {
     // PurpleAir stores two different types of PM_2.5 readings.
     // The EPA wants us to use the higher one.
-    const channelAData = channelAPrimaryResponse.data.feeds[0];
+    const channelAData = channelAPrimaryResponse.data.feeds[0]; // eslint-disable-line no-magic-numbers
     const channelAAtmPm: number = +channelAData.field2;
     const channelACf1Pm: number = +channelAData.field8;
 
-    const channelBData = channelBPrimaryResponse.data.feeds[0];
+    const channelBData = channelBPrimaryResponse.data.feeds[0]; // eslint-disable-line no-magic-numbers
     const channelBAtmPm: number = +channelBData.field2;
     const channelBCf1Pm: number = +channelBData.field8;
 
@@ -104,9 +117,11 @@ export default class SensorReading {
     );
   }
 
-  // Creates single line of CSV code, used for exporting data.
-  // WARNING: If you change this code, also update the generateReadingsCSV
-  // headings variable, so the CSV headings match with the data.
+  /**
+   * Creates single line of CSV code, used for exporting data.
+   * WARNING: If you change this code, also update the generateReadingsCSV
+   * headings variable, so the CSV headings match with the data.
+   */
   toCsvLine(): string {
     return (
       `${this.timestamp}, ` +

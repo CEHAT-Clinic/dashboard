@@ -9,7 +9,7 @@
   ],
   "rules": {
     "prettier/prettier": [
-      "error", 
+      "warn", 
       {
         "endOfLine":"auto"
       }
@@ -46,7 +46,18 @@
       }
     ],
     "require-atomic-updates": "error",
-    "no-console": "warn"
+    "no-console": "warn",
+    "default-case": "warn",
+    "default-case-last": "warn",
+    "default-param-last": "warn",
+    "class-methods-use-this": "warn",
+    "eqeqeq": "error",
+    "no-magic-numbers": "warn",
+    "no-multi-spaces": "warn",
+    "require-await": "error",
+    "camelcase": "warn",
+    "eol-last": "error",
+    "sort-vars": "warn"
   },
   "env": {
     "browser": true,
