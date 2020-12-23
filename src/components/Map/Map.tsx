@@ -55,7 +55,7 @@ class Map extends React.Component {
 
     // Register our API key
     const platform = new H.service.Platform({
-      apikey: String(process.env.REACT_APP_HERE_API_KEY),
+      apikey: String(process.env.REACT_APP_HERE_API_KEY), // eslint-disable-line spellcheck/spell-checker
     });
 
     const defaultLayers = platform.createDefaultLayers();

@@ -22,7 +22,7 @@ const DOC_ID_FIELD = '<doc_id>';
 
 /**
  * Fetches PurpleAir data from Thingspeak API
- * @param purpleAirId - PurpleAir sensor ID, can access from purpleair.com
+ * @param purpleAirId - PurpleAir sensor ID
  */
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
@@ -135,8 +135,8 @@ exports.thingspeakToFirestore = functions
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
       // our program from getting blocked.
       // Allocates up to a minute of the two minute runtime for delaying
-      const oneMinuteInMillis = 60000;
-      const delayBetweenSensors = oneMinuteInMillis / sensorList.length;
+      const oneMinuteInMilliseconds = 60000;
+      const delayBetweenSensors = oneMinuteInMilliseconds / sensorList.length;
       await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
     }
   });
@@ -199,7 +199,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 /**
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
  * excluding thoses data points that indicate sensor malfunction. Those
- * datapoints are represented by NaN.
+ * data points are represented by NaN.
  *
  * @param averages - array containing sensor readings representing hourly averages
  * @returns an array of numbers representing the corrected PM2.5 values pursuant
@@ -207,7 +207,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
  */
 function cleanAverages(averages: SensorReading[]): CleanedReadings {
   // These thresholds for the EPA indicate when diverging sensor readings
-  // indicate malfulnction. The EPA requires that the raw difference between
+  // indicate malfunction. The EPA requires that the raw difference between
   // the readings be less than 5 and the percent difference be less than 70%
   const RAW_THRESHOLD = 5;
   const PERCENT_THRESHOLD = 0.7;
@@ -244,7 +244,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
         cleanedAverages[i] = Number.NaN;
       }
     } else {
-      // If less than 27 datapoints were available for that hour, the reading
+      // If less than 27 data points were available for that hour, the reading
       // would have been undefined
       cleanedAverages[i] = Number.NaN;
     }
@@ -342,7 +342,7 @@ exports.generateReadingsCsv = functions.pubsub
     }
 
     // Combine the data into one string
-    const readings = readingsArrays.map(strArray => strArray.join(''));
+    const readings = readingsArrays.map(stringArray => stringArray.join(''));
     const readingsCsv = headings + readings.join('');
 
     // Generate filename

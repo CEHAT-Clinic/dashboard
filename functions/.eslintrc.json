@@ -3,7 +3,8 @@
   "parser": "@typescript-eslint/parser",
   "plugins": [
     "@typescript-eslint",
-    "tsdoc"
+    "tsdoc",
+    "spellcheck"
   ],
   "extends": [
     "./node_modules/gts/",
@@ -75,6 +76,33 @@
     "require-await": "error",
     "camelcase": "warn",
     "eol-last": "error",
-    "sort-vars": "warn"
+    "sort-vars": "warn",
+    "spellcheck/spell-checker": [
+      "warn",
+      {
+        "skipWordIfMatch": [
+          "aqi",
+          "firebase",
+          "Firebase",
+          "firestore",
+          "Firestore",
+          "thingspeak",
+          "Thingspeak",
+          "axios",
+          "Axios",
+          "csv",
+          "Csv",
+          "pubsub",
+          "Aqi",
+          "nowcast",
+          "fs",
+          "os",
+          "tmpdir",
+          "Atm",
+          "camelcase",
+          "subcollection"
+        ]
+      }
+    ]
   }
 }
