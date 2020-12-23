@@ -4,12 +4,40 @@
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "react-app"
   ],
   "rules": {
-    "prettier/prettier": ["error", {
-     "endOfLine":"auto"
-    }]
+    "prettier/prettier": [
+      "error", 
+      {
+        "endOfLine":"auto"
+      }
+    ],
+    "tsdoc/syntax": "warn",
+    "capitalized-comments": [
+      "warn",
+      "always",
+      {
+        "ignoreConsecutiveComments": true,
+        "ignoreInlineComments": true
+      }
+    ],
+    "spaced-comment": [
+      "warn",
+      "always",
+      {
+        "line": {
+          "markers": ["/"],
+          "exceptions": ["-", "+"]
+        },
+        "block": {
+          "markers": ["!"],
+          "exceptions": ["*"],
+          "balanced": true
+        }
+      }
+    ]
   },
   "env": {
     "browser": true,
@@ -19,7 +47,8 @@
   },
   "plugins": [
     "react",
-    "@typescript-eslint"
+    "@typescript-eslint",
+    "tsdoc"
   ],
   "settings": {
     "react": {
