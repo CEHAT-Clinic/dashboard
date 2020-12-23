@@ -20,17 +20,17 @@ function restrictMovement(
   map.getViewModel().addEventListener('sync', () => {
     const center = map.getCenter();
 
-    // if center is out of bounds
+    // If center is out of bounds
     if (!bounds.containsPoint(center)) {
       if (center.lat > bounds.getTop()) {
-        center.lat = bounds.getTop(); // move center down
+        center.lat = bounds.getTop(); // Move center down
       } else if (center.lat < bounds.getBottom()) {
-        center.lat = bounds.getBottom(); // move center up
+        center.lat = bounds.getBottom(); // Move center up
       }
       if (center.lng < bounds.getLeft()) {
-        center.lng = bounds.getLeft(); // move center right
+        center.lng = bounds.getLeft(); // Move center right
       } else if (center.lng > bounds.getRight()) {
-        center.lng = bounds.getRight(); // move center left
+        center.lng = bounds.getRight(); // Move center left
       }
       map.setCenter(center);
     }
@@ -59,10 +59,10 @@ class Map extends React.Component {
     });
 
     const defaultLayers = platform.createDefaultLayers();
-    const minZoom = 13; // restricts zoom out to >= minZoom
-    const maxZoom = 16; // restricts zoom in to <= maxZoom
-    defaultLayers.vector.normal.map.setMin(minZoom); // restrict minimum zoom
-    defaultLayers.vector.normal.map.setMax(maxZoom); // restrict maximum zoom
+    const minZoom = 13; // Restricts zoom out to >= minZoom
+    const maxZoom = 16; // Restricts zoom in to <= maxZoom
+    defaultLayers.vector.normal.map.setMin(minZoom); // Restrict minimum zoom
+    defaultLayers.vector.normal.map.setMax(maxZoom); // Restrict maximum zoom
 
     // Create a safe map reference (if it is null, throw an error)
     const safeMapRef = this.mapRef.current ? this.mapRef.current : null;
@@ -121,13 +121,13 @@ class Map extends React.Component {
     // Create the default UI which allows for zooming
     new H.mapevents.Behavior(new H.mapevents.MapEvents(map));
     const ui = H.ui.UI.createDefault(map, defaultLayers);
-    ui.getControl('mapsettings').setDisabled(true); // remove traffic options
+    ui.getControl('mapsettings').setDisabled(true); // Remove traffic options
 
     // Resize map on screen resize
     window.addEventListener('resize', () => map.getViewPort().resize());
 
     // Restrict map movement: lattitude and longitude coordinates are specific
-    // to the boundaries of South Gate
+    // To the boundaries of South Gate
     restrictMovement(map, 33.974, -118.288, 33.92, -118.165);
 
     // Update state of React component to contain our map instead of null

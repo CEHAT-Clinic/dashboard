@@ -30,7 +30,7 @@ function NavigationBar(): JSX.Element {
     };
   }, []);
 
-  // toggles the navigation
+  // Toggles the navigation
   function toggleNav(): void {
     setIsNavVisible(!isNavVisible);
   }
