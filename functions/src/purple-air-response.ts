@@ -15,7 +15,6 @@ export default class PurpleAirResponse {
   constructor(response: AxiosResponse) {
     const data = response.data;
 
-    /* eslint-disable no-magic-numbers */
     this.latitude = data.results[0]['Lat'];
     this.longitude = data.results[0]['Lon'];
 
@@ -29,6 +28,5 @@ export default class PurpleAirResponse {
     this.channelBSecondaryId = data.results[1]['THINGSPEAK_SECONDARY_ID'];
     this.channelBSecondaryKey =
       data.results[1]['THINGSPEAK_SECONDARY_ID_READ_KEY'];
-    /* eslint-enable no-magic-numbers */
   }
 }
