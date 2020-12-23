@@ -94,14 +94,10 @@ export default class SensorReading {
     purpleAirResponse: PurpleAirResponse
   ): SensorReading {
     // PurpleAir stores two different types of PM_2.5 readings.
-<<<<<<< HEAD
     // CF_1 uses the "average particulate density" for indoor particulate matter
     // CF_ATM uses the "average particle density" for outdoor particulate matter
     // For more information, see https://www2.purpleair.com/community/faq#hc-what-is-the-difference-between-cf-1-and-cf-atm
     // The EPA formula uses the higher value
-=======
-    // The EPA wants us to use the higher one.
->>>>>>> 039f81c... Remove no-magic-numbers lint rule for array indices
     const channelAData = channelAPrimaryResponse.data.feeds[0];
     const channelAAtmPm: number = +channelAData.field2;
     const channelACf1Pm: number = +channelAData.field8;
