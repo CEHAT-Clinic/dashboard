@@ -156,7 +156,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const currentHour: Date = new Date();
   const previousHour = new Date(currentHour);
   // Only modifies the hour field, keeps minutes field constant
-  previousHour.setUTCHours(previousHour.getUTCHours() - 1);
+  previousHour.setUTCHours(previousHour.getUTCHours() - 1); // eslint-disable-line no-magic-numbers
 
   const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
     DOC_ID_FIELD,
@@ -257,7 +257,7 @@ exports.calculateAqi = functions.pubsub
       const hourlyAverages = await getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
-      //TODO: Start using AQI not PM2.5
+      // TODO: Start using AQI not PM2.5
 
       // NowCast formula from the EPA requires 2 out of the last 3 hours
       // to be available
