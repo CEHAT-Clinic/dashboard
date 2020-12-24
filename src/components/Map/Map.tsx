@@ -1,5 +1,5 @@
 import React from 'react';
-import {db} from '../../firebase';
+import {firestore} from '../../firebase';
 import {createSensorIcon} from './marker_style';
 
 /**
@@ -82,7 +82,7 @@ class Map extends React.Component {
     );
 
     // Add the Sensor Markers to the map
-    const docRef = db.collection('current-reading').doc('pm25');
+    const docRef = firestore.collection('current-reading').doc('pm25');
     docRef.get().then(doc => {
       if (doc.exists) {
         const data = doc.data();
