@@ -10,8 +10,8 @@ interface Props {
 }
 
 /**
- * Provider to combine all app providers, used in index.tsx
- * @param props React components wrapped by the providers
+ * Provider to combine all app providers
+ * @param props - React components wrapped by the providers
  */
 const AppProviders: React.FC<Props> = ({children}: Props) => {
   return <ChakraProvider>{children}</ChakraProvider>;
