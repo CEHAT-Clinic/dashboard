@@ -35,12 +35,10 @@ export default class NowCastConcentration {
     // Base weight factor to apply to each hour's reading
     // which will be raised to the power of the number of hours
     // ago the measurement is from, reducing the weight of later hours
-    /* eslint-disable no-magic-numbers */
     const weightFactor = Math.max(
       MINIMUM_WEIGHT_FACTOR,
       1 - scaledRateOfChange // eslint-disable-line no-magic-numbers
     );
-    /* eslint-enable no-magic-numbers */
 
     let weightedAverageSum = 0;
     let weightSum = 0;

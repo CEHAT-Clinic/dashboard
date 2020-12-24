@@ -37,7 +37,7 @@ export default class SensorReading {
     let humiditySum = 0;
 
     // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0].data(); // eslint-disable-line no-magic-numbers
+    const firstReadingData = readings[0].data();
     const latitude: number = firstReadingData['latitude'];
     const longitude: number = firstReadingData['longitude'];
     const timestamp: FirebaseFirestore.Timestamp =
@@ -94,15 +94,19 @@ export default class SensorReading {
     purpleAirResponse: PurpleAirResponse
   ): SensorReading {
     // PurpleAir stores two different types of PM_2.5 readings.
+<<<<<<< HEAD
     // CF_1 uses the "average particulate density" for indoor particulate matter
     // CF_ATM uses the "average particle density" for outdoor particulate matter
     // For more information, see https://www2.purpleair.com/community/faq#hc-what-is-the-difference-between-cf-1-and-cf-atm
     // The EPA formula uses the higher value
+=======
+    // The EPA wants us to use the higher one.
+>>>>>>> 039f81c... Remove no-magic-numbers lint rule for array indices
     const channelAData = channelAPrimaryResponse.data.feeds[0];
     const channelAAtmPm: number = +channelAData.field2;
     const channelACf1Pm: number = +channelAData.field8;
 
-    const channelBData = channelBPrimaryResponse.data.feeds[0]; // eslint-disable-line no-magic-numbers
+    const channelBData = channelBPrimaryResponse.data.feeds[0];
     const channelBAtmPm: number = +channelBData.field2;
     const channelBCf1Pm: number = +channelBData.field8;
 

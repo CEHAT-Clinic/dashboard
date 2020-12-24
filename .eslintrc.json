@@ -52,7 +52,12 @@
     "default-param-last": "warn",
     "class-methods-use-this": "warn",
     "eqeqeq": "error",
-    "no-magic-numbers": "warn",
+    "no-magic-numbers": [
+      "warn",
+      {
+        "ignoreArrayIndexes": true
+      }
+    ],
     "no-multi-spaces": "warn",
     "require-await": "error",
     "camelcase": "warn",
