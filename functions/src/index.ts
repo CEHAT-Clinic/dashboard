@@ -10,7 +10,7 @@ import * as os from 'os';
 import NowCastConcentration from './nowcast-concentration';
 
 admin.initializeApp();
-const db = admin.firestore();
+const firestore = admin.firestore();
 const Timestamp = admin.firestore.Timestamp;
 
 const THINGSPEAK_URL_TEMPLATE =
@@ -35,6 +35,12 @@ async function getThingspeakKeysFromPurpleAir(
   return new PurpleAirResponse(purpleAirApiResponse);
 }
 
+/**
+ * Uploads a file with name filename and specified data to the default storage
+ * bucket of the Firebase project.
+ * @param filename - name of file to be uploaded to Firebase bucket
+ * @param data - data to write to file
+ */
 function uploadFileToFirebaseBucket(filename: string, data: string) {
   const tempLocalFile = path.join(os.tmpdir(), filename);
   return new Promise<void>((resolve, reject) => {
@@ -64,9 +70,8 @@ exports.thingspeakToFirestore = functions
   .runWith(thingspeakToFirestoreRuntimeOpts)
   .pubsub.schedule('every 2 minutes')
   .onRun(async () => {
-    const sensorList = (await db.collection('/sensors').get()).docs;
-    // Allocates up to a minute of the two minute runtime for delaying
-    const delayBetweenSensors = 60000 / sensorList.length;
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
+
     for (const knownSensor of sensorList) {
       const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
         knownSensor.data()['purpleAirId']
@@ -77,7 +82,7 @@ exports.thingspeakToFirestore = functions
           thingspeakInfo.channelAPrimaryId
         ),
         params: {
-          api_key: thingspeakInfo.channelAPrimaryKey,
+          api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
           results: 1,
         },
       });
@@ -87,7 +92,7 @@ exports.thingspeakToFirestore = functions
           thingspeakInfo.channelBPrimaryId
         ),
         params: {
-          api_key: thingspeakInfo.channelBPrimaryKey,
+          api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
           results: 1,
         },
       });
@@ -104,7 +109,7 @@ exports.thingspeakToFirestore = functions
 
       // Only add data if not already present in database.
       // This happens if a sensor is down, so only old data is returned.
-      const readingsRef = db.collection(resolvedPath);
+      const readingsRef = firestore.collection(resolvedPath);
       if (
         (
           await readingsRef
@@ -124,7 +129,10 @@ exports.thingspeakToFirestore = functions
       }
 
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
-      // our program from getting blocked
+      // our program from getting blocked.
+      // Allocates up to a minute of the two minute runtime for delaying
+      const oneMinuteInMilliseconds = 60000;
+      const delayBetweenSensors = oneMinuteInMilliseconds / sensorList.length;
       await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
     }
   });
@@ -139,8 +147,8 @@ exports.thingspeakToFirestore = functions
  * will be treated as if they came from the same location because the function assumes a sensor
  * is stationary.
  *
- * @param docId Firestore document id for the sensor to be getting averages for
- * @param purpleAirId PurpleAir ID for the sensor
+ * @param docId - Firestore document id for the sensor to be getting averages for
+ * @param purpleAirId - PurpleAir ID for the sensor
  */
 async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const LOOKBACK_PERIOD_HOURS = 12;
@@ -148,7 +156,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const currentHour: Date = new Date();
   const previousHour = new Date(currentHour);
   // Only modifies the hour field, keeps minutes field constant
-  previousHour.setUTCHours(previousHour.getUTCHours() - 1);
+  previousHour.setUTCHours(previousHour.getUTCHours() - 1); // eslint-disable-line no-magic-numbers
 
   const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
     DOC_ID_FIELD,
@@ -157,7 +165,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 
   for (let i = 0; i < averages.length; i++) {
     const readings = (
-      await db
+      await firestore
         .collection(resolvedPath)
         .where('timestamp', '>', Timestamp.fromDate(previousHour))
         .where('timestamp', '<=', Timestamp.fromDate(currentHour))
@@ -174,8 +182,10 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
       averages[i] = reading;
     }
 
+    /* eslint-disable no-magic-numbers */
     currentHour.setUTCHours(currentHour.getUTCHours() - 1);
     previousHour.setUTCHours(previousHour.getUTCHours() - 1);
+    /* eslint-enable no-magic-numbers */
   }
 
   return averages;
@@ -184,15 +194,15 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 /**
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
  * excluding thoses data points that indicate sensor malfunction. Those
- * datapoints are represented by NaN.
+ * data points are represented by NaN.
  *
- * @param averages array containing sensor readings representing hourly averages
+ * @param averages - array containing sensor readings representing hourly averages
  * @returns an array of numbers representing the corrected PM2.5 values pursuant
  *          to the EPA formula
  */
 function cleanAverages(averages: SensorReading[]): CleanedReadings {
   // These thresholds for the EPA indicate when diverging sensor readings
-  // indicate malfulnction. The EPA requires that the raw difference between
+  // indicate malfunction. The EPA requires that the raw difference between
   // the readings be less than 5 and the percent difference be less than 70%
   const RAW_THRESHOLD = 5;
   const PERCENT_THRESHOLD = 0.7;
@@ -210,7 +220,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
       }
 
       const averagePmReading =
-        (reading.channelAPm25 + reading.channelBPm25) / 2;
+        (reading.channelAPm25 + reading.channelBPm25) / 2; // eslint-disable-line no-magic-numbers
       const difference = Math.abs(reading.channelAPm25 - reading.channelBPm25);
       if (
         !(
@@ -220,14 +230,16 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
       ) {
         // Formula from EPA to correct PurpleAir PM 2.5 readings
         // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
+        /* eslint-disable no-magic-numbers */
         cleanedAverages[i] =
           0.534 * averagePmReading - 0.0844 * reading.humidity + 5.604;
+        /* eslint-enable no-magic-numbers */
       } else {
         // If reading exceeds thresholds above
         cleanedAverages[i] = Number.NaN;
       }
     } else {
-      // If less than 27 datapoints were available for that hour, the reading
+      // If less than 27 data points were available for that hour, the reading
       // would have been undefined
       cleanedAverages[i] = Number.NaN;
     }
@@ -238,14 +250,14 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
-    const sensorList = (await db.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       const docId = knownSensor.id;
       const hourlyAverages = await getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
-      //TODO: Start using AQI not PM2.5
+      // TODO: Start using AQI not PM2.5
 
       // NowCast formula from the EPA requires 2 out of the last 3 hours
       // to be available
@@ -277,19 +289,10 @@ exports.calculateAqi = functions.pubsub
       }
     }
 
-    // Note: There is only one document in this database, but we still get it back in
-    // an array
-    const currentReadingDocuments = (
-      await db.collection('current-reading').get()
-    ).docs;
-    if (currentReadingDocuments.length !== 0) {
-      const currentReadingDocId = currentReadingDocuments[0].id;
-
-      await db.collection('current-reading').doc(currentReadingDocId).set({
-        lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
-        data: currentData,
-      });
-    }
+    await firestore.collection('current-reading').doc('pm25').set({
+      lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+      data: currentData,
+    });
   });
 
 exports.generateReadingsCsv = functions.pubsub
@@ -304,7 +307,7 @@ exports.generateReadingsCsv = functions.pubsub
       'latitude, ' +
       'longitude\n';
 
-    const sensorList = (await db.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
     const readingsArrays = new Array<Array<string>>(sensorList.length);
     for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
       // Get readings subcollection path
@@ -313,7 +316,8 @@ exports.generateReadingsCsv = functions.pubsub
         sensorList[sensorIndex].id
       );
 
-      const readingsList = (await db.collection(resolvedPath).get()).docs;
+      const readingsList = (await firestore.collection(resolvedPath).get())
+        .docs;
       const readingsArray = new Array<string>(readingsList.length);
 
       for (
@@ -325,7 +329,7 @@ exports.generateReadingsCsv = functions.pubsub
           readingsList[readingIndex].data()
         );
 
-        // toCsvLine generates the values in the same order as the
+        // The toCsvLine function generates the values in the same order as the
         // headings variable.
         readingsArray[readingIndex] = reading.toCsvLine();
       }
@@ -334,7 +338,7 @@ exports.generateReadingsCsv = functions.pubsub
     }
 
     // Combine the data into one string
-    const readings = readingsArrays.map(strArray => strArray.join(''));
+    const readings = readingsArrays.map(stringArray => stringArray.join(''));
     const readingsCsv = headings + readings.join('');
 
     // Generate filename
@@ -348,29 +352,40 @@ exports.generateReadingsCsv = functions.pubsub
 
 exports.generateAverageReadingsCsv = functions.pubsub
   .topic('generate-average-readings-csv')
-  .onPublish(async () => {
+  .onPublish(() => {
     // Initialize csv with headers
     let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';
 
-    // current-reading collection has single doc
-    const currentReadingDoc = (await db.collection('/current-reading').get())
-      .docs[0];
-    const sensorMap = currentReadingDoc.data().data;
-    for (const sensorId in sensorMap) {
-      const sensorData = sensorMap[sensorId];
-      // Only get most recently calculated average
-      const reading = sensorData.readings[0];
-      csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${reading}\n`;
-    }
+    // Current-reading collection has single doc
+    const currentReadingDocRef = firestore
+      .collection('/current-reading')
+      .doc('pm25');
+    currentReadingDocRef.get().then(doc => {
+      if (doc.exists) {
+        const docData = doc.data();
+        if (docData) {
+          const sensorMap = docData.data;
+          for (const sensorId in sensorMap) {
+            const sensorData = sensorMap[sensorId];
+            // Only get most recently calculated average
+            const reading = sensorData.readings[0];
+            csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${reading}\n`;
+          }
 
-    // Generate filename
-    const timestamp: FirebaseFirestore.Timestamp = currentReadingDoc.data()
-      .lastUpdated;
+          // Generate filename
+          const timestamp: FirebaseFirestore.Timestamp = docData.lastUpdated;
 
-    // Put timestamp into human-readable, computer friendly form
-    // Regex removes all non-word characters in the date string
-    const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
-    const filename = `hour_averages_pm25_${dateTime}.csv`;
+          // Put timestamp into human-readable, computer friendly form
+          // Regex removes all non-word characters in the date string
+          const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
+          const filename = `hour_averages_pm25_${dateTime}.csv`;
 
-    return uploadFileToFirebaseBucket(filename, csvData);
+          return uploadFileToFirebaseBucket(filename, csvData);
+        } else {
+          throw new Error('Document does not contain data');
+        }
+      } else {
+        throw new Error('pm25 document does not exist');
+      }
+    });
   });
