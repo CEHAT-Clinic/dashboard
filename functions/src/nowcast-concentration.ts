@@ -13,7 +13,7 @@ export default class NowCastConcentration {
 
   /**
    * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
-   * @param cleanedAverages A CleanedReadings object representing 12 hours of data,
+   * @param cleanedAverages - A CleanedReadings object representing 12 hours of data,
    *                        where at least two of the last three hours are valid data
    *                        points
    */
@@ -37,7 +37,7 @@ export default class NowCastConcentration {
     // ago the measurement is from, reducing the weight of later hours
     const weightFactor = Math.max(
       MINIMUM_WEIGHT_FACTOR,
-      1 - scaledRateOfChange
+      1 - scaledRateOfChange // eslint-disable-line no-magic-numbers
     );
 
     let weightedAverageSum = 0;

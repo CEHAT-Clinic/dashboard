@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 const isLocalhost = Boolean(
   window.location.hostname === 'localhost' ||
     // [::1] is the IPv6 localhost address.
@@ -17,11 +18,13 @@ function registerValidSW(swUrl: string, config?: Config): void {
   navigator.serviceWorker
     .register(swUrl)
     .then((registration): void => {
+      // eslint-disable-next-line spellcheck/spell-checker
       registration.onupdatefound = function (): void {
         const installingWorker = registration.installing;
         if (installingWorker === null) {
           return;
         }
+        // eslint-disable-next-line spellcheck/spell-checker
         installingWorker.onstatechange = function (): void {
           if (installingWorker.state === 'installed') {
             if (navigator.serviceWorker.controller) {
@@ -38,9 +41,7 @@ function registerValidSW(swUrl: string, config?: Config): void {
                 config.onUpdate(registration);
               }
             } else {
-              // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
+              // Everything has been pre-cached for offline use
               console.log('Content is cached for offline use.');
 
               // Execute callback
@@ -65,10 +66,13 @@ function checkValidServiceWorker(swUrl: string, config?: Config): void {
     .then(response => {
       // Ensure service worker exists, and that we really are getting a JS file.
       const contentType = response.headers.get('content-type');
-      if (
-        response.status === 404 ||
-        (contentType !== null && contentType.indexOf('javascript') === -1)
-      ) {
+
+      const indexNotFound = -1;
+      const noJavaScript = contentType
+        ? contentType.indexOf('javascript') === indexNotFound
+        : false;
+      const pageNotFound = 404;
+      if (response.status === pageNotFound || noJavaScript) {
         // No service worker found. Probably a different app. Reload the page.
         navigator.serviceWorker.ready.then(registration => {
           registration.unregister().then(() => {
