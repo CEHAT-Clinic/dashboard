@@ -75,6 +75,7 @@
           "cehat",
           "dom",
           "firebase",
+          "Firebase",
           "firestore",
           "localhost",
           "Localhost",
@@ -85,7 +86,9 @@
           "geo",
           "Rect",
           "Unmount",
-          "matchers"
+          "matchers",
+          "Chakra",
+          "sg"
         ],
         "skipWords": [
           "Pv"

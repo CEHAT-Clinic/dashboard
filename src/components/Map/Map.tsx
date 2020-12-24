@@ -128,7 +128,7 @@ class Map extends React.Component {
     window.addEventListener('resize', () => map.getViewPort().resize());
 
     // Restrict map movement: latitude and longitude coordinates are specific
-    // To the boundaries of South Gate
+    // to the boundaries of South Gate
     /* eslint-disable no-magic-numbers */
     const [topLat, leftLong, bottomLat, rightLong] = [
       33.974,
