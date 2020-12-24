@@ -12,6 +12,10 @@ interface Props {
 
 /**
  * Provider to combine all app providers
+ * ChakraProvider: Provider for UI
+ * AuthProvider: Provider for current authentication status and to update
+ *               authentication status
+ *
  * @param props - React components wrapped by the providers
  */
 const AppProviders: React.FC<Props> = ({children}: Props) => {
