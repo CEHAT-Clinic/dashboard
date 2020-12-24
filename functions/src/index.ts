@@ -10,7 +10,7 @@ import * as os from 'os';
 import NowCastConcentration from './nowcast-concentration';
 
 admin.initializeApp();
-const db = admin.firestore();
+const firestore = admin.firestore();
 const Timestamp = admin.firestore.Timestamp;
 
 const THINGSPEAK_URL_TEMPLATE =
@@ -70,7 +70,7 @@ exports.thingspeakToFirestore = functions
   .runWith(thingspeakToFirestoreRuntimeOpts)
   .pubsub.schedule('every 2 minutes')
   .onRun(async () => {
-    const sensorList = (await db.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
 
     for (const knownSensor of sensorList) {
       const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
@@ -109,7 +109,7 @@ exports.thingspeakToFirestore = functions
 
       // Only add data if not already present in database.
       // This happens if a sensor is down, so only old data is returned.
-      const readingsRef = db.collection(resolvedPath);
+      const readingsRef = firestore.collection(resolvedPath);
       if (
         (
           await readingsRef
@@ -165,7 +165,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
 
   for (let i = 0; i < averages.length; i++) {
     const readings = (
-      await db
+      await firestore
         .collection(resolvedPath)
         .where('timestamp', '>', Timestamp.fromDate(previousHour))
         .where('timestamp', '<=', Timestamp.fromDate(currentHour))
@@ -250,7 +250,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
-    const sensorList = (await db.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       const docId = knownSensor.id;
@@ -289,7 +289,7 @@ exports.calculateAqi = functions.pubsub
       }
     }
 
-    await db.collection('current-reading').doc('pm25').set({
+    await firestore.collection('current-reading').doc('pm25').set({
       lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
       data: currentData,
     });
@@ -307,7 +307,7 @@ exports.generateReadingsCsv = functions.pubsub
       'latitude, ' +
       'longitude\n';
 
-    const sensorList = (await db.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
     const readingsArrays = new Array<Array<string>>(sensorList.length);
     for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
       // Get readings subcollection path
@@ -316,7 +316,8 @@ exports.generateReadingsCsv = functions.pubsub
         sensorList[sensorIndex].id
       );
 
-      const readingsList = (await db.collection(resolvedPath).get()).docs;
+      const readingsList = (await firestore.collection(resolvedPath).get())
+        .docs;
       const readingsArray = new Array<string>(readingsList.length);
 
       for (
@@ -351,12 +352,12 @@ exports.generateReadingsCsv = functions.pubsub
 
 exports.generateAverageReadingsCsv = functions.pubsub
   .topic('generate-average-readings-csv')
-  .onPublish(async () => {
+  .onPublish(() => {
     // Initialize csv with headers
     let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';
 
     // Current-reading collection has single doc
-    const currentReadingDocRef = await db
+    const currentReadingDocRef = firestore
       .collection('/current-reading')
       .doc('pm25');
     currentReadingDocRef.get().then(doc => {
