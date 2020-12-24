@@ -85,7 +85,9 @@
           "geo",
           "Rect",
           "Unmount",
-          "matchers"
+          "matchers",
+          "Chakra",
+          "sg"
         ],
         "skipWords": [
           "Pv"
