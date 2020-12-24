@@ -95,6 +95,7 @@ class Map extends React.Component {
             const sensorVal = sensorMap[sensorID];
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
+            // eslint-disable-next-line no-magic-numbers
             const label = sensorVal.nowCastPm25.toString().split('.')[0];
             const icon = createSensorIcon(label);
 
