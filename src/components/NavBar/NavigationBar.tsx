@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import './NavigationBar.css';
-import Routes from '.././Routes';
 import cehatLogo from './CEHATLogo.png';
 import menuIcon from './menuIcon.png';
 
@@ -42,7 +41,7 @@ function NavigationBar(): JSX.Element {
         {/* CEHAT logo */}
         {isNavVisible && (
           <nav className="Nav">
-            <a href="/home">Home</a>
+            <a href="/">Home</a>
             <a href="/about">About</a>
             <a href="/health">Health Information</a>
             <a href="/involved">Get Involved</a>
@@ -53,7 +52,6 @@ function NavigationBar(): JSX.Element {
           <img src={menuIcon} className="menu-icon" alt="menu button" />
         </button>
       </header>
-      <Routes />
     </div>
   );
 }

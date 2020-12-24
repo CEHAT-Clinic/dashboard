@@ -1,10 +1,11 @@
 import React from 'react';
-import './App.css';
 import NavigationBar from './components/NavBar/NavigationBar';
+import Routes from './Routes';
 
 const App: React.FC = () => (
-  <div className="ui container">
+  <div>
     <NavigationBar />
+    <Routes />
   </div>
 );
 
