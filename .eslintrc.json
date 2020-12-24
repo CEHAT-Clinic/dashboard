@@ -9,7 +9,7 @@
   ],
   "rules": {
     "prettier/prettier": [
-      "warn", 
+      "error", 
       {
         "endOfLine":"auto"
       }
@@ -37,63 +37,6 @@
           "balanced": true
         }
       }
-    ],
-    "no-extra-parens": [
-      "warn",
-      "all",
-      {
-        "ignoreJSX": "multi-line"
-      }
-    ],
-    "require-atomic-updates": "error",
-    "no-console": "warn",
-    "default-case": "warn",
-    "default-case-last": "warn",
-    "default-param-last": "warn",
-    "class-methods-use-this": "warn",
-    "eqeqeq": "error",
-    "no-magic-numbers": [
-      "warn",
-      {
-        "ignoreArrayIndexes": true
-      }
-    ],
-    "no-multi-spaces": "warn",
-    "require-await": "error",
-    "camelcase": "warn",
-    "eol-last": "error",
-    "sort-vars": "warn",
-    "spellcheck/spell-checker": [
-      "warn",
-      {
-        "skipWordIfMatch": [
-          "aqi",
-          "resize",
-          "Resize",
-          "mapevents",
-          "mapsettings",
-          "cehat",
-          "dom",
-          "firebase",
-          "Firebase",
-          "firestore",
-          "localhost",
-          "Localhost",
-          "href",
-          "unregister",
-          "javascript",
-          "svg",
-          "geo",
-          "Rect",
-          "Unmount",
-          "matchers",
-          "Chakra",
-          "sg"
-        ],
-        "skipWords": [
-          "Pv"
-        ]
-      }
     ]
   },
   "env": {
@@ -105,8 +48,7 @@
   "plugins": [
     "react",
     "@typescript-eslint",
-    "tsdoc",
-    "spellcheck"
+    "tsdoc"
   ],
   "settings": {
     "react": {
