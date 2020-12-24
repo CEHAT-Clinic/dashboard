@@ -333,7 +333,7 @@ exports.generateReadingsCsv = functions.pubsub
           readingsList[readingIndex].data()
         );
 
-        // ToCsvLine generates the values in the same order as the
+        // The toCsvLine function generates the values in the same order as the
         // headings variable.
         readingsArray[readingIndex] = reading.toCsvLine();
       }
