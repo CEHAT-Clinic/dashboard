@@ -42,7 +42,7 @@
       "warn",
       "all",
       {
-        "ignoreJSX": "multi-line"
+        "ignoreJSX": "all"
       }
     ],
     "require-atomic-updates": "error",
