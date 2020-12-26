@@ -20,8 +20,12 @@ const SignUp: ({setIsNewUser}: SignUpProps) => JSX.Element = ({
 
   /**
    * Handles user sign up. Sets user status to authenticated.
+   * @param event - submit form event
    */
-  function handleSignUp() {
+  function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
+    // Prevents submission before sign up is complete
+    event.preventDefault();
+
     setIsAuthenticated(true);
   }
 

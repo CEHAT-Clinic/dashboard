@@ -10,8 +10,12 @@ const SignOut: () => JSX.Element = () => {
 
   /**
    * Signs out the user and sets authentication status to false.
+   * @param event - submit form event
    */
-  function handleSignOut() {
+  function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
+    // Prevents submission before sign out is complete
+    event.preventDefault();
+
     setIsAuthenticated(false);
   }
 
