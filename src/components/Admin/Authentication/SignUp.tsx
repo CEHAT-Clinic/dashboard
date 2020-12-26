@@ -1,6 +1,7 @@
 import React from 'react';
-import {Text, Heading, Box, Link, Button, Divider} from '@chakra-ui/react';
+import {Text, Heading, Link, Divider} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
+import {SubmitButton} from './Util';
 
 /**
  * Props for SignUp component. Used for type safety.
@@ -26,21 +27,11 @@ const SignUp: ({setIsNewUser}: SignUpProps) => JSX.Element = ({
 
   return (
     <>
-      <Box textAlign="center">
-        <Heading>Sign Up</Heading>
-      </Box>
-      <Button
-        onClick={handleSignUp}
-        colorScheme="teal"
-        variant="solid"
-        width="full"
-        mt={4}
-      >
-        Sign Up
-      </Button>
-      <Box my={4}>
-        <Divider orientation="horizontal" />
-      </Box>
+      <Heading textAlign="center">Sign Up</Heading>
+      <form onSubmit={handleSignUp}>
+        <SubmitButton label={'Sign Up'}></SubmitButton>
+      </form>
+      <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
         Already have an account?{' '}
         <Link color="teal.500" onClick={() => setIsNewUser(false)}>

@@ -38,13 +38,6 @@
         }
       }
     ],
-    "no-extra-parens": [
-      "warn",
-      "all",
-      {
-        "ignoreJSX": "all"
-      }
-    ],
     "require-atomic-updates": "error",
     "no-console": "warn",
     "default-case": "warn",

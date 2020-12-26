@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Button} from '@chakra-ui/react';
+import {SubmitButton} from './Util';
 import {useAuth} from '../../../contexts/AuthContext';
 
 /**
@@ -16,17 +16,9 @@ const SignOut: () => JSX.Element = () => {
   }
 
   return (
-    <Box>
-      <Button
-        colorScheme="teal"
-        variant="solid"
-        width="full"
-        mt={4}
-        onClick={handleSignOut}
-      >
-        Sign Out
-      </Button>
-    </Box>
+    <form onSubmit={handleSignOut}>
+      <SubmitButton label={'Sign Out'}></SubmitButton>
+    </form>
   );
 };
 
