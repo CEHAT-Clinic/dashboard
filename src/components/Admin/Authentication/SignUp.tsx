@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, Heading, Link, Divider} from '@chakra-ui/react';
-import {useAuth} from '../../../contexts/AuthContext';
-import {SubmitButton} from './Util';
+import {SubmitButton, signInWithGoogle} from './Util';
 
 /**
  * Props for SignUp component. Used for type safety.
@@ -16,24 +15,23 @@ interface SignUpProps {
 const SignUp: ({setIsNewUser}: SignUpProps) => JSX.Element = ({
   setIsNewUser,
 }: SignUpProps) => {
-  const {setIsAuthenticated} = useAuth();
-
-  /**
-   * Handles user sign up. Sets user status to authenticated.
-   * @param event - submit form event
-   */
-  function handleSignUp(event: React.FormEvent<HTMLFormElement>) {
-    // Prevents submission before sign up is complete
-    event.preventDefault();
-
-    setIsAuthenticated(true);
-  }
+  const [errorGoogle, setErrorGoogle] = useState('');
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
   return (
     <>
       <Heading textAlign="center">Sign Up</Heading>
-      <form onSubmit={handleSignUp}>
-        <SubmitButton label={'Sign Up'}></SubmitButton>
+      <form
+        onSubmit={event => {
+          signInWithGoogle(event, setErrorGoogle, setIsLoadingGoogle);
+        }}
+      >
+        <SubmitButton
+          color={'red'}
+          label={'Sign up with Google'}
+          error={errorGoogle}
+          isLoading={isLoadingGoogle}
+        ></SubmitButton>
       </form>
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">

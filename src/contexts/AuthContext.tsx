@@ -1,12 +1,18 @@
-import React, {createContext, useState, useContext} from 'react';
+import React, {createContext, useState, useContext, useEffect} from 'react';
+import {firebaseAuth} from '../firebase';
 import {Props} from './AppProviders';
 
 /**
  * Interface for AuthContext used for type safety
+ *
+ * - `isAuthenticated: boolean` if user is signed in
+ * - `userId: string` user ID used in Firebase
+ * - `email: string` email used for account sign in
  */
 interface AuthInterface {
   isAuthenticated: boolean;
-  setIsAuthenticated(isAuthenticated: boolean): void;
+  userId: string;
+  email: string;
 }
 
 /**
@@ -20,16 +26,31 @@ const AuthContext = createContext<AuthInterface>({} as AuthInterface);
  * @param props - child React components that will consume the context
  */
 const AuthProvider: React.FC<Props> = ({children}: Props) => {
-  const defaultIsAuthenticated = false;
-  const [isAuthenticated, setIsAuthenticated] = useState(
-    defaultIsAuthenticated
-  );
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userId, setUserId] = useState('');
+  const [email, setEmail] = useState('');
+
+  useEffect(() => {
+    const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
+      if (user) {
+        setIsAuthenticated(true);
+        setUserId(user.uid);
+        if (user.email) setEmail(user.email);
+      } else {
+        setEmail('');
+        setUserId('');
+        setIsAuthenticated(false);
+      }
+    });
+    return unsubscribe;
+  });
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated: isAuthenticated,
-        setIsAuthenticated: setIsAuthenticated,
+        userId: userId,
+        email: email,
       }}
     >
       {children}
@@ -39,7 +60,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use and set authentication status
- * @returns `{isAuthenticated: boolean, setIsAuthenticated: (boolean => void)}`
+ * @returns `{isAuthenticated: boolean, userId: string, email: string}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 

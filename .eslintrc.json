@@ -81,7 +81,8 @@
           "Unmount",
           "matchers",
           "Chakra",
-          "sg"
+          "sg",
+          "uid"
         ],
         "skipWords": [
           "Pv"
