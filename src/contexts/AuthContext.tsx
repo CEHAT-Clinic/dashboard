@@ -48,7 +48,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use and set authentication status
- * @returns `{isAuthenticated: boolean, userId: string, email: string}`
+ * @returns `{isAuthenticated: boolean}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 
