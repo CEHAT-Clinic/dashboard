@@ -6,13 +6,9 @@ import {Props} from './AppProviders';
  * Interface for AuthContext used for type safety
  *
  * - `isAuthenticated: boolean` if user is signed in
- * - `userId: string` user ID used in Firebase
- * - `email: string` email used for account sign in
  */
 interface AuthInterface {
   isAuthenticated: boolean;
-  userId: string;
-  email: string;
 }
 
 /**
@@ -27,18 +23,12 @@ const AuthContext = createContext<AuthInterface>({} as AuthInterface);
  */
 const AuthProvider: React.FC<Props> = ({children}: Props) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userId, setUserId] = useState('');
-  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
       if (user) {
         setIsAuthenticated(true);
-        setUserId(user.uid);
-        if (user.email) setEmail(user.email);
       } else {
-        setEmail('');
-        setUserId('');
         setIsAuthenticated(false);
       }
     });
@@ -49,8 +39,6 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     <AuthContext.Provider
       value={{
         isAuthenticated: isAuthenticated,
-        userId: userId,
-        email: email,
       }}
     >
       {children}

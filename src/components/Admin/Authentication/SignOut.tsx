@@ -7,6 +7,7 @@ import {firebaseAuth} from '../../../firebase';
  */
 const SignOut: () => JSX.Element = () => {
   const [error, setError] = useState('');
+
   /**
    * Signs out the user and sets authentication status to false.
    * @param event - submit form event
