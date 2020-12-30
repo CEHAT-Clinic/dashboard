@@ -1,9 +1,20 @@
 import React from 'react';
+import {useAuth} from '../contexts/AuthContext';
 
-const Admin: React.FC = () => (
-  <div>
-    <h1> Admin Page</h1>
-  </div>
+const AuthenticatedAdmin = React.lazy(
+  () => import('../components/Admin/AuthenticatedAdmin')
 );
+const UnauthenticatedAdmin = React.lazy(
+  () => import('../components/Admin/UnauthenticatedAdmin')
+);
+
+/**
+ * Component for administrative page
+ */
+const Admin: () => JSX.Element = () => {
+  const {isAuthenticated} = useAuth();
+
+  return isAuthenticated ? <AuthenticatedAdmin /> : <UnauthenticatedAdmin />;
+};
 
 export default Admin;

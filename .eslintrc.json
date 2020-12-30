@@ -38,13 +38,6 @@
         }
       }
     ],
-    "no-extra-parens": [
-      "warn",
-      "all",
-      {
-        "ignoreJSX": "multi-line"
-      }
-    ],
     "require-atomic-updates": "error",
     "no-console": "warn",
     "default-case": "warn",
@@ -94,7 +87,9 @@
           "Pv"
         ]
       }
-    ]
+    ],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error"
   },
   "env": {
     "browser": true,
