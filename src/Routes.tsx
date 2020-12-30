@@ -17,7 +17,7 @@ function Routes(): JSX.Element {
           <Route path="/health" component={Health} />
           <Route path="/involved" component={Involved} />
           <Route path="/admin" component={Admin} />
-          <Route path="/" component={Home} />
+          <Route exact path="/" component={Home} />
         </Switch>
       </Suspense>
     </Router>
