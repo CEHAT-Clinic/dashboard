@@ -59,10 +59,9 @@ interface EmailFormInputProps {
 /**
  * Component for email input field in authentication forms.
  * @param props - handleEmailChange, error
- * - `handleEmailChange: (event: React.ChangeEvent<HTMLInputElement>) => void`
- *    handles change in input field
- * - `value: string` value that tracks form value
- * - `error?: string` error message to be displayed
+ * - `handleEmailChange` handles change in input field
+ * - `value` value that tracks form value
+ * - `error` (optional) error message to be displayed
  */
 const EmailFormInput: ({
   handleEmailChange,
@@ -103,13 +102,12 @@ interface PasswordFormInputProps {
 /**
  * Component for password input field in authentication forms.
  * @param props - label, showPassword, handlePasswordChange, handlePasswordVisibility, error
- * - `label: string` label for password input. Defaults to 'Password'
- * - `showPassword: boolean` if password is hidden or not. Defaults to false
- * - `handlePasswordChange: (event: React.ChangeEvent<HTMLInputElement>) => void`
- *    handles change in password input field
- * - `value: string` value that tracks form value
- * - `handlePasswordVisibility: () => void` changes showPassword. Defaults to toggle showPassword.
- * - `error?: string` error message to be displayed. Defaults to ''
+ * - `label` (optional) label for password input. Defaults to 'Password'
+ * - `showPassword` (optional) if password is hidden or not. Defaults to false
+ * - `handlePasswordChange` handles change in password input field
+ * - `value` value that tracks the form value
+ * - `handlePasswordVisibility` (optional) changes showPassword. Defaults to toggle showPassword.
+ * - `error` (optional) error message to be displayed. Defaults to ''
  */
 const PasswordFormInput: ({
   label,
@@ -161,12 +159,12 @@ interface SubmitButtonProps {
 /**
  * Component for submit button in authentication forms.
  * @param props - label, isLoading, color, error, isDisabled
- * - `label?: string` label for button. Defaults to "Submit"
- * - `isLoading?: boolean` if application is currently loading, used to display
+ * - `label` (optional) label for button. Defaults to "Submit"
+ * - `isLoading` (optional) if application is currently loading, used to display
  *   loading circle on button. Defaults to false
- * - `color?: string` color of button. Defaults to "teal"
- * - `error?: string` error message to be displayed. Defaults to ''
- * - `isDisabled?: boolean` if button is clickable. Defaults to false
+ * - `color` (optional) color of button. Defaults to "teal"
+ * - `error` (optional) error message to be displayed. Defaults to ''
+ * - `isDisabled` (optional) if button is clickable. Defaults to false
  */
 const SubmitButton: ({
   label,

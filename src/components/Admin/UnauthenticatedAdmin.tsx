@@ -4,6 +4,13 @@ import SignUp from './Authentication/SignUp';
 import {Box, Flex} from '@chakra-ui/react';
 
 /**
+ * Props for SignIn and SignUp component. Used for type safety.
+ */
+interface UnauthenticatedPageProps {
+  setIsNewUser: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+/**
  * Admin page when a user is not authenticated/signed in.
  */
 const UnauthenticatedAdmin: () => JSX.Element = () => {
@@ -29,4 +36,5 @@ const UnauthenticatedAdmin: () => JSX.Element = () => {
   );
 };
 
+export type {UnauthenticatedPageProps};
 export default UnauthenticatedAdmin;

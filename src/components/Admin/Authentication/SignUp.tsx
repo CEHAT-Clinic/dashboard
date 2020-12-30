@@ -7,20 +7,14 @@ import {
   PasswordFormInput,
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
-
-/**
- * Props for SignUp component. Used for type safety.
- */
-interface SignUpProps {
-  setIsNewUser: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
  * Component to sign up.
  */
-const SignUp: ({setIsNewUser}: SignUpProps) => JSX.Element = ({
+const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
-}: SignUpProps) => {
+}: UnauthenticatedPageProps) => {
   const [errorGoogle, setErrorGoogle] = useState('');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
