@@ -1,20 +1,14 @@
 import React, {useState} from 'react';
 import {Text, Heading, Link, Divider} from '@chakra-ui/react';
 import {SubmitButton, signInWithGoogle} from './Util';
-
-/**
- * Props for SignIn component. Used for type safety.
- */
-interface SignInProps {
-  setIsNewUser: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
  * Component to sign in.
  */
-const SignIn: ({setIsNewUser}: SignInProps) => JSX.Element = ({
+const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
-}: SignInProps) => {
+}: UnauthenticatedPageProps) => {
   const [errorGoogle, setErrorGoogle] = useState('');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
