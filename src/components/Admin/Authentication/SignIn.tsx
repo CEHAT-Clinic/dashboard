@@ -2,20 +2,15 @@ import React from 'react';
 import {Text, Heading, Link, Divider} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import {SubmitButton} from './Util';
-
-/**
- * Props for SignIn component. Used for type safety.
- */
-interface SignInProps {
-  setIsNewUser: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
  * Component to sign in.
  */
-const SignIn: ({setIsNewUser}: SignInProps) => JSX.Element = ({
+const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
-}: SignInProps) => {
+}: UnauthenticatedPageProps) => {
+  // Access AuthContext to change authentication status
   const {setIsAuthenticated} = useAuth();
 
   /**

@@ -8,6 +8,9 @@ const UnauthenticatedAdmin = React.lazy(
   () => import('../components/Admin/UnauthenticatedAdmin')
 );
 
+/**
+ * Component for administrative page
+ */
 const Admin: () => JSX.Element = () => {
   const {isAuthenticated} = useAuth();
 
