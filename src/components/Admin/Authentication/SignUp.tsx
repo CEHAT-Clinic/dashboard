@@ -21,7 +21,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
         }}
       >
         <SubmitButton
-          color={'red'}
+          color={'blue'}
           label={'Sign up with Google'}
           error={errorGoogle}
           isLoading={isLoadingGoogle}

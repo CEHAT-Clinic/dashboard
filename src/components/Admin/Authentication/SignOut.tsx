@@ -19,13 +19,17 @@ const SignOut: () => JSX.Element = () => {
     try {
       await firebaseAuth.signOut();
     } catch {
-      setError('Error occurred. Please try again');
+      setError('Error occurred with sign out. Please try again');
     }
   }
 
   return (
     <form onSubmit={handleSignOut}>
-      <SubmitButton label={'Sign Out'} error={error}></SubmitButton>
+      <SubmitButton
+        label={'Sign Out'}
+        color={'red'}
+        error={error}
+      ></SubmitButton>
     </form>
   );
 };

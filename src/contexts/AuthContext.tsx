@@ -5,7 +5,7 @@ import {Props} from './AppProviders';
 /**
  * Interface for AuthContext used for type safety
  *
- * - `isAuthenticated: boolean` if user is signed in
+ * - `isAuthenticated` if user is signed in
  */
 interface AuthInterface {
   isAuthenticated: boolean;
