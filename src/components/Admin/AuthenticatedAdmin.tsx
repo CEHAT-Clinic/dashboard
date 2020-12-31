@@ -17,7 +17,11 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
     userId = user.uid;
     if (user.email) {
       email = user.email;
+    } else {
+      throw new Error('User email missing');
     }
+  } else {
+    throw new Error('User ID missing');
   }
 
   return (

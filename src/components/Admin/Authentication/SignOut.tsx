@@ -12,20 +12,24 @@ const SignOut: () => JSX.Element = () => {
    * Signs out the user and sets authentication status to false.
    * @param event - submit form event
    */
-  function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
     // Prevents submission before sign out is complete
     event.preventDefault();
 
     try {
-      firebaseAuth.signOut();
+      await firebaseAuth.signOut();
     } catch {
-      setError('Error occurred. Please try again');
+      setError('Error occurred with sign out. Please try again');
     }
   }
 
   return (
     <form onSubmit={handleSignOut}>
-      <SubmitButton label={'Sign Out'} error={error}></SubmitButton>
+      <SubmitButton
+        label={'Sign Out'}
+        color={'red'}
+        error={error}
+      ></SubmitButton>
     </form>
   );
 };

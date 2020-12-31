@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Text, Heading, Link, Divider} from '@chakra-ui/react';
+<<<<<<< HEAD
 import {
   SubmitButton,
   signInWithGoogle,
@@ -7,6 +8,9 @@ import {
   PasswordFormInput,
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
+=======
+import {SubmitButton, signInWithGoogle} from './Util';
+>>>>>>> master
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
@@ -17,6 +21,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
 }: UnauthenticatedPageProps) => {
   const [errorGoogle, setErrorGoogle] = useState('');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
+<<<<<<< HEAD
 
   const [email, setEmail] = useState('');
   const [emailError, setEmailError] = useState('');
@@ -83,6 +88,8 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       }
     }
   }
+=======
+>>>>>>> master
 
   return (
     <>
@@ -93,7 +100,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
         }}
       >
         <SubmitButton
-          color={'red'}
+          color={'blue'}
           label={'Sign up with Google'}
           error={errorGoogle}
           isLoading={isLoadingGoogle}

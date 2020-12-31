@@ -5,7 +5,7 @@ import {Props} from './AppProviders';
 /**
  * Interface for AuthContext used for type safety
  *
- * - `isAuthenticated: boolean` if user is signed in
+ * - `isAuthenticated` if user is signed in
  */
 interface AuthInterface {
   isAuthenticated: boolean;
@@ -48,7 +48,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use and set authentication status
- * @returns `{isAuthenticated: boolean}`
+ * @returns `{isAuthenticated}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 
