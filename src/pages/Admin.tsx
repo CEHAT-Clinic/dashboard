@@ -9,7 +9,7 @@ const UnauthenticatedAdmin = React.lazy(
 );
 
 /**
- * Component for administrative page
+ * Component for the Admin page
  */
 const Admin: () => JSX.Element = () => {
   const {isAuthenticated} = useAuth();

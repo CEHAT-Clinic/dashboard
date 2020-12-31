@@ -1,7 +1,6 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Text, Heading, Link, Divider} from '@chakra-ui/react';
-import {useAuth} from '../../../contexts/AuthContext';
-import {SubmitButton} from './Util';
+import {SubmitButton, signInWithGoogle} from './Util';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
@@ -10,25 +9,23 @@ import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
 }: UnauthenticatedPageProps) => {
-  // Access AuthContext to change authentication status
-  const {setIsAuthenticated} = useAuth();
-
-  /**
-   * Handles user sign in. Sets user status to authenticated.
-   * @param event - submit form event
-   */
-  function handleSignIn(event: React.ChangeEvent<HTMLFormElement>) {
-    // Prevents submission before sign in is complete
-    event.preventDefault();
-
-    setIsAuthenticated(true);
-  }
+  const [errorGoogle, setErrorGoogle] = useState('');
+  const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
   return (
     <>
       <Heading textAlign="center">Sign In</Heading>
-      <form onSubmit={handleSignIn}>
-        <SubmitButton label={'Sign In'}></SubmitButton>
+      <form
+        onSubmit={event => {
+          signInWithGoogle(event, setErrorGoogle, setIsLoadingGoogle);
+        }}
+      >
+        <SubmitButton
+          color={'blue'}
+          label={'Sign in with Google'}
+          error={errorGoogle}
+          isLoading={isLoadingGoogle}
+        ></SubmitButton>
       </form>
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
