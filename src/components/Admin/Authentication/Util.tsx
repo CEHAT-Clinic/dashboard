@@ -35,12 +35,7 @@ const PasswordVisibilityToggle: ({
 }: PasswordVisibilityProps) => {
   return (
     <InputRightElement width="4.5rem">
-      <Button
-        height="1.5rem"
-        size="sm"
-        verticalAlign="center"
-        onClick={handlePasswordVisibility}
-      >
+      <Button height="1.75rem" size="sm" onClick={handlePasswordVisibility}>
         {showPassword ? 'Hide' : 'Show'}
       </Button>
     </InputRightElement>
@@ -58,7 +53,7 @@ interface EmailFormInputProps {
 
 /**
  * Component for email input field in authentication forms.
- * @param props - handleEmailChange, error
+ * @param props - handleEmailChange, value, error
  * - `handleEmailChange` handles change in input field
  * - `value` value that tracks form value
  * - `error` (optional) error message to be displayed
@@ -78,7 +73,7 @@ const EmailFormInput: ({
       <Input
         type="email"
         placeholder="example@test.com"
-        size="lg"
+        size="md"
         onChange={handleEmailChange}
         value={value}
       />
@@ -131,7 +126,7 @@ const PasswordFormInput: ({
         <Input
           type={showPassword ? 'text' : 'password'}
           placeholder="*******"
-          size="lg"
+          size="md"
           onChange={handlePasswordChange}
           value={value}
         />

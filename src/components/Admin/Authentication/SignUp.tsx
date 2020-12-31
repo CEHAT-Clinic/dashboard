@@ -15,6 +15,7 @@ import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
 }: UnauthenticatedPageProps) => {
+  // --------------- State maintenance variables ------------------------
   const [googleError, setGoogleError] = useState('');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -31,6 +32,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
 
   const [generalEmailError, setGeneralEmailError] = useState('');
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  // -------------- End state maintenance variables -------------------------
 
   /**
    * Signs up a user with email in Firebase and handles any errors
@@ -56,7 +58,8 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
         switch (error.code) {
           case 'auth/email-already-in-use': {
             setEmailError(
-              'Email already has an account. Please sign in or use a different email'
+              'Email already has an account. ' +
+                'Please sign in or use a different email'
             );
             break;
           }
@@ -66,7 +69,8 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           }
           case 'auth/weak-password': {
             setPasswordError(
-              'Password not strong enough. Please enter a new password with at least six characters'
+              'Password not strong enough. ' +
+                'Please enter a new password with at least six characters'
             );
             break;
           }
@@ -77,9 +81,9 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
             break;
           }
         }
-        setIsLoadingEmail(false);
         setPassword('');
         setConfirmPassword('');
+        setIsLoadingEmail(false);
       }
     }
   }

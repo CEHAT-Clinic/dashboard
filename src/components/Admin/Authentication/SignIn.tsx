@@ -15,6 +15,7 @@ import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
 }: UnauthenticatedPageProps) => {
+  // --------------- State maintenance variables ------------------------
   const [googleError, setGoogleError] = useState('');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
@@ -27,6 +28,7 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
 
   const [generalEmailError, setGeneralEmailError] = useState('');
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
+  // -------------- End state maintenance variables -------------------------
 
   /**
    * Signs in a user with email and password using Firebase authentication
@@ -50,7 +52,8 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
         }
         case 'auth/user-disabled': {
           setGeneralEmailError(
-            'Account has been disabled. Please contact an administrator if you believe this is a mistake'
+            'Account has been disabled. Please contact an administrator ' +
+              'if you believe this is a mistake'
           );
           break;
         }
