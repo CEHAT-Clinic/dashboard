@@ -23,8 +23,8 @@ interface PasswordVisibilityProps {
  * Component for inside password input fields that toggles if a password is
  * visible in text or hidden behind dots.
  * @param props - showPassword, handlePasswordVisibility
- * - `showPassword: boolean` whether or not password is hidden
- * - `handlePasswordVisibility: () => void` changes showPassword
+ * - `showPassword` whether or not password is hidden
+ * - `handlePasswordVisibility` changes showPassword
  */
 const PasswordVisibilityToggle: ({
   showPassword,
