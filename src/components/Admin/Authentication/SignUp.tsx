@@ -15,7 +15,7 @@ import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   setIsNewUser,
 }: UnauthenticatedPageProps) => {
-  const [errorGoogle, setErrorGoogle] = useState('');
+  const [googleError, setGoogleError] = useState('');
   const [isLoadingGoogle, setIsLoadingGoogle] = useState(false);
 
   const [email, setEmail] = useState('');
@@ -89,13 +89,13 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       <Heading textAlign="center">Sign Up</Heading>
       <form
         onSubmit={event => {
-          signInWithGoogle(event, setErrorGoogle, setIsLoadingGoogle);
+          signInWithGoogle(event, setGoogleError, setIsLoadingGoogle);
         }}
       >
         <SubmitButton
           color={'blue'}
           label={'Sign up with Google'}
-          error={errorGoogle}
+          error={googleError}
           isLoading={isLoadingGoogle}
         ></SubmitButton>
       </form>
