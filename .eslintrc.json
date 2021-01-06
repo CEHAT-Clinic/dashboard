@@ -82,7 +82,17 @@
           "matchers",
           "Chakra",
           "sg",
-          "uid"
+          "uid",
+          "webworker",
+          "globals",
+          "Workbox",
+          "Revalidate",
+          "Precache",
+          "precache",
+          "precached",
+          "pathname",
+          "onupdatefound",
+          "onstatechange"
         ],
         "skipWords": [
           "Pv"
