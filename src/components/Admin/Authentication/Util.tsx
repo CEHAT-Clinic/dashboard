@@ -10,6 +10,7 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import firebase, {firebaseAuth} from '../../../firebase';
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Props for PasswordVisibilityToggle component. Used for type safety.
@@ -181,7 +182,7 @@ const SubmitButton: ({
         variant="solid"
         type="submit"
         width="full"
-        mt={4}
+        marginX={4}
         isDisabled={isDisabled}
       >
         {isLoading ? (
@@ -268,4 +269,27 @@ async function signInWithGoogle(
   }
 }
 
-export {SubmitButton, signInWithGoogle, EmailFormInput, PasswordFormInput};
+/**
+ * Handles reauthentication of a user before account update operations.
+ */
+function handleReauthentication() {
+  const {user} = useAuth();
+  if (user) {
+    const credentials = firebase.auth.AuthCredential;
+  }
+}
+
+interface PasswordInputState {
+  password: string;
+  visible: boolean;
+  error: string;
+}
+
+const defaultPasswordState: PasswordInputState = {
+  password: '',
+  visible: false,
+  error: ''
+}
+
+export type {PasswordInputState};
+export {handleReauthentication, defaultPasswordState, SubmitButton, signInWithGoogle, EmailFormInput, PasswordFormInput};

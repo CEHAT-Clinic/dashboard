@@ -2,6 +2,7 @@ import React from 'react';
 import SignOut from './Authentication/SignOut';
 import {Heading, Box, Flex, Text} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase';
+import ChangePasswordModal from './Authentication/ChangePassword';
 
 /**
  * Admin component for authenticated users.
@@ -39,6 +40,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         <Heading>Admin Page</Heading>
         <Text>User ID: {userId}</Text>
         <Text>Email: {email}</Text>
+        <ChangePasswordModal />
         <SignOut></SignOut>
       </Box>
     </Flex>
