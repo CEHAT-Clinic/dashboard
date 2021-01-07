@@ -14,7 +14,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import {PasswordFormInput, PasswordInputState, SubmitButton} from './Util';
+import {PasswordFormInput, SubmitButton} from './Util';
 import {useAuth} from '../../../contexts/AuthContext';
 
 /**
@@ -25,23 +25,17 @@ function ChangePasswordModal(): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {user} = useAuth();
 
-  const [currentPasswordState, setCurrentPasswordState] = useState<PasswordInputState>({
-    password: '',
-    visible: false,
-    error: ''
-  });
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [currentPasswordError, setCurrentPasswordError] = useState('');
+  const [currentPasswordVisible, setCurrentPasswordVisible] = useState(false);
+
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordError, setNewPasswordError] = useState('');
-  const [newPasswordVisible, setModalPasswordVisible] = useState(false);
+  const [newPasswordVisible, setNewPasswordVisible] = useState(false);
 
-  const [modalConfirmPassword, setModalConfirmPassword] = useState('');
-  const [modalConfirmPasswordError, setModalConfirmPasswordError] = useState(
-    ''
-  );
-  const [
-    modalConfirmPasswordVisible,
-    setModalConfirmPasswordVisible,
-  ] = useState(false);
+  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [confirmNewPasswordError, setConfirmNewPasswordError] = useState('');
+  const [confirmNewPasswordVisible, setConfirmNewPasswordVisible] = useState(false);
 
   const [generalModalError, setGeneralModalError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
@@ -51,10 +45,11 @@ function ChangePasswordModal(): JSX.Element {
    * Resets modal state values before closing the modal.
    */
   function handleClose() {
+    
     setNewPassword('');
     setNewPasswordError('');
-    setModalConfirmPassword('');
-    setModalConfirmPasswordError('');
+    setConfirmNewPassword('');
+    setConfirmNewPasswordError('');
     setGeneralModalError('');
     setModalIsLoading(false);
     setPasswordResetComplete(false);
@@ -71,11 +66,11 @@ function ChangePasswordModal(): JSX.Element {
 
     setModalIsLoading(true);
     if (user) {
-      if (newPassword === modalConfirmPassword) {
+      if (newPassword === confirmNewPassword) {
       try {
         await user.updatePassword('');
         setNewPassword('');
-        setModalConfirmPassword('');
+        setConfirmNewPassword('');
         setPasswordResetComplete(true);
       } catch (error) {
         // Error codes from Firebase documentation
@@ -99,7 +94,7 @@ function ChangePasswordModal(): JSX.Element {
         setModalIsLoading(false);
       }
     } else {
-      setModalConfirmPasswordError('Passwords do not match');
+      setConfirmNewPasswordError('Passwords do not match');
       setModalIsLoading(false);
     }
     } else {
@@ -130,11 +125,11 @@ function ChangePasswordModal(): JSX.Element {
                   handlePasswordChange={event => {
                     setNewPassword(event.target.value);
                     setNewPasswordError('');
-                    setModalConfirmPasswordError('');
+                    setConfirmNewPasswordError('');
                     setGeneralModalError('');
                   }}
                   handlePasswordVisibility={() =>
-                    setModalPasswordVisible(!newPasswordVisible)
+                    setNewPasswordVisible(!newPasswordVisible)
                   }
                   error={newPasswordError}
                   value={newPassword}
@@ -142,16 +137,16 @@ function ChangePasswordModal(): JSX.Element {
                 <PasswordFormInput
                   label="Confirm New Password"
                   handlePasswordChange={event => {
-                    setModalConfirmPassword(event.target.value);
+                    setConfirmNewPassword(event.target.value);
                     setNewPasswordError('');
-                    setModalConfirmPasswordError('');
+                    setConfirmNewPasswordError('');
                     setGeneralModalError('');
                   }}
                   handlePasswordVisibility={() =>
-                    setModalConfirmPasswordVisible(!modalConfirmPasswordVisible)
+                    setConfirmNewPasswordVisible(!confirmNewPasswordVisible)
                   }
-                  error={modalConfirmPasswordError}
-                  value={modalConfirmPassword}
+                  error={confirmNewPasswordError}
+                  value={confirmNewPassword}
                 />
               </ModalBody>
             )}

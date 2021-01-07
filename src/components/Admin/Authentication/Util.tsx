@@ -279,17 +279,4 @@ function handleReauthentication() {
   }
 }
 
-interface PasswordInputState {
-  password: string;
-  visible: boolean;
-  error: string;
-}
-
-const defaultPasswordState: PasswordInputState = {
-  password: '',
-  visible: false,
-  error: ''
-}
-
-export type {PasswordInputState};
-export {handleReauthentication, defaultPasswordState, SubmitButton, signInWithGoogle, EmailFormInput, PasswordFormInput};
+export {handleReauthentication, SubmitButton, signInWithGoogle, EmailFormInput, PasswordFormInput};
