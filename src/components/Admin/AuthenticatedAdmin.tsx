@@ -25,6 +25,23 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
     throw new Error('User ID missing');
   }
 
+  async function getSignInMethods() {
+    let signInMethods: string[] = [];
+    try {
+      const methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
+      signInMethods = methods;
+    } catch (error) {
+      if (error.code === 'auth/invalid-email') {
+        throw new Error('Invalid user email');
+      } else {
+        throw new Error('Error occurred when fetching sign in methods from Firebase');
+      }
+    }
+    return signInMethods;
+  }
+
+  const emailAuthUser = getSignInMethods();
+
   return (
     <Flex width="full" align="center" justifyContent="center">
       <Box
@@ -40,7 +57,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         <Heading>Admin Page</Heading>
         <Text>User ID: {userId}</Text>
         <Text>Email: {email}</Text>
-        <ChangePasswordModal />
+        {<ChangePasswordModal />}
         <SignOut></SignOut>
       </Box>
     </Flex>
