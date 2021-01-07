@@ -45,7 +45,9 @@ function ChangePasswordModal(): JSX.Element {
    * Resets modal state values before closing the modal.
    */
   function handleClose() {
-    
+    setCurrentPassword('');
+    setCurrentPasswordError('');
+    setCurrentPasswordVisible(false);
     setNewPassword('');
     setNewPasswordError('');
     setConfirmNewPassword('');
