@@ -181,7 +181,7 @@ const SubmitButton: ({
         variant="solid"
         type="submit"
         width="full"
-        mt={4}
+        marginY={4}
         isDisabled={isDisabled}
       >
         {isLoading ? (
