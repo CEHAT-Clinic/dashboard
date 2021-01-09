@@ -10,7 +10,6 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import firebase, {firebaseAuth} from '../../../firebase';
-import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Props for PasswordVisibilityToggle component. Used for type safety.
@@ -182,8 +181,8 @@ const SubmitButton: ({
         variant="solid"
         type="submit"
         width="full"
-        marginX={4}
         isDisabled={isDisabled}
+        marginTop={4}
       >
         {isLoading ? (
           <CircularProgress isIndeterminate size="24px" color={color} />
@@ -270,13 +269,38 @@ async function signInWithGoogle(
 }
 
 /**
- * Handles reauthentication of a user before account update operations.
+ * Handles reauthentication of a password-based user before account update operations.
+ * @throws No user
+ * Thrown if the currentUser is null
+ *
+ * @throws No email
+ * Thrown if the currentUser's email is null
+ *
+ * @throws error
+ * Propagates any errors from the reauthenticateWithCredential call to Firebase
  */
-function handleReauthentication() {
-  const {user} = useAuth();
-  if (user) {
-    const credentials = firebase.auth.AuthCredential;
+async function handleReauthenticationWithPassword(
+  password: string
+): Promise<void> {
+  if (!firebaseAuth.currentUser) throw new Error('No user');
+  if (!firebaseAuth.currentUser.email) throw new Error('No email');
+  const credential = firebase.auth.EmailAuthProvider.credential(
+    firebaseAuth.currentUser.email,
+    password
+  );
+
+  try {
+    await firebaseAuth.currentUser.reauthenticateWithCredential(credential);
+  } catch (error) {
+    // Propagate error to component that called this function
+    throw new Error(error);
   }
 }
 
-export {handleReauthentication, SubmitButton, signInWithGoogle, EmailFormInput, PasswordFormInput};
+export {
+  handleReauthenticationWithPassword,
+  SubmitButton,
+  signInWithGoogle,
+  EmailFormInput,
+  PasswordFormInput,
+};

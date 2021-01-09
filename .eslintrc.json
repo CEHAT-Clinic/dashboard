@@ -82,7 +82,10 @@
           "matchers",
           "Chakra",
           "sg",
-          "uid"
+          "uid",
+          "Reauthentication",
+          "reauthentication",
+          "reauthenticate"
         ],
         "skipWords": [
           "Pv"

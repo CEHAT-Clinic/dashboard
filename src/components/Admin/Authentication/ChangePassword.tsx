@@ -14,8 +14,12 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import {PasswordFormInput, SubmitButton} from './Util';
-import {useAuth} from '../../../contexts/AuthContext';
+import {
+  handleReauthenticationWithPassword,
+  PasswordFormInput,
+  SubmitButton,
+} from './Util';
+import {firebaseAuth} from '../../../firebase';
 
 /**
  * Component for changing an authenticated user's password. Includes button that
@@ -23,7 +27,6 @@ import {useAuth} from '../../../contexts/AuthContext';
  */
 function ChangePasswordModal(): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const {user} = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState('');
   const [currentPasswordError, setCurrentPasswordError] = useState('');
@@ -35,7 +38,9 @@ function ChangePasswordModal(): JSX.Element {
 
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [confirmNewPasswordError, setConfirmNewPasswordError] = useState('');
-  const [confirmNewPasswordVisible, setConfirmNewPasswordVisible] = useState(false);
+  const [confirmNewPasswordVisible, setConfirmNewPasswordVisible] = useState(
+    false
+  );
 
   const [generalModalError, setGeneralModalError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
@@ -45,17 +50,35 @@ function ChangePasswordModal(): JSX.Element {
    * Resets modal state values before closing the modal.
    */
   function handleClose() {
-    setCurrentPassword('');
-    setCurrentPasswordError('');
-    setCurrentPasswordVisible(false);
-    setNewPassword('');
-    setNewPasswordError('');
-    setConfirmNewPassword('');
-    setConfirmNewPasswordError('');
-    setGeneralModalError('');
+    resetErrors();
+    resetFormFields();
     setModalIsLoading(false);
     setPasswordResetComplete(false);
     onClose();
+  }
+
+  /**
+   * Resets all form fields and visibility to default values
+   */
+  function resetFormFields() {
+    setCurrentPassword('');
+    setCurrentPasswordVisible(false);
+
+    setNewPassword('');
+    setNewPasswordVisible(false);
+
+    setConfirmNewPassword('');
+    setConfirmNewPasswordVisible(false);
+  }
+
+  /**
+   * Resets all possible errors to no error.
+   */
+  function resetErrors() {
+    setCurrentPasswordError('');
+    setNewPasswordError('');
+    setConfirmNewPasswordError('');
+    setGeneralModalError('');
   }
 
   /**
@@ -67,22 +90,44 @@ function ChangePasswordModal(): JSX.Element {
     event.preventDefault();
 
     setModalIsLoading(true);
-    if (user) {
-      if (newPassword === confirmNewPassword) {
+    if (!firebaseAuth.currentUser) throw Error('User undefined');
+
+    if (newPassword !== confirmNewPassword) {
+      setConfirmNewPasswordError('Passwords do not match');
+      setModalIsLoading(false);
+    } else {
       try {
-        await user.updatePassword('');
-        setNewPassword('');
-        setConfirmNewPassword('');
+        await handleReauthenticationWithPassword(currentPassword);
+        await firebaseAuth.currentUser.updatePassword(newPassword);
+        resetFormFields();
+        resetErrors();
         setPasswordResetComplete(true);
       } catch (error) {
         // Error codes from Firebase documentation
+        const fatalErrors = [
+          'auth/user-mismatch',
+          'auth/user-not-found',
+          'auth/invalid-credential',
+          'auth/invalid-email',
+          'auth/requires-recent-login',
+        ];
+        if (fatalErrors.includes(error.code)) firebaseAuth.signOut();
+
+        // Recoverable errors
         switch (error.code) {
-          case 'auth/weak-password': {
-            setNewPasswordError('Password is not strong enough. Please enter a password longer than six characters');
+          // Error from reauthentication
+          case 'auth/wrong-password': {
+            setCurrentPasswordError(
+              'Wrong current password. Please try again.'
+            );
             break;
           }
-          case 'auth/requires-recent-login': {
-            // TODO: recertify code needed
+          // Error from password reset
+          case 'auth/weak-password': {
+            setNewPasswordError(
+              'Password is not strong enough. ' +
+                'Please enter a password longer than six characters'
+            );
             break;
           }
           default: {
@@ -92,44 +137,50 @@ function ChangePasswordModal(): JSX.Element {
             break;
           }
         }
-      } finally {
-        setModalIsLoading(false);
       }
-    } else {
-      setConfirmNewPasswordError('Passwords do not match');
+      resetFormFields();
       setModalIsLoading(false);
-    }
-    } else {
-      throw Error('User was undefined');
     }
   }
 
   return (
     <Box>
-      <Button color="teal.500" onClick={onOpen}>
+      <Button colorScheme="teal" onClick={onOpen}>
         Update your password
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Send Password Reset Email</ModalHeader>
+          <ModalHeader>Update Password</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handlePasswordUpdate}>
             {passwordResetComplete ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">Password reset email sent</Text>
+                <Text fontSize="lg">Password updated</Text>
               </Flex>
             ) : (
               <ModalBody>
                 <PasswordFormInput
+                  label="Current Password"
+                  handlePasswordChange={event => {
+                    setCurrentPassword(event.target.value);
+                    resetErrors();
+                  }}
+                  showPassword={currentPasswordVisible}
+                  handlePasswordVisibility={() => {
+                    setCurrentPasswordVisible(!currentPasswordVisible);
+                  }}
+                  error={currentPasswordError}
+                  value={currentPassword}
+                />
+                <PasswordFormInput
                   label="New Password"
                   handlePasswordChange={event => {
                     setNewPassword(event.target.value);
-                    setNewPasswordError('');
-                    setConfirmNewPasswordError('');
-                    setGeneralModalError('');
+                    resetErrors();
                   }}
+                  showPassword={newPasswordVisible}
                   handlePasswordVisibility={() =>
                     setNewPasswordVisible(!newPasswordVisible)
                   }
@@ -140,10 +191,9 @@ function ChangePasswordModal(): JSX.Element {
                   label="Confirm New Password"
                   handlePasswordChange={event => {
                     setConfirmNewPassword(event.target.value);
-                    setNewPasswordError('');
-                    setConfirmNewPasswordError('');
-                    setGeneralModalError('');
+                    resetErrors();
                   }}
+                  showPassword={confirmNewPasswordVisible}
                   handlePasswordVisibility={() =>
                     setConfirmNewPasswordVisible(!confirmNewPasswordVisible)
                   }
@@ -153,16 +203,20 @@ function ChangePasswordModal(): JSX.Element {
               </ModalBody>
             )}
             <ModalFooter>
-              {passwordResetComplete ? (
-                <> </>
-              ) : (
+              {!passwordResetComplete && (
                 <SubmitButton
                   label="Update password"
                   isLoading={modalIsLoading}
                   error={generalModalError}
                 />
               )}
-              <Button colorScheme="red" margin={4} onClick={handleClose}>
+
+              <Button
+                colorScheme="red"
+                marginLeft={4}
+                marginTop={4}
+                onClick={handleClose}
+              >
                 Close
               </Button>
             </ModalFooter>
