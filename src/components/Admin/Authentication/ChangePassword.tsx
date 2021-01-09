@@ -210,7 +210,6 @@ function ChangePasswordModal(): JSX.Element {
                   error={generalModalError}
                 />
               )}
-
               <Button
                 colorScheme="red"
                 marginLeft={4}
