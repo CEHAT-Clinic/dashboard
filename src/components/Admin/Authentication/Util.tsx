@@ -277,9 +277,6 @@ async function signInWithGoogle(
  *
  * @throws No email
  * Thrown if the currentUser's email is null
- *
- * @throws error
- * Propagates any errors from the reauthenticateWithCredential call to Firebase
  */
 async function handleReauthenticationWithPassword(
   password: string
@@ -296,7 +293,7 @@ async function handleReauthenticationWithPassword(
     return '';
   } catch (error) {
     // Error codes from Firebase documentation
-    // For these errors, user will be signed out and redirected to sign in
+    // For fatal errors, user will be signed out and redirected to sign in
     const fatalErrors = [
       'auth/user-mismatch',
       'auth/user-not-found',
