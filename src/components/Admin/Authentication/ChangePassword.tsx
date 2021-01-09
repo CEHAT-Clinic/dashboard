@@ -96,45 +96,30 @@ function ChangePasswordModal(): JSX.Element {
       setConfirmNewPasswordError('Passwords do not match');
       setModalIsLoading(false);
     } else {
-      try {
-        await handleReauthenticationWithPassword(currentPassword);
-        await firebaseAuth.currentUser.updatePassword(newPassword);
-        resetFormFields();
-        resetErrors();
-        setPasswordResetComplete(true);
-      } catch (error) {
-        // Error codes from Firebase documentation
-        const fatalErrors = [
-          'auth/user-mismatch',
-          'auth/user-not-found',
-          'auth/invalid-credential',
-          'auth/invalid-email',
-          'auth/requires-recent-login',
-        ];
-        if (fatalErrors.includes(error.code)) firebaseAuth.signOut();
-
-        // Recoverable errors
-        switch (error.code) {
-          // Error from reauthentication
-          case 'auth/wrong-password': {
-            setCurrentPasswordError(
-              'Wrong current password. Please try again.'
-            );
-            break;
-          }
-          // Error from password reset
-          case 'auth/weak-password': {
-            setNewPasswordError(
-              'Password is not strong enough. ' +
-                'Please enter a password longer than six characters'
-            );
-            break;
-          }
-          default: {
-            setGeneralModalError(
-              'Error occurred when trying to update password. Please try again'
-            );
-            break;
+      const error = await handleReauthenticationWithPassword(currentPassword);
+      if (error) {
+        setCurrentPasswordError(error);
+      } else {
+        // Now that user is successfully reauthenticated, attempt to update password
+        try {
+          await firebaseAuth.currentUser.updatePassword(newPassword);
+          resetFormFields();
+          resetErrors();
+          setPasswordResetComplete(true);
+        } catch (error) {
+          // Error codes from Firebase documentation
+          switch (error.code) {
+            case 'auth/weak-password': {
+              setNewPasswordError(
+                'Password is not strong enough. ' +
+                  'Please enter a password longer than six characters'
+              );
+              break;
+            }
+            default: {
+              setGeneralModalError(`Error occurred: ${error.message}`);
+              break;
+            }
           }
         }
       }
@@ -145,7 +130,7 @@ function ChangePasswordModal(): JSX.Element {
 
   return (
     <Box>
-      <Button colorScheme="teal" onClick={onOpen}>
+      <Button colorScheme="teal" onClick={onOpen} width="full">
         Update your password
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
