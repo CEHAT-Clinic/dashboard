@@ -13,13 +13,9 @@ admin.initializeApp();
 const firestore = admin.firestore();
 const Timestamp = admin.firestore.Timestamp;
 
-const THINGSPEAK_URL_TEMPLATE =
-  'https://api.thingspeak.com/channels/<channel_id>/feeds.json';
-const CHANNEL_FIELD = '<channel_id>';
-
+const thingspeakUrl = (channelId: string) =>
+  `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
 const readingsSubcollection = (docId: string) => `/sensors/${docId}/readings`;
-const READINGS_SUBCOLLECTION_TEMPLATE = '/sensors/<doc_id>/readings';
-const DOC_ID_FIELD = '<doc_id>';
 
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
@@ -78,20 +74,14 @@ exports.thingspeakToFirestore = functions
         knownSensor.data()['purpleAirId']
       );
       const channelAPrimaryData = await axios({
-        url: THINGSPEAK_URL_TEMPLATE.replace(
-          CHANNEL_FIELD,
-          thingspeakInfo.channelAPrimaryId
-        ),
+        url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
         params: {
           api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
           results: 1,
         },
       });
       const channelBPrimaryData = await axios({
-        url: THINGSPEAK_URL_TEMPLATE.replace(
-          CHANNEL_FIELD,
-          thingspeakInfo.channelBPrimaryId
-        ),
+        url: thingspeakUrl(thingspeakInfo.channelBPrimaryId),
         params: {
           api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
           results: 1,
@@ -103,10 +93,7 @@ exports.thingspeakToFirestore = functions
         thingspeakInfo
       );
 
-      const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
-        DOC_ID_FIELD,
-        knownSensor.id
-      );
+      const resolvedPath = readingsSubcollection(knownSensor.id);
 
       // Only add data if not already present in database.
       // This happens if a sensor is down, so only old data is returned.
@@ -159,10 +146,7 @@ async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   // Only modifies the hour field, keeps minutes field constant
   previousHour.setUTCHours(previousHour.getUTCHours() - 1); // eslint-disable-line no-magic-numbers
 
-  const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
-    DOC_ID_FIELD,
-    docId
-  );
+  const resolvedPath = readingsSubcollection(docId);
 
   for (let i = 0; i < averages.length; i++) {
     const readings = (
@@ -312,11 +296,7 @@ exports.generateReadingsCsv = functions.pubsub
     const readingsArrays = new Array<Array<string>>(sensorList.length);
     for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
       // Get readings subcollection path
-      const resolvedPath = READINGS_SUBCOLLECTION_TEMPLATE.replace(
-        DOC_ID_FIELD,
-        sensorList[sensorIndex].id
-      );
-
+      const resolvedPath = readingsSubcollection(sensorList[sensorIndex].id);
       const readingsList = (await firestore.collection(resolvedPath).get())
         .docs;
       const readingsArray = new Array<string>(readingsList.length);
@@ -392,26 +372,22 @@ exports.generateAverageReadingsCsv = functions.pubsub
   });
 
 exports.convertOldDocuments = functions.pubsub
-  .topic('convert previous Firestore documents')
+  .topic('convert-old-readings-structure')
   .onPublish(async () => {
-    // Get all sensors
     const sensorList = (await firestore.collection('/sensors').get()).docs;
 
     for (const sensor of sensorList) {
       const readingsCollectionPath = readingsSubcollection(sensor.id);
-
       const readings = await firestore.collection(readingsCollectionPath).get();
-      const docs = readings.docs;
-      for (const doc of docs) {
-        if (doc.get('channelAPmReading') !== null) {
+      for (const doc of readings.docs) {
+        if (doc.get('channelAPmReading') !== undefined) {
           const channelAPm25: number = doc.get('channelAPmReading');
           const channelBPm25: number = doc.get('channelBPmReading');
 
-          // Convert timestamp to Timestamp
+          // Convert timestamp from string to Timestamp
           const timestampString: string = doc.get('timestamp');
-          const timestampDate = new Date(timestampString);
           const timestamp: FirebaseFirestore.Timestamp = Timestamp.fromDate(
-            timestampDate
+            new Date(timestampString)
           );
 
           await firestore
