@@ -17,6 +17,7 @@ const THINGSPEAK_URL_TEMPLATE =
   'https://api.thingspeak.com/channels/<channel_id>/feeds.json';
 const CHANNEL_FIELD = '<channel_id>';
 
+const readingsSubcollection = (docId: string) => `/sensors/${docId}/readings`;
 const READINGS_SUBCOLLECTION_TEMPLATE = '/sensors/<doc_id>/readings';
 const DOC_ID_FIELD = '<doc_id>';
 
@@ -388,4 +389,42 @@ exports.generateAverageReadingsCsv = functions.pubsub
         throw new Error('pm25 document does not exist');
       }
     });
+  });
+
+exports.convertOldDocuments = functions.pubsub
+  .topic('convert previous Firestore documents')
+  .onPublish(async () => {
+    // Get all sensors
+    const sensorList = (await firestore.collection('/sensors').get()).docs;
+
+    for (const sensor of sensorList) {
+      const readingsCollectionPath = readingsSubcollection(sensor.id);
+
+      const readings = await firestore.collection(readingsCollectionPath).get();
+      const docs = readings.docs;
+      for (const doc of docs) {
+        if (doc.get('channelAPmReading') !== null) {
+          const channelAPm25: number = doc.get('channelAPmReading');
+          const channelBPm25: number = doc.get('channelBPmReading');
+
+          // Convert timestamp to Timestamp
+          const timestampString: string = doc.get('timestamp');
+          const timestampDate = new Date(timestampString);
+          const timestamp: FirebaseFirestore.Timestamp = Timestamp.fromDate(
+            timestampDate
+          );
+
+          await firestore
+            .collection(readingsCollectionPath)
+            .doc(doc.id)
+            .update({
+              channelAPm25: channelAPm25,
+              channelBPm25: channelBPm25,
+              timestamp: timestamp,
+              channelAPmReading: admin.firestore.FieldValue.delete(),
+              channelBPmReading: admin.firestore.FieldValue.delete(),
+            });
+        }
+      }
+    }
   });

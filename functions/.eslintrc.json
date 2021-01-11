@@ -100,7 +100,8 @@
           "tmpdir",
           "Atm",
           "camelcase",
-          "subcollection"
+          "subcollection",
+          "Subcollection"
         ]
       }
     ]
