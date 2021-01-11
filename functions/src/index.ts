@@ -378,7 +378,10 @@ exports.convertOldDocuments = functions.pubsub
 
     for (const sensor of sensorList) {
       const readingsCollectionPath = readingsSubcollection(sensor.id);
-      const readings = await firestore.collection(readingsCollectionPath).get();
+      const readings = await firestore
+        .collection(readingsCollectionPath)
+        .where('timestamp', '<=', '2020-11-10T00:00:00Z')
+        .get();
       for (const doc of readings.docs) {
         if (doc.get('channelAPmReading') !== undefined) {
           const channelAPm25: number = doc.get('channelAPmReading');
