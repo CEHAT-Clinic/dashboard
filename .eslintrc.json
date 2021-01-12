@@ -93,7 +93,7 @@
           "pathname",
           "onupdatefound",
           "onstatechange",
-          "unregisters"
+          "Unregisters"
         ],
         "skipWords": [
           "Pv"
