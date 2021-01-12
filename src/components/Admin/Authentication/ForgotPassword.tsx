@@ -29,13 +29,13 @@ import {firebaseAuth} from '../../../firebase';
  * any other component that uses an HTML form tag.
  */
 function ForgotPasswordModal(): JSX.Element {
-  // State maintenance variables
+  // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [modalEmail, setModalEmail] = useState('');
   const [modalError, setModalError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  // End state maintenance variables
+  // --------------- End state maintenance variables ------------------------
 
   /**
    * Resets modal state values before closing the modal.
