@@ -18,14 +18,25 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {EmailFormInput, SubmitButton} from './Util';
 import {firebaseAuth} from '../../../firebase';
 
+/**
+ * Component for users to reset their password by email on the sign in page.
+ * Includes text and a link. When link is clicked, the password reset modal
+ * pops up.
+ *
+ * @remarks
+ *
+ * Since the implementation uses a form, this component should NOT be inside
+ * any other component that uses an HTML form tag.
+ */
 function ForgotPasswordModal(): JSX.Element {
+  // State maintenance variables
   const {isOpen, onOpen, onClose} = useDisclosure();
-
   const [modalEmail, setModalEmail] = useState('');
   const [modalEmailError, setModalEmailError] = useState('');
   const [generalModalError, setGeneralModalError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  // End state maintenance variables
 
   /**
    * Resets modal state values before closing the modal.
