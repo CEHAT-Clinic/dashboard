@@ -14,6 +14,12 @@ type Config = {
   onUpdate?: (registration: ServiceWorkerRegistration) => void;
 };
 
+/**
+ * Function used to register a service worker for the application, making the app
+ * a progressive web app (PWA)
+ * @param config - optional configuration to add logic when the service worker
+ *                 registration succeeds or is updated.
+ */
 export function register(config?: Config): void {
   if (process.env.NODE_ENV === 'production' && 'serviceWorker' in navigator) {
     // The URL constructor is available in all browsers that support service workers.
@@ -48,6 +54,15 @@ export function register(config?: Config): void {
   }
 }
 
+/**
+ * Registers a service worker. This tells the browser that there is a service
+ * worker, and it goes through the install and activate lifecyle events.
+ * See https://developers.google.com/web/fundamentals/primers/service-workers/registration
+ * for documentation.
+ * @param serviceWorkerUrl - URL where service worker file is located
+ * @param config - optional configuration to add logic when the service worker
+ *                 registration succeeds or is updated.
+ */
 function registerValidServiceWorker(serviceWorkerUrl: string, config?: Config) {
   navigator.serviceWorker
     .register(serviceWorkerUrl)
@@ -73,9 +88,7 @@ function registerValidServiceWorker(serviceWorkerUrl: string, config?: Config) {
                 config.onUpdate(registration);
               }
             } else {
-              // At this point, everything has been precached.
-              // It's the perfect time to display a
-              // "Content is cached for offline use." message.
+              // Here, everything has been precached.
               console.log('Content is cached for offline use.');
 
               // Execute callback
@@ -92,6 +105,12 @@ function registerValidServiceWorker(serviceWorkerUrl: string, config?: Config) {
     });
 }
 
+/**
+ * Confirms that a valid service worker exists, and reloads the page if not.
+ * @param serviceWorkerUrl - URL where service worker file is located
+ * @param config - optional configuration to add logic when the service worker
+ *                 registration succeeds or is updated.
+ */
 function checkValidServiceWorker(serviceWorkerUrl: string, config?: Config) {
   // Check if the service worker can be found. If it can't reload the page.
   fetch(serviceWorkerUrl, {
@@ -124,6 +143,9 @@ function checkValidServiceWorker(serviceWorkerUrl: string, config?: Config) {
     });
 }
 
+/**
+ * Unregisters a service worker
+ */
 export function unregister(): void {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.ready
