@@ -26,25 +26,31 @@ import {firebaseAuth} from '../../../firebase';
  * opens modal to update the user's password.
  */
 function ChangePasswordModal(): JSX.Element {
+  // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
+  // Current password state variables
   const [currentPassword, setCurrentPassword] = useState('');
   const [currentPasswordError, setCurrentPasswordError] = useState('');
   const [currentPasswordVisible, setCurrentPasswordVisible] = useState(false);
 
+  // New password state
   const [newPassword, setNewPassword] = useState('');
   const [newPasswordError, setNewPasswordError] = useState('');
   const [newPasswordVisible, setNewPasswordVisible] = useState(false);
 
+  // Confirm new password state
   const [confirmNewPassword, setConfirmNewPassword] = useState('');
   const [confirmNewPasswordError, setConfirmNewPasswordError] = useState('');
   const [confirmNewPasswordVisible, setConfirmNewPasswordVisible] = useState(
     false
   );
 
+  // General state
   const [generalModalError, setGeneralModalError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [passwordResetComplete, setPasswordResetComplete] = useState(false);
+  // --------------- End state maintenance variables ------------------------
 
   /**
    * Resets modal state values before closing the modal.

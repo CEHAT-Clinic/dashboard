@@ -8,11 +8,13 @@ import ChangePasswordModal from './Authentication/ChangePassword';
  * Admin component for authenticated users.
  */
 const AuthenticatedAdmin: () => JSX.Element = () => {
+  // --------------- State maintenance variables ------------------------
   const [email, setEmail] = useState('');
   const [signInMethods, setSignInMethods] = useState<string[]>([]);
   const [passwordUser, setPasswordUser] = useState(false);
   const [googleUser, setGoogleUser] = useState(false);
   const [error, setError] = useState('');
+  // --------------- End state maintenance variables ------------------------
 
   // Runs on mount
   useEffect(() => {
