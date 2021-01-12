@@ -51,6 +51,13 @@ function ForgotPasswordModal(): JSX.Element {
   /**
    * Sends a user a password reset email using Firebase authentication
    * @param event - submit form event
+   * 
+   * @remarks
+   * 
+   * If a user created their account through Google authentication, they can
+   * still "reset" their password. If they reset their password through the email
+   * sent, then this will create a password and the user wil be able to sign in
+   * via Google authentication or email/password authentication in the future.
    */
   async function handlePasswordReset(event: React.FormEvent<HTMLFormElement>) {
     // Prevents submission before call to Firebase is complete
