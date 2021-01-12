@@ -1,28 +1,58 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import SignOut from './Authentication/SignOut';
 import {Heading, Box, Flex, Text} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase';
+import ChangePasswordModal from './Authentication/ChangePassword';
 
 /**
  * Admin component for authenticated users.
  */
 const AuthenticatedAdmin: () => JSX.Element = () => {
-  const user = firebaseAuth.currentUser;
-  let userId = '';
-  let email = '';
+  // --------------- State maintenance variables ------------------------
+  const [email, setEmail] = useState('');
+  const [signInMethods, setSignInMethods] = useState<string[]>([]);
+  const [passwordUser, setPasswordUser] = useState(false);
+  const [googleUser, setGoogleUser] = useState(false);
+  const [error, setError] = useState('');
+  // --------------- End state maintenance variables ------------------------
 
-  // Since AuthenticatedAdmin is only accessible to authenticated users,
-  // user should never be null
-  if (user) {
-    userId = user.uid;
-    if (user.email) {
-      email = user.email;
-    } else {
-      throw new Error('User email missing');
+  // Runs on mount
+  useEffect(() => {
+    if (!firebaseAuth.currentUser) throw new Error('No user');
+    if (!firebaseAuth.currentUser.email) throw new Error('No user email');
+    setEmail(firebaseAuth.currentUser.email);
+  }, []);
+
+  // When email is populated, fetches sign in methods
+  useEffect(() => {
+    /**
+     * Gets sign in methods for the signed in user and sets signInMethods.
+     * In own function to be able to make async calls from within useEffect
+     */
+    async function getSignInMethods() {
+      try {
+        const methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
+        setSignInMethods(methods);
+      } catch (error) {
+        if (error.code === 'auth/invalid-email') {
+          setError(`Invalid email ${email}`);
+        } else {
+          setError(
+            `Error occurred when fetching user sign in methods: ${error}, ${error.code}, ${error.message}`
+          );
+        }
+      }
     }
-  } else {
-    throw new Error('User ID missing');
-  }
+    if (email) {
+      getSignInMethods();
+    }
+  }, [email]);
+
+  // When signInMethods populated, sets password user value
+  useEffect(() => {
+    if (signInMethods.includes('password')) setPasswordUser(true);
+    if (signInMethods.includes('google.com')) setGoogleUser(true);
+  }, [signInMethods]);
 
   return (
     <Flex width="full" align="center" justifyContent="center">
@@ -37,8 +67,10 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>Admin Page</Heading>
-        <Text>User ID: {userId}</Text>
         <Text>Email: {email}</Text>
+        {passwordUser && <ChangePasswordModal />}
+        {googleUser && <Text>Account connected to Google</Text>}
+        <Text>{error}</Text>
         <SignOut></SignOut>
       </Box>
     </Flex>
