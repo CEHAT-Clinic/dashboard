@@ -32,8 +32,7 @@ function ForgotPasswordModal(): JSX.Element {
   // State maintenance variables
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [modalEmail, setModalEmail] = useState('');
-  const [modalEmailError, setModalEmailError] = useState('');
-  const [generalModalError, setGeneralModalError] = useState('');
+  const [modalError, setModalError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   // End state maintenance variables
@@ -43,8 +42,7 @@ function ForgotPasswordModal(): JSX.Element {
    */
   function handleClose() {
     setModalEmail('');
-    setModalEmailError('');
-    setGeneralModalError('');
+    setModalError('');
     setModalIsLoading(false);
     setEmailSent(false);
     onClose();
@@ -67,15 +65,15 @@ function ForgotPasswordModal(): JSX.Element {
       // Error codes from Firebase documentation
       switch (error.code) {
         case 'auth/invalid-email': {
-          setModalEmailError('Email address is not valid');
+          setModalError('Email address is not valid');
           break;
         }
         case 'auth/user-not-found': {
-          setGeneralModalError(`No user found for ${modalEmail}`);
+          setModalError(`No user found for ${modalEmail}`);
           break;
         }
         default: {
-          setGeneralModalError(
+          setModalError(
             'Error occurred when trying to send email. Please try again'
           );
           break;
@@ -110,22 +108,18 @@ function ForgotPasswordModal(): JSX.Element {
                 <EmailFormInput
                   handleEmailChange={event => {
                     setModalEmail(event.target.value);
-                    setModalEmailError('');
-                    setGeneralModalError('');
+                    setModalError('');
                   }}
-                  error={modalEmailError}
+                  error={modalError}
                   value={modalEmail}
                 />
               </ModalBody>
             )}
             <ModalFooter>
-              {emailSent ? (
-                <> </>
-              ) : (
+              {!emailSent && (
                 <SubmitButton
                   label="Send password reset email"
                   isLoading={modalIsLoading}
-                  error={generalModalError}
                 />
               )}
               <Button colorScheme="red" margin={4} onClick={handleClose}>
