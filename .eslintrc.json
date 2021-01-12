@@ -92,7 +92,8 @@
           "precached",
           "pathname",
           "onupdatefound",
-          "onstatechange"
+          "onstatechange",
+          "unregisters"
         ],
         "skipWords": [
           "Pv"
