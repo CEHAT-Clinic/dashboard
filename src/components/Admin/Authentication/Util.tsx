@@ -181,8 +181,8 @@ const SubmitButton: ({
         variant="solid"
         type="submit"
         width="full"
+        marginY={4}
         isDisabled={isDisabled}
-        marginTop={4}
       >
         {isLoading ? (
           <CircularProgress isIndeterminate size="24px" color={color} />

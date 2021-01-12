@@ -85,7 +85,18 @@
           "uid",
           "Reauthentication",
           "reauthentication",
-          "reauthenticate"
+          "reauthenticate",
+          "webworker",
+          "globals",
+          "Workbox",
+          "Revalidate",
+          "Precache",
+          "precache",
+          "precached",
+          "pathname",
+          "onupdatefound",
+          "onstatechange",
+          "Unregisters"
         ],
         "skipWords": [
           "Pv"
