@@ -2,11 +2,13 @@ import React from 'react';
 import SignOut from './Authentication/SignOut';
 import {Heading, Box, Flex, Text} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase';
+import {useAuth} from '../../contexts/AuthContext';
 
 /**
  * Admin component for authenticated users.
  */
 const AuthenticatedAdmin: () => JSX.Element = () => {
+  const {isAdmin} = useAuth();
   const user = firebaseAuth.currentUser;
   let userId = '';
   let email = '';
@@ -37,6 +39,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>Admin Page</Heading>
+        {isAdmin ? <Text>You are an admin user</Text> : <></>}
         <Text>User ID: {userId}</Text>
         <Text>Email: {email}</Text>
         <SignOut></SignOut>
