@@ -8,11 +8,20 @@ service cloud.firestore {
         allow read, write: if false;
       }
     }
-    // Update once authentication is added for admin users
-    match /admin-users/{admin} {
-      allow read, write: if false;
+
+    function isSignedIn(rqst) {
+      return rqst.auth != null;
     }
-    
+
+    function isAdmin(rsc, rqst) {
+      return isSignedIn(rqst) && rqst.auth.uid in rsc.data.userId;
+    }
+  
+    match /admin/users {
+      allow read: if isSignedIn(request);
+      allow write: if isAdmin(resource, request);
+    }
+
     // Used to display values on live webpage
     match /current-reading/{readings} {
       allow read: if true;
