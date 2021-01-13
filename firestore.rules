@@ -14,11 +14,15 @@ service cloud.firestore {
     }
 
     function isAdmin(rsc, rqst) {
+      // In the /admin/users doc, admins' user IDs are stored in the array userId
       return isSignedIn(rqst) && rqst.auth.uid in rsc.data.userId;
     }
   
     match /admin/users {
+      // All signed in users allowed to read the admin users doc because
+      // this is used to check if the user is an admin
       allow read: if isSignedIn(request);
+      // Only admin users are allowed to change the admin array
       allow write: if isAdmin(resource, request);
     }
 
