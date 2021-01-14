@@ -53,7 +53,8 @@
     "eject": "react-scripts eject",
     "clean": "gts clean",
     "compile": "tsc",
-    "fix": "gts fix"
+    "fix": "gts fix",
+    "serve": "npm run build && serve -s build"
   },
   "browserslist": {
     "production": [
