@@ -17,9 +17,8 @@ service cloud.firestore {
       return isSignedIn(rqst) && rqst.auth.uid in rsc.data.userId;
     }
   
-    // TODO: Make separate PR for these rules 
     match /admin/users {
-      allow read: if true;
+      allow read: if isSignedIn(request);
       allow write: if isAdmin(resource, request);
     }
 
