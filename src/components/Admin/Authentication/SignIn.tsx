@@ -8,6 +8,7 @@ import {
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
+import ForgotPasswordModal from './ForgotPassword';
 
 /**
  * Component to sign in.
@@ -121,6 +122,7 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           isLoading={isLoadingEmail}
         ></SubmitButton>
       </form>
+      <ForgotPasswordModal />
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
         Need an account?{' '}
