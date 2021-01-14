@@ -1,25 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /sensors/{sensorID} {
-      allow read, write: if false;
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      // In the /admin/users doc, admins' user IDs are stored in the array userId
+      let admins = get(/databases/$(database)/documents/admin/users).data.userId;
+      return isSignedIn() && request.auth.uid in admins;
+    }
+
+    match /sensors/{sensorDoc} {
+      allow read, write: if isAdmin();
       
       match /readings/{reading} {
         allow read, write: if false;
       }
     }
-
-    function isSignedIn(rqst) {
-      return rqst.auth != null;
-    }
-
-    function isAdmin(rsc, rqst) {
-      return isSignedIn(rqst) && rqst.auth.uid in rsc.data.userId;
-    }
   
     match /admin/users {
-      allow read: if isSignedIn(request);
-      allow write: if isAdmin(resource, request);
+      // All signed in users allowed to read the admin users doc because
+      // this is used to check if the user is an admin
+      allow read: if isSignedIn();
+      // Only admin users are allowed to change modify the admin array
+      allow write: if isAdmin();
     }
 
     // Used to display values on live webpage
