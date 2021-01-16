@@ -6,9 +6,11 @@ import {Props} from './AppProviders';
  * Interface for AuthContext used for type safety
  *
  * - `isAuthenticated` if user is signed in
+ * - `isLoading` if authentication status is being fetched
  */
 interface AuthInterface {
   isAuthenticated: boolean;
+  isLoading: boolean;
 }
 
 /**
@@ -22,23 +24,29 @@ const AuthContext = createContext<AuthInterface>({} as AuthInterface);
  * @param props - child React components that will consume the context
  */
 const AuthProvider: React.FC<Props> = ({children}: Props) => {
+  // --------------- State maintenance variables ------------------------
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  // --------------- End state maintenance variables ------------------------
 
   useEffect(() => {
+    setIsLoading(true);
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
       if (user) {
         setIsAuthenticated(true);
       } else {
         setIsAuthenticated(false);
       }
+      setIsLoading(false);
     });
     return unsubscribe;
-  });
+  }, []);
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated: isAuthenticated,
+        isLoading: isLoading,
       }}
     >
       {children}
@@ -48,7 +56,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use and set authentication status
- * @returns `{isAuthenticated}`
+ * @returns `{isAuthenticated, isLoading}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 
