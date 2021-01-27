@@ -50,7 +50,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
     }
   }, [email]);
 
-  // When signInMethods populated, sets password user value
+  // When signInMethods is populated, sets password user value
   useEffect(() => {
     if (signInMethods.includes('password')) setPasswordUser(true);
     if (signInMethods.includes('google.com')) setGoogleUser(true);
@@ -69,7 +69,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>Admin Page</Heading>
-        {isAdmin ? <Text>You are an admin user</Text> : <></>}
+        {isAdmin && <Text>You are an admin user</Text>}
         <Text>Email: {email}</Text>
         {passwordUser && <ChangePasswordModal />}
         {googleUser && <Text>Account connected to Google</Text>}
