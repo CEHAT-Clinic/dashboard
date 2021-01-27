@@ -1,5 +1,5 @@
 /* Style sheet for the Home screen component */
-@media(min-width: 700px){
+/* @media(min-width: 700px){
     .Content_Wrapper {
         display: flex;
         flex-direction: row;
@@ -8,9 +8,12 @@
     .Map_Wrapper {
         flex: 2;
     }
+} */
+.Map_Wrapper {
+    flex: 2
 }
 
-.Side_Widgets {
+/* .Side_Widgets {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -26,4 +29,4 @@
 .Multi_Purpose_Box {
     border: 1px #ccc solid;
     padding: 10px;
-}
+} */
