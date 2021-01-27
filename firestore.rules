@@ -18,6 +18,7 @@ service cloud.firestore {
         allow read, write: if false;
       }
     }
+
     match /admin/users {
       // All signed in users allowed to read the admin users doc because
       // this is used to check if the user is an admin

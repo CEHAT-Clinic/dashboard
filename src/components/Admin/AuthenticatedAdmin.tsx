@@ -50,7 +50,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
     }
   }, [email]);
 
-  // When signInMethods is populated, sets password user value
+  // When signInMethods is populated, sets user type state maintenance variables
   useEffect(() => {
     if (signInMethods.includes('password')) setPasswordUser(true);
     if (signInMethods.includes('google.com')) setGoogleUser(true);
