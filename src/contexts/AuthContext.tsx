@@ -45,6 +45,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
           .get()
           .then(doc => {
             if (doc.exists) {
+              // Get the document data that contains all admin userIds
               const userData = doc.data();
               if (userData) {
                 const adminUserIds: string[] = userData.userId ?? [];
@@ -53,7 +54,8 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
             }
           })
           .catch(error => {
-            throw new Error(error);
+            // Error thrown upon failure to fetch the admin/users doc from Firestore
+            throw new Error(`Unable to fetch admin/users doc: ${error}`);
           });
       } else {
         setIsAuthenticated(false);
