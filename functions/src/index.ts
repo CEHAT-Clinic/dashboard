@@ -280,9 +280,23 @@ exports.calculateAqi = functions.pubsub
     });
   });
 
+/**
+ * @param message - JSON message with start and end fields, which are in
+ *                  milliseconds since EPOC and represent the interval of times
+ *                  for which readings will be fetched
+ */
 exports.generateReadingsCsv = functions.pubsub
   .topic('generate-readings-csv')
-  .onPublish(async () => {
+  .onPublish(async (message) => {
+    // Get the `start` and `end` attributes of the PubSub message JSON body.
+    let start: number | null = null;
+    let end: number | null = null;
+    try {
+      start = message.json.start;
+      end = message.json.end;
+    } catch (e) {
+      console.error('PubSub message was not JSON', e);
+    }
     // Initialize csv with headers
     const headings =
       'timestamp, ' +
@@ -295,9 +309,16 @@ exports.generateReadingsCsv = functions.pubsub
     const sensorList = (await firestore.collection('/sensors').get()).docs;
     const readingsArrays = new Array<Array<string>>(sensorList.length);
     for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
+      // Default to the most recent month
+      const startDate = start ? new Date(start) : new Date();
+      const endDate = end ? new Date(end) : new Date();
+
       // Get readings subcollection path
       const resolvedPath = readingsSubcollection(sensorList[sensorIndex].id);
-      const readingsList = (await firestore.collection(resolvedPath).get())
+      const readingsList = (await firestore.collection(resolvedPath)
+      .where('timestamp', '>', startDate)
+      .where('timestamp', '<', endDate)
+      .get())
         .docs;
       const readingsArray = new Array<string>(readingsList.length);
 
