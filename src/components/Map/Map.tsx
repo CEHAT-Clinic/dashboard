@@ -90,7 +90,7 @@ class Map extends React.Component<MapProps> {
       }
     );
 
-    const registerClick = (evt: any) => {
+    const registerClick = (evt: H.util.Event) => {
       this.props.updateSensor(evt.target.getData()); // Update state of home
     };
 
