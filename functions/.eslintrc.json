@@ -52,13 +52,6 @@
         }
       }
     ],
-    "no-extra-parens": [
-      "warn",
-      "all",
-      {
-        "ignoreJSX": "multi-line"
-      }
-    ],
     "require-atomic-updates": "error",
     "no-console": "warn",
     "default-case": "warn",
@@ -101,7 +94,11 @@
           "Atm",
           "camelcase",
           "subcollection",
-          "Subcollection"
+          "Subcollection",
+          "breakpoint",
+          "Breakpoint",
+          "Conc",
+          "micrograms"
         ]
       }
     ]
