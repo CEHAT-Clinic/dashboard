@@ -1,17 +1,14 @@
 import * as functions from 'firebase-functions';
 import axios from 'axios';
 import PurpleAirResponse from './purple-air-response';
-import * as admin from 'firebase-admin';
 import SensorReading from './sensor-reading';
 import CleanedReadings from './cleaned-reading';
-import * as fs from 'fs';
-import * as path from 'path';
-import * as os from 'os';
 import NowCastConcentration from './nowcast-concentration';
-
-admin.initializeApp();
-const firestore = admin.firestore();
-const Timestamp = admin.firestore.Timestamp;
+import {
+  generateReadingsCsv,
+  generateAverageReadingsCsv,
+} from './download-readings';
+import {firestore, Timestamp, FieldValue} from './admin';
 
 const thingspeakUrl = (channelId: string) =>
   `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
@@ -30,33 +27,6 @@ async function getThingspeakKeysFromPurpleAir(
   });
 
   return new PurpleAirResponse(purpleAirApiResponse);
-}
-
-/**
- * Uploads a file with name filename and specified data to the default storage
- * bucket of the Firebase project.
- * @param filename - name of file to be uploaded to Firebase bucket
- * @param data - data to write to file
- */
-function uploadFileToFirebaseBucket(filename: string, data: string) {
-  const tempLocalFile = path.join(os.tmpdir(), filename);
-  return new Promise<void>((resolve, reject) => {
-    // Write data into the temp file
-    fs.writeFile(tempLocalFile, data, error => {
-      if (error) {
-        reject(error);
-        return;
-      }
-
-      // Upload file into current Firebase project default bucket
-      admin
-        .storage()
-        .bucket()
-        .upload(tempLocalFile)
-        .then(() => resolve())
-        .catch(error => reject(error));
-    });
-  });
 }
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
@@ -275,120 +245,20 @@ exports.calculateAqi = functions.pubsub
     }
 
     await firestore.collection('current-reading').doc('pm25').set({
-      lastUpdated: admin.firestore.FieldValue.serverTimestamp(),
+      lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });
   });
 
-/**
- * @param message - JSON message with start and end fields, which are in
- *                  milliseconds since EPOC and represent the interval of times
- *                  for which readings will be fetched
- */
-exports.generateReadingsCsv = functions.pubsub
-  .topic('generate-readings-csv')
-  .onPublish(async (message) => {
-    // Get the `start` and `end` attributes of the PubSub message JSON body.
-    let start: number | null = null;
-    let end: number | null = null;
-    try {
-      start = message.json.start;
-      end = message.json.end;
-    } catch (e) {
-      console.error('PubSub message was not JSON: ', e);
-    }
+const generateReadingsCsvRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 540,
+};
 
-    // Initialize csv with headers
-    const headings =
-      'timestamp, ' +
-      'channelAPm25, ' +
-      'channelBPm25, ' +
-      'humidity, ' +
-      'latitude, ' +
-      'longitude\n';
-
-    const sensorList = (await firestore.collection('/sensors').get()).docs;
-    const readingsArrays = new Array<Array<string>>(sensorList.length);
-    for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
-      // Default to the most recent month
-      const startDate = start ? new Date(start) : new Date();
-      const endDate = end ? new Date(end) : new Date();
-
-      // Get readings subcollection path
-      const resolvedPath = readingsSubcollection(sensorList[sensorIndex].id);
-      const readingsList = (await firestore.collection(resolvedPath)
-      .where('timestamp', '>', startDate)
-      .where('timestamp', '<', endDate)
-      .get())
-        .docs;
-      const readingsArray = new Array<string>(readingsList.length);
-
-      for (
-        let readingIndex = 0;
-        readingIndex < readingsList.length;
-        readingIndex++
-      ) {
-        const reading = SensorReading.fromFirestore(
-          readingsList[readingIndex].data()
-        );
-
-        // The toCsvLine function generates the values in the same order as the
-        // headings variable.
-        readingsArray[readingIndex] = reading.toCsvLine();
-      }
-
-      readingsArrays[sensorIndex] = readingsArray;
-    }
-
-    // Combine the data into one string
-    const readings = readingsArrays.map(stringArray => stringArray.join(''));
-    const readingsCsv = headings + readings.join('');
-
-    // Generate filename
-    // Put timestamp into human-readable, computer friendly for
-    // Regex removes all non-word characters in the date string
-    const dateTime = new Date().toISOString().replace(/\W/g, '_');
-    const filename = `pm25_readings_${dateTime}.csv`;
-
-    return uploadFileToFirebaseBucket(filename, readingsCsv);
-  });
+exports.generateReadingsCsv = functions
+  .runWith(generateReadingsCsvRuntimeOptions)
+  .pubsub.topic('generate-readings-csv')
+  .onPublish(generateReadingsCsv);
 
 exports.generateAverageReadingsCsv = functions.pubsub
   .topic('generate-average-readings-csv')
-  .onPublish(() => {
-    // Initialize csv with headers
-    let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';
-
-    // Current-reading collection has single doc
-    const currentReadingDocRef = firestore
-      .collection('/current-reading')
-      .doc('pm25');
-    currentReadingDocRef.get().then(doc => {
-      if (doc.exists) {
-        const docData = doc.data();
-        if (docData) {
-          const sensorMap = docData.data;
-          for (const sensorId in sensorMap) {
-            const sensorData = sensorMap[sensorId];
-            // Only get most recently calculated average
-            const reading = sensorData.readings[0];
-            csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${reading}\n`;
-          }
-
-          // Generate filename
-          const timestamp: FirebaseFirestore.Timestamp = docData.lastUpdated;
-
-          // Put timestamp into human-readable, computer friendly form
-          // Regex removes all non-word characters in the date string
-          const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
-          const filename = `hour_averages_pm25_${dateTime}.csv`;
-
-          return uploadFileToFirebaseBucket(filename, csvData);
-        } else {
-          throw new Error('Document does not contain data');
-        }
-      } else {
-        throw new Error('pm25 document does not exist');
-      }
-    });
-  });
+  .onPublish(generateAverageReadingsCsv);

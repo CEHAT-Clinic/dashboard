@@ -124,7 +124,7 @@ export default class SensorReading {
    */
   toCsvLine(): string {
     return (
-      `${this.timestamp}, ` +
+      `${this.timestamp.toISOString()}, ` +
       `${this.channelAPm25}, ` +
       `${this.channelBPm25}, ` +
       `${this.humidity}, ` +
