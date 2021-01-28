@@ -1,0 +1,109 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "tsdoc",
+    "spellcheck"
+  ],
+  "extends": [
+    "./node_modules/gts/",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "prettier/prettier": [
+      "warn",
+      {
+        "endOfLine": "auto"
+      }
+    ],
+    "tsdoc/syntax": "warn",
+    "capitalized-comments": [
+      "warn",
+      "always",
+      {
+        "ignoreConsecutiveComments": true,
+        "ignoreInlineComments": true
+      }
+    ],
+    "spaced-comment": [
+      "warn",
+      "always",
+      {
+        "line": {
+          "markers": [
+            "/"
+          ],
+          "exceptions": [
+            "-",
+            "+"
+          ]
+        },
+        "block": {
+          "markers": [
+            "!"
+          ],
+          "exceptions": [
+            "*"
+          ],
+          "balanced": true
+        }
+      }
+    ],
+    "no-extra-parens": [
+      "warn",
+      "all",
+      {
+        "ignoreJSX": "multi-line"
+      }
+    ],
+    "require-atomic-updates": "error",
+    "no-console": "warn",
+    "default-case": "warn",
+    "default-case-last": "warn",
+    "default-param-last": "warn",
+    "class-methods-use-this": "warn",
+    "eqeqeq": "error",
+    "no-magic-numbers": [
+      "warn",
+      {
+        "ignoreArrayIndexes": true
+      }
+    ],
+    "no-multi-spaces": "warn",
+    "require-await": "error",
+    "camelcase": "warn",
+    "eol-last": "error",
+    "sort-vars": "warn",
+    "spellcheck/spell-checker": [
+      "warn",
+      {
+        "skipWordIfMatch": [
+          "aqi",
+          "firebase",
+          "Firebase",
+          "firestore",
+          "Firestore",
+          "thingspeak",
+          "Thingspeak",
+          "axios",
+          "Axios",
+          "csv",
+          "Csv",
+          "pubsub",
+          "Aqi",
+          "nowcast",
+          "fs",
+          "os",
+          "tmpdir",
+          "Atm",
+          "camelcase",
+          "subcollection",
+          "Subcollection"
+        ]
+      }
+    ]
+  }
+}

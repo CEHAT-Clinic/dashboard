@@ -27,12 +27,10 @@ export default class SensorReading {
   /**
    * Computes an average reading for the time block provided by the first element
    *
-   * @param readings Array of documents containing readings from Firestore
+   * @param readings - Array of documents containing readings from Firestore
    */
   static averageDocuments(
-    readings: FirebaseFirestore.QueryDocumentSnapshot<
-      FirebaseFirestore.DocumentData
-    >[]
+    readings: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]
   ): SensorReading {
     let channelAPmReadingSum = 0;
     let channelBPmReadingSum = 0;
@@ -66,6 +64,11 @@ export default class SensorReading {
       longitude
     );
   }
+
+  /**
+   * Creates a SensorReading object from a Firestore reading doc
+   * @param data - Firestore document from sensors/sensorDocId/readings collection
+   */
   static fromFirestore(data: FirebaseFirestore.DocumentData): SensorReading {
     return new this(
       data.timestamp.toDate(),
@@ -77,6 +80,14 @@ export default class SensorReading {
     );
   }
 
+  /**
+   * Creates a SensorReading object from Thingspeak response
+   * @param channelAPrimaryResponse - Channel A response from ThingSpeak
+   * @param channelBPrimaryResponse - Channel B response from ThingSpeak
+   * @param purpleAirResponse - PurpleAirResponse metadata
+   *
+   * @returns SensorReading object
+   */
   static fromThingspeak(
     channelAPrimaryResponse: AxiosResponse,
     channelBPrimaryResponse: AxiosResponse,
@@ -106,9 +117,11 @@ export default class SensorReading {
     );
   }
 
-  // Creates single line of CSV code, used for exporting data.
-  // WARNING: If you change this code, also update the generateReadingsCSV
-  // headings variable, so the CSV headings match with the data.
+  /**
+   * Creates single line of CSV code, used for exporting data.
+   * WARNING: If you change this code, also update the generateReadingsCSV
+   * headings variable, so the CSV headings match with the data.
+   */
   toCsvLine(): string {
     return (
       `${this.timestamp}, ` +
