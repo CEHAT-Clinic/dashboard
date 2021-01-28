@@ -295,8 +295,9 @@ exports.generateReadingsCsv = functions.pubsub
       start = message.json.start;
       end = message.json.end;
     } catch (e) {
-      console.error('PubSub message was not JSON', e);
+      console.error('PubSub message was not JSON: ', e);
     }
+
     // Initialize csv with headers
     const headings =
       'timestamp, ' +
