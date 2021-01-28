@@ -1,5 +1,5 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
-import {firebaseAuth} from '../firebase';
+import {firebaseAuth, firestore} from '../firebase';
 import {Props} from './AppProviders';
 
 /**
@@ -7,10 +7,12 @@ import {Props} from './AppProviders';
  *
  * - `isAuthenticated` if user is signed in
  * - `isLoading` if authentication status is being fetched
+ * - `isAdmin` if user is an admin
  */
 interface AuthInterface {
   isAuthenticated: boolean;
   isLoading: boolean;
+  isAdmin: boolean;
 }
 
 /**
@@ -26,6 +28,7 @@ const AuthContext = createContext<AuthInterface>({} as AuthInterface);
 const AuthProvider: React.FC<Props> = ({children}: Props) => {
   // --------------- State maintenance variables ------------------------
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
@@ -34,8 +37,29 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
       if (user) {
         setIsAuthenticated(true);
+
+        // Check if user is an admin user
+        firestore
+          .collection('admin')
+          .doc('users')
+          .get()
+          .then(doc => {
+            if (doc.exists) {
+              // Get the document data that contains all admin userIds
+              const userData = doc.data();
+              if (userData) {
+                const adminUserIds: string[] = userData.userId ?? [];
+                if (adminUserIds.includes(user.uid)) setIsAdmin(true);
+              }
+            }
+          })
+          .catch(error => {
+            // Error thrown upon failure to fetch the admin/users doc from Firestore
+            throw new Error(`Unable to fetch admin/users doc: ${error}`);
+          });
       } else {
         setIsAuthenticated(false);
+        setIsAdmin(false);
       }
       setIsLoading(false);
     });
@@ -46,6 +70,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     <AuthContext.Provider
       value={{
         isAuthenticated: isAuthenticated,
+        isAdmin: isAdmin,
         isLoading: isLoading,
       }}
     >
@@ -56,7 +81,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use and set authentication status
- * @returns `{isAuthenticated, isLoading}`
+ * @returns `{isAuthenticated, isLoading, isAdmin}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 
