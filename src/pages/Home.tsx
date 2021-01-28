@@ -1,21 +1,12 @@
 import React from 'react';
 import Map from '../components/Map/Map';
-import './Home.css';
-import {
-  Text,
-  Heading,
-  Box,
-  Flex,
-  Spacer,
-  Divider,
-  extendTheme,
-} from '@chakra-ui/react';
+import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
 
 /**
  * Interface for the state of the home screen component
  */
 interface HomeState {
-  currentSensor?: string; // most recently clicked sensor to display
+  currentSensor?: string; // Most recently clicked sensor to display
 }
 
 /**
@@ -23,12 +14,12 @@ interface HomeState {
  */
 class Home extends React.Component<unknown, HomeState> {
   // Constructor to establish state
-  constructor(props: any) {
+  constructor(props: unknown) {
     super(props);
     // Bind the this context to the updateState function
     this.updateState = this.updateState.bind(this);
 
-    // Set initialstate
+    // Set initial state
     this.state = {
       currentSensor: 'none', // TODO: allow for null in some way
     };
@@ -51,20 +42,36 @@ class Home extends React.Component<unknown, HomeState> {
         <Text>
           NOTE: This Website Is Under Construction. Check Back in Spring 2021
         </Text>
-        <Flex direction={['column', 'column', 'row', 'row']}>
-          <Flex flex="2">
-            <div className="Map_Wrapper">
-              <Map updateSensor={this.updateState} />
-            </div>
-          </Flex>
-          <Flex bg="lemon" direction="column" textAlign="center">
-            <Box bg="tomato">
+        <Flex direction={['column', 'column', 'row', 'row']} marginTop={4}>
+          <Box flex="2" marginX={4} height={['100%']}>
+            <Map updateSensor={this.updateState} />
+          </Box>
+          <Flex
+            direction="column"
+            textAlign="center"
+            width={['100%', null, '40%', null]}
+          >
+            <Box
+              background="#E2E8F0"
+              marginX={4}
+              marginBottom={2}
+              marginTop={['4', null, '0', null]}
+              height={['150px', null, '100%', null]}
+              borderRadius={6}
+            >
               <Heading>The Dial Will Go Here</Heading>
               <Text>Current Sensor Reading: {this.state.currentSensor}</Text>
             </Box>
             <Spacer />
-            <Box bg="lime">
-              <Heading>The Multi Purpose</Heading>
+            <Box
+              background="#E2E8F0"
+              marginX={4}
+              marginTop={2}
+              marginBottom={['4', null, '0', null]}
+              height={['150px', null, '100%', null]}
+              borderRadius={6}
+            >
+              <Heading>The Multi Purpose Box Will Go Here</Heading>
               <Text>Hello World</Text>
             </Box>
           </Flex>

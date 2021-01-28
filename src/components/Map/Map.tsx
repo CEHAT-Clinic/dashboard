@@ -1,6 +1,7 @@
 import React from 'react';
 import {firestore} from '../../firebase';
 import {createSensorIcon} from './markerStyle';
+import {Box} from '@chakra-ui/react';
 
 /**
  * Interface for the props of the Map component
@@ -90,7 +91,7 @@ class Map extends React.Component<MapProps> {
     );
 
     const registerClick = (evt: any) => {
-      this.props.updateSensor(evt.target.getData()); //update state of home
+      this.props.updateSensor(evt.target.getData()); // Update state of home
     };
 
     // Add the Sensor Markers to the map
@@ -117,7 +118,7 @@ class Map extends React.Component<MapProps> {
               },
               {icon: icon}
             );
-            marker.setData(label); //data to be read by home component
+            marker.setData(label); // Data to be read by home component
             marker.addEventListener('tap', registerClick);
             // Add marker to the map
             map.addObject(marker);
@@ -165,9 +166,9 @@ class Map extends React.Component<MapProps> {
 
   render(): JSX.Element {
     return (
-      <div>
-        <div ref={this.mapRef} style={{height: '500px'}} />
-      </div>
+      <Box height="500px">
+        <div ref={this.mapRef} style={{height: '100%'}} />
+      </Box>
     );
   }
 }
