@@ -10,7 +10,6 @@ import {
   Divider,
   extendTheme,
 } from '@chakra-ui/react';
-import {createBreakpoints} from '@chakra-ui/theme-tools';
 
 /**
  * Interface for the state of the home screen component
@@ -48,9 +47,7 @@ class Home extends React.Component<unknown, HomeState> {
   render(): JSX.Element {
     return (
       <>
-        <Heading fontSize={['20px', '90px', '180px', '200px']}>
-          Home Page
-        </Heading>
+        <Heading>Home Page</Heading>
         <Text>
           NOTE: This Website Is Under Construction. Check Back in Spring 2021
         </Text>
@@ -60,14 +57,8 @@ class Home extends React.Component<unknown, HomeState> {
               <Map updateSensor={this.updateState} />
             </div>
           </Flex>
-          <Flex
-            bg="lemon"
-            direction="column"
-            alignItems="center"
-            textAlign="center"
-          >
-            <Text> Testing </Text>
-            <Box bg="tomato" w={['100%', '50%', '25%']}>
+          <Flex bg="lemon" direction="column" textAlign="center">
+            <Box bg="tomato">
               <Heading>The Dial Will Go Here</Heading>
               <Text>Current Sensor Reading: {this.state.currentSensor}</Text>
             </Box>
