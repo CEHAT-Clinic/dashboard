@@ -34,49 +34,60 @@ function uploadFileToFirebaseBucket(filename: string, data: string) {
 }
 
 /**
- * @param message - JSON message with start and end fields, which are in
- *                  milliseconds since EPOC and represent the interval of times
- *                  for which readings will be fetched
+ * @param message - PubSub message that includes JSON with start and end fields
+ * 
+ * @remarks
+ * The start and end values represent the non-inclusive interval of time to fetch
+ * readings for. The start and end values should be numbers that are the number 
+ * of milliseconds since EPOCH.
+ * 
+ * @example
+ * ```
+ * // Gets readings for the month of December (in PST)
+ * generateReadingsCsv(
+ *   {data: Buffer.from('{"start": 1606809599000, "end": 1609488000000}')}
+ * )
+ * ```
  */
 async function generateReadingsCsv(
-  message: functions.pubsub.Message
+  message?: functions.pubsub.Message
 ): Promise<void> {
-  let start: number | undefined = undefined;
-  let end: number | undefined = undefined;
+  let startMilliseconds: number | undefined = undefined;
+  let endMilliseconds: number | undefined = undefined;
 
   // Get the `start` and `end` attributes of the PubSub message JSON body.
-  try {
-    start = message.json.start;
-    end = message.json.end;
-  } catch (error) {
-    console.log(`PubSub message was not JSON: ${error}`);
+  if (message) {
+    try {
+      startMilliseconds = message.json.start;
+      endMilliseconds = message.json.end;
+    } catch (error) {
+      // No error, use default values
+    }
   }
 
-  // Default to the most recent month
-  let startDate = new Date();
-  let endDate = new Date(startDate);
-  endDate.setMonth(startDate.getMonth() - 1); // eslint-disable-line no-magic-numbers
+  let startDate: Date | undefined = undefined;
+  let endDate: Date | undefined = undefined;
 
   // Validate start and end dates, or set defaults
-  if (start && end && (start < end)) {
-    startDate = new Date(start);
-    endDate = new Date(end);
+  if (startMilliseconds && endMilliseconds && startMilliseconds < endMilliseconds) {
+    startDate = new Date(startMilliseconds);
+    endDate = new Date(endMilliseconds);
+  } else {
+    // Default to the most recent month
+    startDate = new Date();
+    endDate = new Date(startDate);
+    endDate.setMonth(startDate.getMonth() - 1); // eslint-disable-line no-magic-numbers
   }
-  console.log(`Start date: ${startDate}, End date: ${endDate}`);
 
   // Initialize csv with headers
-  const headings =
-    'timestamp, ' +
-    'channelAPm25, ' +
-    'channelBPm25, ' +
-    'humidity, ' +
-    'latitude, ' +
-    'longitude\n';
+  const headings = SensorReading.getCsvHeader();
 
   const sensorList = (await firestore.collection('/sensors').get()).docs;
   const readingsArrays = new Array<Array<string>>(sensorList.length);
   for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
     const resolvedPath = `/sensors/${sensorList[sensorIndex].id}/readings`;
+
+    // Only fetch readings within the start and end bounds
     const readingsList = (
       await firestore
         .collection(resolvedPath)
@@ -84,7 +95,8 @@ async function generateReadingsCsv(
         .where('timestamp', '<', endDate)
         .get()
     ).docs;
-    console.log(`Number of readings: ${readingsList.length}`);
+
+    // Contains readings for this sensor
     const readingsArray = new Array<string>(readingsList.length);
 
     for (
@@ -96,28 +108,28 @@ async function generateReadingsCsv(
         readingsList[readingIndex].data()
       );
 
-      // The toCsvLine function generates the values in the same order as the
-      // headings variable.
       readingsArray[readingIndex] = reading.toCsvLine();
     }
-
     readingsArrays[sensorIndex] = readingsArray;
   }
 
-  // Combine the data into one string
+  // Combine the data into one string to be written in the CSV file
   const readings = readingsArrays.map(stringArray => stringArray.join(''));
   const readingsCsv = headings + readings.join('');
 
   // Generate filename
   // Put timestamp into human-readable, computer friendly for
   // Regex removes all non-word characters in the date string
-  const startDateISOString = startDate.toISOString().replace(/\W/g, '_');
-  const endDateISOString = endDate.toISOString().replace(/\W/g, '_');
+  const startDateISOString = startDate.toISOString().replace(/\W/g, '');
+  const endDateISOString = endDate.toISOString().replace(/\W/g, '');
   const filename = `pm25_${startDateISOString}_to_${endDateISOString}.csv`;
 
   return uploadFileToFirebaseBucket(filename, readingsCsv);
 }
 
+/**
+ * Fetches the current-readings from Firestore and creates a corresponding CSV
+ */
 function generateAverageReadingsCsv(): void {
   // Initialize csv with headers
   let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';

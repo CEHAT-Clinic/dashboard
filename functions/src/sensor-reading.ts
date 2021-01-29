@@ -119,8 +119,7 @@ export default class SensorReading {
 
   /**
    * Creates single line of CSV code, used for exporting data.
-   * WARNING: If you change this code, also update the generateReadingsCSV
-   * headings variable, so the CSV headings match with the data.
+   * Values should be in same order as getCsvHeader.
    */
   toCsvLine(): string {
     return (
@@ -131,5 +130,18 @@ export default class SensorReading {
       `${this.latitude}, ` +
       `${this.longitude}\n`
     );
+  }
+
+  /**
+   * Creates the header for the CSV file generated from sensor readings.
+   * Values should be in same order as toCsvLine.
+   */
+  static getCsvHeader(): string {
+    return ('timestamp, ' +
+    'channelAPm25, ' +
+    'channelBPm25, ' +
+    'humidity, ' +
+    'latitude, ' +
+    'longitude\n');
   }
 }
