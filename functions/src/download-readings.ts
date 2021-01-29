@@ -35,12 +35,12 @@ function uploadFileToFirebaseBucket(filename: string, data: string) {
 
 /**
  * @param message - PubSub message that includes JSON with start and end fields
- * 
+ *
  * @remarks
  * The start and end values represent the non-inclusive interval of time to fetch
- * readings for. The start and end values should be numbers that are the number 
+ * readings for. The start and end values should be numbers that are the number
  * of milliseconds since EPOCH.
- * 
+ *
  * @example
  * ```
  * // Gets readings for the month of December (in PST)
@@ -69,7 +69,11 @@ async function generateReadingsCsv(
   let endDate: Date | undefined = undefined;
 
   // Validate start and end dates, or set defaults
-  if (startMilliseconds && endMilliseconds && startMilliseconds < endMilliseconds) {
+  if (
+    startMilliseconds &&
+    endMilliseconds &&
+    startMilliseconds < endMilliseconds
+  ) {
     startDate = new Date(startMilliseconds);
     endDate = new Date(endMilliseconds);
   } else {

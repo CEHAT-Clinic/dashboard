@@ -137,11 +137,13 @@ export default class SensorReading {
    * Values should be in same order as toCsvLine.
    */
   static getCsvHeader(): string {
-    return ('timestamp, ' +
-    'channelAPm25, ' +
-    'channelBPm25, ' +
-    'humidity, ' +
-    'latitude, ' +
-    'longitude\n');
+    return (
+      'timestamp, ' +
+      'channelAPm25, ' +
+      'channelBPm25, ' +
+      'humidity, ' +
+      'latitude, ' +
+      'longitude\n'
+    );
   }
 }
