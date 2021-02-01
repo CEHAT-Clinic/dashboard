@@ -1,8 +1,9 @@
 /**
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
+ * @param size - size of marker ('small' if normal, 'large' if hovered)
  */
-export function createSensorIcon(aqiReading: string): H.map.Icon {
+export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   /** Thresholds for AQI categories are taken
    * from https://www.purpleair.com/map. Anything above 250 is considered a
    * "Health Alert"
@@ -26,15 +27,32 @@ export function createSensorIcon(aqiReading: string): H.map.Icon {
     color = '"#FF3628"'; // Red
   }
 
+  // Set marker size
+  const normalMarkerSize = 20;
+  const hoverMarkerSize = 22;
+  const ms = size === 'small' ? normalMarkerSize : hoverMarkerSize;
+
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
-    '<circle cx="20" cy="20" r="20" fill=' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60">' +
+    '<circle cx="' +
+    hoverMarkerSize +
+    '" cy="' +
+    hoverMarkerSize +
+    '" r="' +
+    ms +
+    '" fill=' +
     color +
     '/>' +
-    '<text x="20" y="20" alignment-baseline="middle" text-anchor="middle"' +
-    ' font-size="20" font-family="Arial">' +
+    '<text x="' +
+    ms +
+    '" y="' +
+    ms +
+    '" alignment-baseline="middle" text-anchor="middle"' +
+    ' font-size="' +
+    ms +
+    '" font-family="Arial">' +
     aqiReading +
     '</text></svg>';
   /* eslint-enable spellcheck/spell-checker */

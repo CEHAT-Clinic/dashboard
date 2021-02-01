@@ -44,7 +44,7 @@ class Home extends React.Component<unknown, HomeState> {
         </Text>
         <Flex direction={['column', 'column', 'row', 'row']} marginTop={4}>
           <Box flex="2" marginX={4} height={['100%']}>
-            <Map updateSensor={this.updateState} />
+            <Map updateCurrentSensor={this.updateState} />
           </Box>
           <Flex
             direction="column"
