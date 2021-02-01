@@ -43,7 +43,7 @@
     "workbox-range-requests": "^6.0.2",
     "workbox-routing": "^6.0.2",
     "workbox-strategies": "^6.0.2",
-    "workbox-streams": "^6.0.2"
+    "workbox-streams": "^6.1.0"
   },
   "scripts": {
     "lint": "gts lint",
