@@ -1,5 +1,6 @@
 /**
- * Computes the AQI for PM 2.5 given the appropriate AQI breakpoints. in most use cases, this function will be called from a function which knows those breakpoints.
+ * Computes the AQI for PM 2.5 given the appropriate AQI breakpoints.
+ * In most use cases, this function will be called from a function which knows those breakpoints.
  *
  * Adapted from EPA function available at https://www.airnow.gov/sites/default/files/custom-js/conc-aqi.js
  *
