@@ -9,6 +9,7 @@ import {
   generateAverageReadingsCsv,
 } from './download-readings';
 import {firestore, Timestamp, FieldValue} from './admin';
+import {aqiFromPm25} from './calculate-aqi';
 
 const thingspeakUrl = (channelId: string) =>
   `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
@@ -212,8 +213,6 @@ exports.calculateAqi = functions.pubsub
       const hourlyAverages = await getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
-      // TODO: Start using AQI not PM2.5
-
       // NowCast formula from the EPA requires 2 out of the last 3 hours
       // to be available
       let validEntriesLastThreeHours = 0;
@@ -236,10 +235,12 @@ exports.calculateAqi = functions.pubsub
         const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
           cleanedAverages
         );
+        const aqi = aqiFromPm25(nowcastPm25.reading);
         currentData[purpleAirId] = {
           latitude: nowcastPm25.latitude,
           longitude: nowcastPm25.longitude,
           nowCastPm25: nowcastPm25.reading,
+          aqi: aqi,
         };
       }
     }
