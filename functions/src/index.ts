@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import NowCastConcentration from './nowcast-concentration';
-import { aqiFromPm25 } from './calculate-aqi';
+import {aqiFromPm25} from './calculate-aqi';
 
 admin.initializeApp();
 const firestore = admin.firestore();
