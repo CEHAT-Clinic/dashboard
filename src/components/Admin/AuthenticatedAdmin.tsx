@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import SignOut from './Authentication/SignOut';
-import {Heading, Box, Flex, Text} from '@chakra-ui/react';
+import {Heading, Box, Flex, Text, Button} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase';
 import {useAuth} from '../../contexts/AuthContext';
 import ChangePasswordModal from './Authentication/ChangePassword';
@@ -70,6 +70,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
       >
         <Heading>Admin Page</Heading>
         {isAdmin && <Text>You are an admin user</Text>}
+        <Button>Manage Account Information</Button>
         <Text>Email: {email}</Text>
         {passwordUser && <ChangePasswordModal />}
         {googleUser && <Text>Account connected to Google</Text>}

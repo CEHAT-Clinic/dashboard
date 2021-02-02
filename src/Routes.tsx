@@ -7,6 +7,15 @@ const Home = lazy(() => import('./pages/Home'));
 const Health = lazy(() => import('./pages/Health'));
 const Admin = lazy(() => import('./pages/Admin'));
 const Involved = lazy(() => import('./pages/Involved'));
+const ManageAccount = lazy(
+  () => import('./components/Admin/UserPage/ManageAccount')
+);
+const ManageUsers = lazy(
+  () => import('./components/Admin/UserPage/ManageUsers')
+);
+const ManageSensors = lazy(
+  () => import('./components/Admin/UserPage/ManageSensors')
+);
 
 function Routes(): JSX.Element {
   return (
@@ -16,7 +25,10 @@ function Routes(): JSX.Element {
           <Route path="/about" component={About} />
           <Route path="/health" component={Health} />
           <Route path="/involved" component={Involved} />
-          <Route path="/admin" component={Admin} />
+          <Route exact path="/admin" component={Admin} />
+          <Route path="/admin/manage-account" component={ManageAccount} />
+          <Route path="/admin/manage-users" component={ManageUsers} />
+          <Route path="/admin/manage-sensors" component={ManageSensors} />
           <Route exact path="/" component={Home} />
         </Switch>
       </Suspense>
