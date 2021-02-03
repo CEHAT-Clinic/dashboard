@@ -1,7 +1,7 @@
 /**
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
- * @param size - size of marker ('small' if normal, 'large' if hovered)
+ * @param size - size of marker ('standard' or 'hover')
  */
 export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   /** Thresholds for AQI categories are taken
@@ -28,9 +28,9 @@ export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   }
 
   // Set marker size
-  const normalMarkerSize = 20;
+  const standardMarkerSize = 20;
   const hoverMarkerSize = 22;
-  const ms = size === 'small' ? normalMarkerSize : hoverMarkerSize;
+  const ms = size === 'standard' ? standardMarkerSize : hoverMarkerSize;
 
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */

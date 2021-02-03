@@ -5,6 +5,8 @@ import {Box} from '@chakra-ui/react';
 
 /**
  * Interface for the props of the Map component
+ * The updateCurrentSensor function allows the Home screen to display
+ * information about a sensor when it is clicked.
  */
 interface MapProps {
   updateCurrentSensor: (sensorID: string) => void;
@@ -91,34 +93,35 @@ class Map extends React.Component<MapProps> {
     );
 
     /**
-     * Registers when a sensor is clicked on the map. This function updates
-     * the current sensor (stored in the Map props) to be displayed in the sensor
-     * box on the home page.
+     * Registers when a marker is clicked on the map. This function updates
+     * the current sensor (stored in the state of the Home page) to be
+     * displayed in the sensor box on the home page.
      * @param evt - tap event
      */
     const registerClick = (evt: H.util.Event) => {
-      this.props.updateCurrentSensor(evt.target.getData().label); // Update state of home
+      this.props.updateCurrentSensor(evt.target.getData().aqi); // Update state of home
     };
 
     /**
-     * Registers when a sensor is hovered over. This function updates which sensor
-     * should have an enlarged marker image
-     * @param evt - hover event
+     * Registers when a cursor enters a marker (cursor is hovered over marker).
+     * This function enlarges the marker from the standard size to a
+     * larger, hover size
+     * @param evt - pointerenter event
      */
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(evt.target.getData().label, 'large');
+      const icon = createSensorIcon(evt.target.getData().aqi, 'hover');
       marker.setIcon(icon);
     };
 
     /**
-     * Registers when a sensor is hovered over. This function updates which sensor
-     * should have an enlarged marker image
-     * @param evt - hover event
+     * Registers when a cursor leaves a marker (no longer hovered over marker).
+     * This function changes the enlarged marker to go back to the standard size
+     * @param evt - pointerleave event
      */
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(marker.getData().label, 'small');
+      const icon = createSensorIcon(marker.getData().aqi, 'standard');
       marker.setIcon(icon);
     };
 
@@ -135,8 +138,8 @@ class Map extends React.Component<MapProps> {
             const sensorVal = sensorMap[sensorID];
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
-            const label = sensorVal.aqi.toString().split('.')[0];
-            const icon = createSensorIcon(label, 'small');
+            const aqi = sensorVal.aqi.toString().split('.')[0];
+            const icon = createSensorIcon(aqi, 'standard');
 
             // Create marker
             const marker = new H.map.Marker(
@@ -146,7 +149,7 @@ class Map extends React.Component<MapProps> {
               },
               {icon: icon}
             );
-            marker.setData({sensorID: sensorID, label: label}); // Data to be read by home component
+            marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
             marker.addEventListener('tap', registerClick); // Tap event
             marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
             marker.addEventListener('pointerleave', registerHoverEnd); // End hover
@@ -185,7 +188,7 @@ class Map extends React.Component<MapProps> {
     restrictMovement(map, topLat, leftLong, bottomLat, rightLong);
 
     // Update state of React component to contain our map instead of null
-    this.setState({map: map});
+    this.setState({map});
   }
 
   componentWillUnmount(): void {
