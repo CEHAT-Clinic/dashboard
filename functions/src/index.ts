@@ -251,6 +251,8 @@ exports.calculateAqi = functions.pubsub
     });
   });
 
+// When there are many readings to get, extra time beyond the default 120 seconds
+// may be necessary. 540 seconds is the maximum allowed value.
 const generateReadingsCsvRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 540,
 };
