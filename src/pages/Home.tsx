@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
+import AQIDial from '../components/AQIDial';
 
 /**
  * Home screen component
@@ -29,11 +30,12 @@ const Home: () => JSX.Element = () => {
             marginX={4}
             marginBottom={2}
             marginTop={['4', null, '0', null]}
-            height={['150px', null, '100%', null]}
+            height={['300px', null, '100%', null]}
             borderRadius={6}
           >
             <Heading>Current Sensor Box</Heading>
             <Text>AQI: {currentSensor}</Text>
+            <AQIDial currentReading={currentSensor} />
           </Box>
           <Spacer />
           <Box
