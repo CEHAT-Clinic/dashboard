@@ -26,9 +26,9 @@ function Routes(): JSX.Element {
           <Route path="/health" component={Health} />
           <Route path="/involved" component={Involved} />
           <Route exact path="/admin" component={Admin} />
-          <Route path="/admin/manage-account" component={ManageAccount} />
-          <Route path="/admin/manage-users" component={ManageUsers} />
-          <Route path="/admin/manage-sensors" component={ManageSensors} />
+          <Route path="/admin/account" component={ManageAccount} />
+          <Route path="/admin/users" component={ManageUsers} />
+          <Route path="/admin/sensors" component={ManageSensors} />
           <Route exact path="/" component={Home} />
         </Switch>
       </Suspense>
