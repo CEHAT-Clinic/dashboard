@@ -1,18 +1,39 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
 
+/**
+ * Interface for the props of the dial, currentReading is the aqi value that
+ * the dial should display
+ */
 interface DialProps {
   currentReading: string;
 }
 
+/**
+ * AQI Dial Display Component
+ */
 class AQIDial extends React.Component<DialProps> {
+  /**
+   * The graphics package displays a percentage (in range 0 to 1). This function
+   * converts our AQI readings to the appropriate number between 0 and 1 that
+   * the dial should display
+   * @param currentReading - the aqi value to be displayed
+   */
   convertToPercent = (currentReading: string): number => {
-    const aqi: number = +currentReading;
-    let dialReading = aqi / 500;
+    const aqi: number = +currentReading; // Convert from string to number
+    let dialReading = 0; // Initialize dial reading
     if (aqi <= 50) {
-      dialReading = 0.2;
+      dialReading = (aqi / 50) * 0.2;
     } else if (aqi <= 100) {
-      dialReading = 0.4;
+      dialReading = (aqi / 100) * 0.4;
+    } else if (aqi <= 150) {
+      dialReading = (aqi / 150) * 0.6;
+    } else if (aqi <= 200) {
+      dialReading = (aqi / 200) * 0.8;
+    } else if (aqi <= 250) {
+      dialReading = aqi / 250;
+    } else {
+      dialReading = 1;
     }
     return dialReading;
   };
@@ -28,6 +49,7 @@ class AQIDial extends React.Component<DialProps> {
           percent={this.convertToPercent(this.props.currentReading)}
           textColor={'black'}
           hideText={true}
+          animate={false}
         />
       </>
     );
