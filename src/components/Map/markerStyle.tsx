@@ -35,24 +35,16 @@ export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60">' +
-    '<circle cx="' +
-    hoverMarkerSize +
-    '" cy="' +
-    hoverMarkerSize +
-    '" r="' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
+    '<circle stroke="black" stroke-width="0.5" cx="40" cy="40" r="' +
     ms +
     '" fill=' +
     color +
     '/>' +
-    '<text x="' +
-    ms +
-    '" y="' +
-    ms +
-    '" alignment-baseline="middle" text-anchor="middle"' +
+    '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle"' +
     ' font-size="' +
     ms +
-    '" font-family="Arial">' +
+    '" font-family="DroidSerif">' +
     aqiReading +
     '</text></svg>';
   /* eslint-enable spellcheck/spell-checker */
