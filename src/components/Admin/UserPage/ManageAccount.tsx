@@ -17,10 +17,12 @@ const ManageAccount: () => JSX.Element = () => {
 
   // Runs on mount
   useEffect(() => {
-    if (!firebaseAuth.currentUser) throw new Error('No user');
-    if (!firebaseAuth.currentUser.email) throw new Error('No user email');
-    setEmail(firebaseAuth.currentUser.email);
-  }, []);
+    if (isAuthenticated) {
+      if (!firebaseAuth.currentUser) throw new Error('No user');
+      if (!firebaseAuth.currentUser.email) throw new Error('No user email');
+      setEmail(firebaseAuth.currentUser.email);
+    }
+  }, [isAuthenticated]);
 
   // When email is populated, fetches sign in methods
   useEffect(() => {

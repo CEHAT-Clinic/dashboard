@@ -25,7 +25,8 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
       >
         <Heading>Admin Page</Heading>
         {isAdmin && <Text>You are an admin user</Text>}
-        <Button>Manage Account Information</Button>
+        {/* TODO: need to make link work */}
+        <Button onClick={() => console.log('Manage account clicked')} href="/admin/account">Manage Account Information</Button>
         <SignOut></SignOut>
       </Box>
     </Flex>
