@@ -35,8 +35,8 @@ export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80">' +
-    '<circle stroke="black" stroke-width="0.5" cx="40" cy="40" r="' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44">' +
+    '<circle stroke="black" stroke-width="0.5" cx="22" cy="22" r="' +
     ms +
     '" fill=' +
     color +
