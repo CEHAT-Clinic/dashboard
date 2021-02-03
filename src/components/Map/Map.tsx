@@ -135,7 +135,7 @@ class Map extends React.Component<MapProps> {
             const sensorVal = sensorMap[sensorID];
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
-            const label = sensorVal.nowCastPm25.toString().split('.')[0];
+            const label = sensorVal.aqi.toString().split('.')[0];
             const icon = createSensorIcon(label, 'small');
 
             // Create marker

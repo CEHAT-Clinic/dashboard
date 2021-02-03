@@ -18,11 +18,11 @@ export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   if (aqi < satisfactory) {
     color = '"#1B8DFF"'; // Light blue
   } else if (aqi < moderateConcern) {
-    color = '"#304ACC"'; // Dark blue
+    color = '"#4765f5"'; // Dark blue
   } else if (aqi < sensitiveGroups) {
-    color = '"#852199"'; // Purple
+    color = '"#9247a1"'; // Purple
   } else if (aqi < healthRiskForAll) {
-    color = '"#CC244B"'; // Pink-red
+    color = '"#cc2475"'; // Pink-red
   } else {
     color = '"#FF3628"'; // Red
   }
