@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import SignOut from './Authentication/SignOut';
 import {Heading, Box, Flex, Text} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase';
+import {useAuth} from '../../contexts/AuthContext';
 import ChangePasswordModal from './Authentication/ChangePassword';
 
 /**
@@ -9,6 +10,7 @@ import ChangePasswordModal from './Authentication/ChangePassword';
  */
 const AuthenticatedAdmin: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
+  const {isAdmin} = useAuth();
   const [email, setEmail] = useState('');
   const [signInMethods, setSignInMethods] = useState<string[]>([]);
   const [passwordUser, setPasswordUser] = useState(false);
@@ -48,7 +50,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
     }
   }, [email]);
 
-  // When signInMethods populated, sets password user value
+  // When signInMethods is populated, sets user type state maintenance variables
   useEffect(() => {
     if (signInMethods.includes('password')) setPasswordUser(true);
     if (signInMethods.includes('google.com')) setGoogleUser(true);
@@ -67,6 +69,7 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>Admin Page</Heading>
+        {isAdmin && <Text>You are an admin user</Text>}
         <Text>Email: {email}</Text>
         {passwordUser && <ChangePasswordModal />}
         {googleUser && <Text>Account connected to Google</Text>}
