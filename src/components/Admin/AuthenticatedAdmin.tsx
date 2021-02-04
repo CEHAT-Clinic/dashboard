@@ -1,6 +1,6 @@
 import React from 'react';
 import SignOut from './Authentication/SignOut';
-import {Heading, Box, Flex, Text, Button} from '@chakra-ui/react';
+import {Heading, Box, Flex, Button} from '@chakra-ui/react';
 import {useAuth} from '../../contexts/AuthContext';
 
 /**
@@ -24,9 +24,19 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>Admin Page</Heading>
-        {isAdmin && <Text>You are an admin user</Text>}
-        {/* TODO: need to make link work */}
-        <Button onClick={() => console.log('Manage account clicked')} href="/admin/account">Manage Account Information</Button>
+        <Button as="a" href="/admin/account" width="70%" marginY={1}>
+          Manage Account
+        </Button>
+        {isAdmin && (
+          <Button as="a" href="/admin/sensors" width="70%" marginY={1}>
+            Manage Sensors
+          </Button>
+        )}
+        {isAdmin && (
+          <Button as="a" href="/admin/users" width="70%" marginY={1}>
+            Manage Users
+          </Button>
+        )}
         <SignOut></SignOut>
       </Box>
     </Flex>

@@ -1,13 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading, Text} from '@chakra-ui/react';
+import {Box, Heading, Text, Flex, Button} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import ChangePasswordModal from '../Authentication/ChangePassword';
 import {firebaseAuth} from '../../../firebase';
+import Loading from '../../Util/Loading';
 
 const ManageAccount: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
-  const {isAuthenticated} = useAuth();
+  const {isAuthenticated, isLoading} = useAuth();
   const [email, setEmail] = useState('');
   const [signInMethods, setSignInMethods] = useState<string[]>([]);
   const [passwordUser, setPasswordUser] = useState(false);
@@ -55,17 +56,33 @@ const ManageAccount: () => JSX.Element = () => {
     if (signInMethods.includes('google.com')) setGoogleUser(true);
   }, [signInMethods]);
 
-  if (!isAuthenticated) {
+  if (isLoading) {
+    return <Loading />;
+  } else if (!isAuthenticated) {
     return <AccessDenied reason="you are not signed in" />;
   } else {
     return (
-      <Box>
-        <Heading>Manage Your Account</Heading>
-        <Text>Email: {email}</Text>
-        {passwordUser && <ChangePasswordModal />}
-        {googleUser && <Text>Account connected to Google</Text>}
-        <Text>{error}</Text>
-      </Box>
+      <Flex width="full" align="center" justifyContent="center">
+        <Box
+          padding={8}
+          margin={8}
+          width="full"
+          maxWidth="500px"
+          borderWidth={1}
+          borderRadius={8}
+          boxShadow="lg"
+          textAlign="center"
+        >
+          <Heading>Manage Your Account</Heading>
+          <Text>Email: {email}</Text>
+          {passwordUser && <ChangePasswordModal />}
+          {googleUser && <Text>Account connected to Google</Text>}
+          <Text>{error}</Text>
+          <Button as="a" href="/admin" margin={1}>
+            Return to admin page
+          </Button>
+        </Box>
+      </Flex>
     );
   }
 };

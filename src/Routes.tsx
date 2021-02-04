@@ -1,5 +1,6 @@
 import React, {lazy, Suspense} from 'react';
 import {BrowserRouter as Router, Switch, Route} from 'react-router-dom';
+import Loading from './components/Util/Loading';
 
 // Import Pages: lazy imports to save on load time
 const About = lazy(() => import('./pages/About'));
@@ -20,7 +21,7 @@ const ManageSensors = lazy(
 function Routes(): JSX.Element {
   return (
     <Router>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense fallback={<Loading />}>
         <Switch>
           <Route path="/about" component={About} />
           <Route path="/health" component={Health} />
