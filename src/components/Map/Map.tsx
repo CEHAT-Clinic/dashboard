@@ -110,7 +110,7 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(evt.target.getData().aqi, 'hover');
+      const icon = createSensorIcon(evt.target.getData().aqi, true);
       marker.setIcon(icon);
     };
 
@@ -121,7 +121,7 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(marker.getData().aqi, 'standard');
+      const icon = createSensorIcon(marker.getData().aqi, false);
       marker.setIcon(icon);
     };
 
@@ -139,7 +139,7 @@ class Map extends React.Component<MapProps> {
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
             const aqi = sensorVal.aqi.toString().split('.')[0];
-            const icon = createSensorIcon(aqi, 'standard');
+            const icon = createSensorIcon(aqi, false);
 
             // Create marker
             const marker = new H.map.Marker(

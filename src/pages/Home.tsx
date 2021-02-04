@@ -6,14 +6,13 @@ import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
  * Home screen component
  */
 const Home: () => JSX.Element = () => {
-  // State for which sensor to display
+  // State for which sensor to display in the current sensor box
   const [currentSensor, setCurrentSensor] = useState('');
 
   return (
-    <>
-      <Heading>Home Page</Heading>
+    <Box>
       <Text>
-        NOTE: This Website Is Under Construction. Check Back in Spring 2021
+        NOTE: This Website Is Under Construction. Check Back in April 2021.
       </Text>
       <Flex direction={['column', 'column', 'row', 'row']} marginTop={4}>
         <Box flex="2" marginX={4} height={['100%']}>
@@ -48,7 +47,7 @@ const Home: () => JSX.Element = () => {
           </Box>
         </Flex>
       </Flex>
-    </>
+    </Box>
   );
 };
 
