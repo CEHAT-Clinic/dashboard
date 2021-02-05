@@ -1,9 +1,7 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import SignOut from './Authentication/SignOut';
-import {Heading, Box, Flex, Text} from '@chakra-ui/react';
-import {firebaseAuth} from '../../firebase';
+import {Heading, Box, Flex, Button} from '@chakra-ui/react';
 import {useAuth} from '../../contexts/AuthContext';
-import ChangePasswordModal from './Authentication/ChangePassword';
 
 /**
  * Admin component for authenticated users.
@@ -11,50 +9,7 @@ import ChangePasswordModal from './Authentication/ChangePassword';
 const AuthenticatedAdmin: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isAdmin} = useAuth();
-  const [email, setEmail] = useState('');
-  const [signInMethods, setSignInMethods] = useState<string[]>([]);
-  const [passwordUser, setPasswordUser] = useState(false);
-  const [googleUser, setGoogleUser] = useState(false);
-  const [error, setError] = useState('');
   // --------------- End state maintenance variables ------------------------
-
-  // Runs on mount
-  useEffect(() => {
-    if (!firebaseAuth.currentUser) throw new Error('No user');
-    if (!firebaseAuth.currentUser.email) throw new Error('No user email');
-    setEmail(firebaseAuth.currentUser.email);
-  }, []);
-
-  // When email is populated, fetches sign in methods
-  useEffect(() => {
-    /**
-     * Gets sign in methods for the signed in user and sets signInMethods.
-     * In own function to be able to make async calls from within useEffect
-     */
-    async function getSignInMethods() {
-      try {
-        const methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
-        setSignInMethods(methods);
-      } catch (error) {
-        if (error.code === 'auth/invalid-email') {
-          setError(`Invalid email ${email}`);
-        } else {
-          setError(
-            `Error occurred when fetching user sign in methods: ${error}, ${error.code}, ${error.message}`
-          );
-        }
-      }
-    }
-    if (email) {
-      getSignInMethods();
-    }
-  }, [email]);
-
-  // When signInMethods is populated, sets user type state maintenance variables
-  useEffect(() => {
-    if (signInMethods.includes('password')) setPasswordUser(true);
-    if (signInMethods.includes('google.com')) setGoogleUser(true);
-  }, [signInMethods]);
 
   return (
     <Flex width="full" align="center" justifyContent="center">
@@ -69,11 +24,19 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>Admin Page</Heading>
-        {isAdmin && <Text>You are an admin user</Text>}
-        <Text>Email: {email}</Text>
-        {passwordUser && <ChangePasswordModal />}
-        {googleUser && <Text>Account connected to Google</Text>}
-        <Text>{error}</Text>
+        <Button as="a" href="/admin/account" width="70%" marginY={1}>
+          Manage Account
+        </Button>
+        {isAdmin && (
+          <Button as="a" href="/admin/sensors" width="70%" marginY={1}>
+            Manage Sensors
+          </Button>
+        )}
+        {isAdmin && (
+          <Button as="a" href="/admin/users" width="70%" marginY={1}>
+            Manage Users
+          </Button>
+        )}
         <SignOut></SignOut>
       </Box>
     </Flex>

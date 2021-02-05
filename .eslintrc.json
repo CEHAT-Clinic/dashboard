@@ -61,6 +61,10 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "evt",
+          "pointerenter",
+          "pointerleave",
+          "mb",
           "resize",
           "Resize",
           "mapevents",
@@ -97,7 +101,8 @@
           "pathname",
           "onupdatefound",
           "onstatechange",
-          "Unregisters"
+          "Unregisters",
+          "xl"
         ],
         "skipWords": [
           "Pv"

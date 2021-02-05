@@ -1,6 +1,16 @@
 import React from 'react';
 import {firestore} from '../../firebase';
 import {createSensorIcon} from './markerStyle';
+import {Box} from '@chakra-ui/react';
+
+/**
+ * Interface for the props of the Map component
+ * The updateCurrentSensor function allows the Home screen to display
+ * information about a sensor when it is clicked.
+ */
+interface MapProps {
+  updateCurrentSensor: (sensorID: string) => void;
+}
 
 /**
  * This function restricts the movement of the map so that it is always
@@ -41,7 +51,7 @@ function restrictMovement(
  * Generates a HERE map centered around South Gate with restricted movement
  * and markers for each of the sensors in the database
  */
-class Map extends React.Component {
+class Map extends React.Component<MapProps> {
   mapRef = React.createRef<HTMLDivElement>();
 
   // State contains the instance of the HERE map to display
@@ -82,6 +92,39 @@ class Map extends React.Component {
       }
     );
 
+    /**
+     * Registers when a marker is clicked on the map. This function updates
+     * the current sensor (stored in the state of the Home page) to be
+     * displayed in the sensor box on the home page.
+     * @param evt - tap event
+     */
+    const registerClick = (evt: H.util.Event) => {
+      this.props.updateCurrentSensor(evt.target.getData().aqi); // Update state of home
+    };
+
+    /**
+     * Registers when a cursor enters a marker (cursor is hovered over marker).
+     * This function enlarges the marker from the standard size to a
+     * larger, hover size
+     * @param evt - pointerenter event
+     */
+    const registerHoverStart = (evt: H.util.Event) => {
+      const marker: H.map.Marker = evt.target;
+      const icon = createSensorIcon(evt.target.getData().aqi, true);
+      marker.setIcon(icon);
+    };
+
+    /**
+     * Registers when a cursor leaves a marker (no longer hovered over marker).
+     * This function changes the enlarged marker to go back to the standard size
+     * @param evt - pointerleave event
+     */
+    const registerHoverEnd = (evt: H.util.Event) => {
+      const marker: H.map.Marker = evt.target;
+      const icon = createSensorIcon(marker.getData().aqi, false);
+      marker.setIcon(icon);
+    };
+
     // Add the Sensor Markers to the map
     const docRef = firestore.collection('current-reading').doc('pm25');
     docRef.get().then(doc => {
@@ -95,8 +138,8 @@ class Map extends React.Component {
             const sensorVal = sensorMap[sensorID];
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
-            const label = sensorVal.nowCastPm25.toString().split('.')[0];
-            const icon = createSensorIcon(label);
+            const aqi = sensorVal.aqi.toString().split('.')[0];
+            const icon = createSensorIcon(aqi, false);
 
             // Create marker
             const marker = new H.map.Marker(
@@ -106,6 +149,11 @@ class Map extends React.Component {
               },
               {icon: icon}
             );
+            marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
+            marker.addEventListener('tap', registerClick); // Tap event
+            marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
+            marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+
             // Add marker to the map
             map.addObject(marker);
           }
@@ -152,9 +200,9 @@ class Map extends React.Component {
 
   render(): JSX.Element {
     return (
-      <div>
-        <div ref={this.mapRef} style={{height: '400px'}} />
-      </div>
+      <Box height="500px">
+        <div ref={this.mapRef} style={{height: '100%'}} />
+      </Box>
     );
   }
 }
