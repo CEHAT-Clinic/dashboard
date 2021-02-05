@@ -101,7 +101,8 @@
           "pathname",
           "onupdatefound",
           "onstatechange",
-          "Unregisters"
+          "Unregisters",
+          "xl"
         ],
         "skipWords": [
           "Pv"

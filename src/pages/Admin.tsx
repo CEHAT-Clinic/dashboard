@@ -1,6 +1,6 @@
 import React from 'react';
 import {useAuth} from '../contexts/AuthContext';
-import {Text} from '@chakra-ui/react';
+import Loading from '../components/Util/Loading';
 
 const AuthenticatedAdmin = React.lazy(
   () => import('../components/Admin/AuthenticatedAdmin')
@@ -16,8 +16,7 @@ const Admin: () => JSX.Element = () => {
   const {isAuthenticated, isLoading} = useAuth();
 
   if (isLoading) {
-    // TODO: Replace Loading text with loading component
-    return <Text>Loading...</Text>;
+    return <Loading />;
   } else {
     return isAuthenticated ? <AuthenticatedAdmin /> : <UnauthenticatedAdmin />;
   }
