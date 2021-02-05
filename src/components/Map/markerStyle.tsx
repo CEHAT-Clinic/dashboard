@@ -33,27 +33,27 @@ export function createSensorIcon(
   // Set marker size
   const standardMarkerSize = 20;
   const hoverMarkerSize = 22;
-  const ms = hover ? hoverMarkerSize : standardMarkerSize;
+  const markerSize = hover ? hoverMarkerSize : standardMarkerSize;
 
   // Set marker border
   const standardMarkerBorder = 0.5;
   const hoverMarkerBorder = 2;
-  const mb = hover ? hoverMarkerBorder : standardMarkerBorder;
+  const markerBorder = hover ? hoverMarkerBorder : standardMarkerBorder;
 
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
     '<svg xmlns="http://www.w3.org/2000/svg" width="46" height="46">' +
     '<circle stroke="black" stroke-width="' +
-    mb +
+    markerBorder +
     '" cx="23" cy="23" r="' +
-    ms +
+    markerSize +
     '" fill=' +
     color +
     '/>' +
     '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle"' +
     ' font-size="' +
-    ms +
+    markerSize +
     '" font-family="DroidSerif">' +
     aqiReading +
     '</text></svg>';
