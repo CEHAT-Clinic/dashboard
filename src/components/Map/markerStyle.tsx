@@ -1,9 +1,12 @@
 /**
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
- * @param size - size of marker ('standard' or 'hover')
+ * @param hover - boolean: is the cursor hovering over this marker?
  */
-export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
+export function createSensorIcon(
+  aqiReading: string,
+  hover: boolean
+): H.map.Icon {
   /** Thresholds for AQI categories are taken
    * from https://www.purpleair.com/map. Anything above 250 is considered a
    * "Health Alert"
@@ -30,20 +33,27 @@ export function createSensorIcon(aqiReading: string, size: string): H.map.Icon {
   // Set marker size
   const standardMarkerSize = 20;
   const hoverMarkerSize = 22;
-  const ms = size === 'standard' ? standardMarkerSize : hoverMarkerSize;
+  const markerSize = hover ? hoverMarkerSize : standardMarkerSize;
+
+  // Set marker border
+  const standardMarkerBorder = 0.5;
+  const hoverMarkerBorder = 2;
+  const markerBorder = hover ? hoverMarkerBorder : standardMarkerBorder;
 
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44">' +
-    '<circle stroke="black" stroke-width="0.5" cx="22" cy="22" r="' +
-    ms +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="46" height="46">' +
+    '<circle stroke="black" stroke-width="' +
+    markerBorder +
+    '" cx="23" cy="23" r="' +
+    markerSize +
     '" fill=' +
     color +
     '/>' +
     '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle"' +
     ' font-size="' +
-    ms +
+    markerSize +
     '" font-family="DroidSerif">' +
     aqiReading +
     '</text></svg>';
