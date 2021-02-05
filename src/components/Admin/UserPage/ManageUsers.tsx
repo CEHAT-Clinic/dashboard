@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Heading,
@@ -23,27 +23,36 @@ import {firestore} from '../../../firebase';
  */
 const ManageUsers: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading} = useAuth();
-  const [adminUsers, setAdminUsers] = useState<string[]>([]);
+  const [adminUserIds, setAdminUserIds] = useState<string[]>([]);
 
-  // Get all admin users
-  firestore
-  .collection('admin')
-  .doc('users')
-  .get()
-  .then(doc => {
-    if (doc.exists) {
-      // Get the document data that contains all admin userIds
-      const userData = doc.data();
-      if (userData) {
-        const adminUserIds: string[] = userData.userId ?? [];
-        setAdminUsers(adminUserIds);
-      }
+  // On render, fetch all admin users
+  useEffect(() => {
+    if (isAdmin) {
+      // Get all admin users
+      firestore
+      .collection('admin')
+      .doc('users')
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          // Get the document data that contains all admin userIds
+          const userData = doc.data();
+          if (userData) {
+            const adminUserIds: string[] = userData.userId ?? [];
+            setAdminUserIds(adminUserIds);
+          }
+        }
+      })
+      .catch(error => {
+        // Error thrown upon failure to fetch the admin/users doc from Firestore
+        throw new Error(`Unable to fetch admin/users doc: ${error}`);
+      });
     }
-  })
-  .catch(error => {
-    // Error thrown upon failure to fetch the admin/users doc from Firestore
-    throw new Error(`Unable to fetch admin/users doc: ${error}`);
-  });
+  }, [])
+
+  // Once admin users are fetched, fetch user details
+  
+  
 
 
   if (isLoading) {
