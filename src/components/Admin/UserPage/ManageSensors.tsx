@@ -4,6 +4,10 @@ import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 
+/**
+ * Component for administrative page to manage the sensors.
+ * If a user is not signed in or an admin user, access is denied.
+ */
 const ManageSensors: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading} = useAuth();
 

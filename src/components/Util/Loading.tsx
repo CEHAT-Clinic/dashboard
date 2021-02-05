@@ -1,6 +1,9 @@
 import React from 'react';
 import {Text, Flex, Box, Spinner} from '@chakra-ui/react';
 
+/**
+ * General loading components that displays a spinner and "Loading..." text
+ */
 const Loading: React.FC = () => (
   <Flex width="full" align="center" justifyContent="center">
     <Box

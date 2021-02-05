@@ -6,6 +6,10 @@ import ChangePasswordModal from '../Authentication/ChangePassword';
 import {firebaseAuth} from '../../../firebase';
 import Loading from '../../Util/Loading';
 
+/**
+ * Component for a user to manage their own account information.
+ * If a user is not signed in, access is denied.
+ */
 const ManageAccount: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isAuthenticated, isLoading} = useAuth();
