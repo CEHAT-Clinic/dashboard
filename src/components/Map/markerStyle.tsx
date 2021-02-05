@@ -1,8 +1,12 @@
 /**
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
+ * @param hover - boolean: is the cursor hovering over this marker?
  */
-export function createSensorIcon(aqiReading: string): H.map.Icon {
+export function createSensorIcon(
+  aqiReading: string,
+  hover: boolean
+): H.map.Icon {
   /** Thresholds for AQI categories are taken
    * from https://www.purpleair.com/map. Anything above 250 is considered a
    * "Health Alert"
@@ -17,24 +21,40 @@ export function createSensorIcon(aqiReading: string): H.map.Icon {
   if (aqi < satisfactory) {
     color = '"#1B8DFF"'; // Light blue
   } else if (aqi < moderateConcern) {
-    color = '"#304ACC"'; // Dark blue
+    color = '"#4765f5"'; // Dark blue
   } else if (aqi < sensitiveGroups) {
-    color = '"#852199"'; // Purple
+    color = '"#9247a1"'; // Purple
   } else if (aqi < healthRiskForAll) {
-    color = '"#CC244B"'; // Pink-red
+    color = '"#cc2475"'; // Pink-red
   } else {
     color = '"#FF3628"'; // Red
   }
 
+  // Set marker size
+  const standardMarkerSize = 20;
+  const hoverMarkerSize = 22;
+  const markerSize = hover ? hoverMarkerSize : standardMarkerSize;
+
+  // Set marker border
+  const standardMarkerBorder = 0.5;
+  const hoverMarkerBorder = 2;
+  const markerBorder = hover ? hoverMarkerBorder : standardMarkerBorder;
+
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
   const svgMarkup =
-    '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40">' +
-    '<circle cx="20" cy="20" r="20" fill=' +
+    '<svg xmlns="http://www.w3.org/2000/svg" width="46" height="46">' +
+    '<circle stroke="black" stroke-width="' +
+    markerBorder +
+    '" cx="23" cy="23" r="' +
+    markerSize +
+    '" fill=' +
     color +
     '/>' +
-    '<text x="20" y="20" alignment-baseline="middle" text-anchor="middle"' +
-    ' font-size="20" font-family="Arial">' +
+    '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle"' +
+    ' font-size="' +
+    markerSize +
+    '" font-family="DroidSerif">' +
     aqiReading +
     '</text></svg>';
   /* eslint-enable spellcheck/spell-checker */
