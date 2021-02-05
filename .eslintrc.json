@@ -61,6 +61,10 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "evt",
+          "pointerenter",
+          "pointerleave",
+          "mb",
           "resize",
           "Resize",
           "mapevents",
