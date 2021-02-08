@@ -51,8 +51,12 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
       />
       <Text fontSize={30}>Air Quality Index: {currentReading}</Text>
       <Text fontSize={14} mb={2}>
-        For more information on air quality and the Air Quality Index (AQI), check out our
-        <Link fontSize={14} color="#32bfd1" href="/health"> health information.</Link>
+        For more information on air quality and the Air Quality Index (AQI),
+        check out our
+        <Link fontSize={14} color="#32bfd1" href="/health">
+          {' '}
+          health information.
+        </Link>
       </Text>
       <Grid
         templateColumns="repeat(4, 1fr)"
