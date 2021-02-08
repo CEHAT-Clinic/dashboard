@@ -5,7 +5,8 @@
  */
 export function createSensorIcon(
   aqiReading: string,
-  hover: boolean
+  hover: boolean,
+  clicked: boolean
 ): H.map.Icon {
   /** Thresholds for AQI categories are taken
    * from https://www.purpleair.com/map. Anything above 250 is considered a

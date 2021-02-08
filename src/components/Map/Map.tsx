@@ -57,6 +57,7 @@ class Map extends React.Component<MapProps> {
   // State contains the instance of the HERE map to display
   state = {
     map: null as H.Map | null,
+    currentSensor: null as H.map.Marker | null,
   };
 
   // This fires every time the page is refreshed
@@ -99,7 +100,29 @@ class Map extends React.Component<MapProps> {
      * @param evt - tap event
      */
     const registerClick = (evt: H.util.Event) => {
-      this.props.updateCurrentSensor(evt.target.getData().aqi); // Update state of home
+      const previousSensor: H.map.Marker | null = this.state.currentSensor;
+      const newSensor: H.map.Marker = evt.target;
+      this.props.updateCurrentSensor(newSensor.getData().aqi); // Update state of home
+
+      // update new icon
+      const newSensorIcon = createSensorIcon(
+        newSensor.getData().aqi,
+        true,
+        false
+      );
+      newSensor.setIcon(newSensorIcon);
+
+      // Update old icon
+      if (previousSensor !== null) {
+        const oldSensorIcon = createSensorIcon(
+          newSensor.getData().aqi,
+          false,
+          false
+        );
+        previousSensor.setIcon(oldSensorIcon);
+      }
+
+      this.setState({currentSensor: newSensor});
     };
 
     /**
@@ -110,7 +133,7 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(evt.target.getData().aqi, true);
+      const icon = createSensorIcon(evt.target.getData().aqi, true, false);
       marker.setIcon(icon);
     };
 
@@ -121,8 +144,10 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(marker.getData().aqi, false);
-      marker.setIcon(icon);
+      if (marker !== this.state.currentSensor) {
+        const icon = createSensorIcon(marker.getData().aqi, false, false);
+        marker.setIcon(icon);
+      }
     };
 
     // Add the Sensor Markers to the map
@@ -139,7 +164,7 @@ class Map extends React.Component<MapProps> {
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
             const aqi = sensorVal.aqi.toString().split('.')[0];
-            const icon = createSensorIcon(aqi, false);
+            const icon = createSensorIcon(aqi, false, false);
 
             // Create marker
             const marker = new H.map.Marker(
@@ -188,7 +213,7 @@ class Map extends React.Component<MapProps> {
     restrictMovement(map, topLat, leftLong, bottomLat, rightLong);
 
     // Update state of React component to contain our map instead of null
-    this.setState({map});
+    this.setState({map: map});
   }
 
   componentWillUnmount(): void {
