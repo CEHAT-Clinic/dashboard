@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
 import AQIDial from '../components/AQIDial';
@@ -7,8 +7,16 @@ import AQIDial from '../components/AQIDial';
  * Home screen component
  */
 const Home: () => JSX.Element = () => {
-  // State for which sensor to display in the current sensor box
+  // --------------- State maintenance variables ------------------------
   const [currentSensor, setCurrentSensor] = useState('');
+  const [displayDial, setDisplayDial] = useState(false);
+  // --------------- End state maintenance variables ------------------------
+
+  // When currentReading is populated, show the dial. If not, don't.
+  useEffect(() => {
+    if (currentSensor !== '') setDisplayDial(true);
+    else setDisplayDial(false);
+  }, [currentSensor]);
 
   return (
     <Box>
@@ -29,12 +37,13 @@ const Home: () => JSX.Element = () => {
             marginX={4}
             marginBottom={2}
             marginTop={['4', null, '0', null]}
-            height={['300px', null, '100%', null]}
+            height={['100%', null, '100%', null]}
             borderRadius={6}
           >
-            <Heading>Current Sensor Box</Heading>
-            <Text>AQI: {currentSensor}</Text>
-            <AQIDial currentReading={currentSensor} />
+            {displayDial && <AQIDial currentReading={currentSensor} />}
+            {!displayDial && (
+              <Text> Click a sensor on the map to see its AQI value here!</Text>
+            )}
           </Box>
           <Spacer />
           <Box
@@ -42,7 +51,7 @@ const Home: () => JSX.Element = () => {
             marginX={4}
             marginTop={2}
             marginBottom={['4', null, '0', null]}
-            height={['150px', null, '100%', null]}
+            height={['100%', null, '100%', null]}
             borderRadius={6}
           >
             <Heading>Data Visualizion Box</Heading>
