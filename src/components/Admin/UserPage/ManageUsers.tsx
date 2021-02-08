@@ -33,6 +33,7 @@ const ManageUsers: () => JSX.Element = () => {
 
   // On render, fetch all users
   useEffect(() => {
+    // Only fetch all user data if user is an admin user
     if (isAdmin) {
       setIsLoading(true);
       firestore
@@ -42,20 +43,20 @@ const ManageUsers: () => JSX.Element = () => {
           const userList: User[] = [];
           querySnapshot.docs.forEach(doc => {
             if (doc.exists) {
-              // Get the document data that contains all admin userIds
               const userData = doc.data();
+
+              // Make sure that the doc data and relevant fields exist
               if (
                 userData &&
                 userData.name !== undefined &&
                 userData.email !== undefined &&
                 userData.admin !== undefined
               ) {
-                const user: User = {
+                userList.push({
                   email: userData.email,
                   name: userData.name,
                   admin: userData.admin,
-                };
-                userList.push(user);
+                });
               }
             }
           });
@@ -129,7 +130,7 @@ const ManageUsers: () => JSX.Element = () => {
               ))}
             </Tbody>
           </Table>
-          <Text textColor="red.500">{error}</Text>
+          {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
             Return to admin page
           </Button>
