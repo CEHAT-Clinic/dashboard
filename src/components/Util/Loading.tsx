@@ -23,6 +23,7 @@ const Loading: React.FC = () => (
         size="xl"
       />
       <Text>Loading...</Text>
+      <Text>Cargando...</Text>
     </Box>
   </Flex>
 );
