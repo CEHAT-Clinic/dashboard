@@ -2,7 +2,7 @@
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
  * @param hover - boolean: is the cursor hovering over this marker?
- * @param clicked - boolean: is this cursor currently selected
+ * @param clicked - boolean: is this cursor currently selected?
  */
 export function createSensorIcon(
   aqiReading: string,

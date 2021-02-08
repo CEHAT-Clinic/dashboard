@@ -54,7 +54,6 @@ function restrictMovement(
 class Map extends React.Component<MapProps> {
   mapRef = React.createRef<HTMLDivElement>();
 
-  // State contains the instance of the HERE map to display and which marker
   state = {
     map: null as H.Map | null, // Instance of the HERE map to display
     clickedSensor: null as H.map.Marker | null, // Clicked marker
@@ -97,8 +96,9 @@ class Map extends React.Component<MapProps> {
      * Registers when a marker is clicked on the map. This function updates
      * the current sensor (stored in the state of the Home page) to be
      * displayed in the sensor box on the home page.
+     *
      * Additionally, this function changes the styling of the clicked marker and
-     * undoes the styling of the previously clicked marker
+     * undoes the styling of the previously clicked marker.
      * @param evt - tap event
      */
     const registerClick = (evt: H.util.Event) => {
