@@ -8,6 +8,7 @@ import {
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
+import {useTranslation} from 'react-i18next/*';
 
 /**
  * Component to sign up.
@@ -34,6 +35,8 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   // -------------- End state maintenance variables -------------------------
 
+  const {t} = useTranslation(['administration', 'common']);
+
   /**
    * Signs up a user with email in Firebase and handles any errors
    * @param event - submit form event
@@ -46,7 +49,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
 
     setIsLoadingEmail(true);
     if (password !== confirmPassword) {
-      setConfirmPasswordError('Passwords do not match');
+      setConfirmPasswordError(t('passwordMismatch'));
       setPassword('');
       setConfirmPassword('');
       setIsLoadingEmail(false);
@@ -57,27 +60,19 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
         // Error codes from Firebase documentation
         switch (error.code) {
           case 'auth/email-already-in-use': {
-            setEmailError(
-              'Email already has an account. ' +
-                'Please sign in or use a different email'
-            );
+            setEmailError(t('accountExists'));
             break;
           }
           case 'auth/invalid-email': {
-            setEmailError('Invalid email. Please enter a valid email address');
+            setEmailError(t('invalidEmail'));
             break;
           }
           case 'auth/weak-password': {
-            setPasswordError(
-              'Password not strong enough. ' +
-                'Please enter a new password with at least six characters'
-            );
+            setPasswordError(t('notStrongEnough'));
             break;
           }
           default: {
-            setGeneralEmailError(
-              'Error occurred. Please try to create account again'
-            );
+            setGeneralEmailError(t('common:generalError'));
             break;
           }
         }
@@ -90,15 +85,15 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
 
   return (
     <>
-      <Heading textAlign="center">Sign Up</Heading>
+      <Heading textAlign="center">{t('pageHeader.signUp')}</Heading>
       <form
         onSubmit={event => {
-          signInWithGoogle(event, setGoogleError, setIsLoadingGoogle);
+          signInWithGoogle(event, setGoogleError, setIsLoadingGoogle, t);
         }}
       >
         <SubmitButton
           color={'blue'}
-          label={'Sign up with Google'}
+          label={t('signUp.google')}
           error={googleError}
           isLoading={isLoadingGoogle}
         ></SubmitButton>
@@ -124,9 +119,10 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           showPassword={showPassword}
           handlePasswordVisibility={() => setShowPassword(!showPassword)}
           value={password}
+          label={t('password')}
         ></PasswordFormInput>
         <PasswordFormInput
-          label={'Confirm Password'}
+          label={t('confirmPassword')}
           handlePasswordChange={event => {
             setConfirmPassword(event.target.value);
             setConfirmPasswordError('');
@@ -140,16 +136,16 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           value={confirmPassword}
         ></PasswordFormInput>
         <SubmitButton
-          label={'Sign up with email'}
+          label={t('signUp.email')}
           error={generalEmailError}
           isLoading={isLoadingEmail}
         ></SubmitButton>
       </form>
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
-        Already have an account?{' '}
+        {t('haveAccount.text')}
         <Link color="teal.500" onClick={() => setIsNewUser(false)}>
-          Sign in
+          {t('haveAccount.link')}
         </Link>
       </Text>
     </>

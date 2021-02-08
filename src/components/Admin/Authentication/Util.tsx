@@ -10,6 +10,8 @@ import {
   InputGroup,
 } from '@chakra-ui/react';
 import firebase, {firebaseAuth} from '../../../firebase';
+import {useTranslation} from 'react-i18next/*';
+import {TFunction} from 'i18next';
 
 /**
  * Props for PasswordVisibilityToggle component. Used for type safety.
@@ -33,10 +35,13 @@ const PasswordVisibilityToggle: ({
   showPassword,
   handlePasswordVisibility,
 }: PasswordVisibilityProps) => {
+  const {t} = useTranslation('administration');
   return (
     <InputRightElement width="4.5rem">
       <Button height="1.75rem" size="sm" onClick={handlePasswordVisibility}>
-        {showPassword ? 'Hide' : 'Show'}
+        {showPassword
+          ? t('passwordVisibility.hide')
+          : t('passwordVisibility.show')}
       </Button>
     </InputRightElement>
   );
@@ -67,9 +72,10 @@ const EmailFormInput: ({
   value,
   error = '',
 }: EmailFormInputProps) => {
+  const {t} = useTranslation('administration');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>Email</FormLabel>
+      <FormLabel>{t('email')}</FormLabel>
       <Input
         type="email"
         placeholder="example@test.com"
@@ -112,16 +118,17 @@ const PasswordFormInput: ({
   handlePasswordVisibility,
   error,
 }: PasswordFormInputProps) => JSX.Element = ({
-  label = 'Password',
+  label = 'password',
   showPassword = false,
   handlePasswordChange,
   value,
   handlePasswordVisibility = () => !showPassword,
   error = '',
 }: PasswordFormInputProps) => {
+  const {t} = useTranslation('administration');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel>{t(label)}</FormLabel>
       <InputGroup>
         <Input
           type={showPassword ? 'text' : 'password'}
@@ -204,13 +211,13 @@ const SubmitButton: ({
 async function signInWithGoogle(
   event: React.FormEvent<HTMLFormElement>,
   setError: React.Dispatch<React.SetStateAction<string>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  translate: TFunction
 ): Promise<void> {
   // Prevents submission before sign in is complete
   event.preventDefault();
 
   setIsLoading(true);
-
   try {
     await firebaseAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
   } catch (error) {
@@ -220,25 +227,18 @@ async function signInWithGoogle(
         firebaseAuth
           .fetchSignInMethodsForEmail(error.email)
           .then(signInMethodArray => {
-            const errorMessageTemplate =
-              'Account created with different sign in method. ' +
-              'Please sign in with one of the following: ';
+            const errorMessageTemplate = translate('wrongMethod');
             const methods = signInMethodArray.join(', ');
             setError(errorMessageTemplate + methods);
           })
           .catch(error => {
             switch (error.code) {
               case 'auth/invalid-email': {
-                setError(
-                  'Invalid email. Please try signing in again' +
-                    ' with a valid email address'
-                );
+                setError(translate('invalidEmail'));
                 break;
               }
               default: {
-                setError(
-                  'Error occurred. Please try to sign in with a different method.'
-                );
+                setError(translate('tryAgain'));
                 break;
               }
             }
@@ -254,13 +254,11 @@ async function signInWithGoogle(
         break;
       }
       case 'auth/popup-blocked': {
-        setError(
-          'Sign in pop up blocked. Enable pop ups in your browser or sign in with email'
-        );
+        setError(translate('popUpsBlocked'));
         break;
       }
       default: {
-        setError('Error occurred. Please try again');
+        setError(translate('common:error'));
         break;
       }
     }
@@ -279,10 +277,11 @@ async function signInWithGoogle(
  * Thrown if the currentUser's email is null
  */
 async function handleReauthenticationWithPassword(
-  password: string
+  password: string,
+  translate: TFunction
 ): Promise<string> {
-  if (!firebaseAuth.currentUser) throw new Error('No user');
-  if (!firebaseAuth.currentUser.email) throw new Error('No email');
+  if (!firebaseAuth.currentUser) throw new Error(translate('noUser'));
+  if (!firebaseAuth.currentUser.email) throw new Error(translate('noEmail'));
   const credential = firebase.auth.EmailAuthProvider.credential(
     firebaseAuth.currentUser.email,
     password
@@ -304,10 +303,10 @@ async function handleReauthenticationWithPassword(
 
     switch (error.code) {
       case 'auth/wrong-password': {
-        return 'Wrong current password';
+        return translate('incorrectPassword');
       }
       default: {
-        return `Error occurred: ${error.message}`;
+        return translate('unknownError') + error.message;
       }
     }
   }

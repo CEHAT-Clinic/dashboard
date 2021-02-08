@@ -10,7 +10,6 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isAdmin} = useAuth();
   // --------------- End state maintenance variables ------------------------
-
   return (
     <Flex width="full" align="center" justifyContent="center">
       <Box

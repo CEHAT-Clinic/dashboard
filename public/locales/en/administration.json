@@ -1,0 +1,64 @@
+{
+    "userUndefined": "User undefined",
+    "passwordMismatch": "Passwords do not match",
+    "notStrongEnough": "Password is not strong enough. Please enter a password longer than six characters",
+    "unknownError": "Error occurred: ",
+    "invalidEmail": "Invalid email. Please enter a valid email address",
+    "userNotFound": "No user found for ",
+    "emailSendFailure": "Error occurred when trying to send email. Please try again",
+    "accountDisabled": "Account has been disabled. Please contact an administrator if you believe this is a mistake",
+    "incorrectPassword": "Wrong password. Try again or reset your password. You may also have created your account with a different method",
+    "accountExists":"Email already has an account. Please sign in or use a different email",
+    "modalLaunch": {
+        "change": "Update Password",
+        "forgot": {
+            "text": "Forgot your password? ",
+            "link": "Reset your password"
+        }
+    },
+    "modalHeader": {
+        "change":"Update Password",
+        "forgot": "Send Password Reset Email"
+    },
+    "success": {
+        "change": "Password updated",
+        "forgot": "Password reset email sent"
+    }, 
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "submitLabel": {
+        "change": "Update password",
+        "forgot": "Send password reset email"
+    },
+    "signIn": {
+        "google": "Sign in with Google",
+        "email": "Sign in with email"
+    },
+    "signUp": {
+        "google": "Sign up with Google",
+        "email": "Sign in with email"
+    },
+    "signOut": "Sign out",
+    "signOutError": "Error occurred with sign out. Please try again",
+    "pageHeader": {
+        "signIn": "Sign In",
+        "signUp": "Sign Up"
+    },
+    "haveAccount": {
+        "text": "Already have an account? ",
+        "link": "Sign in"
+    },
+    "passwordVisibility": {
+        "hide": "Hide",
+        "show": "Show"
+    },
+    "email": "Email",
+    "wrongMethod": "Account created with different sign in method. Please sign in with one of the following: ",
+    "tryAgain": "Error occurred. Please try to sign in with a different method.",
+    "popUpsBlocked": "Sign in pop up blocked. Enable pop ups in your browser or sign in with email",
+    "noUser": "No user",
+    "noEmail": "No email"
+}
