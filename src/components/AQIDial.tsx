@@ -1,6 +1,6 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
-import {Text, Box, Tag, Grid, GridItem} from '@chakra-ui/react';
+import {Text, Box, Tag, Grid, GridItem, Link} from '@chakra-ui/react';
 
 /**
  * Interface for the props of the dial
@@ -50,6 +50,10 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
         animate={false}
       />
       <Text fontSize={30}>Air Quality Index: {currentReading}</Text>
+      <Text fontSize={14} mb={2}>
+        For more information on air quality and the Air Quality Index (AQI), check out our
+        <Link fontSize={14} color="#32bfd1" href="/health"> health information.</Link>
+      </Text>
       <Grid
         templateColumns="repeat(4, 1fr)"
         templateRows="repeat(2, 1fr)"
