@@ -11,6 +11,7 @@ import {
   Th,
   Tbody,
   TableCaption,
+  Text,
 } from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
@@ -23,79 +24,52 @@ import {User} from '../Authentication/Util';
  * If a user is not signed in or an admin user, access is denied.
  */
 const ManageUsers: () => JSX.Element = () => {
+  // --------------- State maintenance variables ------------------------
   const {isAuthenticated, isAdmin, isLoading: fetchingAuthInfo} = useAuth();
-  const [adminUserIds, setAdminUserIds] = useState<string[]>([]);
-  const [adminUsers, setAdminUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  // -------------- End state maintenance variables -------------------------
 
-  // On render, fetch all admin users
+  // On render, fetch all users
   useEffect(() => {
     if (isAdmin) {
       setIsLoading(true);
-      // Get all admin users
       firestore
-        .collection('admin')
-        .doc('users')
+        .collection('users')
         .get()
-        .then(doc => {
-          if (doc.exists) {
-            // Get the document data that contains all admin userIds
-            const userData = doc.data();
-            if (userData) {
-              const adminUserIds: string[] = userData.userId ?? [];
-              setAdminUserIds(adminUserIds);
+        .then(querySnapshot => {
+          const userList: User[] = [];
+          querySnapshot.docs.forEach(doc => {
+            if (doc.exists) {
+              // Get the document data that contains all admin userIds
+              const userData = doc.data();
+              if (
+                userData &&
+                userData.name !== undefined &&
+                userData.email !== undefined &&
+                userData.admin !== undefined
+              ) {
+                const user: User = {
+                  email: userData.email,
+                  name: userData.name,
+                  admin: userData.admin,
+                };
+                userList.push(user);
+              }
             }
-          }
+          });
+          setUsers(userList);
         })
         .catch(error => {
-          // Error thrown upon failure to fetch admin/users doc from Firestore
-          throw new Error(`Unable to fetch admin users doc: ${error}`);
+          // Error thrown upon failure to fetch users collection from Firestore
+          setError(`Unable to fetch users: ${error}`);
         })
         .finally(() => {
           setIsLoading(false);
         });
     }
   }, [isAdmin]);
-
-  // Fetch admin documents
-  useEffect(() => {
-    if (adminUserIds) {
-      setIsLoading(true);
-      const tempAdminUsers: User[] = [];
-      for (const userId of adminUserIds) {
-        firestore
-          .collection('users')
-          .doc(userId)
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              const userData = doc.data();
-              console.log(userData);
-              if (
-                userData &&
-                userData.name &&
-                userData.email &&
-                userData.admin
-              ) {
-                const user: User = {
-                  name: userData.name,
-                  email: userData.email,
-                  admin: userData.admin,
-                };
-                tempAdminUsers.push(user);
-              }
-            }
-          })
-          .catch(error => {
-            // Error thrown upon failure to fetch users/userId doc from Firestore
-            throw new Error(`Unable to fetch user doc: ${error}`);
-          });
-      }
-      // TODO: this isn't staying
-      setAdminUsers(tempAdminUsers);
-      setIsLoading(false);
-    }
-  }, [adminUserIds]);
 
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
@@ -104,7 +78,6 @@ const ManageUsers: () => JSX.Element = () => {
   } else if (!isAdmin) {
     return <AccessDenied reason="you are not an admin user" />;
   } else {
-    console.log(adminUsers.length)
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
@@ -127,14 +100,36 @@ const ManageUsers: () => JSX.Element = () => {
               </Tr>
             </Thead>
             <Tbody>
-              {adminUsers.map((user, id) => (
+              {users
+                .filter(user => user.admin)
+                .map((user, id) => (
+                  <Tr key={id}>
+                    <Td>{user.name}</Td>
+                    <Td>{user.email}</Td>
+                  </Tr>
+                ))}
+            </Tbody>
+          </Table>
+          <Table>
+            <TableCaption placement="top">All Current Users</TableCaption>
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+                <Th>Email</Th>
+                <Th>Admin?</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {users.map((user, id) => (
                 <Tr key={id}>
                   <Td>{user.name}</Td>
                   <Td>{user.email}</Td>
+                  <Td>{user.admin ? 'Yes' : 'No'}</Td>
                 </Tr>
               ))}
             </Tbody>
           </Table>
+          <Text textColor="red.500">{error}</Text>
           <Button as="a" href="/admin" margin={1}>
             Return to admin page
           </Button>
