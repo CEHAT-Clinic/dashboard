@@ -2,6 +2,7 @@
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
  * @param hover - boolean: is the cursor hovering over this marker?
+ * @param clicked - boolean: is this cursor currently selected
  */
 export function createSensorIcon(
   aqiReading: string,
@@ -33,13 +34,19 @@ export function createSensorIcon(
 
   // Set marker size
   const standardMarkerSize = 20;
-  const hoverMarkerSize = 22;
-  const markerSize = hover ? hoverMarkerSize : standardMarkerSize;
+  const largeMarkerSize = 22;
+  let markerSize = standardMarkerSize;
+
+  // Enlarge marker if clicked or hovered
+  if (hover || clicked) {
+    markerSize = largeMarkerSize;
+  }
 
   // Set marker border
   const standardMarkerBorder = 0.5;
-  const hoverMarkerBorder = 2;
-  const markerBorder = hover ? hoverMarkerBorder : standardMarkerBorder;
+  const largeMarkerBorder = 2;
+  // Enlarge border if clicked
+  const markerBorder = clicked ? largeMarkerBorder : standardMarkerBorder;
 
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */

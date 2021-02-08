@@ -54,10 +54,10 @@ function restrictMovement(
 class Map extends React.Component<MapProps> {
   mapRef = React.createRef<HTMLDivElement>();
 
-  // State contains the instance of the HERE map to display
+  // State contains the instance of the HERE map to display and which marker
   state = {
-    map: null as H.Map | null,
-    currentSensor: null as H.map.Marker | null,
+    map: null as H.Map | null, // Instance of the HERE map to display
+    clickedSensor: null as H.map.Marker | null, // Clicked marker
   };
 
   // This fires every time the page is refreshed
@@ -97,32 +97,33 @@ class Map extends React.Component<MapProps> {
      * Registers when a marker is clicked on the map. This function updates
      * the current sensor (stored in the state of the Home page) to be
      * displayed in the sensor box on the home page.
+     * Additionally, this function changes the styling of the clicked marker and
+     * undoes the styling of the previously clicked marker
      * @param evt - tap event
      */
     const registerClick = (evt: H.util.Event) => {
-      const previousSensor: H.map.Marker | null = this.state.currentSensor;
+      const prevSensor: H.map.Marker | null = this.state.clickedSensor;
       const newSensor: H.map.Marker = evt.target;
-      this.props.updateCurrentSensor(newSensor.getData().aqi); // Update state of home
 
-      // update new icon
-      const newSensorIcon = createSensorIcon(
-        newSensor.getData().aqi,
-        true,
-        false
-      );
-      newSensor.setIcon(newSensorIcon);
+      // Update state of home to display clicked sensor
+      this.props.updateCurrentSensor(newSensor.getData().aqi);
 
-      // Update old icon
-      if (previousSensor !== null) {
-        const oldSensorIcon = createSensorIcon(
-          newSensor.getData().aqi,
+      // Update icon of currently clicked sensor
+      const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
+      newSensor.setIcon(newIcon);
+
+      // Update icon of previously clicked sensor
+      if (prevSensor !== null) {
+        const prevIcon = createSensorIcon(
+          prevSensor.getData().aqi,
           false,
           false
         );
-        previousSensor.setIcon(oldSensorIcon);
+        prevSensor.setIcon(prevIcon);
       }
 
-      this.setState({currentSensor: newSensor});
+      // Update the state of the clicked Sensor
+      this.setState({clickedSensor: newSensor});
     };
 
     /**
@@ -144,7 +145,7 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      if (marker !== this.state.currentSensor) {
+      if (marker !== this.state.clickedSensor) {
         const icon = createSensorIcon(marker.getData().aqi, false, false);
         marker.setIcon(icon);
       }
