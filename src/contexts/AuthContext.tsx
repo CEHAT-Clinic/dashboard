@@ -56,12 +56,16 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
           .catch(error => {
             // Error thrown upon failure to fetch the admin/users doc from Firestore
             throw new Error(`Unable to fetch admin/users doc: ${error}`);
+          })
+          .finally(() => {
+            // Loading is only finished after the async calls to Firestore complete
+            setIsLoading(false);
           });
       } else {
         setIsAuthenticated(false);
         setIsAdmin(false);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
     return unsubscribe;
   }, []);
