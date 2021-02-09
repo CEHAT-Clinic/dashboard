@@ -134,8 +134,10 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(evt.target.getData().aqi, true, false);
-      marker.setIcon(icon);
+      if (marker !== this.state.selectedSensor) {
+        const icon = createSensorIcon(evt.target.getData().aqi, true, false);
+        marker.setIcon(icon);
+      }
     };
 
     /**
