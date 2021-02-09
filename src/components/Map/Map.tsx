@@ -6,7 +6,7 @@ import {Box} from '@chakra-ui/react';
 /**
  * Interface for the props of the Map component
  * The updateCurrentSensor function allows the Home screen to display
- * information about a sensor when it is clicked.
+ * information about a sensor when it is selected.
  */
 interface MapProps {
   updateCurrentSensor: (sensorID: string) => void;
@@ -54,9 +54,9 @@ function restrictMovement(
 class Map extends React.Component<MapProps> {
   mapRef = React.createRef<HTMLDivElement>();
 
-  // State contains the instance of the HERE map to display
   state = {
-    map: null as H.Map | null,
+    map: null as H.Map | null, // Instance of the HERE map to display
+    selectedSensor: null as H.map.Marker | null, // Selected marker
   };
 
   // This fires every time the page is refreshed
@@ -93,13 +93,37 @@ class Map extends React.Component<MapProps> {
     );
 
     /**
-     * Registers when a marker is clicked on the map. This function updates
+     * Registers when a marker is selected on the map. This function updates
      * the current sensor (stored in the state of the Home page) to be
      * displayed in the sensor box on the home page.
+     *
+     * Additionally, this function changes the styling of the selected marker and
+     * undoes the styling of the previously selected marker.
      * @param evt - tap event
      */
     const registerClick = (evt: H.util.Event) => {
-      this.props.updateCurrentSensor(evt.target.getData().aqi); // Update state of home
+      const prevSensor: H.map.Marker | null = this.state.selectedSensor;
+      const newSensor: H.map.Marker = evt.target;
+
+      // Update state of home to display selected sensor
+      this.props.updateCurrentSensor(newSensor.getData().aqi);
+
+      // Update icon of currently selected sensor
+      const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
+      newSensor.setIcon(newIcon);
+
+      // Update icon of previously selected sensor
+      if (prevSensor !== null) {
+        const prevIcon = createSensorIcon(
+          prevSensor.getData().aqi,
+          false,
+          false
+        );
+        prevSensor.setIcon(prevIcon);
+      }
+
+      // Update the state of the selected Sensor
+      this.setState({selectedSensor: newSensor});
     };
 
     /**
@@ -110,8 +134,10 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(evt.target.getData().aqi, true);
-      marker.setIcon(icon);
+      if (marker !== this.state.selectedSensor) {
+        const icon = createSensorIcon(evt.target.getData().aqi, true, false);
+        marker.setIcon(icon);
+      }
     };
 
     /**
@@ -121,8 +147,10 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      const icon = createSensorIcon(marker.getData().aqi, false);
-      marker.setIcon(icon);
+      if (marker !== this.state.selectedSensor) {
+        const icon = createSensorIcon(marker.getData().aqi, false, false);
+        marker.setIcon(icon);
+      }
     };
 
     // Add the Sensor Markers to the map
@@ -139,7 +167,7 @@ class Map extends React.Component<MapProps> {
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
             const aqi = sensorVal.aqi.toString().split('.')[0];
-            const icon = createSensorIcon(aqi, false);
+            const icon = createSensorIcon(aqi, false, false);
 
             // Create marker
             const marker = new H.map.Marker(
@@ -188,7 +216,7 @@ class Map extends React.Component<MapProps> {
     restrictMovement(map, topLat, leftLong, bottomLat, rightLong);
 
     // Update state of React component to contain our map instead of null
-    this.setState({map});
+    this.setState({map: map});
   }
 
   componentWillUnmount(): void {
