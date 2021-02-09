@@ -6,7 +6,7 @@ import {Box} from '@chakra-ui/react';
 /**
  * Interface for the props of the Map component
  * The updateCurrentSensor function allows the Home screen to display
- * information about a sensor when it is clicked.
+ * information about a sensor when it is selected.
  */
 interface MapProps {
   updateCurrentSensor: (sensorID: string) => void;
@@ -56,7 +56,7 @@ class Map extends React.Component<MapProps> {
 
   state = {
     map: null as H.Map | null, // Instance of the HERE map to display
-    clickedSensor: null as H.map.Marker | null, // Clicked marker
+    selectedSensor: null as H.map.Marker | null, // Selected marker
   };
 
   // This fires every time the page is refreshed
@@ -93,26 +93,26 @@ class Map extends React.Component<MapProps> {
     );
 
     /**
-     * Registers when a marker is clicked on the map. This function updates
+     * Registers when a marker is selected on the map. This function updates
      * the current sensor (stored in the state of the Home page) to be
      * displayed in the sensor box on the home page.
      *
-     * Additionally, this function changes the styling of the clicked marker and
-     * undoes the styling of the previously clicked marker.
+     * Additionally, this function changes the styling of the selected marker and
+     * undoes the styling of the previously selected marker.
      * @param evt - tap event
      */
     const registerClick = (evt: H.util.Event) => {
-      const prevSensor: H.map.Marker | null = this.state.clickedSensor;
+      const prevSensor: H.map.Marker | null = this.state.selectedSensor;
       const newSensor: H.map.Marker = evt.target;
 
-      // Update state of home to display clicked sensor
+      // Update state of home to display selected sensor
       this.props.updateCurrentSensor(newSensor.getData().aqi);
 
-      // Update icon of currently clicked sensor
+      // Update icon of currently selected sensor
       const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
       newSensor.setIcon(newIcon);
 
-      // Update icon of previously clicked sensor
+      // Update icon of previously selected sensor
       if (prevSensor !== null) {
         const prevIcon = createSensorIcon(
           prevSensor.getData().aqi,
@@ -122,8 +122,8 @@ class Map extends React.Component<MapProps> {
         prevSensor.setIcon(prevIcon);
       }
 
-      // Update the state of the clicked Sensor
-      this.setState({clickedSensor: newSensor});
+      // Update the state of the selected Sensor
+      this.setState({selectedSensor: newSensor});
     };
 
     /**
@@ -145,7 +145,7 @@ class Map extends React.Component<MapProps> {
      */
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
-      if (marker !== this.state.clickedSensor) {
+      if (marker !== this.state.selectedSensor) {
         const icon = createSensorIcon(marker.getData().aqi, false, false);
         marker.setIcon(icon);
       }

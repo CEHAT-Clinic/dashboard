@@ -2,12 +2,12 @@
  * Creates the SVG icon for a particular sensor given the AQI reading
  * @param aqiReading - current AQI reading, rounded to nearest one's place
  * @param hover - boolean: is the cursor hovering over this marker?
- * @param clicked - boolean: is this cursor currently selected?
+ * @param selected - boolean: is this cursor currently selected?
  */
 export function createSensorIcon(
   aqiReading: string,
   hover: boolean,
-  clicked: boolean
+  selected: boolean
 ): H.map.Icon {
   /** Thresholds for AQI categories are taken
    * from https://www.purpleair.com/map. Anything above 250 is considered a
@@ -35,18 +35,12 @@ export function createSensorIcon(
   // Set marker size
   const standardMarkerSize = 20;
   const largeMarkerSize = 22;
-  let markerSize = standardMarkerSize;
-
-  // Enlarge marker if clicked or hovered
-  if (hover || clicked) {
-    markerSize = largeMarkerSize;
-  }
+  const markerSize = hover || selected ? largeMarkerSize : standardMarkerSize;
 
   // Set marker border
   const standardMarkerBorder = 0.5;
   const largeMarkerBorder = 2;
-  // Enlarge border if clicked
-  const markerBorder = clicked ? largeMarkerBorder : standardMarkerBorder;
+  const markerBorder = selected ? largeMarkerBorder : standardMarkerBorder;
 
   // SVG Marker Image
   /* eslint-disable spellcheck/spell-checker */
