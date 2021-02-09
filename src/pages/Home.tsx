@@ -14,7 +14,7 @@ const Home: () => JSX.Element = () => {
 
   // When currentReading is populated, show the dial. If not, don't.
   useEffect(() => {
-    if (currentSensor !== '') setDisplayDial(true);
+    if (currentSensor) setDisplayDial(true);
     else setDisplayDial(false);
   }, [currentSensor]);
 
