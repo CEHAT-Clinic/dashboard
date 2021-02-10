@@ -43,7 +43,6 @@ const Home: () => JSX.Element = () => {
             {displayDial && <AQIDial currentReading={currentSensor} />}
             {!displayDial && (
               <Text marginTop={[null, null, '20%', null]}>
-                {' '}
                 Click a sensor on the map to see its AQI value here!
               </Text>
             )}
