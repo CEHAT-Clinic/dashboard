@@ -55,7 +55,7 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
         textColor={'black'}
         hideText={true}
         animate={false}
-        arcWidth={0.3}
+        arcWidth={0.4}
       />
       <Text fontSize={30}>Air Quality Index: {currentReading}</Text>
       <Text fontSize={14} mb={2}>
