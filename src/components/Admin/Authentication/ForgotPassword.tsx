@@ -17,7 +17,7 @@ import {
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {EmailFormInput, SubmitButton} from './Util';
 import {firebaseAuth} from '../../../firebase';
-import {useTranslation} from 'react-i18next/*';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for users to reset their password by email on the sign in page.

@@ -9,7 +9,7 @@ import {
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import ForgotPasswordModal from './ForgotPassword';
-import {useTranslation} from 'react-i18next/*';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component to sign in.

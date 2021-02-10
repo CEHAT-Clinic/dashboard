@@ -8,7 +8,7 @@ import {
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
-import {useTranslation} from 'react-i18next/*';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component to sign up.

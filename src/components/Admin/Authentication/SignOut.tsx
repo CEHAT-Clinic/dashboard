@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {SubmitButton} from './Util';
 import {firebaseAuth} from '../../../firebase';
-import {useTranslation} from 'react-i18next/*';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Button that signs the user out

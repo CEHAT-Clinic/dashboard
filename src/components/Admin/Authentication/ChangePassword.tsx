@@ -20,7 +20,7 @@ import {
   SubmitButton,
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
-import {useTranslation} from 'react-i18next/*';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for changing an authenticated user's password. Includes button that
