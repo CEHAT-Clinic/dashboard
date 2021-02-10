@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text, Heading, Box, Flex, Button} from '@chakra-ui/react';
+import {useTranslation} from 'react-i18next';
 
 interface AccessDeniedProps {
   reason: string;
@@ -20,6 +21,8 @@ interface AccessDeniedProps {
 const AccessDenied: ({reason}: AccessDeniedProps) => JSX.Element = ({
   reason,
 }: AccessDeniedProps) => {
+  const {t} = useTranslation('administration');
+
   return (
     <Flex width="full" align="center" justifyContent="center">
       <Box
@@ -32,18 +35,15 @@ const AccessDenied: ({reason}: AccessDeniedProps) => JSX.Element = ({
         boxShadow="lg"
         textAlign="center"
       >
-        <Heading>Access Denied</Heading>
-        <Text>You do not have access to this page because {reason}.</Text>
+        <Heading>{t('accessDenied.heading')}</Heading>
+        <Text>{t('accessDenied.reasonLeadUp') + reason}.</Text>
         <Button as="a" href="/" margin={1} width="50%">
-          Return to Home
+          {t('accessDenied.returnHome')}
         </Button>
         <Button as="a" href="/admin" margin={1} width="50%">
-          Return to Admin home
+          {t('returnAdmin')}
         </Button>
-        <Text>
-          If you think you should have access to this page, please contact a
-          site administrator or a member of the South Gate CEHAT.
-        </Text>
+        <Text>{t('accessDenied.shouldHaveAccess')}</Text>
       </Box>
     </Flex>
   );

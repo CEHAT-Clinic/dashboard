@@ -60,5 +60,24 @@
     "tryAgain": "Error occurred. Please try to sign in with a different method.",
     "popUpsBlocked": "Sign in pop up blocked. Enable pop ups in your browser or sign in with email",
     "noUser": "No user",
-    "noEmail": "No email"
+    "noEmail": "No email",
+    "accessDenied": {
+        "heading": "Access Denied",
+        "reasonLeadUp": "You do not have access to this page because ",
+        "returnHome": "Return to Home",
+
+        "shouldHaveAccess": "If you think you should have access to this page, please contact a site administrator or a member of the South Gate CEHAT."
+    },
+    "manageAccount":{
+        "methodFetchError": "Error occurred when fetching user sign in methods",
+        "connectedToGoogle": "Account connected to Google",
+        "heading": "Manage Your Account"
+    },
+    "returnAdmin": "Return to Admin Home",
+    "notSignedIn": "you are not signed in",
+    "notAdmin": "you are not an admin user",
+    "manageSensors": "Manage Sensors",
+    "manageAccountButtonText": "Manage Account",
+    "manageUsers": "Manage Users",
+    "header": "Admin Page"
 }
