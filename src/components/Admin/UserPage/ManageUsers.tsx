@@ -10,7 +10,6 @@ import {
   Td,
   Th,
   Tbody,
-  TableCaption,
   Text,
 } from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -85,51 +84,59 @@ const ManageUsers: () => JSX.Element = () => {
           padding={8}
           margin={8}
           width="full"
-          maxWidth="500px"
+          maxWidth="1000px"
           borderWidth={1}
           borderRadius={8}
           boxShadow="lg"
           textAlign="center"
         >
           <Heading>Manage Users</Heading>
-          <Table>
-            <TableCaption placement="top">Current Admin Users</TableCaption>
-            <Thead>
-              <Tr>
-                <Th>Name</Th>
-                <Th>Email</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {users
-                .filter(user => user.admin)
-                .map((user, id) => (
+          <Box marginY={5} overflowX="auto" maxWidth="100%">
+            <Heading textAlign="left" fontSize="lg">
+              Current Admin Users
+            </Heading>
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Email</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {users
+                  .filter(user => user.admin)
+                  .map((user, id) => (
+                    <Tr key={id}>
+                      <Td>{user.name}</Td>
+                      <Td>{user.email}</Td>
+                    </Tr>
+                  ))}
+              </Tbody>
+            </Table>
+          </Box>
+          <Box marginY={5} overflowX="auto" maxWidth="100%">
+            <Heading textAlign="left" fontSize="lg">
+              All Current Users
+            </Heading>
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th>Name</Th>
+                  <Th>Email</Th>
+                  <Th>Admin?</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {users.map((user, id) => (
                   <Tr key={id}>
                     <Td>{user.name}</Td>
                     <Td>{user.email}</Td>
+                    <Td>{user.admin ? 'Yes' : 'No'}</Td>
                   </Tr>
                 ))}
-            </Tbody>
-          </Table>
-          <Table>
-            <TableCaption placement="top">All Current Users</TableCaption>
-            <Thead>
-              <Tr>
-                <Th>Name</Th>
-                <Th>Email</Th>
-                <Th>Admin?</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {users.map((user, id) => (
-                <Tr key={id}>
-                  <Td>{user.name}</Td>
-                  <Td>{user.email}</Td>
-                  <Td>{user.admin ? 'Yes' : 'No'}</Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
+              </Tbody>
+            </Table>
+          </Box>
           {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
             Return to admin page
