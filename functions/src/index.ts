@@ -15,6 +15,22 @@ const thingspeakUrl = (channelId: string) =>
   `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
 const readingsSubcollection = (docId: string) => `/sensors/${docId}/readings`;
 
+interface pm25BufferElement {
+  timestamp: FirebaseFirestore.Timestamp | null,
+  channelAPm25: number,
+  channelBPm25: number,
+  humidity: number,
+  latitude: number,
+  longitude: number,
+}
+
+// const defaultBufferElement: pm25BufferElement = {timestamp: null,
+//                                                 channelAPm25: NaN,
+//                                                 channelBPm25: NaN,
+//                                                 humidity: NaN,
+//                                                 latitude: NaN,
+//                                                 longitude:NaN}
+
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
 ): Promise<PurpleAirResponse> {
@@ -29,6 +45,7 @@ async function getThingspeakKeysFromPurpleAir(
 
   return new PurpleAirResponse(purpleAirApiResponse);
 }
+
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
   timeoutSeconds: 120,
@@ -65,10 +82,32 @@ exports.thingspeakToFirestore = functions
       );
 
       const resolvedPath = readingsSubcollection(knownSensor.id);
+      const readingsRef = firestore.collection(resolvedPath); 
 
-      // Only add data if not already present in database.
-      // This happens if a sensor is down, so only old data is returned.
-      const readingsRef = firestore.collection(resolvedPath);
+      // my code:
+      const docRef = firestore.collection('sensors').doc(knownSensor.id);
+
+      // If the PM 2.5 circular buffer or the buffer index are not present, 
+      // add them to the document with initial values
+      let pm25BufferIndex = 0;
+      let pm25Buffer= new Array<pm25BufferElement>(3600);
+
+      docRef.get().then(doc => {
+        if (doc.exists) {
+          if ((doc.get('pm25BufferIndex') == null) || 
+              (doc.get('pm25Buffer') == null)){
+            // add a default array and make the buffer index 0
+            docRef.update({
+              pm25BufferIndex: pm25BufferIndex,
+              pm25Buffer: pm25Buffer
+            })
+          }else{
+            pm25BufferIndex = doc.get('pm25BufferIndex')
+            pm25Buffer = doc.get('pm25Buffer')
+          }
+
+      // If data is not already present in the databse, add it to the historical
+      // readings and to the circular buffer
       if (
         (
           await readingsRef
@@ -85,6 +124,20 @@ exports.thingspeakToFirestore = functions
           longitude: reading.longitude,
         };
         await readingsRef.add(firestoreSafeReading);
+
+        // MY CODE:
+        // add to circular buffer
+        
+        // sensorRef.set(firestoreSafeReading).then(() => {
+        //   console.log("Document successfully written!");
+        // });
+        // END MY CODE
+      } else{
+        // Else, the data is already present in the database, so don't add to 
+        // the historical readings, but still add to the circular buffer.
+        // This happens when a sensor is down.
+
+        // add to circular buffer with NaN
       }
 
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
