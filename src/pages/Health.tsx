@@ -1,9 +1,10 @@
+import { Box, Heading } from '@chakra-ui/react';
 import React from 'react';
 
 const Health: React.FC = () => (
-  <div>
-    <h1> Health Info Page</h1>
-  </div>
+  <Box>
+    <Heading> Health Info Page</Heading>
+  </Box>
 );
 
 export default Health;
