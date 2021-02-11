@@ -51,6 +51,9 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
                 const adminUserIds: string[] = userData.userId ?? [];
                 if (adminUserIds.includes(user.uid)) setIsAdmin(true);
               }
+            } else {
+              // Create a user doc if document doesn't exist
+              
             }
           })
           .catch(error => {

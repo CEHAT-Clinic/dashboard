@@ -1,12 +1,18 @@
 import React, {useState} from 'react';
-import {Text, Heading, Link, Divider} from '@chakra-ui/react';
+import {
+  Text,
+  Heading,
+  Link,
+  Divider,
+} from '@chakra-ui/react';
 import {
   SubmitButton,
   signInWithGoogle,
   EmailFormInput,
   PasswordFormInput,
+  User,
 } from './Util';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth, firestore} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
@@ -38,9 +44,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
    * Signs up a user with email in Firebase and handles any errors
    * @param event - submit form event
    */
-  async function handleSignUpWithEmail(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  function handleSignUpWithEmail(event: React.FormEvent<HTMLFormElement>) {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
@@ -51,40 +55,63 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       setConfirmPassword('');
       setIsLoadingEmail(false);
     } else {
-      try {
-        await firebaseAuth.createUserWithEmailAndPassword(email, password);
-      } catch (error) {
-        // Error codes from Firebase documentation
-        switch (error.code) {
-          case 'auth/email-already-in-use': {
-            setEmailError(
-              'Email already has an account. ' +
-                'Please sign in or use a different email'
-            );
-            break;
+      firebaseAuth
+        .createUserWithEmailAndPassword(email, password)
+        .then(userCredential => {
+          // Upon success, create a user doc
+          if (userCredential.user) {
+            const user = userCredential.user;
+
+            const userDocData: User = {
+              name: user.displayName ?? displayName,
+              email: user.email ?? email,
+              admin: false,
+            };
+            firestore
+              .collection('users')
+              .add(userDocData)
+              .then(() => {
+                // Doc created
+              })
+              .catch(error => {
+                setGeneralEmailError(`Error occurred: ${error}`);
+              });
           }
-          case 'auth/invalid-email': {
-            setEmailError('Invalid email. Please enter a valid email address');
-            break;
+        })
+        .catch(error => {
+          // Error codes from Firebase documentation
+          switch (error.code) {
+            case 'auth/email-already-in-use': {
+              setEmailError(
+                'Email already has an account. ' +
+                  'Please sign in or use a different email'
+              );
+              break;
+            }
+            case 'auth/invalid-email': {
+              setEmailError(
+                'Invalid email. Please enter a valid email address'
+              );
+              break;
+            }
+            case 'auth/weak-password': {
+              setPasswordError(
+                'Password not strong enough. ' +
+                  'Please enter a new password with at least six characters'
+              );
+              break;
+            }
+            default: {
+              setGeneralEmailError(
+                'Error occurred. Please try to create account again'
+              );
+              break;
+            }
           }
-          case 'auth/weak-password': {
-            setPasswordError(
-              'Password not strong enough. ' +
-                'Please enter a new password with at least six characters'
-            );
-            break;
-          }
-          default: {
-            setGeneralEmailError(
-              'Error occurred. Please try to create account again'
-            );
-            break;
-          }
-        }
-        setPassword('');
-        setConfirmPassword('');
-        setIsLoadingEmail(false);
-      }
+          setPassword('');
+          setConfirmPassword('');
+          setIsLoadingEmail(false);
+        });
     }
   }
 

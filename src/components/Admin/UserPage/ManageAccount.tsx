@@ -1,5 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading, Text, Flex, Button} from '@chakra-ui/react';
+import {Box, Heading, Text, Flex, Button,
+  FormControl,
+  FormLabel,
+  Input,
+  FormErrorMessage,
+} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import ChangePasswordModal from '../Authentication/ChangePassword';
@@ -18,6 +23,8 @@ const ManageAccount: () => JSX.Element = () => {
   const [passwordUser, setPasswordUser] = useState(false);
   const [googleUser, setGoogleUser] = useState(false);
   const [error, setError] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [displayNameError, setDisplayNameError] = useState('');
   // --------------- End state maintenance variables ------------------------
 
   // Runs on mount
@@ -78,6 +85,25 @@ const ManageAccount: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading>Manage Your Account</Heading>
+          <FormControl
+          isRequired
+          marginTop={4}
+          isInvalid={displayNameError !== ''}
+        >
+          <FormLabel>Display Name</FormLabel>
+          <Input
+            type="text"
+            placeholder="John Smith"
+            size="md"
+            onChange={event => {
+              setDisplayName(event.target.value);
+              setDisplayNameError('');
+              setGeneralEmailError('');
+            }}
+            value={displayName}
+          />
+          <FormErrorMessage>{displayNameError}</FormErrorMessage>
+        </FormControl>
           <Text>Email: {email}</Text>
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>Account connected to Google</Text>}
