@@ -1,3 +1,6 @@
 {
-    "close": "Cierra"
+    "close": "Cierra",
+    "generalError": "Ha ocurrido un error. Por favor, vulve a intentar",
+    "yes": "Sí",
+    "no": "No"
 }

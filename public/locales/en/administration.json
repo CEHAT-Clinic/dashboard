@@ -59,6 +59,8 @@
     "wrongMethod": "Account created with different sign in method. Please sign in with one of the following: ",
     "tryAgain": "Error occurred. Please try to sign in with a different method.",
     "popUpsBlocked": "Sign in pop up blocked. Enable pop ups in your browser or sign in with email",
+    "needAccount": "Need an account? ",
+    "signUpLink": "Sign up",
     "noUser": "No user",
     "noEmail": "No email",
     "accessDenied": {
@@ -79,5 +81,12 @@
     "manageSensors": "Manage Sensors",
     "manageAccountButtonText": "Manage Account",
     "manageUsers": "Manage Users",
-    "header": "Admin Page"
+    "header": "Admin Page",
+    "users":{
+        "cantFetch": "Unable to fetch users: ",
+        "heading": "Current Admins Users",
+        "name": "Name",
+        "allCurrent": "All Current Users",
+        "isAdmin": "Admin?"
+    }
 }

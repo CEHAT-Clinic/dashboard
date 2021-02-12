@@ -1,4 +1,6 @@
 {
     "close": "Close",
-    "generalError": "Error occurred. Please try again"
+    "generalError": "Error occurred. Please try again",
+    "yes": "Yes",
+    "no": "No"
 }

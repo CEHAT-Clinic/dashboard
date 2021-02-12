@@ -59,6 +59,8 @@
     "wrongMethod": "La cuenta fue creada con otro metódo de iniciar sesión. Por favor, inicie sesión con uno de: ",
     "tryAgain": "Ha ocurrido un error. Por favor, intente inciar sesión con metódo diferente",
     "popUpsBlocked": "El elemento emergente de inicar sesión fue bloqueado. Los permita en su navegador o inicie sesión con correo electrónico",
+    "needAccount": "Necesita una cuenta? ",
+    "signUpLink": "Se inscribe",
     "noUser": "No usuario",
     "noEmail": "No correo electrónico",
     "accessDenied": {
@@ -79,5 +81,12 @@
     "manageSensors": "Maneja Sensores",
     "manageAccountButtonText": "Maneja Cuenta",
     "manageUsers": "Maneja Usuarios",
-    "header": "Página Administrativa"
+    "header": "Página Administrativa",
+    "users":{
+        "cantFetch": "No podemos recoger los usuarios: ",
+        "heading": "Los Administradores",
+        "name": "Nombre",
+        "allCurrent": "Todos Los Usuarios",
+        "isAdmin": "¿Administrador?"
+    }
 }

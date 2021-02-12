@@ -122,9 +122,9 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       <ForgotPasswordModal />
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
-        Need an account?{' '}
+        {t('needAccount')}
         <Link color="teal.500" onClick={() => setIsNewUser(true)}>
-          Sign up
+          {t('signUpLink')}
         </Link>
       </Text>
     </>
