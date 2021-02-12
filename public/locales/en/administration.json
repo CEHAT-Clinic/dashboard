@@ -39,7 +39,7 @@
     },
     "signUp": {
         "google": "Sign up with Google",
-        "email": "Sign in with email"
+        "email": "Sign up with email"
     },
     "signOut": "Sign out",
     "signOutError": "Error occurred with sign out. Please try again",
