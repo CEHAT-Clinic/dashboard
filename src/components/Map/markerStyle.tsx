@@ -10,26 +10,29 @@ export function createSensorIcon(
   selected: boolean
 ): H.map.Icon {
   /** Thresholds for AQI categories are taken
-   * from https://www.purpleair.com/map. Anything above 250 is considered a
-   * "Health Alert"
+   * from https://www.airnow.gov/aqi/aqi-basics/
+   * Anything above 300 is considered "Hazardous"
    */
-  const satisfactory = 50; // Air quality is satisfactory for all groups
-  const moderateConcern = 100; // Moderate health concern
-  const sensitiveGroups = 150; // Health risk for sensitive groups
-  const healthRiskForAll = 200; // Health risk for all individuals
+  const good = 50; // Air quality is good (0-50)
+  const moderate = 100; // Air quality is acceptable (51-100)
+  const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
+  const unhealthy = 200; // Health risk for all individuals (151-200)
+  const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
 
   let color = '"white"'; // Initialize color
   const aqi = Number(aqiReading);
-  if (aqi < satisfactory) {
-    color = '"#1B8DFF"'; // Light blue
-  } else if (aqi < moderateConcern) {
-    color = '"#4765f5"'; // Dark blue
+  if (aqi < good) {
+    color = '"#08E400"'; // Green
+  } else if (aqi < moderate) {
+    color = '"#FEFF00"'; // Yellow
   } else if (aqi < sensitiveGroups) {
-    color = '"#9247a1"'; // Purple
-  } else if (aqi < healthRiskForAll) {
-    color = '"#cc2475"'; // Pink-red
+    color = '"#FF7E02"'; // Orange
+  } else if (aqi < unhealthy) {
+    color = '"#FF0202"'; // Red
+  } else if (aqi < veryUnhealthy) {
+    color = '"#8F3F97"'; // Purple
   } else {
-    color = '"#FF3628"'; // Red
+    color = '"#7E0224"'; // Maroon
   }
 
   // Set marker size
