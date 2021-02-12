@@ -20,7 +20,7 @@
     "@types/react-router-dom": "^5.1.7",
     "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.11",
-    "firebase": "^8.2.6",
+    "firebase": "^8.2.7",
     "framer-motion": "^3.3.0",
     "navi": "^0.14.0",
     "ol": "^6.5.0",
