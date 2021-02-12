@@ -85,24 +85,24 @@ const AQIDial2: ({currentReading}: DialProps) => JSX.Element = ({
   const convertToPercent = (currentReading: string): number => {
     // The maximum AQI value for the dial (corresponds to Health Alert for all)
 
-    // Note: the true maximum AQI is 500 (not 250), but anything over 250 is
-    // considered extremely hazardous, so any readings over 250 will be displayed
-    // as "maxing out" the dial.
-    const aqiMax = 300;
-    const dialMax = 1;
+    // Note: the true maximum AQI is 500 (not 300), but anything over 300 is
+    // considered hazardous, so any readings over 300 will be displayed
+    // as maxing out the dial in the "hazardous" category.
+    const aqiMax = 300; // Max AQI to be displayed normally
+    const dialMax1Scale = 1; // Maximum value of dial
+    const dialMax300Scale = 312.5; // Number to convert from 0-1 scale to 0-300 scale
     const aqi: number = +currentReading; // Convert from string to number
     let dialReading = 0; // Initialize dial reading
     if (aqi <= aqiMax) {
-      dialReading = aqi / aqiMax; // Convert to something between 0 and 1
+      dialReading = aqi / dialMax300Scale; // Convert to something between 0 and 1
     } else {
       // AQI is above health alert
-      dialReading = dialMax; // Set dial to 1 (max)
+      dialReading = dialMax1Scale; // Set dial to 1 (max)
     }
     return dialReading;
   };
-  /* eslint-disable no-magic-numbers */
+  // eslint-disable-next-line
   const arcLengths = [0.16, 0.16, 0.16, 0.16, 0.32, 0.04];
-  /* eslint-enable no-magic-numbers */
 
   return (
     <Box>

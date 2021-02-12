@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
-import AQIDial from '../components/AQIDial';
+// Import AQIDial from '../components/AQIDial';
 import AQIDial2 from '../components/AQIDial2';
 
 /**
