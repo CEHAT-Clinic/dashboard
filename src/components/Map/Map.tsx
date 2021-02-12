@@ -104,26 +104,28 @@ class Map extends React.Component<MapProps> {
     const registerClick = (evt: H.util.Event) => {
       const prevSensor: H.map.Marker | null = this.state.selectedSensor;
       const newSensor: H.map.Marker = evt.target;
+      // Update sensor icons only if we are selecting a different sensor
+      if (prevSensor !== newSensor) {
+        // Update state of home to display selected sensor
+        this.props.updateCurrentSensor(newSensor.getData().aqi);
 
-      // Update state of home to display selected sensor
-      this.props.updateCurrentSensor(newSensor.getData().aqi);
+        // Update icon of currently selected sensor
+        const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
+        newSensor.setIcon(newIcon);
 
-      // Update icon of currently selected sensor
-      const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
-      newSensor.setIcon(newIcon);
+        // Update icon of previously selected sensor
+        if (prevSensor !== null) {
+          const prevIcon = createSensorIcon(
+            prevSensor.getData().aqi,
+            false,
+            false
+          );
+          prevSensor.setIcon(prevIcon);
+        }
 
-      // Update icon of previously selected sensor
-      if (prevSensor !== null) {
-        const prevIcon = createSensorIcon(
-          prevSensor.getData().aqi,
-          false,
-          false
-        );
-        prevSensor.setIcon(prevIcon);
+        // Update the state of the selected Sensor
+        this.setState({selectedSensor: newSensor});
       }
-
-      // Update the state of the selected Sensor
-      this.setState({selectedSensor: newSensor});
     };
 
     /**

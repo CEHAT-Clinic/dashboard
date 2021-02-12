@@ -5,10 +5,10 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Returns true if the current user is authenticated and is an admin user
     function isAdmin() {
-      // In the /admin/users doc, admins' user IDs are stored in the array userId
-      let admins = get(/databases/$(database)/documents/admin/users).data.userId;
-      return isSignedIn() && request.auth.uid in admins;
+      let isAdmin = get(/databases/$(database)/documents/users/$(request.auth.uid)).data.admin;
+      return isSignedIn() && isAdmin;
     }
 
     match /sensors/{sensorDoc} {
@@ -27,8 +27,19 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Only allow a user to be changed to an admin if the current user is an admin
+    // Only allow changes to other fields if user is modifying their own user
+    // doc, or if the user is an admin user, who can modify all accounts
     match /users/{userId} {
-      allow read, write: if isAdmin() || (isSignedIn() && request.auth.uid == userId);
+      // For a valid user doc update for a non-admin user, they must be signed in,
+      // be changing their own doc, and not change the admin field to true
+      function validNonAdminUpdate() {
+        let isCorrectUserDoc = isSignedIn() && request.auth.uid == userId;
+        let validAdminStatus = request.resource.data.admin == false;
+        return isCorrectUserDoc && validAdminStatus;
+      }
+
+      allow read, write: if isAdmin() || validNonAdminUpdate();
     }
 
     // Used to display values on live webpage

@@ -312,6 +312,15 @@ async function handleReauthenticationWithPassword(
   }
 }
 
+/**
+ * Interface to describe the contents of a user's doc in Firestore
+ */
+interface User {
+  email: string;
+  name: string;
+  admin: boolean;
+}
+
 export {
   handleReauthenticationWithPassword,
   SubmitButton,
@@ -319,3 +328,5 @@ export {
   EmailFormInput,
   PasswordFormInput,
 };
+
+export type {User};
