@@ -1,3 +1,83 @@
 {
-    
+    "userUndefined": "Usuario indeterminado",
+    "passwordMismatch": "Las contranseñas no son iguales",
+    "notStrongEnough": "La contraseña no tiene fuerza suficiente. Por favor, entregue una contraseña de seis o más caracteres",
+    "unknownError": "Ha ocurrido un error: ",
+    "invalidEmail": "La dirreción de correo electrónico es inválida. Por favor, entrgue una válida",
+    "userNotFound": "No hemos encontrado un usuario para ",
+    "emailSendFailure": "Ha ocurrido un error tratando de enviar el correo electrónico. Por favor, vuelva a intentar",
+    "accountDisabled": "La cuenta ha sido desactivada. Si cree que es un error, contacte con un administrador",
+    "incorrectPassword": "Contraseña incorrecta. Vuelva a intentar o vuelva a ponerla. También es posible que hubiera creado su cuenta con otro metódo",
+    "accountExists":"Ya existe una cuenta con la misma dirección de correo electrónico. Por favor, inicie sesión o use una dirección diferente",
+    "modalLaunch": {
+        "change": "Actualiza Contraseña",
+        "forgot": {
+            "text": "Ha olvidado su contraseña? ",
+            "link": "Vuelve a ponerla"
+        }
+    },
+    "modalHeader": {
+        "change":"Actualiza Contraseña",
+        "forgot": "Envia un Correo Electrónico para Volver a Poner una Contraseña"
+    },
+    "success": {
+        "change": "Contraseña actualizada",
+        "forgot": "Correo electrónico enviado"
+    }, 
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Contraseña nueva",
+    "confirmNewPassword": "Confirme la contraseña nueva",
+    "password": "Contraseña",
+    "confirmPassword": "Confirme la contraseña",
+    "submitLabel": {
+        "change": "Actualiza contraseña",
+        "forgot": "Envia el correo electrónico"
+    },
+    "signIn": {
+        "google": "Inicia sesión con Google",
+        "email": "Inicia sesión con correo electrónico"
+    },
+    "signUp": {
+        "google": "Se inscribe con Google",
+        "email": "Se inscribe con correo electrónico"
+    },
+    "signOut": "Cierra sesión",
+    "signOutError": "Al tratar de cerrar sesión, ha ocurrido un error. Por favor, vuelva a intentar",
+    "pageHeader": {
+        "signIn": "Inicia Sesión",
+        "signUp": "Se Inscribe"
+    },
+    "haveAccount": {
+        "text": "Ya tiene una cuenta? ",
+        "link": "Inicia sesión"
+    },
+    "passwordVisibility": {
+        "hide": "Esconde",
+        "show": "Muestra"
+    },
+    "email": "Correo electrónico",
+    "wrongMethod": "La cuenta fue creada con otro metódo de iniciar sesión. Por favor, inicie sesión con uno de: ",
+    "tryAgain": "Ha ocurrido un error. Por favor, intente inciar sesión con metódo diferente",
+    "popUpsBlocked": "El elemento emergente de inicar sesión fue bloqueado. Los permita en su navegador o inicie sesión con correo electrónico",
+    "noUser": "No usuario",
+    "noEmail": "No correo electrónico",
+    "accessDenied": {
+        "heading": "Acceso Denegado",
+        "reasonLeadUp": "No tiene acceso a esta página ya que ",
+        "returnHome": "Regresa a Inicio",
+
+        "shouldHaveAccess": "Si cree que debe tener acceso a esta págino, por favor, contacte con un administrador o un miembro del CEHAT de South Gate."
+    },
+    "manageAccount":{
+        "methodFetchError": "Occurió un error al recoger metódos de inciar sesión",
+        "connectedToGoogle": "Cuenta conectada con Google",
+        "heading": "Maneja Su Cuenta"
+    },
+    "returnAdmin": "Regresa a la Página Administrativa",
+    "notSignedIn": "no ha iniciado sesión",
+    "notAdmin": "no es un administrador",
+    "manageSensors": "Maneja Sensores",
+    "manageAccountButtonText": "Maneja Cuenta",
+    "manageUsers": "Maneja Usuarios",
+    "header": "Página Administrativa"
 }
