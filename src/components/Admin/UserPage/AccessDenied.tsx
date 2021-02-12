@@ -37,10 +37,10 @@ const AccessDenied: ({reason}: AccessDeniedProps) => JSX.Element = ({
       >
         <Heading>{t('accessDenied.heading')}</Heading>
         <Text>{t('accessDenied.reasonLeadUp') + reason}.</Text>
-        <Button as="a" href="/" margin={1} width="50%">
+        <Button as="a" href="/" margin={1} width="flex">
           {t('accessDenied.returnHome')}
         </Button>
-        <Button as="a" href="/admin" margin={1} width="50%">
+        <Button as="a" href="/admin" margin={1} width="flex">
           {t('returnAdmin')}
         </Button>
         <Text>{t('accessDenied.shouldHaveAccess')}</Text>
