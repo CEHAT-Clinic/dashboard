@@ -3,7 +3,8 @@ import {render} from '@testing-library/react';
 import App from './App';
 
 jest.mock('react-i18next', () => ({
-  // This mock makes sure any components using the translate hook can use it without a warning being shown
+  // This mock makes sure any components using the translate hook
+  // can use it without a warning being shown
   useTranslation: () => {
     return {
       t: (s: string) => s,
@@ -17,7 +18,7 @@ jest.mock('react-i18next', () => ({
 }));
 
 // Temporary test to have at least one test
-// Checks if appp renders without a failure
+// Checks if app renders without a failure
 test('App renders', () => {
-  render(<App />);  
+  render(<App />);
 });
