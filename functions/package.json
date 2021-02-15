@@ -18,7 +18,7 @@
   "main": "lib/index.js",
   "dependencies": {
     "axios": "^0.21.1",
-    "eslint": "^7.19.0",
+    "eslint": "^7.20.0",
     "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.11",
     "firebase-admin": "^9.5.0",
