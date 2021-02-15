@@ -40,22 +40,20 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
         // Check if user is an admin user
         firestore
-          .collection('admin')
-          .doc('users')
+          .collection('users')
+          .doc(user.uid)
           .get()
           .then(doc => {
             if (doc.exists) {
-              // Get the document data that contains all admin userIds
               const userData = doc.data();
               if (userData) {
-                const adminUserIds: string[] = userData.userId ?? [];
-                if (adminUserIds.includes(user.uid)) setIsAdmin(true);
+                if (userData.admin) setIsAdmin(true);
               }
             }
           })
           .catch(error => {
-            // Error thrown upon failure to fetch the admin/users doc from Firestore
-            throw new Error(`Unable to fetch admin/users doc: ${error}`);
+            // Error thrown upon failure to fetch the users doc from Firestore
+            throw new Error(`Unable to fetch users doc: ${error}`);
           })
           .finally(() => {
             // Loading is only finished after the async calls to Firestore complete
