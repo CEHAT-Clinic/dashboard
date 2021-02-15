@@ -119,10 +119,10 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           showPassword={showPassword}
           handlePasswordVisibility={() => setShowPassword(!showPassword)}
           value={password}
-          label={t('password')}
+          labelKey={t('password')}
         ></PasswordFormInput>
         <PasswordFormInput
-          label={t('confirmPassword')}
+          labelKey={t('confirmPassword')}
           handlePasswordChange={event => {
             setConfirmPassword(event.target.value);
             setConfirmPasswordError('');

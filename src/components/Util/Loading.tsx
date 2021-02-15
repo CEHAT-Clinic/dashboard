@@ -15,6 +15,7 @@ const Loading: React.FC = () => (
       borderRadius={8}
       textAlign="center"
     >
+      <Text>Loading...</Text>
       <Spinner
         thickness="4px"
         speed="1s"
@@ -22,7 +23,6 @@ const Loading: React.FC = () => (
         color="blue.500"
         size="xl"
       />
-      <Text>Loading...</Text>
       <Text>Cargando...</Text>
     </Box>
   </Flex>

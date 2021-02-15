@@ -92,7 +92,7 @@ const EmailFormInput: ({
  * Props for PasswordFormInput component. Used for type safety.
  */
 interface PasswordFormInputProps {
-  label?: string;
+  labelKey?: string;
   showPassword?: boolean;
   handlePasswordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
@@ -111,14 +111,14 @@ interface PasswordFormInputProps {
  * - `error` (optional) error message to be displayed. Defaults to ''
  */
 const PasswordFormInput: ({
-  label,
+  labelKey,
   showPassword,
   handlePasswordChange,
   value,
   handlePasswordVisibility,
   error,
 }: PasswordFormInputProps) => JSX.Element = ({
-  label = 'password',
+  labelKey = 'password',
   showPassword = false,
   handlePasswordChange,
   value,
@@ -128,7 +128,7 @@ const PasswordFormInput: ({
   const {t} = useTranslation('administration');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>{t(label)}</FormLabel>
+      <FormLabel>{t(labelKey)}</FormLabel>
       <InputGroup>
         <Input
           type={showPassword ? 'text' : 'password'}

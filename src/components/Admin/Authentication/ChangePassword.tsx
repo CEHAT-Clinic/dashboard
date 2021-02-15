@@ -156,7 +156,7 @@ function ChangePasswordModal(): JSX.Element {
             ) : (
               <ModalBody>
                 <PasswordFormInput
-                  label={t('currentPassword')}
+                  labelKey={t('currentPassword')}
                   handlePasswordChange={event => {
                     setCurrentPassword(event.target.value);
                     resetErrors();
@@ -169,7 +169,7 @@ function ChangePasswordModal(): JSX.Element {
                   value={currentPassword}
                 />
                 <PasswordFormInput
-                  label={t('newPassword')}
+                  labelKey={t('newPassword')}
                   handlePasswordChange={event => {
                     setNewPassword(event.target.value);
                     resetErrors();
@@ -182,7 +182,7 @@ function ChangePasswordModal(): JSX.Element {
                   value={newPassword}
                 />
                 <PasswordFormInput
-                  label={t('confirmNewPassword')}
+                  labelKey={t('confirmNewPassword')}
                   handlePasswordChange={event => {
                     setConfirmNewPassword(event.target.value);
                     resetErrors();
