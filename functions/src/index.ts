@@ -16,20 +16,22 @@ const thingspeakUrl = (channelId: string) =>
 const readingsSubcollection = (docId: string) => `/sensors/${docId}/readings`;
 
 interface pm25BufferElement {
-  timestamp: FirebaseFirestore.Timestamp|null,
-  channelAPm25: number,
-  channelBPm25: number,
-  humidity: number,
-  latitude: number,
-  longitude: number,
+  timestamp: FirebaseFirestore.Timestamp | null;
+  channelAPm25: number;
+  channelBPm25: number;
+  humidity: number;
+  latitude: number;
+  longitude: number;
 }
 
-const defaultBufferElement: pm25BufferElement = {timestamp: null,
-                                                channelAPm25: NaN,
-                                                channelBPm25: NaN,
-                                                humidity: NaN,
-                                                latitude: NaN,
-                                                longitude:NaN}
+const defaultBufferElement: pm25BufferElement = {
+  timestamp: null,
+  channelAPm25: NaN,
+  channelBPm25: NaN,
+  humidity: NaN,
+  latitude: NaN,
+  longitude: NaN
+};
 
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
@@ -48,14 +50,14 @@ async function getThingspeakKeysFromPurpleAir(
 
 /**
  * Increment the buffer index, circling back to 0 if the index is at the last point
- * @param index : current index
- * @param length : length of the array
+ * @param index - current index
+ * @param length - length of the array
  */
-const incrementIndex = (index:number,length:number) => {
-  var newIndex = index + 1;
-  newIndex = (newIndex < length) ? newIndex : 0;
-  return newIndex
-}
+const incrementIndex = (index: number, length: number) => {
+  let newIndex = index + 1; // eslint-disable-line no-magic-numbers
+  newIndex = newIndex < length ? newIndex : 0; // eslint-disable-line no-magic-numbers
+  return newIndex;
+};
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
   timeoutSeconds: 120,
@@ -92,31 +94,36 @@ exports.thingspeakToFirestore = functions
       );
 
       const resolvedPath = readingsSubcollection(knownSensor.id);
-      const readingsRef = firestore.collection(resolvedPath); 
+      const readingsRef = firestore.collection(resolvedPath);
 
       const docRef = firestore.collection('sensors').doc(knownSensor.id);
 
-      // If the PM 2.5 circular buffer or the buffer index are not present, 
+      // If the PM 2.5 circular buffer or the buffer index are not present,
       // add them to the document with initial values
       let pm25BufferIndex = 0;
       let pm25Buffer: pm25BufferElement[] = [];
-      for (var i=0; i < 10; ++i){
+      const bufferSize = 10;
+      for (let i = 0; i < 10; ++i) {
         pm25Buffer.push(defaultBufferElement);
-      }
+      };
 
-      // Update pm25 Buffer if it exists in the database
-      docRef.get().then(doc => {
-        if (doc.exists) {
-          if ((doc.get('pm25BufferIndex') !== null) || 
-              (doc.get('pm25Buffer') !== null)){
-                pm25BufferIndex = doc.get('pm25BufferIndex')
-                pm25Buffer = doc.get('pm25Buffer')
-        }
-        }
-      }).catch(error => {
-        console.log("ERROR");
-      })
-
+      // Read pm25 Buffer if it exists in the database
+      docRef
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (
+              doc.get('pm25BufferIndex') !== null ||
+              doc.get('pm25Buffer') !== null
+            ) {
+              pm25BufferIndex = doc.get('pm25BufferIndex');
+              pm25Buffer = doc.get('pm25Buffer');
+            }
+          }
+        })
+        .catch(error => {
+          console.log('Error getting document');
+        });
 
       // If data is not already present in the databse, add it to the historical
       // readings and to the circular buffer
@@ -127,7 +134,7 @@ exports.thingspeakToFirestore = functions
             .get()
         ).empty
       ) {
-        // add to historical readings
+        // Add to historical readings
         const firestoreSafeReading = {
           timestamp: Timestamp.fromDate(reading.timestamp),
           channelAPm25: reading.channelAPm25,
@@ -138,29 +145,30 @@ exports.thingspeakToFirestore = functions
         };
         await readingsRef.add(firestoreSafeReading);
 
-        // add to circular buffer
+        // Add to circular buffer
         pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
-        
-      } else{
-        // Else, the data is already present in the database, so don't add to 
+      } else {
+        // Else, the data is already present in the database, so don't add to
         // the historical readings, but still add to the circular buffer.
         // This happens when a sensor is down.
-        pm25Buffer[pm25BufferIndex] = defaultBufferElement; // add default element
+        pm25Buffer[pm25BufferIndex] = defaultBufferElement; // Add default element
       }
 
       // Write to document
-      pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length) //increment index
-        docRef.get().then(doc => {
+      pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length); // Increment index
+      docRef
+        .get()
+        .then(doc => {
           if (doc.exists) {
             docRef.update({
               pm25BufferIndex: pm25BufferIndex,
-              pm25Buffer : pm25Buffer
-            })      
+              pm25Buffer: pm25Buffer,
+            });
           }
-          }).catch(error => {
-          console.log("Error getting document");
         })
-
+        .catch(error => {
+          console.log('Error getting document');
+        });
 
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
       // our program from getting blocked.
