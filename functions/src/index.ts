@@ -16,7 +16,7 @@ const thingspeakUrl = (channelId: string) =>
 const readingsSubcollection = (docId: string) => `/sensors/${docId}/readings`;
 
 interface pm25BufferElement {
-  timestamp: FirebaseFirestore.Timestamp | null,
+  timestamp: FirebaseFirestore.Timestamp|null,
   channelAPm25: number,
   channelBPm25: number,
   humidity: number,
@@ -24,12 +24,12 @@ interface pm25BufferElement {
   longitude: number,
 }
 
-// const defaultBufferElement: pm25BufferElement = {timestamp: null,
-//                                                 channelAPm25: NaN,
-//                                                 channelBPm25: NaN,
-//                                                 humidity: NaN,
-//                                                 latitude: NaN,
-//                                                 longitude:NaN}
+const defaultBufferElement: pm25BufferElement = {timestamp: null,
+                                                channelAPm25: NaN,
+                                                channelBPm25: NaN,
+                                                humidity: NaN,
+                                                latitude: NaN,
+                                                longitude:NaN}
 
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
@@ -46,6 +46,16 @@ async function getThingspeakKeysFromPurpleAir(
   return new PurpleAirResponse(purpleAirApiResponse);
 }
 
+/**
+ * Increment the buffer index, circling back to 0 if the index is at the last point
+ * @param index : current index
+ * @param length : length of the array
+ */
+const incrementIndex = (index:number,length:number) => {
+  var newIndex = index + 1;
+  newIndex = (newIndex < length) ? newIndex : 0;
+  return newIndex
+}
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
   timeoutSeconds: 120,
@@ -84,27 +94,29 @@ exports.thingspeakToFirestore = functions
       const resolvedPath = readingsSubcollection(knownSensor.id);
       const readingsRef = firestore.collection(resolvedPath); 
 
-      // my code:
       const docRef = firestore.collection('sensors').doc(knownSensor.id);
 
       // If the PM 2.5 circular buffer or the buffer index are not present, 
       // add them to the document with initial values
       let pm25BufferIndex = 0;
-      let pm25Buffer= new Array<pm25BufferElement>(3600);
+      let pm25Buffer: pm25BufferElement[] = [];
+      for (var i=0; i < 10; ++i){
+        pm25Buffer.push(defaultBufferElement);
+      }
 
+      // Update pm25 Buffer if it exists in the database
       docRef.get().then(doc => {
         if (doc.exists) {
-          if ((doc.get('pm25BufferIndex') == null) || 
-              (doc.get('pm25Buffer') == null)){
-            // add a default array and make the buffer index 0
-            docRef.update({
-              pm25BufferIndex: pm25BufferIndex,
-              pm25Buffer: pm25Buffer
-            })
-          }else{
-            pm25BufferIndex = doc.get('pm25BufferIndex')
-            pm25Buffer = doc.get('pm25Buffer')
-          }
+          if ((doc.get('pm25BufferIndex') !== null) || 
+              (doc.get('pm25Buffer') !== null)){
+                pm25BufferIndex = doc.get('pm25BufferIndex')
+                pm25Buffer = doc.get('pm25Buffer')
+        }
+        }
+      }).catch(error => {
+        console.log("ERROR");
+      })
+
 
       // If data is not already present in the databse, add it to the historical
       // readings and to the circular buffer
@@ -115,6 +127,7 @@ exports.thingspeakToFirestore = functions
             .get()
         ).empty
       ) {
+        // add to historical readings
         const firestoreSafeReading = {
           timestamp: Timestamp.fromDate(reading.timestamp),
           channelAPm25: reading.channelAPm25,
@@ -125,20 +138,29 @@ exports.thingspeakToFirestore = functions
         };
         await readingsRef.add(firestoreSafeReading);
 
-        // MY CODE:
         // add to circular buffer
+        pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
         
-        // sensorRef.set(firestoreSafeReading).then(() => {
-        //   console.log("Document successfully written!");
-        // });
-        // END MY CODE
       } else{
         // Else, the data is already present in the database, so don't add to 
         // the historical readings, but still add to the circular buffer.
         // This happens when a sensor is down.
-
-        // add to circular buffer with NaN
+        pm25Buffer[pm25BufferIndex] = defaultBufferElement; // add default element
       }
+
+      // Write to document
+      pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length) //increment index
+        docRef.get().then(doc => {
+          if (doc.exists) {
+            docRef.update({
+              pm25BufferIndex: pm25BufferIndex,
+              pm25Buffer : pm25Buffer
+            })      
+          }
+          }).catch(error => {
+          console.log("Error getting document");
+        })
+
 
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
       // our program from getting blocked.
