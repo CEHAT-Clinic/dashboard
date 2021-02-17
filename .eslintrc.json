@@ -102,7 +102,10 @@
           "onupdatefound",
           "onstatechange",
           "Unregisters",
-          "xl"
+          "xl",
+          "Thead",
+          "Td",
+          "Tbody"
         ],
         "skipWords": [
           "Pv"
