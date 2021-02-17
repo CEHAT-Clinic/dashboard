@@ -31,15 +31,16 @@ service cloud.firestore {
     // Only allow changes to other fields if user is modifying their own user
     // doc, or if the user is an admin user, who can modify all accounts
     match /users/{userId} {
+      function isCurrentUserDoc() {
+        return isSignedIn() && request.auth.uid == userId;
+      }
       // For a valid user doc update for a non-admin user, they must be signed in,
       // be changing their own doc, and not change the admin field to true
       function validNonAdminUpdate() {
-        let isCorrectUserDoc = isSignedIn() && request.auth.uid == userId;
-        let validAdminStatus = request.resource.data.admin == false;
-        return isCorrectUserDoc && validAdminStatus;
+        return isCurrentUserDoc() && request.resource.data.admin == false;
       }
-
-      allow read, write: if isAdmin() || validNonAdminUpdate();
+      allow read: if isAdmin() || isCurrentUserDoc();
+      allow write: if isAdmin() || validNonAdminUpdate();
     }
 
     // Used to display values on live webpage
