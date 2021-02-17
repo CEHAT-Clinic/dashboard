@@ -1,18 +1,12 @@
 import React, {useState} from 'react';
-import {
-  Text,
-  Heading,
-  Link,
-  Divider,
-} from '@chakra-ui/react';
+import {Text, Heading, Link, Divider} from '@chakra-ui/react';
 import {
   SubmitButton,
   signInWithGoogle,
   EmailFormInput,
   PasswordFormInput,
-  User,
 } from './Util';
-import {firebaseAuth, firestore} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 
 /**
@@ -57,27 +51,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
     } else {
       firebaseAuth
         .createUserWithEmailAndPassword(email, password)
-        .then(userCredential => {
-          // Upon success, create a user doc
-          if (userCredential.user) {
-            const user = userCredential.user;
-
-            const userDocData: User = {
-              name: user.displayName ?? displayName,
-              email: user.email ?? email,
-              admin: false,
-            };
-            firestore
-              .collection('users')
-              .add(userDocData)
-              .then(() => {
-                // Doc created
-              })
-              .catch(error => {
-                setGeneralEmailError(`Error occurred: ${error}`);
-              });
-          }
-        })
+        .then()
         .catch(error => {
           // Error codes from Firebase documentation
           switch (error.code) {

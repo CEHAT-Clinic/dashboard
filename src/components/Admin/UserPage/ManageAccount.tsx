@@ -1,5 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading, Text, Flex, Button,
+import {
+  Box,
+  Heading,
+  Text,
+  Flex,
+  Button,
   FormControl,
   FormLabel,
   Input,
@@ -86,24 +91,24 @@ const ManageAccount: () => JSX.Element = () => {
         >
           <Heading>Manage Your Account</Heading>
           <FormControl
-          isRequired
-          marginTop={4}
-          isInvalid={displayNameError !== ''}
-        >
-          <FormLabel>Display Name</FormLabel>
-          <Input
-            type="text"
-            placeholder="John Smith"
-            size="md"
-            onChange={event => {
-              setDisplayName(event.target.value);
-              setDisplayNameError('');
-              setGeneralEmailError('');
-            }}
-            value={displayName}
-          />
-          <FormErrorMessage>{displayNameError}</FormErrorMessage>
-        </FormControl>
+            isRequired
+            marginTop={4}
+            isInvalid={displayNameError !== ''}
+          >
+            <FormLabel>Display Name</FormLabel>
+            <Input
+              type="text"
+              placeholder="John Smith"
+              size="md"
+              onChange={event => {
+                setDisplayName(event.target.value);
+                setDisplayNameError('');
+                setError('');
+              }}
+              value={displayName}
+            />
+            <FormErrorMessage>{displayNameError}</FormErrorMessage>
+          </FormControl>
           <Text>Email: {email}</Text>
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>Account connected to Google</Text>}
