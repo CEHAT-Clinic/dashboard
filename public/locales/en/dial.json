@@ -4,6 +4,6 @@
     "good": "Good",
     "moderate": "Moderate",
     "sensitive": "Unhealthy for Sensitive Groups",
-    "all": "Unhealthy for All",
+    "all": "Unhealthy",
     "very": "Very Unhealthy"
 }
