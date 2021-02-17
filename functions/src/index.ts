@@ -30,7 +30,7 @@ const defaultBufferElement: pm25BufferElement = {
   channelBPm25: NaN,
   humidity: NaN,
   latitude: NaN,
-  longitude: NaN
+  longitude: NaN,
 };
 
 async function getThingspeakKeysFromPurpleAir(
@@ -101,21 +101,18 @@ exports.thingspeakToFirestore = functions
       // If the PM 2.5 circular buffer or the buffer index are not present,
       // add them to the document with initial values
       let pm25BufferIndex = 0;
-      let pm25Buffer: pm25BufferElement[] = [];
+      let pm25Buffer: Array<pm25BufferElement> = [];
       const bufferSize = 10;
-      for (let i = 0; i < 10; ++i) {
+      for (let i = 0; i < bufferSize; ++i) {
         pm25Buffer.push(defaultBufferElement);
-      };
+      }
 
-      // Read pm25 Buffer if it exists in the database
+      // Get pm25 Buffer if it exists in the database
       docRef
         .get()
         .then(doc => {
           if (doc.exists) {
-            if (
-              doc.get('pm25BufferIndex') !== null ||
-              doc.get('pm25Buffer') !== null
-            ) {
+            if (doc.get('pm25BufferIndex') && doc.get('pm25Buffer')) {
               pm25BufferIndex = doc.get('pm25BufferIndex');
               pm25Buffer = doc.get('pm25Buffer');
             }
@@ -148,14 +145,16 @@ exports.thingspeakToFirestore = functions
         // Add to circular buffer
         pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
       } else {
-        // Else, the data is already present in the database, so don't add to
-        // the historical readings, but still add to the circular buffer.
+        // Else, the value is the same as the previous value, so this data is
+        // already present in the database. We don't add to the historical
+        // readings, but still add a default element to the circular buffer.
         // This happens when a sensor is down.
         pm25Buffer[pm25BufferIndex] = defaultBufferElement; // Add default element
       }
 
+      // Increment index
+      pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length);
       // Write to document
-      pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length); // Increment index
       docRef
         .get()
         .then(doc => {
