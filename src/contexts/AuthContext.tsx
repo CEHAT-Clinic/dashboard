@@ -39,25 +39,6 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
       if (user) {
         setIsAuthenticated(true);
 
-        const createNewUserDoc = () => {
-          // Create a user doc if document doesn't exist
-          console.log('Creating a user doc');
-          const userData: User = {
-            name: user.displayName ?? '',
-            email: user.email ?? '',
-            admin: false,
-          };
-          firestore
-            .collection('users')
-            .doc(user.uid)
-            .set(userData)
-            .then()
-            .catch(error => {
-              // Error thrown upon failure to create the users doc in Firestore
-              throw new Error(`Unable to create users doc: ${error}`);
-            });
-        };
-
         // Check if user is an admin user
         firestore
           .collection('users')
@@ -70,14 +51,25 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
                 if (userData.admin) setIsAdmin(true);
               }
             } else {
-              createNewUserDoc();
+              // If a user doc doesn't exist, create one
+              const userData: User = {
+                name: user.displayName ?? '',
+                email: user.email ?? '',
+                admin: false,
+              };
+              firestore
+                .collection('users')
+                .doc(user.uid)
+                .set(userData)
+                .then()
+                .catch(error => {
+                  // Error thrown upon failure to create the users doc in Firestore
+                  throw new Error(`Unable to create users doc: ${error}`);
+                });
             }
           })
           .catch(error => {
-            console.log(error.code);
-            if (error.code === 'auth/insufficient-permission') {
-              createNewUserDoc();
-            }
+            throw new Error(`Error occurred: ${error}`);
           })
           .finally(() => {
             // Loading is only finished after the async calls to Firestore complete
