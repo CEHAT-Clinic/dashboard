@@ -39,7 +39,7 @@ interface AQIBufferElement{
 }
 const defaultAQIBufferElement: AQIBufferElement = {
   timestamp: null,
-  aqi: 7
+  aqi: NaN
 }
 
 async function getThingspeakKeysFromPurpleAir(
@@ -119,7 +119,7 @@ exports.thingspeakToFirestore = functions
       }
 
       // Get pm25 Buffer if it exists in the database
-      docRef
+      await docRef
         .get()
         .then(doc => {
           if (doc.exists) {
@@ -166,7 +166,7 @@ exports.thingspeakToFirestore = functions
       // Increment index
       pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length);
       // Write to document
-      docRef
+      await docRef
         .get()
         .then(doc => {
           if (doc.exists) {
@@ -322,7 +322,7 @@ exports.calculateAqi = functions.pubsub
       }
 
       // Get AQI Buffer if it exists in the database
-      sensorDocRef
+      await sensorDocRef
         .get()
         .then(doc => {
           if (doc.exists) {
@@ -366,7 +366,7 @@ exports.calculateAqi = functions.pubsub
           aqi: aqi,
         };
         const aqiBufferData = {
-          aqi: 3,
+          aqi: aqi,
           timestamp: null,
         }
         aqiBuffer[aqiBufferIndex] = aqiBufferData; // update circular buffer
@@ -378,7 +378,7 @@ exports.calculateAqi = functions.pubsub
     // Increment index
     aqiBufferIndex = incrementIndex(aqiBufferIndex, aqiBuffer.length);
     // Write to document
-    sensorDocRef
+    await sensorDocRef
       .get()
       .then(doc => {
         if (doc.exists) {
