@@ -1,6 +1,7 @@
 import React from 'react';
 import GaugeChart from 'react-gauge-chart';
 import {Text, Box, Tag, Grid, GridItem, Link} from '@chakra-ui/react';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Interface for the props of the dial
@@ -44,6 +45,8 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
     return dialReading;
   };
 
+  const {t} = useTranslation(['dial', 'menu']);
+
   return (
     <Box>
       <GaugeChart
@@ -57,13 +60,11 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
         animate={false}
         arcWidth={0.4}
       />
-      <Text fontSize={30}>Air Quality Index: {currentReading}</Text>
+      <Text fontSize={30}>{t('aqi') + currentReading}</Text>
       <Text fontSize={14} mb={2}>
-        For more information on air quality and the Air Quality Index (AQI),
-        check out our
+        {t('moreInfo')}
         <Link fontSize={14} color="#32bfd1" href="/health">
-          {' '}
-          health information.
+          {t('menu:healthInfo').toLowerCase()}
         </Link>
       </Text>
       <Grid
@@ -76,27 +77,27 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
       >
         <GridItem rowSpan={1} colSpan={1}>
           <Tag fontSize={16} px={5} py={1} bg="#1B8DFF" textColor="white">
-            Good
+            {t('good')}
           </Tag>
         </GridItem>
         <GridItem rowSpan={1} colSpan={1}>
           <Tag fontSize={16} px={2} py={1} bg="#4765f5" textColor="white">
-            Moderate
+            {t('moderate')}
           </Tag>
         </GridItem>
         <GridItem rowSpan={1} colSpan={2}>
           <Tag fontSize={16} px={2} py={1} bg="#9247a1" textColor="white">
-            Unhealthy For Sensitive Groups
+            {t('sensitive')}
           </Tag>
         </GridItem>
         <GridItem rowSpan={1} colSpan={2}>
           <Tag fontSize={16} px={2} py={1} bg="#cc2475" textColor="white">
-            Unhealthy For All
+            {t('all')}
           </Tag>
         </GridItem>
         <GridItem rowSpan={1} colSpan={2}>
           <Tag fontSize={16} px={2} py={1} bg="#FF3628" textColor="white">
-            Very Unhealthy
+            {t('very')}
           </Tag>
         </GridItem>
       </Grid>

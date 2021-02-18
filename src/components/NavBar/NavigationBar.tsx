@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import './NavigationBar.css';
 import cehatLogo from './CEHATLogo.png';
 import menuIcon from './menuIcon.png';
+import {useTranslation} from 'react-i18next';
 
 function NavigationBar(): JSX.Element {
   // State of nav bar (always visible in large screen)
@@ -34,22 +35,24 @@ function NavigationBar(): JSX.Element {
     setIsNavVisible(!isNavVisible);
   }
 
+  const {t} = useTranslation('menu');
   return (
     <div>
       <header className="Navigation_Header">
-        <img src={cehatLogo} className="Logo" alt="logo" />
+        {}
+        {/* Logo in Spanish and English are the same */}
+        <img src={cehatLogo} className="Logo" alt="Logo" />
         {/* CEHAT logo */}
         {isNavVisible && (
           <nav className="Nav">
-            <a href="/">Home</a>
-            <a href="/about">About</a>
-            <a href="/health">Health Information</a>
-            <a href="/involved">Get Involved</a>
-            <a href="/admin">Admin</a>
+            <a href="/">{t('home')}</a>
+            <a href="/health">{t('healthInfo')}</a>
+            <a href="/about">{t('about')}</a>
+            <a href="/admin">{t('admin')}</a>
           </nav>
         )}
         <button onClick={toggleNav} className="Burger">
-          <img src={menuIcon} className="menu-icon" alt="menu button" />
+          <img src={menuIcon} className="menu-icon" alt={t('menuButton')} />
         </button>
       </header>
     </div>

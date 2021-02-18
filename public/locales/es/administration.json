@@ -1,0 +1,92 @@
+{
+    "userUndefined": "Usuario indeterminado",
+    "passwordMismatch": "Las contranseñas no son iguales",
+    "notStrongEnough": "La contraseña no es suficientemente fiable. Por favor, intenta de nuevo con una contraseña de seis o más caracteres",
+    "unknownError": "Ha ocurrido un error: ",
+    "invalidEmail": "El correo electrónico no es válida. Por favor, introduce un correo electrónico válida",
+    "userNotFound": "No hemos encontrado un usuario para ",
+    "emailSendFailure": "Ha ocurrido un error tratando de enviar el correo electrónico. Por favor, vuelve a intentar",
+    "accountDisabled": "La cuenta ha sido desactivada. Si crees que es un error, contacta a un administrador",
+    "incorrectPassword": "Contraseña incorrecta. Vuelve a intentar o vuelve a ponerla. También es posible que creaste tu cuenta con otro metódo",
+    "accountExists":"Ya existe una cuenta con el mismo correo electrónico. Por favor, inicia sesión o usa un correo electrónico diferente",
+    "modalLaunch": {
+        "change": "Actualiza Contraseña",
+        "forgot": {
+            "text": "¿Has olvidado tu contraseña? ",
+            "link": "Vuelve a ponerla"
+        }
+    },
+    "modalHeader": {
+        "change":"Actualiza Contraseña",
+        "forgot": "Envia un Correo Electrónico para Volver a Poner una Contraseña"
+    },
+    "success": {
+        "change": "Contraseña actualizada",
+        "forgot": "Correo electrónico enviado"
+    }, 
+    "currentPassword": "Contraseña actual",
+    "newPassword": "Contraseña nueva",
+    "confirmNewPassword": "Confirma la contraseña nueva",
+    "password": "Contraseña",
+    "confirmPassword": "Confirma la contraseña",
+    "submitLabel": {
+        "change": "Actualiza contraseña",
+        "forgot": "Envia el correo electrónico"
+    },
+    "signIn": {
+        "google": "Inicia sesión con Google",
+        "email": "Inicia sesión con correo electrónico"
+    },
+    "signUp": {
+        "google": "Inscríbete con Google",
+        "email": "Inscríbete por correo electrónico"
+    },
+    "signOut": "Cierra sesión",
+    "signOutError": "Al tratar de cerrar la sesión, ha ocurrido un error. Por favor, vuelve a intentar",
+    "pageHeader": {
+        "signIn": "Inicia Sesión",
+        "signUp": "Inscríbete"
+    },
+    "haveAccount": {
+        "text": "¿Ya tienes una cuenta? ",
+        "link": "Inicia sesión"
+    },
+    "passwordVisibility": {
+        "hide": "Esconde",
+        "show": "Muestra"
+    },
+    "email": "Correo electrónico",
+    "wrongMethod": "La cuenta ya fue creada con otro método de registración. Inscríbete con una de las siguientes: ",
+    "tryAgain": "Ocurrió un error. Por favor, trata de inscribirte con otro método de registración",
+    "popUpsBlocked": "El menú emergente de registración fue bloqueado. Permite elementos emergentes en tu navegador o registrate con correo electrónico",
+    "needAccount": "¿Necesitas una cuenta? ",
+    "signUpLink": "Regístrate",
+    "noUser": "Usuario no aparece",
+    "noEmail": "Correo electrónico no aparece",
+    "accessDenied": {
+        "heading": "Acceso Denegado",
+        "reasonLeadUp": "No tienes acceso a esta página ya que ",
+        "returnHome": "Regresa a Inicio",
+
+        "shouldHaveAccess": "Si crees que debes de tener acceso a esta págino, por favor, contacta a un administrador o un miembro del CEHAT de South Gate."
+    },
+    "manageAccount":{
+        "methodFetchError": "Occurió un error al recoger metódos de inciar sesión",
+        "connectedToGoogle": "Cuenta conectada con Google",
+        "heading": "Administra Tu Cuenta"
+    },
+    "returnAdmin": "Regresa a la Página Administrativa",
+    "notSignedIn": "no has iniciado la sesión",
+    "notAdmin": "no es un administrador",
+    "manageSensors": "Administra los Sensores",
+    "manageAccountButtonText": "Administra la Cuenta",
+    "manageUsers": "Administra los Usuarios",
+    "header": "Página Administrativa",
+    "users":{
+        "cantFetch": "No se pudieron obtener los usuarios: ",
+        "heading": "Los administradores",
+        "name": "Nombre",
+        "allCurrent": "Todos usuarios actuales",
+        "isAdmin": "¿Administrador(a)?"
+    }
+}

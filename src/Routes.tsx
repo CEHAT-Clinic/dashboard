@@ -7,7 +7,6 @@ const About = lazy(() => import('./pages/About'));
 const Home = lazy(() => import('./pages/Home'));
 const Health = lazy(() => import('./pages/Health'));
 const Admin = lazy(() => import('./pages/Admin'));
-const Involved = lazy(() => import('./pages/Involved'));
 const ManageAccount = lazy(
   () => import('./components/Admin/UserPage/ManageAccount')
 );
@@ -25,7 +24,6 @@ function Routes(): JSX.Element {
         <Switch>
           <Route path="/about" component={About} />
           <Route path="/health" component={Health} />
-          <Route path="/involved" component={Involved} />
           <Route exact path="/admin" component={Admin} />
           <Route path="/admin/account" component={ManageAccount} />
           <Route path="/admin/users" component={ManageUsers} />

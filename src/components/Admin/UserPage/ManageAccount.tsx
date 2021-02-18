@@ -5,6 +5,7 @@ import AccessDenied from './AccessDenied';
 import ChangePasswordModal from '../Authentication/ChangePassword';
 import {firebaseAuth} from '../../../firebase';
 import Loading from '../../Util/Loading';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for a user to manage their own account information.
@@ -20,14 +21,16 @@ const ManageAccount: () => JSX.Element = () => {
   const [error, setError] = useState('');
   // --------------- End state maintenance variables ------------------------
 
+  const {t} = useTranslation('administration');
+
   // Runs on mount
   useEffect(() => {
     if (isAuthenticated) {
-      if (!firebaseAuth.currentUser) throw new Error('No user');
-      if (!firebaseAuth.currentUser.email) throw new Error('No user email');
+      if (!firebaseAuth.currentUser) throw new Error(t('noUser'));
+      if (!firebaseAuth.currentUser.email) throw new Error(t('noEmail'));
       setEmail(firebaseAuth.currentUser.email);
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, t]);
 
   // When email is populated, fetches sign in methods
   useEffect(() => {
@@ -41,10 +44,12 @@ const ManageAccount: () => JSX.Element = () => {
         setSignInMethods(methods);
       } catch (error) {
         if (error.code === 'auth/invalid-email') {
-          setError(`Invalid email ${email}`);
+          setError(t('invalidEmail'));
         } else {
           setError(
-            `Error occurred when fetching user sign in methods: ${error}, ${error.code}, ${error.message}`
+            `${t('manageAccount.methodFetchError')}: ${error}, ${error.code}, ${
+              error.message
+            }`
           );
         }
       }
@@ -52,7 +57,7 @@ const ManageAccount: () => JSX.Element = () => {
     if (email) {
       getSignInMethods();
     }
-  }, [email]);
+  }, [email, t]);
 
   // When signInMethods is populated, sets user type state maintenance variables
   useEffect(() => {
@@ -63,7 +68,7 @@ const ManageAccount: () => JSX.Element = () => {
   if (isLoading) {
     return <Loading />;
   } else if (!isAuthenticated) {
-    return <AccessDenied reason="you are not signed in" />;
+    return <AccessDenied reason={t('notSignedIn')} />;
   } else {
     return (
       <Flex width="full" align="center" justifyContent="center">
@@ -77,13 +82,15 @@ const ManageAccount: () => JSX.Element = () => {
           boxShadow="lg"
           textAlign="center"
         >
-          <Heading>Manage Your Account</Heading>
-          <Text>Email: {email}</Text>
+          <Heading>{t('manageAccount.heading')}</Heading>
+          <Text>
+            {t('email')}: {email}
+          </Text>
           {passwordUser && <ChangePasswordModal />}
-          {googleUser && <Text>Account connected to Google</Text>}
+          {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Text>{error}</Text>
           <Button as="a" href="/admin" margin={1}>
-            Return to admin page
+            {t('returnAdmin')}
           </Button>
         </Box>
       </Flex>
