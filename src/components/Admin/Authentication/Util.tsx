@@ -207,7 +207,7 @@ const SubmitButton: ({
  * @param event - submit form event
  * @param setError - function to set error state for any errors from Google
  * @param setIsLoading - function to set loading state
- * @param translate - function to translate text using i18nnext
+ * @param translate - function to translate text using i18n-next
  */
 async function signInWithGoogle(
   event: React.FormEvent<HTMLFormElement>,
