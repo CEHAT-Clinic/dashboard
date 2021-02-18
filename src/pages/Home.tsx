@@ -2,7 +2,8 @@ import React, {useState} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
 // Import AQIDial from '../components/AQIDial';
-import AQIDial2 from '../components/AQIDial2';
+import AQIDial2 from '../components/AQIGauge/AQIDial2';
+import AQIGauge from '../components/AQIGauge/NewGauge';
 
 /**
  * Home screen component
@@ -35,7 +36,8 @@ const Home: () => JSX.Element = () => {
             borderRadius={6}
           >
             {currentSensor ? (
-              <AQIDial2 currentReading={currentSensor} />
+              //<AQIDial2 currentReading={currentSensor} />
+              <AQIGauge/>
             ) : (
               <Text marginTop={[null, null, '20%', null]}>
                 Click a sensor on the map to see its AQI value here!
