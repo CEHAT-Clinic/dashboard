@@ -103,7 +103,7 @@ interface PasswordFormInputProps {
 /**
  * Component for password input field in authentication forms.
  * @param props - label, showPassword, handlePasswordChange, handlePasswordVisibility, error
- * - `label` (optional) label for password input. Defaults to 'Password'
+ * - `labelKey` (optional) key for looking up a label for password input. Defaults to 'Password'
  * - `showPassword` (optional) if password is hidden or not. Defaults to false
  * - `handlePasswordChange` handles change in password input field
  * - `value` value that tracks the form value
@@ -207,6 +207,7 @@ const SubmitButton: ({
  * @param event - submit form event
  * @param setError - function to set error state for any errors from Google
  * @param setIsLoading - function to set loading state
+ * @param translate - function to translate text using i18nnext
  */
 async function signInWithGoogle(
   event: React.FormEvent<HTMLFormElement>,
