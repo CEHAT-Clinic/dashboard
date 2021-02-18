@@ -24,7 +24,7 @@ interface pm25BufferElement {
   longitude: number;
 }
 
-const defaultBufferElement: pm25BufferElement = {
+const defaultPm25BufferElement: pm25BufferElement = {
   timestamp: null,
   channelAPm25: NaN,
   channelBPm25: NaN,
@@ -32,6 +32,15 @@ const defaultBufferElement: pm25BufferElement = {
   latitude: NaN,
   longitude: NaN,
 };
+
+interface AQIBufferElement{
+  timestamp: FirebaseFirestore.Timestamp | null;
+  aqi: number;
+}
+const defaultAQIBufferElement: AQIBufferElement = {
+  timestamp: null,
+  aqi: 7
+}
 
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
@@ -102,9 +111,11 @@ exports.thingspeakToFirestore = functions
       // add them to the document with initial values
       let pm25BufferIndex = 0;
       let pm25Buffer: Array<pm25BufferElement> = [];
-      const bufferSize = 10;
+      // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
+      // the AQI nowcast calculation
+      const bufferSize = 10; //TODO: change this from testing size
       for (let i = 0; i < bufferSize; ++i) {
-        pm25Buffer.push(defaultBufferElement);
+        pm25Buffer.push(defaultPm25BufferElement);
       }
 
       // Get pm25 Buffer if it exists in the database
@@ -149,7 +160,7 @@ exports.thingspeakToFirestore = functions
         // already present in the database. We don't add to the historical
         // readings, but still add a default element to the circular buffer.
         // This happens when a sensor is down.
-        pm25Buffer[pm25BufferIndex] = defaultBufferElement; // Add default element
+        pm25Buffer[pm25BufferIndex] = defaultPm25BufferElement; // Add default element
       }
 
       // Increment index
@@ -295,6 +306,36 @@ exports.calculateAqi = functions.pubsub
       const hourlyAverages = await getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
+      // document reference for current sensor 
+      // (to update last-24-hours AQI buffer)
+      const sensorDocRef = firestore.collection('/sensors').doc(docId);
+
+      // If the last 24 hours AQI circular buffer or the buffer index are not 
+      // present, add them to the document with initial values
+      let aqiBufferIndex = 0;
+      let aqiBuffer: Array<AQIBufferElement> = [];
+      // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
+      // create a graph with 24 hours of data
+      const bufferSize = 3; //TODO: change this from testing size
+      for (let i = 0; i < bufferSize; ++i) {
+        aqiBuffer.push(defaultAQIBufferElement);
+      }
+
+      // Get AQI Buffer if it exists in the database
+      sensorDocRef
+        .get()
+        .then(doc => {
+          if (doc.exists) {
+            if (doc.get('aqiBufferIndex') && doc.get('aqiBuffer')) {
+              aqiBufferIndex = doc.get('aqiBufferIndex');
+              aqiBuffer = doc.get('aqiBuffer');
+            }
+          }
+        })
+        .catch(error => {
+          console.log('Error getting document');
+        });
+
       // NowCast formula from the EPA requires 2 out of the last 3 hours
       // to be available
       let validEntriesLastThreeHours = 0;
@@ -324,13 +365,39 @@ exports.calculateAqi = functions.pubsub
           nowCastPm25: nowcastPm25.reading,
           aqi: aqi,
         };
+        const aqiBufferData = {
+          aqi: 3,
+          timestamp: null,
+        }
+        aqiBuffer[aqiBufferIndex] = aqiBufferData; // update circular buffer
+      } else{
+        // if there's not enough info, use the default circular buffer element
+        aqiBuffer[aqiBufferIndex] = defaultAQIBufferElement; 
       }
+
+    // Increment index
+    aqiBufferIndex = incrementIndex(aqiBufferIndex, aqiBuffer.length);
+    // Write to document
+    sensorDocRef
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          sensorDocRef.update({
+            aqiBufferIndex: aqiBufferIndex,
+            aqiBuffer: aqiBuffer,
+          });
+        }
+      })
+      .catch(error => {
+        console.log('Error getting document');
+      });
     }
 
     await firestore.collection('current-reading').doc('pm25').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });
+
   });
 
 // When there are many readings to get, extra time beyond the default 120 seconds
