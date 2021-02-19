@@ -74,7 +74,7 @@ function NavigationBar(): JSX.Element {
           </nav>
         )}
         <button onClick={toggleNav} className="Burger">
-          <img src={menuIcon} className="menu-icon" alt={t('menuButton')} />
+          <FaBars className="menu-icon" aria-label={t('menuButton')} />
         </button>
       </header>
     </div>
