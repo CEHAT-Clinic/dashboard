@@ -25,7 +25,7 @@ All conditional formatting for small/big screens is in this file */
   }
 
 /* Style for navigation links*/
-.Nav a {
+nav a, #changeLanguage {
     color: #fff;
     font-size: 20px;
     font-weight: 500;
@@ -34,7 +34,7 @@ All conditional formatting for small/big screens is in this file */
   }
 
 /* Navigable link text gets larger when you hover*/
-.Nav a:hover {
+nav a:hover, #changeLanguage:hover {
     transform: scale(1.1);
   }
 

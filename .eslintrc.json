@@ -106,7 +106,8 @@
           "Thead",
           "Td",
           "Tbody",
-          "Lngs"
+          "Lngs",
+          "Idioma"
         ],
         "skipWords": [
           "Pv"
