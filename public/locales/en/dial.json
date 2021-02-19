@@ -1,0 +1,9 @@
+{
+    "aqi": "Air Quality Index: ",
+    "moreInfo": "For more information on air quality and the Air Quality Index (AQI), check out our ",
+    "good": "Good",
+    "moderate": "Moderate",
+    "sensitive": "Unhealthy for Sensitive Groups",
+    "all": "Unhealthy",
+    "very": "Very Unhealthy"
+}
