@@ -135,8 +135,8 @@ function ChangePasswordModal(): JSX.Element {
   }
 
   return (
-    <Box>
-      <Button colorScheme="teal" onClick={onOpen} width="full">
+    <Box marginY={2}>
+      <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
         Update your password
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
@@ -201,12 +201,7 @@ function ChangePasswordModal(): JSX.Element {
                   error={generalModalError}
                 />
               )}
-              <Button
-                colorScheme="red"
-                marginLeft={4}
-                marginTop={4}
-                onClick={handleClose}
-              >
+              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
                 Close
               </Button>
             </ModalFooter>

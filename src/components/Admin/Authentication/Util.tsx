@@ -8,6 +8,8 @@ import {
   FormLabel,
   Input,
   InputGroup,
+  Box,
+  FormHelperText,
 } from '@chakra-ui/react';
 import firebase, {firebaseAuth} from '../../../firebase';
 
@@ -92,6 +94,7 @@ interface PasswordFormInputProps {
   value: string;
   handlePasswordVisibility?: () => void;
   error?: string;
+  helpMessage?: string;
 }
 
 /**
@@ -103,6 +106,7 @@ interface PasswordFormInputProps {
  * - `value` value that tracks the form value
  * - `handlePasswordVisibility` (optional) changes showPassword. Defaults to toggle showPassword.
  * - `error` (optional) error message to be displayed. Defaults to ''
+ * - `helpMessage` (optional) message to explain the form field to users
  */
 const PasswordFormInput: ({
   label,
@@ -111,6 +115,7 @@ const PasswordFormInput: ({
   value,
   handlePasswordVisibility,
   error,
+  helpMessage,
 }: PasswordFormInputProps) => JSX.Element = ({
   label = 'Password',
   showPassword = false,
@@ -118,6 +123,7 @@ const PasswordFormInput: ({
   value,
   handlePasswordVisibility = () => !showPassword,
   error = '',
+  helpMessage = '',
 }: PasswordFormInputProps) => {
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
@@ -135,6 +141,7 @@ const PasswordFormInput: ({
           handlePasswordVisibility={handlePasswordVisibility}
         />
       </InputGroup>
+      <FormHelperText>{helpMessage}</FormHelperText>
       <FormErrorMessage>{error}</FormErrorMessage>
     </FormControl>
   );
@@ -175,23 +182,25 @@ const SubmitButton: ({
   isDisabled = false,
 }: SubmitButtonProps) => {
   return (
-    <FormControl isInvalid={error !== ''}>
-      <Button
-        colorScheme={color}
-        variant="solid"
-        type="submit"
-        width="full"
-        marginY={4}
-        isDisabled={isDisabled}
-      >
-        {isLoading ? (
-          <CircularProgress isIndeterminate size="24px" color={color} />
-        ) : (
-          label
-        )}
-      </Button>
-      <FormErrorMessage>{error}</FormErrorMessage>
-    </FormControl>
+    <Box align="center">
+      <FormControl isInvalid={error !== ''}>
+        <Button
+          colorScheme={color}
+          variant="solid"
+          type="submit"
+          minWidth="50%"
+          marginY={4}
+          isDisabled={isDisabled}
+        >
+          {isLoading ? (
+            <CircularProgress isIndeterminate size="24px" color={color} />
+          ) : (
+            label
+          )}
+        </Button>
+        <FormErrorMessage>{error}</FormErrorMessage>
+      </FormControl>
+    </Box>
   );
 };
 
