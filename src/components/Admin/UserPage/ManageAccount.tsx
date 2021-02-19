@@ -26,6 +26,8 @@ const ManageAccount: () => JSX.Element = () => {
   const [error, setError] = useState('');
   // --------------- End state maintenance variables ------------------------
 
+  const {t} = useTranslation('administration');
+
   // Runs on mount and on authentication status change
   useEffect(() => {
     if (isAuthenticated && firebaseAuth.currentUser) {
@@ -40,10 +42,10 @@ const ManageAccount: () => JSX.Element = () => {
           })
           .catch(error => {
             if (error.code === 'auth/invalid-email' && email) {
-              setError(`Invalid email ${email}`);
+              setError(t('invalidEmailShort') + email);
             } else {
               setError(
-                `Error occurred when fetching user sign in methods: ${error}, ${error.code}, ${error.message}`
+                `${t('manageAccount.methodFetchError')}: ${error}`
               );
             }
           })
@@ -51,49 +53,6 @@ const ManageAccount: () => JSX.Element = () => {
       }
     }
   }, [isAuthenticated, email]);
-  const {t} = useTranslation('administration');
-
-  // Runs on mount
-  useEffect(() => {
-    if (isAuthenticated) {
-      if (!firebaseAuth.currentUser) throw new Error(t('noUser'));
-      if (!firebaseAuth.currentUser.email) throw new Error(t('noEmail'));
-      setEmail(firebaseAuth.currentUser.email);
-    }
-  }, [isAuthenticated, t]);
-
-  // When email is populated, fetches sign in methods
-  useEffect(() => {
-    /**
-     * Gets sign in methods for the signed in user and sets signInMethods.
-     * In own function to be able to make async calls from within useEffect
-     */
-    async function getSignInMethods() {
-      try {
-        const methods = await firebaseAuth.fetchSignInMethodsForEmail(email);
-        setSignInMethods(methods);
-      } catch (error) {
-        if (error.code === 'auth/invalid-email') {
-          setError(t('invalidEmail'));
-        } else {
-          setError(
-            `${t('manageAccount.methodFetchError')}: ${error}, ${error.code}, ${
-              error.message
-            }`
-          );
-        }
-      }
-    }
-    if (email) {
-      getSignInMethods();
-    }
-  }, [email, t]);
-
-  // When signInMethods is populated, sets user type state maintenance variables
-  useEffect(() => {
-    if (signInMethods.includes('password')) setPasswordUser(true);
-    if (signInMethods.includes('google.com')) setGoogleUser(true);
-  }, [signInMethods]);
 
   if (isLoading || fetchingAuthContext) {
     return <Loading />;
@@ -112,43 +71,33 @@ const ManageAccount: () => JSX.Element = () => {
           boxShadow="lg"
           textAlign="center"
         >
-<<<<<<< HEAD
-          <Heading marginBottom={2}>Manage Your Account</Heading>
+          <Heading marginBottom={2}>{t('manageAccount.heading')}</Heading>
           <Text textAlign="left" fontSize="lg" fontWeight="bold">
-            Email
+            {t('email')}
           </Text>
           <Text textAlign="left" fontSize="md">
             {email}
           </Text>
           <Divider marginY={2} />
           <Text textAlign="left" fontSize="lg" fontWeight="bold">
-            Name
+            {t('name')}
           </Text>
           <Text
             color={name ? 'black.500' : 'red.500'}
             textAlign="left"
             fontSize="md"
           >
-            {name ? name : 'Please add a name to your account'}
+            {name ? name : t('noName')}
           </Text>
           <ChangeNameModal passwordUser={passwordUser} />
           <Divider marginY={2} />
           <Text marginTop={2} fontSize="lg" fontWeight="bold" textAlign="left">
-            Manage Sign In Methods
-          </Text>
-          {passwordUser && <ChangePasswordModal />}
-          {googleUser && <Text>Account connected to Google</Text>}
-          <Divider marginY={2} />
-          <Text color="red.500">{error}</Text>
-=======
-          <Heading>{t('manageAccount.heading')}</Heading>
-          <Text>
-            {t('email')}: {email}
+            {t('manageAccount.manageSignInMethodsHeader')}
           </Text>
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
-          <Text>{error}</Text>
->>>>>>> main
+          <Divider marginY={2} />
+          <Text color="red.500">{error}</Text>
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>

@@ -25,6 +25,7 @@ import {
   SubmitButton,
 } from './Util';
 import {firestore, firebaseAuth} from '../../../firebase';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Props for ChangeNameModal component. Used for type safety.
@@ -58,6 +59,9 @@ const ChangeNameModal: ({
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [nameChangeComplete, setNameChangeComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
+
+  const {t} = useTranslation('administration');
+
   /**
    * Resets modal state values before closing the modal.
    */
@@ -113,7 +117,7 @@ const ChangeNameModal: ({
 
     // Verify that the inputted password is correct before proceeding
     if (passwordUser) {
-      handleReauthenticationWithPassword(password)
+      handleReauthenticationWithPassword(password, t)
         .then(error => {
           if (error) {
             // This error can be handled by the user
@@ -155,7 +159,7 @@ const ChangeNameModal: ({
                 <Box marginY={1}>
                   {passwordUser && (
                     <PasswordFormInput
-                      label="Password"
+                      labelKey={t('password')}
                       handlePasswordChange={event => {
                         setPassword(event.target.value);
                         setError('');
