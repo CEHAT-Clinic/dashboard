@@ -52,6 +52,8 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
   useEffect(() => {
     setIsLoading(true);
+    
+    // Creates listener for authentication status
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
       if (user) {
         setIsAuthenticated(true);
@@ -63,7 +65,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     return unsubscribe;
   }, []);
 
-  // Watch a user's document for account updates
+  // Watch a user's document for account updates if a user is signed in
   useEffect(() => {
     if (isAuthenticated && firebaseAuth.currentUser) {
       setIsLoading(true);
@@ -71,7 +73,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
       // This creates a listener for changes on the document so that if a user
       // updates their account information, this change is reflected on the user's
-      // account.
+      // account page.
       const unsubscribe = firestore
         .collection('users')
         .doc(user.uid)
