@@ -8,7 +8,8 @@ function NavigationBar(): JSX.Element {
   // State for whether to use globe or text, must be kept
   // separate because mobile should always be text, even
   // when nav bar is hidden
-  const [isMobile, setIsMobile] = useState(window.matchMedia('(max-width: 700px)')?.matches
+  const [isMobile, setIsMobile] = useState(
+    window.matchMedia('(max-width: 700px)')?.matches
   );
 
   // State of nav bar (always visible in large screen)
