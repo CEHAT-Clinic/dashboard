@@ -16,7 +16,7 @@ All conditional formatting for small/big screens is in this file */
   }
 
 /* Arranges links in the navigation bar w*/
-.Nav {
+nav {
     display: grid;
     grid-area: nav;
     grid-template-columns: repeat(5, auto);
@@ -58,7 +58,7 @@ nav a:hover, #changeLanguage:hover {
       grid-template-areas: "logo burger" "nav nav";
     }
     /* Drop down Menu Options*/
-    .Nav {
+    nav {
       grid-template-rows: repeat(5, auto);
       grid-template-columns: none;
       grid-row-gap: 20px;

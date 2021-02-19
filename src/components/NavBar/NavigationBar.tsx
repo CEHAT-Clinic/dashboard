@@ -55,7 +55,7 @@ function NavigationBar(): JSX.Element {
         {/* Logo in Spanish and English are the same */}
         <img src={cehatLogo} className="Logo" alt="Logo" />
         {isNavVisible && (
-          <nav className="Nav">
+          <nav>
             <a href="/">{t('home')}</a>
             <a href="/health">{t('healthInfo')}</a>
             <a href="/about">{t('about')}</a>
