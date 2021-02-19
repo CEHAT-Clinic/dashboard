@@ -58,23 +58,23 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
         .catch(error => {
           // Error codes from Firebase documentation
           switch (error.code) {
-                case 'auth/email-already-in-use': {
-                  setEmailError(t('accountExists'));
-                  break;
-                }
-                case 'auth/invalid-email': {
-                  setEmailError(t('invalidEmail'));
-                  break;
-                }
-                case 'auth/weak-password': {
-                  setPasswordError(t('notStrongEnough'));
-                  break;
-                }
-                default: {
-                  setGeneralEmailError(t('common:generalError'));
-                  break;
-                }
-              }
+            case 'auth/email-already-in-use': {
+              setEmailError(t('accountExists'));
+              break;
+            }
+            case 'auth/invalid-email': {
+              setEmailError(t('invalidEmail'));
+              break;
+            }
+            case 'auth/weak-password': {
+              setPasswordError(t('notStrongEnough'));
+              break;
+            }
+            default: {
+              setGeneralEmailError(t('common:generalError'));
+              break;
+            }
+          }
           setPassword('');
           setConfirmPassword('');
           setIsLoadingEmail(false);

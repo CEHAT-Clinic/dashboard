@@ -44,15 +44,13 @@ const ManageAccount: () => JSX.Element = () => {
             if (error.code === 'auth/invalid-email' && email) {
               setError(t('invalidEmailShort') + email);
             } else {
-              setError(
-                `${t('manageAccount.methodFetchError')}: ${error}`
-              );
+              setError(`${t('manageAccount.methodFetchError')}: ${error}`);
             }
           })
           .finally(() => setIsLoading(false));
       }
     }
-  }, [isAuthenticated, email]);
+  }, [isAuthenticated, email, t]);
 
   if (isLoading || fetchingAuthContext) {
     return <Loading />;
