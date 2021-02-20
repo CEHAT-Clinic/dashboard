@@ -52,7 +52,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
   useEffect(() => {
     setIsLoading(true);
-    
+
     // Creates listener for authentication status
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
       if (user) {
@@ -79,7 +79,6 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         .doc(user.uid)
         .onSnapshot(snapshot => {
           if (snapshot.exists) {
-            // TODO: check for changes instead of checking for data
             const userData = snapshot.data();
             if (userData) {
               if (userData.admin !== undefined) setIsAdmin(userData.admin);
@@ -104,7 +103,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               .then()
               .catch(error => {
                 // Error thrown upon failure to create the users doc in Firestore
-                throw new Error(`Unable to create users doc: ${error}`);
+                throw new Error('Unable to create user doc' + error);
               })
               .finally(() => setIsLoading(false));
           }

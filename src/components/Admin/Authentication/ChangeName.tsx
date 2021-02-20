@@ -60,7 +60,7 @@ const ChangeNameModal: ({
   const [nameChangeComplete, setNameChangeComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation(['administration', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -86,33 +86,38 @@ const ChangeNameModal: ({
     event.preventDefault();
     setModalIsLoading(true);
 
-    if (!firebaseAuth.currentUser) throw new Error('No user');
-    const user = firebaseAuth.currentUser;
-
     /**
      * Updates the user's name in Firebase and in their Firestore user doc
      */
     function updateName(): void {
-      // Update Firebase account
-      user
-        .updateProfile({
-          displayName: newName,
-        })
-        .then(() => {
-          // Update Firestore user document
-          firestore
-            .collection('users')
-            .doc(user.uid)
-            .update({
-              name: newName,
-            })
-            .then(() => setNameChangeComplete(true))
-            .catch(error => setError(`Error occurred: ${error.message}`));
-        })
-        .catch(error => setError(`Error occurred: ${error.message}`))
-        .finally(() => {
-          setModalIsLoading(false);
-        });
+      if (firebaseAuth.currentUser) {
+        const user = firebaseAuth.currentUser;
+        // Update Firebase account
+        user
+          .updateProfile({
+            displayName: newName,
+          })
+          .then(() => {
+            // Update Firestore user document
+            firestore
+              .collection('users')
+              .doc(user.uid)
+              .update({
+                name: newName,
+              })
+              .then(() => setNameChangeComplete(true))
+              .catch(error => {
+                // Error will be caught by the next catch statement
+                throw new Error(error);
+              });
+          })
+          .catch(error =>
+            setError(t('common:generalErrorTemplate') + error.message)
+          )
+          .finally(() => {
+            setModalIsLoading(false);
+          });
+      }
     }
 
     // Verify that the inputted password is correct before proceeding
@@ -141,25 +146,25 @@ const ChangeNameModal: ({
   return (
     <Box marginY={2}>
       <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
-        Update your name
+        {t('nameModal.launchButton')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Update Name</ModalHeader>
+          <ModalHeader>{t('nameModal.header')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handleDisplayNameUpdate}>
             {nameChangeComplete ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">Name updated</Text>
+                <Text fontSize="lg">{t('nameModal.success')}</Text>
               </Flex>
             ) : (
               <ModalBody>
                 <Box marginY={1}>
                   {passwordUser && (
                     <PasswordFormInput
-                      labelKey={t('password')}
+                      label={'password'}
                       handlePasswordChange={event => {
                         setPassword(event.target.value);
                         setError('');
@@ -171,9 +176,7 @@ const ChangeNameModal: ({
                       }}
                       error={passwordError}
                       value={password}
-                      helpMessage={
-                        'Enter your current password before updating your account'
-                      }
+                      helpMessage={t('passwordHelpMessage')}
                     />
                   )}
                   <FormControl
@@ -181,10 +184,10 @@ const ChangeNameModal: ({
                     marginTop={4}
                     isInvalid={error !== ''}
                   >
-                    <FormLabel>Name</FormLabel>
+                    <FormLabel>{t('name')}</FormLabel>
                     <Input
                       type="text"
-                      placeholder="John Smith"
+                      placeholder="Bob"
                       size="md"
                       onChange={event => {
                         setNewName(event.target.value);
@@ -194,8 +197,7 @@ const ChangeNameModal: ({
                     />
                     <FormErrorMessage>{error}</FormErrorMessage>
                     <FormHelperText>
-                      Your name is used so that site admins can identify who you
-                      are.
+                      {t('nameModal.formHelperMessage')}
                     </FormHelperText>
                   </FormControl>
                 </Box>
@@ -204,13 +206,13 @@ const ChangeNameModal: ({
             <ModalFooter>
               {!nameChangeComplete && (
                 <SubmitButton
-                  label="Update name"
+                  label={t('nameModal.submitButton')}
                   isLoading={modalIsLoading}
                   error={error}
                 />
               )}
               <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
-                Close
+                {t('common:close')}
               </Button>
             </ModalFooter>
           </form>

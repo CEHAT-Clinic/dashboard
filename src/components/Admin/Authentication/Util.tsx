@@ -94,7 +94,7 @@ const EmailFormInput: ({
  * Props for PasswordFormInput component. Used for type safety.
  */
 interface PasswordFormInputProps {
-  labelKey?: string;
+  label?: string;
   showPassword?: boolean;
   handlePasswordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
@@ -106,7 +106,7 @@ interface PasswordFormInputProps {
 /**
  * Component for password input field in authentication forms.
  * @param props - label, showPassword, handlePasswordChange, handlePasswordVisibility, error
- * - `labelKey` (optional) key for looking up a label for password input. Defaults to 'Password'
+ * - `label` (optional) label for password input. Defaults to t('password')
  * - `showPassword` (optional) if password is hidden or not. Defaults to false
  * - `handlePasswordChange` handles change in password input field
  * - `value` value that tracks the form value
@@ -115,7 +115,7 @@ interface PasswordFormInputProps {
  * - `helpMessage` (optional) message to explain the form field to users
  */
 const PasswordFormInput: ({
-  labelKey,
+  label,
   showPassword,
   handlePasswordChange,
   value,
@@ -123,7 +123,7 @@ const PasswordFormInput: ({
   error,
   helpMessage,
 }: PasswordFormInputProps) => JSX.Element = ({
-  labelKey = 'password',
+  label,
   showPassword = false,
   handlePasswordChange,
   value,
@@ -132,9 +132,10 @@ const PasswordFormInput: ({
   helpMessage = '',
 }: PasswordFormInputProps) => {
   const {t} = useTranslation('administration');
+  const safeLabel = label ? label : t('password');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>{t(labelKey)}</FormLabel>
+      <FormLabel>{safeLabel}</FormLabel>
       <InputGroup>
         <Input
           type={showPassword ? 'text' : 'password'}
@@ -168,7 +169,7 @@ interface SubmitButtonProps {
 /**
  * Component for submit button in authentication forms.
  * @param props - label, isLoading, color, error, isDisabled
- * - `label` (optional) label for button. Defaults to "Submit"
+ * - `label` (optional) label for button. Defaults to t('submit')
  * - `isLoading` (optional) if application is currently loading, used to display
  *   loading circle on button. Defaults to false
  * - `color` (optional) color of button. Defaults to "teal"
@@ -182,12 +183,14 @@ const SubmitButton: ({
   error,
   isDisabled,
 }: SubmitButtonProps) => JSX.Element = ({
-  label = 'Submit',
+  label,
   isLoading = false,
   color = 'teal',
   error = '',
   isDisabled = false,
 }: SubmitButtonProps) => {
+  const {t} = useTranslation('common');
+  const safeLabel = label ? label : t('submit');
   return (
     <Box align="center">
       <FormControl isInvalid={error !== ''}>
@@ -202,7 +205,7 @@ const SubmitButton: ({
           {isLoading ? (
             <CircularProgress isIndeterminate size="24px" color={color} />
           ) : (
-            label
+            safeLabel
           )}
         </Button>
         <FormErrorMessage>{error}</FormErrorMessage>

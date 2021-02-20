@@ -10,18 +10,18 @@
     "accountDisabled": "Account has been disabled. Please contact an administrator if you believe this is a mistake",
     "incorrectPassword": "Wrong password. Try again or reset your password. You may also have created your account with a different method",
     "accountExists":"Email already has an account. Please sign in or use a different email",
-    "modalLaunch": {
+    "passwordModalLaunch": {
         "change": "Update Password",
         "forgot": {
             "text": "Forgot your password? ",
             "link": "Reset your password"
         }
     },
-    "modalHeader": {
+    "passwordModalHeader": {
         "change":"Update Password",
         "forgot": "Send Password Reset Email"
     },
-    "success": {
+    "passwordModalSuccess": {
         "change": "Password updated",
         "forgot": "Password reset email sent"
     }, 
@@ -29,10 +29,18 @@
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
     "password": "Password",
+    "passwordHelpMessage": "Enter your current password before updating your account",
     "confirmPassword": "Confirm Password",
-    "submitLabel": {
+    "passwordSubmitLabel": {
         "change": "Update password",
         "forgot": "Send password reset email"
+    },
+    "nameModal": {
+        "launchButton": "Update your name",
+        "header": "Update Name",
+        "submitButton": "Update name",
+        "success": "Name updated",
+        "formHelperMessage": "Your name is used so that site admins can identify your account"
     },
     "signIn": {
         "google": "Sign in with Google",
