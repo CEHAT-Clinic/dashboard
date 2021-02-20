@@ -20,7 +20,7 @@
     "@types/react-router-dom": "^5.1.7",
     "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.11",
-    "i18next": "^19.8.7",
+    "i18next": "^19.8.9",
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-http-backend": "^1.1.0",
     "firebase": "^8.2.8",
