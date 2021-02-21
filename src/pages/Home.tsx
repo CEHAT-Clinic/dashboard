@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
-import AQIDial2 from '../components/AQIGauge/AQIDial2';
+import AQIDial from '../components/AQIGauge/AQIDial';
 
 /**
  * Home screen component
@@ -34,7 +34,7 @@ const Home: () => JSX.Element = () => {
             borderRadius={6}
           >
             {currentSensor ? (
-              <AQIDial2 currentReading={currentSensor} />
+              <AQIDial currentReading={currentSensor} />
             ) : (
               // <AQIGauge />
               <Text marginTop={[null, null, '20%', null]}>

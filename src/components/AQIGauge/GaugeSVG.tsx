@@ -1,7 +1,7 @@
 import React from 'react';
 import {arc} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
-import {DialProps} from './AQIDial2';
+import {DialProps} from './AQIDial';
 
 const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   currentReading,
@@ -14,7 +14,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   const outerRadius = 1;
   const startAngle = -Math.PI / 2;
   const endAngle = Math.PI / 2;
-  const cornerRadius = 1;
+  const cornerRadius = 0.1;
   /* eslint-enable no-magic-numbers */
 
   const arcGenerator = arc().cornerRadius(cornerRadius);
@@ -91,20 +91,21 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   };
   const arcColor = assignColor(aqi);
 
-  // Check for null
-  if (backgroundArc == null || filledArc == null) {
+  // Check for null to avoid type errors
+  if (!backgroundArc || !filledArc) {
     backgroundArc = '';
     filledArc = '';
   }
 
   return (
-    <div>
-      <svg width="9em" viewBox={' -1 -1 2 1'}>
+    <div className="svg">
+      <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.1'}>
         <path
           d={backgroundArc}
-          fill="#dbdbe7"
+          fill="#E2E8F0"
+          // Fill="#F0F0F0"
           stroke="black"
-          strokeWidth="0.01"
+          strokeWidth={0.002}
         />
         <path d={filledArc} fill={arcColor} />
       </svg>

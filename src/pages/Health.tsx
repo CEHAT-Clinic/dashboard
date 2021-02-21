@@ -88,7 +88,7 @@ const Health: React.FC = () => {
         </Table>
         <Text>
           This table is adapted from the EPA air quality website. For even more
-          information, you can visit the
+          information, you can visit the{' '}
           <Link color="#32bfd1" href="https://www.airnow.gov/aqi/aqi-basics/">
             Airnow website
           </Link>
