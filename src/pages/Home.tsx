@@ -37,7 +37,6 @@ const Home: () => JSX.Element = () => {
             {currentSensor ? (
               <AQIDial currentReading={currentSensor} />
             ) : (
-              // <AQIGauge />
               <Text marginTop={[null, null, '20%', null]}>
                 {t('noActiveSensor')}
               </Text>
