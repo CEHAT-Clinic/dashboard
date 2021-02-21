@@ -3,6 +3,7 @@ import {Box, Heading, Flex, Button} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -11,12 +12,14 @@ import Loading from '../../Util/Loading';
 const ManageSensors: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading} = useAuth();
 
+  const {t} = useTranslation('administration');
+
   if (isLoading) {
     return <Loading />;
   } else if (!isAuthenticated) {
-    return <AccessDenied reason="you are not signed in" />;
+    return <AccessDenied reason={t('notSignedIn')} />;
   } else if (!isAdmin) {
-    return <AccessDenied reason="you are not an admin user" />;
+    return <AccessDenied reason={t('notAdmin')} />;
   } else {
     return (
       <Flex width="full" align="center" justifyContent="center">
@@ -30,9 +33,9 @@ const ManageSensors: () => JSX.Element = () => {
           boxShadow="lg"
           textAlign="center"
         >
-          <Heading>Manage Sensors</Heading>
+          <Heading>{t('manageSensors')}</Heading>
           <Button as="a" href="/admin" margin={1}>
-            Return to admin page
+            {t('returnAdmin')}
           </Button>
         </Box>
       </Flex>

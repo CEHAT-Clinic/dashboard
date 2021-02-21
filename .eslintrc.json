@@ -105,7 +105,8 @@
           "xl",
           "Thead",
           "Td",
-          "Tbody"
+          "Tbody",
+          "Lngs"
         ],
         "skipWords": [
           "Pv"

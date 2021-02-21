@@ -17,6 +17,7 @@ import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {firestore} from '../../../firebase';
 import {User} from '../Authentication/Util';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for administrative page to manage site users.
@@ -29,6 +30,8 @@ const ManageUsers: () => JSX.Element = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   // -------------- End state maintenance variables -------------------------
+
+  const {t} = useTranslation(['administration', 'common']);
 
   // On render, fetch all users
   useEffect(() => {
@@ -63,20 +66,20 @@ const ManageUsers: () => JSX.Element = () => {
         })
         .catch(error => {
           // Error thrown upon failure to fetch users collection from Firestore
-          setError(`Unable to fetch users: ${error}`);
+          setError(t('users.cantFetch') + error);
         })
         .finally(() => {
           setIsLoading(false);
         });
     }
-  }, [isAdmin]);
+  }, [isAdmin, t]);
 
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
   } else if (!isAuthenticated) {
-    return <AccessDenied reason="you are not signed in" />;
+    return <AccessDenied reason={t('notSignedIn')} />;
   } else if (!isAdmin) {
-    return <AccessDenied reason="you are not an admin user" />;
+    return <AccessDenied reason={t('notAdmin')} />;
   } else {
     return (
       <Flex width="full" align="center" justifyContent="center">
@@ -90,16 +93,16 @@ const ManageUsers: () => JSX.Element = () => {
           boxShadow="lg"
           textAlign="center"
         >
-          <Heading>Manage Users</Heading>
+          <Heading>{t('manageUsers')}</Heading>
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              Current Admin Users
+              {t('users.heading')}
             </Heading>
             <Table>
               <Thead>
                 <Tr>
-                  <Th>Name</Th>
-                  <Th>Email</Th>
+                  <Th>{t('users.name')}</Th>
+                  <Th>{t('email')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -116,14 +119,14 @@ const ManageUsers: () => JSX.Element = () => {
           </Box>
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              All Current Users
+              {t('users.allCurrent')}
             </Heading>
             <Table>
               <Thead>
                 <Tr>
-                  <Th>Name</Th>
-                  <Th>Email</Th>
-                  <Th>Admin?</Th>
+                  <Th>{t('users.name')}</Th>
+                  <Th>{t('email')}</Th>
+                  <Th>{t('users.isAdmin')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -131,7 +134,7 @@ const ManageUsers: () => JSX.Element = () => {
                   <Tr key={id}>
                     <Td>{user.name}</Td>
                     <Td>{user.email}</Td>
-                    <Td>{user.admin ? 'Yes' : 'No'}</Td>
+                    <Td>{user.admin ? t('common:yes') : t('common:no')}</Td>
                   </Tr>
                 ))}
               </Tbody>
@@ -139,7 +142,7 @@ const ManageUsers: () => JSX.Element = () => {
           </Box>
           {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
-            Return to admin page
+            {t('returnAdmin')}
           </Button>
         </Box>
       </Flex>

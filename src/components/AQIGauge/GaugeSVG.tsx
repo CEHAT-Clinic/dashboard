@@ -6,7 +6,6 @@ import {DialProps} from './AQIDial';
 const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   currentReading,
 }: DialProps) => {
-
   // Arc properties
   /* eslint-disable no-magic-numbers */
   const innerRadius = 0.65;
@@ -18,7 +17,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
 
   const arcGenerator = arc().cornerRadius(cornerRadius);
 
-  // This is the grey arc in the background that goes from the beginning to end
+  // This is the arc in the background that goes from the beginning to end
   let backgroundArc = arcGenerator({
     innerRadius: innerRadius,
     outerRadius: outerRadius,
@@ -96,7 +95,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     return arcColor;
   };
   const filledColor = assignColor(aqi);
-  const backgroundColor = "#E2E8F0"
+  const backgroundColor = '#E2E8F0';
 
   return (
     <div className="svg">
