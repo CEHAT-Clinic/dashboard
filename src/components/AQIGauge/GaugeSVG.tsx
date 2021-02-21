@@ -6,9 +6,8 @@ import {DialProps} from './AQIDial';
 const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   currentReading,
 }: DialProps) => {
-  // Draw the background arc
-  // Arc properties:
 
+  // Arc properties
   /* eslint-disable no-magic-numbers */
   const innerRadius = 0.65;
   const outerRadius = 1;
@@ -19,6 +18,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
 
   const arcGenerator = arc().cornerRadius(cornerRadius);
 
+  // This is the grey arc in the background that goes from the beginning to end
   let backgroundArc = arcGenerator({
     innerRadius: innerRadius,
     outerRadius: outerRadius,
@@ -26,7 +26,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     endAngle: endAngle,
   });
 
-  // Convert from AQI value to percent
+  // Values to display
   const min = 0;
   const max = 300;
   const aqi: number = +currentReading;
@@ -64,6 +64,12 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     endAngle: angle,
   });
 
+  // Check for null to avoid type errors
+  if (!backgroundArc || !filledArc) {
+    backgroundArc = '';
+    filledArc = '';
+  }
+
   // Filled arc color:
   const assignColor = (aqi: number) => {
     const good = 50; // Air quality is good (0-50)
@@ -89,25 +95,19 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     }
     return arcColor;
   };
-  const arcColor = assignColor(aqi);
-
-  // Check for null to avoid type errors
-  if (!backgroundArc || !filledArc) {
-    backgroundArc = '';
-    filledArc = '';
-  }
+  const filledColor = assignColor(aqi);
+  const backgroundColor = "#E2E8F0"
 
   return (
     <div className="svg">
       <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.1'}>
         <path
           d={backgroundArc}
-          fill="#E2E8F0"
-          // Fill="#F0F0F0"
+          fill={backgroundColor}
           stroke="black"
           strokeWidth={0.002}
         />
-        <path d={filledArc} fill={arcColor} />
+        <path d={filledArc} fill={filledColor} />
       </svg>
     </div>
   );
