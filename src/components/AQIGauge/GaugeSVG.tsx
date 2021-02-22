@@ -6,29 +6,25 @@ import {DialProps} from './AQIDial';
 const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   currentReading,
 }: DialProps) => {
-  // Arc properties
   /* eslint-disable no-magic-numbers */
+  // Arc properties
   const innerRadius = 0.65;
   const outerRadius = 1;
   const startAngle = -Math.PI / 2;
   const endAngle = Math.PI / 2;
-  const cornerRadius = 0.1;
-  /* eslint-enable no-magic-numbers */
 
-  const arcGenerator = arc().cornerRadius(cornerRadius);
-
-  // This is the arc in the background that goes from the beginning to end
-  let backgroundArc = arcGenerator({
-    innerRadius: innerRadius,
-    outerRadius: outerRadius,
-    startAngle: startAngle,
-    endAngle: endAngle,
-  });
+  // AQI category cutoff values
+  const good = 50; // Air quality is good (0-50)
+  const moderate = 100; // Air quality is acceptable (51-100)
+  const sensitive = 150; // Health risk for sensitive groups (101-150)
+  const unhealthy = 200; // Health risk for all individuals (151-200)
+  const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
 
   // Values to display
   const min = 0;
   const max = 300;
   const aqi: number = +currentReading;
+  /* eslint-enable no-magic-numbers */
 
   /**
    * Convert aqi reading on scale [min,max] to [0,1] scale
@@ -46,43 +42,76 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     return percent;
   };
 
-  const percent = convertToPercent(aqi, min, max);
-
   // Convert from percent to angle
   const angleScale = scaleLinear()
     .domain([0, 1]) /* eslint-disable-line no-magic-numbers */
     .range([startAngle, endAngle])
     .clamp(true);
-  const angle = angleScale(percent);
 
-  // Make the filled arc to overlay the background arc
-  let filledArc = arcGenerator({
-    innerRadius: innerRadius,
-    outerRadius: outerRadius,
-    startAngle: startAngle,
-    endAngle: angle,
-  });
+  const arcGenerator = arc(); // Used to make arcs
 
-  // Check for null to avoid type errors
-  if (!backgroundArc || !filledArc) {
-    backgroundArc = '';
-    filledArc = '';
-  }
+  // Background Arcs
+  const goodArcAngle = angleScale(convertToPercent(good, min, max));
+  const goodArc =
+    arcGenerator({
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
+      startAngle: startAngle,
+      endAngle: goodArcAngle,
+    }) ?? '';
+  const moderateArcAngle = angleScale(convertToPercent(moderate, min, max));
+  const moderateArc =
+    arcGenerator({
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
+      startAngle: goodArcAngle,
+      endAngle: moderateArcAngle,
+    }) ?? '';
+  const sensitiveArcAngle = angleScale(convertToPercent(sensitive, min, max));
+  const sensitiveArc =
+    arcGenerator({
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
+      startAngle: moderateArcAngle,
+      endAngle: sensitiveArcAngle,
+    }) ?? '';
+  const unhealthyArcAngle = angleScale(convertToPercent(unhealthy, min, max));
+  const unhealthyArc =
+    arcGenerator({
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
+      startAngle: sensitiveArcAngle,
+      endAngle: unhealthyArcAngle,
+    }) ?? '';
+  const veryUnhealthyArcAngle = angleScale(
+    convertToPercent(veryUnhealthy, min, max)
+  );
+  const veryUnhealthyArc =
+    arcGenerator({
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
+      startAngle: unhealthyArcAngle,
+      endAngle: veryUnhealthyArcAngle,
+    }) ?? '';
 
-  // Filled arc color:
+  // Filled arc to overlay the background arcs
+  const filledAngle = angleScale(convertToPercent(aqi, min, max));
+  const filledArc =
+    arcGenerator({
+      innerRadius: innerRadius,
+      outerRadius: outerRadius,
+      startAngle: startAngle,
+      endAngle: filledAngle,
+    }) ?? '';
+
+  // Assign appropriate color
   const assignColor = (aqi: number) => {
-    const good = 50; // Air quality is good (0-50)
-    const moderate = 100; // Air quality is acceptable (51-100)
-    const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
-    const unhealthy = 200; // Health risk for all individuals (151-200)
-    const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
-
     let arcColor = 'white';
     if (aqi <= good) {
       arcColor = '#08E400';
     } else if (aqi <= moderate) {
       arcColor = '#FEFF00';
-    } else if (aqi <= sensitiveGroups) {
+    } else if (aqi <= sensitive) {
       arcColor = '#FF7E02';
     } else if (aqi <= unhealthy) {
       arcColor = '#FF0202';
@@ -94,19 +123,51 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     }
     return arcColor;
   };
-  const filledColor = assignColor(aqi);
-  const backgroundColor = '#E2E8F0';
 
   return (
     <div className="svg">
       <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.1'}>
         <path
-          d={backgroundArc}
-          fill={backgroundColor}
+          d={goodArc}
+          fill={assignColor(good)}
           stroke="black"
           strokeWidth={0.002}
+          fillOpacity="0.3"
         />
-        <path d={filledArc} fill={filledColor} />
+        <path
+          d={moderateArc}
+          fill={assignColor(moderate)}
+          stroke="black"
+          strokeWidth={0.002}
+          fillOpacity="0.3"
+        />
+        <path
+          d={sensitiveArc}
+          fill={assignColor(sensitive)}
+          stroke="black"
+          strokeWidth={0.002}
+          fillOpacity="0.3"
+        />
+        <path
+          d={unhealthyArc}
+          fill={assignColor(unhealthy)}
+          stroke="black"
+          strokeWidth={0.002}
+          fillOpacity="0.3"
+        />
+        <path
+          d={veryUnhealthyArc}
+          fill={assignColor(veryUnhealthy)}
+          stroke="black"
+          strokeWidth={0.002}
+          fillOpacity="0.3"
+        />
+        <path
+          d={filledArc}
+          fill={assignColor(aqi)}
+          stroke="black"
+          strokeWidth={0.004}
+        />
       </svg>
     </div>
   );
