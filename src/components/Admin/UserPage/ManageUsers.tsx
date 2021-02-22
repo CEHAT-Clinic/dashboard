@@ -58,6 +58,7 @@ const ManageUsers: () => JSX.Element = () => {
                   email: userData.email,
                   name: userData.name,
                   admin: userData.admin,
+                  userId: doc.id,
                 });
               }
             }
@@ -73,6 +74,13 @@ const ManageUsers: () => JSX.Element = () => {
         });
     }
   }, [isAdmin, t]);
+
+  /**
+   * For the selected user, this changes the 
+   */
+  function toggleAdminStatus() {
+    console.log('Toggle clicked');
+  }
 
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
@@ -135,6 +143,7 @@ const ManageUsers: () => JSX.Element = () => {
                     <Td>{user.name}</Td>
                     <Td>{user.email}</Td>
                     <Td>{user.admin ? t('common:yes') : t('common:no')}</Td>
+                    <Td><Button onClick={toggleAdminStatus}>Toggle Admin Status</Button></Td>
                   </Tr>
                 ))}
               </Tbody>
