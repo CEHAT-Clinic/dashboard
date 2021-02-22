@@ -79,16 +79,28 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         .onSnapshot(snapshot => {
           if (snapshot.exists) {
             const userData = snapshot.data();
+
+            /**
+             * 
+             * @param value - the value being checked for validity
+             * @param type - the valid type for the value being checked
+             * 
+             * @returns true if the inputted value is not undefined and is of the type `type`
+             */
+            function validData(value: any, type: string) {
+              return value !== undefined && typeof value === type;
+            }
+
             if (userData) {
-              if (userData.admin !== undefined) setIsAdmin(userData.admin);
-              if (userData.name) setName(userData.name);
-              if (userData.email) setEmail(userData.email);
+              if (validData(userData.admin, 'boolean')) setIsAdmin(userData.admin);
+              if (validData(userData.name, 'string')) setName(userData.name);
+              if (validData(userData.email, 'string')) setEmail(userData.email);
             }
             setIsLoading(false);
           } else {
             // If a user doc doesn't exist, create one using the information
             // attached to the Firebase User object
-            const newUserData: User = {
+            const newUserData = {
               name: user.displayName ?? '',
               email: user.email ?? '',
               admin: false,

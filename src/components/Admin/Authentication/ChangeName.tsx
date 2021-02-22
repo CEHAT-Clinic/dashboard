@@ -97,17 +97,14 @@ const ChangeNameModal: ({
           })
           .then(() => {
             // Update Firestore user document
+            // Any errors are caught by the following catch statement
             firestore
               .collection('users')
               .doc(user.uid)
               .update({
                 name: newName,
               })
-              .then(() => setNameChangeComplete(true))
-              .catch(error => {
-                // Error will be caught by the next catch statement
-                throw new Error(error);
-              });
+              .then(() => setNameChangeComplete(true));
           })
           .catch(error =>
             setError(t('common:generalErrorTemplate') + error.message)
@@ -162,7 +159,7 @@ const ChangeNameModal: ({
                 <Box marginY={1}>
                   {passwordUser && (
                     <PasswordFormInput
-                      label={'password'}
+                      label={t('password')}
                       handlePasswordChange={event => {
                         setPassword(event.target.value);
                         setError('');
