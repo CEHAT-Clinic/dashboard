@@ -79,8 +79,6 @@ const ChangeNameModal: ({
   /**
    * Updates an authenticated user using Firebase authentication
    * @param event - submit form event
-   *
-   * @throws No user Thrown if the currentUser is null
    */
   function handleDisplayNameUpdate(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

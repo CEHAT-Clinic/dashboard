@@ -40,14 +40,12 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
   // --------------- End state maintenance variables ------------------------
 
   /**
-   * Function to reset all state variables to default
+   * Function to reset all state variables to defaults
    */
   function resetState(): void {
-    setIsAuthenticated(false);
     setIsAdmin(false);
     setEmail('');
     setName('');
-    setIsLoading(false);
   }
 
   useEffect(() => {
@@ -55,12 +53,13 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
     // Creates listener for authentication status
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
+      setIsLoading(true);
       if (user) {
         setIsAuthenticated(true);
-        setIsLoading(false);
       } else {
         resetState();
       }
+      setIsLoading(false);
     });
     return unsubscribe;
   }, []);
@@ -84,10 +83,8 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               if (userData.admin !== undefined) setIsAdmin(userData.admin);
               if (userData.name) setName(userData.name);
               if (userData.email) setEmail(userData.email);
-              setIsLoading(false);
-            } else {
-              setIsLoading(false);
             }
+            setIsLoading(false);
           } else {
             // If a user doc doesn't exist, create one using the information
             // attached to the Firebase User object
@@ -100,10 +97,9 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               .collection('users')
               .doc(user.uid)
               .update(newUserData)
-              .then()
               .catch(error => {
                 // Error thrown upon failure to create the users doc in Firestore
-                throw new Error('Unable to create user doc' + error);
+                throw new Error('Unable to create user doc: ' + error);
               })
               .finally(() => setIsLoading(false));
           }
@@ -129,7 +125,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 };
 
 /**
- * Custom hook to allow other components to use and set authentication status
+ * Custom hook to allow other components to use authentication status
  * @returns `{isAuthenticated, isLoading, isAdmin, name, email}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);

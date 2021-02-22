@@ -54,7 +54,6 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
     } else {
       firebaseAuth
         .createUserWithEmailAndPassword(email, password)
-        .then()
         .catch(error => {
           // Error codes from Firebase documentation
           switch (error.code) {
