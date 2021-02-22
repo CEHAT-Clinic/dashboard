@@ -4,17 +4,19 @@ import cehatLogo from './CEHATLogo.png';
 import {useTranslation} from 'react-i18next';
 import {FaBars, FaGlobeAmericas} from 'react-icons/fa';
 
+/** Element for the navigation bar for use on all pages */
 function NavigationBar(): JSX.Element {
   // State for whether to use globe or text, must be kept
   // separate because mobile should always be text, even
   // when nav bar is hidden
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 700px)')?.matches
+    window.matchMedia('(max-width: 700px)')?.matches ?? false
   );
 
   // State of nav bar (always visible in large screen)
   const [isNavVisible, setIsNavVisible] = useState(!isMobile);
 
+  /** Adjust UI for switching between narrow/mobile and wide/desktop modes */
   function handleScreenChange(this: MediaQueryList): void {
     if (this.matches) {
       setIsNavVisible(false);
@@ -44,8 +46,12 @@ function NavigationBar(): JSX.Element {
     setIsNavVisible(!isNavVisible);
   }
 
+  /** Toggle the language of the website between English and Spanish. Close menu bar after toggling if on mobile. */
   function toggleLanguage(): void {
     i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
+    if (isMobile) {
+      toggleNav();
+    }
   }
 
   const {t, i18n} = useTranslation('menu');
@@ -61,13 +67,16 @@ function NavigationBar(): JSX.Element {
             <a href="/about">{t('about')}</a>
             <a href="/admin">{t('admin')}</a>
             <button id="changeLanguage" onClick={toggleLanguage}>
-              {/* Display globe on desktop, but text in menu bard on mobile */}
+              {/* Display globe on desktop, but text in menu bar on mobile */}
               {isMobile ? (
-                'Change Language/Cambia Idioma'
+                <span>
+                  <FaGlobeAmericas id="mobileGlobe" title={t('globeIcon')} />{' '}
+                  {t('changeLanguage')}
+                </span>
               ) : (
                 <FaGlobeAmericas
-                  aria-label="Change Language/Cambia Idioma"
-                  title="Change Language/Cambia Idioma"
+                  aria-label={t('globeIcon')}
+                  title={t('changeLanguage')}
                 />
               )}
             </button>

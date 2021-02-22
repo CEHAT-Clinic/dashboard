@@ -15,7 +15,7 @@ All conditional formatting for small/big screens is in this file */
     height: 70px;
   }
 
-/* Arranges links in the navigation bar w*/
+/* Arranges links in the navigation bar*/
 nav {
     display: grid;
     grid-area: nav;
@@ -33,7 +33,7 @@ nav a, #changeLanguage {
     text-decoration: none;
   }
 
-/* Navigable link text gets larger when you hover*/
+/* Navigable link text gets larger when you hover */
 nav a:hover, #changeLanguage:hover {
     transform: scale(1.1);
   }
@@ -50,6 +50,10 @@ nav a:hover, #changeLanguage:hover {
     background: none;
     outline: none;
     transition: 0.1s;
+  }
+
+  #mobileGlobe {
+    display: inline
   }
 
 /* Conditional formatting for small screens */
