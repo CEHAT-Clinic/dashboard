@@ -63,7 +63,7 @@ const ManageSensors: () => JSX.Element = () => {
                   latitude: 0,
                   longitude: 0,
                   online: true, // TODO: update cloud function with this value
-                  mostRecentReading: now // TODO: update cloud function
+                  mostRecentReading: now, // TODO: update cloud function
                 });
               }
             }
@@ -97,7 +97,9 @@ const ManageSensors: () => JSX.Element = () => {
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
           <Box>
-            <Button marginY={2} colorScheme='green'>{t('sensors.add')}</Button>
+            <Button marginY={2} colorScheme="green">
+              {t('sensors.add')}
+            </Button>
           </Box>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
@@ -120,8 +122,16 @@ const ManageSensors: () => JSX.Element = () => {
                     <Td>{sensor.purpleAirId}</Td>
                     <Td>{sensor.latitude}</Td>
                     <Td>{sensor.longitude}</Td>
-                    <Td>{sensor.online ? t('sensors.online') : t('sensors.offline')}</Td>
-                    <Td>{sensor.mostRecentReading.toLocaleDateString() + ' ' + sensor.mostRecentReading.toLocaleTimeString()}</Td>
+                    <Td>
+                      {sensor.online
+                        ? t('sensors.online')
+                        : t('sensors.offline')}
+                    </Td>
+                    <Td>
+                      {sensor.mostRecentReading.toLocaleDateString() +
+                        ' ' +
+                        sensor.mostRecentReading.toLocaleTimeString()}
+                    </Td>
                     <Td>
                       <Button>{t('sensors.remove')}</Button>
                     </Td>
