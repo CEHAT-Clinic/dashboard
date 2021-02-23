@@ -41,9 +41,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
    * Signs up a user with email in Firebase and handles any errors
    * @param event - submit form event
    */
-  async function handleSignUpWithEmail(
-    event: React.FormEvent<HTMLFormElement>
-  ) {
+  function handleSignUpWithEmail(event: React.FormEvent<HTMLFormElement>) {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
@@ -54,32 +52,32 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       setConfirmPassword('');
       setIsLoadingEmail(false);
     } else {
-      try {
-        await firebaseAuth.createUserWithEmailAndPassword(email, password);
-      } catch (error) {
-        // Error codes from Firebase documentation
-        switch (error.code) {
-          case 'auth/email-already-in-use': {
-            setEmailError(t('accountExists'));
-            break;
+      firebaseAuth
+        .createUserWithEmailAndPassword(email, password)
+        .catch(error => {
+          // Error codes from Firebase documentation
+          switch (error.code) {
+            case 'auth/email-already-in-use': {
+              setEmailError(t('accountExists'));
+              break;
+            }
+            case 'auth/invalid-email': {
+              setEmailError(t('invalidEmail'));
+              break;
+            }
+            case 'auth/weak-password': {
+              setPasswordError(t('notStrongEnough'));
+              break;
+            }
+            default: {
+              setGeneralEmailError(t('common:generalError'));
+              break;
+            }
           }
-          case 'auth/invalid-email': {
-            setEmailError(t('invalidEmail'));
-            break;
-          }
-          case 'auth/weak-password': {
-            setPasswordError(t('notStrongEnough'));
-            break;
-          }
-          default: {
-            setGeneralEmailError(t('common:generalError'));
-            break;
-          }
-        }
-        setPassword('');
-        setConfirmPassword('');
-        setIsLoadingEmail(false);
-      }
+          setPassword('');
+          setConfirmPassword('');
+          setIsLoadingEmail(false);
+        });
     }
   }
 
@@ -119,10 +117,10 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           showPassword={showPassword}
           handlePasswordVisibility={() => setShowPassword(!showPassword)}
           value={password}
-          labelKey={t('password')}
+          label={t('password')}
         ></PasswordFormInput>
         <PasswordFormInput
-          labelKey={t('confirmPassword')}
+          label={t('confirmPassword')}
           handlePasswordChange={event => {
             setConfirmPassword(event.target.value);
             setConfirmPasswordError('');

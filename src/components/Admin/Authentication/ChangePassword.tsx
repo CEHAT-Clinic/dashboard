@@ -53,7 +53,7 @@ function ChangePasswordModal(): JSX.Element {
   const [passwordResetComplete, setPasswordResetComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation(['administration', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -138,25 +138,25 @@ function ChangePasswordModal(): JSX.Element {
   }
 
   return (
-    <Box>
-      <Button colorScheme="teal" onClick={onOpen} width="full">
-        {t('modalLaunch.change')}
+    <Box marginY={2}>
+      <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
+        {t('passwordModalLaunch.change')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t('modalHeader.change')}</ModalHeader>
+          <ModalHeader>{t('passwordModalHeader.change')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handlePasswordUpdate}>
             {passwordResetComplete ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">{t('success.change')}</Text>
+                <Text fontSize="lg">{t('passwordModalSuccess.change')}</Text>
               </Flex>
             ) : (
               <ModalBody>
                 <PasswordFormInput
-                  labelKey={t('currentPassword')}
+                  label={t('currentPassword')}
                   handlePasswordChange={event => {
                     setCurrentPassword(event.target.value);
                     resetErrors();
@@ -169,7 +169,7 @@ function ChangePasswordModal(): JSX.Element {
                   value={currentPassword}
                 />
                 <PasswordFormInput
-                  labelKey={t('newPassword')}
+                  label={t('newPassword')}
                   handlePasswordChange={event => {
                     setNewPassword(event.target.value);
                     resetErrors();
@@ -182,7 +182,7 @@ function ChangePasswordModal(): JSX.Element {
                   value={newPassword}
                 />
                 <PasswordFormInput
-                  labelKey={t('confirmNewPassword')}
+                  label={t('confirmNewPassword')}
                   handlePasswordChange={event => {
                     setConfirmNewPassword(event.target.value);
                     resetErrors();
@@ -199,18 +199,13 @@ function ChangePasswordModal(): JSX.Element {
             <ModalFooter>
               {!passwordResetComplete && (
                 <SubmitButton
-                  label={t('submitLabel.change')}
+                  label={t('passwordSubmitLabel.change')}
                   isLoading={modalIsLoading}
                   error={generalModalError}
                 />
               )}
-              <Button
-                colorScheme="red"
-                marginLeft={4}
-                marginTop={4}
-                onClick={handleClose}
-              >
-                Close
+              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
+                {t('common:close')}
               </Button>
             </ModalFooter>
           </form>
