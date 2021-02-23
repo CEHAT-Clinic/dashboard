@@ -45,6 +45,8 @@ const ManageSensors: () => JSX.Element = () => {
       setIsLoading(true);
 
       // Create listener that updates on any data changes
+      // TODO: use the current-readings collection
+      // TODO: update cloud function to edit the sensors doc rather than pm25
       const unsubscribe = firestore
         .collection('sensors')
         .onSnapshot(querySnapshot => {
@@ -57,11 +59,11 @@ const ManageSensors: () => JSX.Element = () => {
               if (sensorData && validData(sensorData.purpleAirId, 'string')) {
                 sensorList.push({
                   purpleAirId: sensorData.purpleAirId,
-                  name: 'SG CEHAT',
+                  name: 'SG CEHAT', // TODO: add sensor name to the docs
                   latitude: 0,
                   longitude: 0,
-                  online: true,
-                  mostRecentReading: now
+                  online: true, // TODO: update cloud function with this value
+                  mostRecentReading: now // TODO: update cloud function
                 });
               }
             }
@@ -95,21 +97,21 @@ const ManageSensors: () => JSX.Element = () => {
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
           <Box>
-            <Button marginY={2} colorScheme='green'>{'Add new sensor'}</Button>
+            <Button marginY={2} colorScheme='green'>{t('sensors.add')}</Button>
           </Box>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
-              {'Current Sensors'}
+              {t('sensors.heading')}
             </Heading>
             <Table>
               <Thead>
-                <Th>{'Name'}</Th>
-                <Th>{'Purple Air ID'}</Th>
-                <Th>{'Latitude'}</Th>
-                <Th>{'Longitude'}</Th>
-                <Th>{'Status'}</Th>
-                <Th>{'Most Recent Reading'}</Th>
-                <Th>{'Remove'}</Th>
+                <Th>{t('sensors.name')}</Th>
+                <Th>{t('sensors.purpleAirId')}</Th>
+                <Th>{t('sensors.latitude')}</Th>
+                <Th>{t('sensors.longitude')}</Th>
+                <Th>{t('sensors.status')}</Th>
+                <Th>{t('sensors.recentReading')}</Th>
+                <Th>{t('sensors.remove')}</Th>
               </Thead>
               <Tbody>
                 {sensors.map((sensor, id) => (
@@ -118,10 +120,10 @@ const ManageSensors: () => JSX.Element = () => {
                     <Td>{sensor.purpleAirId}</Td>
                     <Td>{sensor.latitude}</Td>
                     <Td>{sensor.longitude}</Td>
-                    <Td>{sensor.online ? 'Working' : 'Error'}</Td>
+                    <Td>{sensor.online ? t('sensors.online') : t('sensors.offline')}</Td>
                     <Td>{sensor.mostRecentReading.toLocaleDateString() + ' ' + sensor.mostRecentReading.toLocaleTimeString()}</Td>
                     <Td>
-                      <Button>Remove Sensor</Button>
+                      <Button>{t('sensors.remove')}</Button>
                     </Td>
                   </Tr>
                 ))}

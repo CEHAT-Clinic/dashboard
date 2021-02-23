@@ -113,5 +113,18 @@
         },
         "changeAdminError": "No se puede cambiar el status de administrador(a) de ",
         "confirmChange": "Confirma el cambio de status de administrador"
+    },
+    "sensors": {
+        "heading": "Los sensors actuales",
+        "name": "Nombre del sensor",
+        "purpleAirId": "Purple Air ID",
+        "latitude": "Latitud",
+        "longitude": "Longitud",
+        "status": "Estado actual",
+        "recentReading": "Hora de la medición más reciente",
+        "remove": "Eliminar el sensor",
+        "online": "conectado",
+        "offline": "desconectado",
+        "add": "Añadir un sensor nuevo"
     }
 }
