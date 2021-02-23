@@ -8,6 +8,8 @@ import {
   FormLabel,
   Input,
   InputGroup,
+  Box,
+  FormHelperText,
 } from '@chakra-ui/react';
 import firebase, {firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
@@ -92,43 +94,48 @@ const EmailFormInput: ({
  * Props for PasswordFormInput component. Used for type safety.
  */
 interface PasswordFormInputProps {
-  labelKey?: string;
+  label?: string;
   showPassword?: boolean;
   handlePasswordChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
   value: string;
   handlePasswordVisibility?: () => void;
   error?: string;
+  helpMessage?: string;
 }
 
 /**
  * Component for password input field in authentication forms.
  * @param props - label, showPassword, handlePasswordChange, handlePasswordVisibility, error
- * - `labelKey` (optional) key for looking up a label for password input. Defaults to 'Password'
+ * - `label` (optional) label for password input. Defaults to t('password')
  * - `showPassword` (optional) if password is hidden or not. Defaults to false
  * - `handlePasswordChange` handles change in password input field
  * - `value` value that tracks the form value
  * - `handlePasswordVisibility` (optional) changes showPassword. Defaults to toggle showPassword.
  * - `error` (optional) error message to be displayed. Defaults to ''
+ * - `helpMessage` (optional) message to explain the form field to users
  */
 const PasswordFormInput: ({
-  labelKey,
+  label,
   showPassword,
   handlePasswordChange,
   value,
   handlePasswordVisibility,
   error,
+  helpMessage,
 }: PasswordFormInputProps) => JSX.Element = ({
-  labelKey = 'password',
+  label,
   showPassword = false,
   handlePasswordChange,
   value,
   handlePasswordVisibility = () => !showPassword,
   error = '',
+  helpMessage = '',
 }: PasswordFormInputProps) => {
   const {t} = useTranslation('administration');
+  const safeLabel = label ? label : t('password');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>{t(labelKey)}</FormLabel>
+      <FormLabel>{safeLabel}</FormLabel>
       <InputGroup>
         <Input
           type={showPassword ? 'text' : 'password'}
@@ -142,6 +149,7 @@ const PasswordFormInput: ({
           handlePasswordVisibility={handlePasswordVisibility}
         />
       </InputGroup>
+      <FormHelperText>{helpMessage}</FormHelperText>
       <FormErrorMessage>{error}</FormErrorMessage>
     </FormControl>
   );
@@ -161,7 +169,7 @@ interface SubmitButtonProps {
 /**
  * Component for submit button in authentication forms.
  * @param props - label, isLoading, color, error, isDisabled
- * - `label` (optional) label for button. Defaults to "Submit"
+ * - `label` (optional) label for button. Defaults to t('submit')
  * - `isLoading` (optional) if application is currently loading, used to display
  *   loading circle on button. Defaults to false
  * - `color` (optional) color of button. Defaults to "teal"
@@ -175,30 +183,34 @@ const SubmitButton: ({
   error,
   isDisabled,
 }: SubmitButtonProps) => JSX.Element = ({
-  label = 'Submit',
+  label,
   isLoading = false,
   color = 'teal',
   error = '',
   isDisabled = false,
 }: SubmitButtonProps) => {
+  const {t} = useTranslation('common');
+  const safeLabel = label ? label : t('submit');
   return (
-    <FormControl isInvalid={error !== ''}>
-      <Button
-        colorScheme={color}
-        variant="solid"
-        type="submit"
-        width="full"
-        marginY={4}
-        isDisabled={isDisabled}
-      >
-        {isLoading ? (
-          <CircularProgress isIndeterminate size="24px" color={color} />
-        ) : (
-          label
-        )}
-      </Button>
-      <FormErrorMessage>{error}</FormErrorMessage>
-    </FormControl>
+    <Box align="center">
+      <FormControl isInvalid={error !== ''}>
+        <Button
+          colorScheme={color}
+          variant="solid"
+          type="submit"
+          minWidth="50%"
+          marginY={4}
+          isDisabled={isDisabled}
+        >
+          {isLoading ? (
+            <CircularProgress isIndeterminate size="24px" color={color} />
+          ) : (
+            safeLabel
+          )}
+        </Button>
+        <FormErrorMessage>{error}</FormErrorMessage>
+      </FormControl>
+    </Box>
   );
 };
 
