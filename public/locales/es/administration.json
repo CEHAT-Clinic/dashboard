@@ -11,14 +11,14 @@
     "incorrectPassword": "Contraseña incorrecta. Vuelve a intentar o vuelve a ponerla. También es posible que creaste tu cuenta con otro metódo",
     "accountExists":"Ya existe una cuenta con el mismo correo electrónico. Por favor, inicia sesión o usa un correo electrónico diferente",
     "passwordModalLaunch": {
-        "change": "Actualiza contraseña",
+        "change": "Actualiza tu contraseña",
         "forgot": {
             "text": "¿Has olvidado tu contraseña? ",
             "link": "Vuelve a ponerla"
         }
     },
     "passwordModalHeader": {
-        "change":"Actualiza contraseña",
+        "change":"Actualiza tu contraseña",
         "forgot": "Envia un Correo Electrónico para Volver a Poner una Contraseña"
     },
     "passwordModalSuccess": {
@@ -37,8 +37,8 @@
     },
     "nameModal": {
         "launchButton": "Actualiza tu nombre",
-        "header": "Actualiza nombre",
-        "submitButton": "Actualiza nombre",
+        "header": "Actualiza tu nombre",
+        "submitButton": "Actualiza tu nombre",
         "success": "Nombre actualizado",
         "formHelperMessage": "Tu nombre se usa para que los administradores del sitio puedan identificar tu cuenta"
     },
