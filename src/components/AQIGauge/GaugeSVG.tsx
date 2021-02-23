@@ -8,10 +8,10 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
 }: DialProps) => {
   /* eslint-disable no-magic-numbers */
   // Arc properties
-  const innerRadius = 0.65;
+  const innerRadius = 0.5;
   const outerRadius = 1;
-  const startAngle = -Math.PI / 2;
-  const endAngle = Math.PI / 2;
+  const initialAngle = -Math.PI / 2;
+  const finalAngle = Math.PI / 2;
 
   // AQI category cutoff values
   const good = 50; // Air quality is good (0-50)
@@ -27,7 +27,7 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
   /* eslint-enable no-magic-numbers */
 
   /**
-   * Convert aqi reading on scale [min,max] to [0,1] scale
+   * Convert AQI reading on scale [min,max] to [0,1] scale
    * @param aqi - AQI value to convert to [0,1] scale
    * @param min - minimum value for original scale
    * @param max - maximum value for original scale
@@ -45,68 +45,30 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
   // Convert from percent to angle
   const convertToAngle = scaleLinear()
     .domain([0, 1]) /* eslint-disable-line no-magic-numbers */
-    .range([startAngle, endAngle])
+    .range([initialAngle, finalAngle])
     .clamp(true);
 
   const arcGenerator = arc(); // Used to make arcs
 
-  // Background Arcs
-  const goodArcAngle = convertToAngle(convertToPercent(good, min, max));
-  const goodArc =
-    arcGenerator({
-      innerRadius: innerRadius,
-      outerRadius: outerRadius,
-      startAngle: startAngle,
-      endAngle: goodArcAngle,
-    }) ?? '';
-  const moderateArcAngle = convertToAngle(convertToPercent(moderate, min, max));
-  const moderateArc =
-    arcGenerator({
-      innerRadius: innerRadius,
-      outerRadius: outerRadius,
-      startAngle: goodArcAngle,
-      endAngle: moderateArcAngle,
-    }) ?? '';
-  const sensitiveArcAngle = convertToAngle(
-    convertToPercent(sensitive, min, max)
-  );
-  const sensitiveArc =
-    arcGenerator({
-      innerRadius: innerRadius,
-      outerRadius: outerRadius,
-      startAngle: moderateArcAngle,
-      endAngle: sensitiveArcAngle,
-    }) ?? '';
-  const unhealthyArcAngle = convertToAngle(
-    convertToPercent(unhealthy, min, max)
-  );
-  const unhealthyArc =
-    arcGenerator({
-      innerRadius: innerRadius,
-      outerRadius: outerRadius,
-      startAngle: sensitiveArcAngle,
-      endAngle: unhealthyArcAngle,
-    }) ?? '';
-  const veryUnhealthyArcAngle = convertToAngle(
-    convertToPercent(veryUnhealthy, min, max)
-  );
-  const veryUnhealthyArc =
-    arcGenerator({
-      innerRadius: innerRadius,
-      outerRadius: outerRadius,
-      startAngle: unhealthyArcAngle,
-      endAngle: veryUnhealthyArcAngle,
-    }) ?? '';
+  // Draw background arcs
+  const arcs: string[] = [];
+  const categories = [good, moderate, sensitive, unhealthy, veryUnhealthy];
+  let startAngle = initialAngle;
+  for (const category of categories) {
+    const endAngle = convertToAngle(convertToPercent(category, min, max));
+    const arc =
+      arcGenerator({
+        innerRadius: innerRadius,
+        outerRadius: outerRadius,
+        startAngle: startAngle,
+        endAngle: endAngle,
+      }) ?? '';
+    arcs.push(arc);
+    startAngle = endAngle;
+  }
 
   // Filled arc to overlay the background arcs
   const filledAngle = convertToAngle(convertToPercent(aqi, min, max));
-  const filledArc =
-    arcGenerator({
-      innerRadius: innerRadius,
-      outerRadius: outerRadius,
-      startAngle: startAngle,
-      endAngle: filledAngle,
-    }) ?? '';
 
   // Assign appropriate color
   const assignColor = (aqi: number) => {
@@ -129,23 +91,15 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
   };
 
   const needleColor = '#636360';
-  const colors = [good, moderate, sensitive, unhealthy, veryUnhealthy];
-  const arcs = [
-    goodArc,
-    moderateArc,
-    sensitiveArc,
-    unhealthyArc,
-    veryUnhealthyArc,
-  ];
   const pathObjects = [];
-  for (let i = 0; i < colors.length; i++) {
+  for (let i = 0; i < arcs.length; i++) {
     pathObjects.push(
       <path
         d={arcs[i]}
-        fill={assignColor(colors[i])}
+        fill={assignColor(categories[i])}
         stroke="black"
         strokeWidth={0.002}
-        fillOpacity="0.3"
+        fillOpacity={1}
       />
     );
   }
@@ -154,12 +108,6 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
     <div className="svg">
       <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.15'}>
         {pathObjects.map(pathObject => pathObject)}
-        <path
-          d={filledArc}
-          fill={assignColor(aqi)}
-          stroke="black"
-          strokeWidth={0.004}
-        />
         <circle cx={0} cy={0} r={0.08} fill={needleColor} />
         <path
           d="M0.84 5.961e-08L0.770718 0.75L0.909282 0.75L0.84 5.961e-08Z"

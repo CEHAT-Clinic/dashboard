@@ -31,31 +31,37 @@ const AQILabel: ({currentAQI}: DialProps) => JSX.Element = ({
   let textColor = 'white';
   let backgroundColor = '#08E400';
   let label = '';
-  const px2 = 2;
-  const px5 = 5;
-  let px = px2;
+  const smallPadding = 2;
+  const largePadding = 5;
+  let px = smallPadding;
 
   const {t} = useTranslation('dial');
 
   if (aqi <= good) {
     [textColor, backgroundColor] = ['black', '#08E400'];
-    [label, px] = [t('good'), px5];
+    label = t('good');
+    px = largePadding;
   } else if (aqi <= moderate) {
     [textColor, backgroundColor] = ['black', '#FEFF00'];
-    [label, px] = [t('moderate'), px2];
+    label = t('moderate');
+    px = smallPadding;
   } else if (aqi <= sensitiveGroups) {
     [textColor, backgroundColor] = ['black', '#FF7E02'];
-    [label, px] = [t('sensitive'), px2];
+    label = t('sensitive');
+    px = smallPadding;
   } else if (aqi <= unhealthy) {
     [textColor, backgroundColor] = ['white', '#FF0202'];
-    [label, px] = [t('unhealthy'), px2];
+    label = t('unhealthy');
+    px = smallPadding;
   } else if (aqi <= veryUnhealthy) {
     [textColor, backgroundColor] = ['white', '#8F3F97'];
-    [label, px] = [t('very'), px2];
+    label = t('very');
+    px = smallPadding;
   } else {
     // Anything greater than 300 is "Hazardous"
     [textColor, backgroundColor] = ['white', '#7E0224'];
-    [label, px] = [t('hazardous'), px2];
+    label = t('hazardous');
+    px = smallPadding;
   }
   return (
     <Tag

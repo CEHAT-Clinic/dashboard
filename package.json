@@ -22,8 +22,6 @@
     "@types/react-router-dom": "^5.1.7",
     "d3-scale": "^3.2.3",
     "d3-shape": "^2.0.0",
-    "eslint-plugin-spellcheck": "0.0.17",
-    "eslint-plugin-tsdoc": "^0.2.11",
     "firebase": "^8.2.9",
     "framer-motion": "^3.6.7",
     "i18next": "^19.8.9",
