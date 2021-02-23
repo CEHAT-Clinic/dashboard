@@ -35,7 +35,7 @@ const Home: () => JSX.Element = () => {
             borderRadius={6}
           >
             {currentSensor ? (
-              <AQIDial currentReading={currentSensor} />
+              <AQIDial currentAQI={currentSensor} />
             ) : (
               <Text marginTop={[null, null, '20%', null]}>
                 {t('noActiveSensor')}

@@ -1,86 +1,87 @@
 import React from 'react';
 import {Text, Box, Tag, Link, Center} from '@chakra-ui/react';
 import GaugeSVG from './GaugeSVG';
+
 /**
  * Interface for the props of the dial
- * - currentReading is the AQI value that the dial should display
+ * - `currentAQI` is the AQI value that the dial should display
  */
 interface DialProps {
-  currentReading: string;
+  currentAQI: string;
 }
 
 /**
  * AQI Dial Label Component
  * This component displays the label for the AQI displayed by the dial.
- * Ex if the AQI is less than 50, it will show the label "Good"
+ * @example if the AQI is less than 50, it will show the label "Good"
  */
-const AQILabel: ({currentReading}: DialProps) => JSX.Element = ({
-  currentReading,
+const AQILabel: ({currentAQI}: DialProps) => JSX.Element = ({
+  currentAQI,
 }: DialProps) => {
   // Convert the AQI from a string to a number
-  const aqi: number = +currentReading;
-  // AQI boundary values
+  const aqi: number = +currentAQI;
+  // AQI boundary values from https://www.airnow.gov/aqi/aqi-basics/
   const good = 50; // Air quality is good (0-50)
   const moderate = 100; // Air quality is acceptable (51-100)
   const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
   const unhealthy = 200; // Health risk for all individuals (151-200)
   const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
 
+  let textColor = 'white';
+  let backgroundColor = '#08E400';
+  let label = '';
+  const px2 = 2;
+  const px5 = 5;
+  let px = px2;
+
   if (aqi <= good) {
-    return (
-      <Tag fontSize={16} px={5} py={1} bg="#08E400" textColor="white">
-        Good (0-50)
-      </Tag>
-    );
+    [textColor, backgroundColor] = ['black', '#08E400'];
+    [label, px] = ['Good (0-50)', px5];
   } else if (aqi <= moderate) {
-    return (
-      <Tag fontSize={16} px={2} py={1} bg="#FEFF00" textColor="black">
-        Moderate (51-100)
-      </Tag>
-    );
+    [textColor, backgroundColor] = ['black', '#FEFF00'];
+    [label, px] = ['Moderate (51-100)', px2];
   } else if (aqi <= sensitiveGroups) {
-    return (
-      <Tag fontSize={16} px={2} py={1} bg="#FF7E02" textColor="white">
-        Unhealthy For Sensitive Groups (101-150)
-      </Tag>
-    );
+    [textColor, backgroundColor] = ['black', '#FF7E02'];
+    [label, px] = ['Unhealthy For Sensitive Groups (101-150)', px2];
   } else if (aqi <= unhealthy) {
-    return (
-      <Tag fontSize={16} px={2} py={1} bg="#FF0202" textColor="white">
-        Unhealthy (151-200)
-      </Tag>
-    );
+    [textColor, backgroundColor] = ['white', '#FF0202'];
+    [label, px] = ['Unhealthy (151-200)', px2];
   } else if (aqi <= veryUnhealthy) {
-    return (
-      <Tag fontSize={16} px={2} py={1} bg="#8F3F97" textColor="white">
-        Very Unhealthy (201-300)
-      </Tag>
-    );
+    [textColor, backgroundColor] = ['white', '#8F3F97'];
+    [label, px] = ['Very Unhealthy (201-300)', px2];
   } else {
     // Anything greater than 300 is "Hazardous"
-    return (
-      <Tag fontSize={16} px={2} py={1} bg="#7E0224" textColor="white">
-        Hazardous (301+)
-      </Tag>
-    );
+    [textColor, backgroundColor] = ['white', '#7E0224'];
+    [label, px] = ['Hazardous (301+)', px2];
   }
+  return (
+    <Tag
+      fontSize={16}
+      px={px}
+      py={1}
+      bg={backgroundColor}
+      textColor={textColor}
+    >
+      {label}
+    </Tag>
+  );
 };
 
 /**
  * AQI Dial Display Component
  * This component displays the dial representation of the AQI as well as the AQI
  * reading for the currently selected sensor. Additionally, there is a key below
- * the dial to label each color on the dial with how sever the health risk is.
+ * the dial to label each color on the dial with how severe the health risk is.
  */
-const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
-  currentReading,
+const AQIDial: ({currentAQI}: DialProps) => JSX.Element = ({
+  currentAQI,
 }: DialProps) => {
   return (
     <Box>
       <Center>
-        <GaugeSVG currentReading={currentReading} />
+        <GaugeSVG currentAQI={currentAQI} />
       </Center>
-      <Text fontSize={30}>Air Quality Index: {currentReading}</Text>
+      <Text fontSize={30}>Air Quality Index: {currentAQI}</Text>
       <Text fontSize={14} mb={2}>
         For more information on air quality and the Air Quality Index (AQI),
         check out our
@@ -89,7 +90,7 @@ const AQIDial: ({currentReading}: DialProps) => JSX.Element = ({
           health information.
         </Link>
       </Text>
-      <AQILabel currentReading={currentReading} />
+      <AQILabel currentAQI={currentAQI} />
     </Box>
   );
 };

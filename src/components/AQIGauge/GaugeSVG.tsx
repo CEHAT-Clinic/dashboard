@@ -3,8 +3,8 @@ import {arc} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
 import {DialProps} from './AQIDial';
 
-const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
-  currentReading,
+const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
+  currentAQI,
 }: DialProps) => {
   /* eslint-disable no-magic-numbers */
   // Arc properties
@@ -23,7 +23,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   // Values to display
   const min = 0;
   const max = 300;
-  const aqi: number = +currentReading;
+  const aqi: number = +currentAQI;
   /* eslint-enable no-magic-numbers */
 
   /**
@@ -129,45 +129,31 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   };
 
   const needleColor = '#636360';
+  const colors = [good, moderate, sensitive, unhealthy, veryUnhealthy];
+  const arcs = [
+    goodArc,
+    moderateArc,
+    sensitiveArc,
+    unhealthyArc,
+    veryUnhealthyArc,
+  ];
+  const pathObjects = [];
+  for (let i = 0; i < colors.length; i++) {
+    pathObjects.push(
+      <path
+        d={arcs[i]}
+        fill={assignColor(colors[i])}
+        stroke="black"
+        strokeWidth={0.002}
+        fillOpacity="0.3"
+      />
+    );
+  }
 
   return (
     <div className="svg">
-      <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.1'}>
-        <path
-          d={goodArc}
-          fill={assignColor(good)}
-          stroke="black"
-          strokeWidth={0.002}
-          fillOpacity="0.3"
-        />
-        <path
-          d={moderateArc}
-          fill={assignColor(moderate)}
-          stroke="black"
-          strokeWidth={0.002}
-          fillOpacity="0.3"
-        />
-        <path
-          d={sensitiveArc}
-          fill={assignColor(sensitive)}
-          stroke="black"
-          strokeWidth={0.002}
-          fillOpacity="0.3"
-        />
-        <path
-          d={unhealthyArc}
-          fill={assignColor(unhealthy)}
-          stroke="black"
-          strokeWidth={0.002}
-          fillOpacity="0.3"
-        />
-        <path
-          d={veryUnhealthyArc}
-          fill={assignColor(veryUnhealthy)}
-          stroke="black"
-          strokeWidth={0.002}
-          fillOpacity="0.3"
-        />
+      <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.15'}>
+        {pathObjects.map(pathObject => pathObject)}
         <path
           d={filledArc}
           fill={assignColor(aqi)}
