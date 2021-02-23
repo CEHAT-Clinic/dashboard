@@ -1,6 +1,7 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
 import {firebaseAuth, firestore} from '../firebase';
 import {Props} from './AppProviders';
+import {validData} from '../util';
 
 /**
  * Interface for AuthContext used for type safety
@@ -37,20 +38,6 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   // --------------- End state maintenance variables ------------------------
-
-  /**
-   *
-   * @param value - the value being checked for validity
-   * @param type - the valid type for the value being checked
-   *
-   * @returns true if the inputted value is not undefined and is of the type `type`
-   */
-  function validData(
-    value: any, // eslint-disable-line @typescript-eslint/no-explicit-any
-    type: string
-  ) {
-    return value !== undefined && typeof value === type;
-  }
 
   /**
    * Function to reset all state variables to defaults

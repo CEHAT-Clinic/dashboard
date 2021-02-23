@@ -99,6 +99,19 @@
         "heading": "Current Admins Users",
         "name": "Name",
         "allCurrent": "All Current Users",
-        "isAdmin": "Admin?"
+        "adminStatus": "Admin Status",
+        "makeAdmin": {
+            "button": "Make admin",
+            "confirmStart": "Are you sure you want to make ",
+            "confirmEnd": " an admin user?"
+        },
+        "removeAdmin": {
+            "button": "Remove admin",
+            "confirmStart": "Are you sure you want to remove ",
+            "confirmEnd": " as an admin user?",
+            "cannotBeUndone": "This change cannot be undone without another administrator"
+        },
+        "changeAdminError": "Unable to change admin status for ",
+        "confirmChange": "Confirm Admin Status Change"
     }
 }

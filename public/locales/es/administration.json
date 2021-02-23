@@ -99,6 +99,19 @@
         "heading": "Los administradores",
         "name": "Nombre",
         "allCurrent": "Todos usuarios actuales",
-        "isAdmin": "¿Administrador(a)?"
+        "adminStatus": "Status de administrador(a)",
+        "makeAdmin": {
+            "button": "Hacer administrador(a)",
+            "confirmStart": "¿Estás seguro de que quieres hacer de ",
+            "confirmEnd": " un usuario administrador?"
+        },
+        "removeAdmin": {
+            "button": "Quitar administrador(a)",
+            "confirmStart": "¿Estás seguro de que quieres eliminar a ",
+            "confirmEnd": " como usario administrador?",
+            "cannotBeUndone": "Esta acción no se puede deshacer sin otro/a administrador(a)"
+        },
+        "changeAdminError": "No se puede cambiar el status de administrador(a) de ",
+        "confirmChange": "Confirma el cambio de status de administrador"
     }
 }
