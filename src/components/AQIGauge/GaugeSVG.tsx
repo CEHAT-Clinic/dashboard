@@ -43,7 +43,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   };
 
   // Convert from percent to angle
-  const angleScale = scaleLinear()
+  const convertToAngle = scaleLinear()
     .domain([0, 1]) /* eslint-disable-line no-magic-numbers */
     .range([startAngle, endAngle])
     .clamp(true);
@@ -51,7 +51,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
   const arcGenerator = arc(); // Used to make arcs
 
   // Background Arcs
-  const goodArcAngle = angleScale(convertToPercent(good, min, max));
+  const goodArcAngle = convertToAngle(convertToPercent(good, min, max));
   const goodArc =
     arcGenerator({
       innerRadius: innerRadius,
@@ -59,7 +59,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
       startAngle: startAngle,
       endAngle: goodArcAngle,
     }) ?? '';
-  const moderateArcAngle = angleScale(convertToPercent(moderate, min, max));
+  const moderateArcAngle = convertToAngle(convertToPercent(moderate, min, max));
   const moderateArc =
     arcGenerator({
       innerRadius: innerRadius,
@@ -67,7 +67,9 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
       startAngle: goodArcAngle,
       endAngle: moderateArcAngle,
     }) ?? '';
-  const sensitiveArcAngle = angleScale(convertToPercent(sensitive, min, max));
+  const sensitiveArcAngle = convertToAngle(
+    convertToPercent(sensitive, min, max)
+  );
   const sensitiveArc =
     arcGenerator({
       innerRadius: innerRadius,
@@ -75,7 +77,9 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
       startAngle: moderateArcAngle,
       endAngle: sensitiveArcAngle,
     }) ?? '';
-  const unhealthyArcAngle = angleScale(convertToPercent(unhealthy, min, max));
+  const unhealthyArcAngle = convertToAngle(
+    convertToPercent(unhealthy, min, max)
+  );
   const unhealthyArc =
     arcGenerator({
       innerRadius: innerRadius,
@@ -83,7 +87,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
       startAngle: sensitiveArcAngle,
       endAngle: unhealthyArcAngle,
     }) ?? '';
-  const veryUnhealthyArcAngle = angleScale(
+  const veryUnhealthyArcAngle = convertToAngle(
     convertToPercent(veryUnhealthy, min, max)
   );
   const veryUnhealthyArc =
@@ -95,7 +99,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     }) ?? '';
 
   // Filled arc to overlay the background arcs
-  const filledAngle = angleScale(convertToPercent(aqi, min, max));
+  const filledAngle = convertToAngle(convertToPercent(aqi, min, max));
   const filledArc =
     arcGenerator({
       innerRadius: innerRadius,
@@ -124,7 +128,7 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     return arcColor;
   };
 
-  const needleColor = "#636360"
+  const needleColor = '#636360';
 
   return (
     <div className="svg">
