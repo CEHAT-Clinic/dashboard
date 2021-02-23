@@ -124,6 +124,8 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
     return arcColor;
   };
 
+  const needleColor = "#636360"
+
   return (
     <div className="svg">
       <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.1'}>
@@ -167,6 +169,14 @@ const GaugeSVG: ({currentReading}: DialProps) => JSX.Element = ({
           fill={assignColor(aqi)}
           stroke="black"
           strokeWidth={0.004}
+        />
+        <circle cx={0} cy={0} r={0.08} fill={needleColor} />
+        <path
+          d="M0.84 5.961e-08L0.770718 0.75L0.909282 0.75L0.84 5.961e-08Z"
+          fill={needleColor}
+          transform={`rotate(${
+            filledAngle * (180 / Math.PI) // eslint-disable-line no-magic-numbers
+          }) translate(-0.84, -0.75)`}
         />
       </svg>
     </div>
