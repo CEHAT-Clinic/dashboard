@@ -32,7 +32,7 @@
     "passwordHelpMessage": "Introduce tu contraseña actual antes de actualizar tu cuenta",
     "confirmPassword": "Confirma la contraseña",
     "passwordSubmitLabel": {
-        "change": "Actualiza contraseña",
+        "change": "Actualiza tu contraseña",
         "forgot": "Envia el correo electrónico"
     },
     "nameModal": {
