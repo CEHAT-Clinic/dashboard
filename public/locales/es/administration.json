@@ -121,7 +121,7 @@
         "latitude": "Latitud",
         "longitude": "Longitud",
         "status": "Estado actual",
-        "recentReading": "Hora de la medición más reciente",
+        "recentReading": "Hora de la lectura del sensor más reciente",
         "remove": "Eliminar el sensor",
         "online": "conectado",
         "offline": "desconectado",
