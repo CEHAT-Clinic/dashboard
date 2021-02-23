@@ -1,6 +1,7 @@
 import React from 'react';
 import {Text, Box, Tag, Link, Center} from '@chakra-ui/react';
 import GaugeSVG from './GaugeSVG';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Interface for the props of the dial
@@ -34,25 +35,27 @@ const AQILabel: ({currentAQI}: DialProps) => JSX.Element = ({
   const px5 = 5;
   let px = px2;
 
+  const {t} = useTranslation('dial');
+
   if (aqi <= good) {
     [textColor, backgroundColor] = ['black', '#08E400'];
-    [label, px] = ['Good (0-50)', px5];
+    [label, px] = [t('good'), px5];
   } else if (aqi <= moderate) {
     [textColor, backgroundColor] = ['black', '#FEFF00'];
-    [label, px] = ['Moderate (51-100)', px2];
+    [label, px] = [t('moderate'), px2];
   } else if (aqi <= sensitiveGroups) {
     [textColor, backgroundColor] = ['black', '#FF7E02'];
-    [label, px] = ['Unhealthy For Sensitive Groups (101-150)', px2];
+    [label, px] = [t('sensitive'), px2];
   } else if (aqi <= unhealthy) {
     [textColor, backgroundColor] = ['white', '#FF0202'];
-    [label, px] = ['Unhealthy (151-200)', px2];
+    [label, px] = [t('unhealthy'), px2];
   } else if (aqi <= veryUnhealthy) {
     [textColor, backgroundColor] = ['white', '#8F3F97'];
-    [label, px] = ['Very Unhealthy (201-300)', px2];
+    [label, px] = [t('very'), px2];
   } else {
     // Anything greater than 300 is "Hazardous"
     [textColor, backgroundColor] = ['white', '#7E0224'];
-    [label, px] = ['Hazardous (301+)', px2];
+    [label, px] = [t('hazardous'), px2];
   }
   return (
     <Tag
@@ -76,18 +79,19 @@ const AQILabel: ({currentAQI}: DialProps) => JSX.Element = ({
 const AQIDial: ({currentAQI}: DialProps) => JSX.Element = ({
   currentAQI,
 }: DialProps) => {
+  const {t} = useTranslation(['dial', 'menu']);
+
   return (
     <Box>
       <Center>
         <GaugeSVG currentAQI={currentAQI} />
       </Center>
-      <Text fontSize={30}>Air Quality Index: {currentAQI}</Text>
+      <Text fontSize={30}>{t('aqi') + currentAQI}</Text>
       <Text fontSize={14} mb={2}>
-        For more information on air quality and the Air Quality Index (AQI),
-        check out our
+        {t('moreInfo')}
         <Link fontSize={14} color="#32bfd1" href="/health">
           {' '}
-          health information.
+          {t('menu:healthInfo')}
         </Link>
       </Text>
       <AQILabel currentAQI={currentAQI} />
