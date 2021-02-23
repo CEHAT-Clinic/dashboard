@@ -112,6 +112,10 @@ const ManageUsers: () => JSX.Element = () => {
     user: User;
   }
 
+  /**
+   * Creates a button that when clicked, creates a confirmation popup to change a user's status
+   * @param user - The current user for a row
+   */
   const ToggleUserPopover: ({user}: ToggleUserPopoverProps) => JSX.Element = ({
     user,
   }: ToggleUserPopoverProps) => {

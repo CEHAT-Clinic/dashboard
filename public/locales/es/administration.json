@@ -106,7 +106,7 @@
             "confirmEnd": " un usuario administrador?"
         },
         "removeAdmin": {
-            "button": "Quitar administrador(a)",
+            "button": "Eliminar administrador(a)",
             "confirmStart": "¿Estás seguro de que quieres eliminar a ",
             "confirmEnd": " como usario administrador?",
             "cannotBeUndone": "Esta acción no se puede deshacer sin otro/a administrador(a)"
