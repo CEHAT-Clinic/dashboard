@@ -59,7 +59,7 @@ const ManageSensors: () => JSX.Element = () => {
               if (sensorData && validData(sensorData.purpleAirId, 'string')) {
                 sensorList.push({
                   purpleAirId: sensorData.purpleAirId,
-                  name: 'SG CEHAT', // TODO: add sensor name to the docs
+                  name: sensorData.name,
                   latitude: 0,
                   longitude: 0,
                   online: true, // TODO: update cloud function with this value
