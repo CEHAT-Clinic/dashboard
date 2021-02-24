@@ -1,0 +1,104 @@
+{
+    "userUndefined": "User undefined",
+    "passwordMismatch": "Passwords do not match",
+    "notStrongEnough": "Password is not strong enough. Please enter a password longer than six characters",
+    "unknownError": "Error occurred: ",
+    "invalidEmail": "Invalid email. Please enter a valid email address",
+    "invalidEmailShort": "Invalid email: ",
+    "userNotFound": "No user found for ",
+    "emailSendFailure": "Error occurred when trying to send email. Please try again",
+    "accountDisabled": "Account has been disabled. Please contact an administrator if you believe this is a mistake",
+    "incorrectPassword": "Wrong password. Try again or reset your password. You may also have created your account with a different method",
+    "accountExists":"Email already has an account. Please sign in or use a different email",
+    "passwordModalLaunch": {
+        "change": "Update Password",
+        "forgot": {
+            "text": "Forgot your password? ",
+            "link": "Reset your password"
+        }
+    },
+    "passwordModalHeader": {
+        "change":"Update Password",
+        "forgot": "Send Password Reset Email"
+    },
+    "passwordModalSuccess": {
+        "change": "Password updated",
+        "forgot": "Password reset email sent"
+    }, 
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "password": "Password",
+    "passwordHelpMessage": "Enter your current password before updating your account",
+    "confirmPassword": "Confirm Password",
+    "passwordSubmitLabel": {
+        "change": "Update password",
+        "forgot": "Send password reset email"
+    },
+    "nameModal": {
+        "launchButton": "Update your name",
+        "header": "Update Name",
+        "submitButton": "Update name",
+        "success": "Name updated",
+        "formHelperMessage": "Your name is used so that site admins can identify your account"
+    },
+    "signIn": {
+        "google": "Sign in with Google",
+        "email": "Sign in with email"
+    },
+    "signUp": {
+        "google": "Sign up with Google",
+        "email": "Sign up with email"
+    },
+    "signOut": "Sign out",
+    "signOutError": "Error occurred with sign out. Please try again",
+    "pageHeader": {
+        "signIn": "Sign In",
+        "signUp": "Sign Up"
+    },
+    "haveAccount": {
+        "text": "Already have an account? ",
+        "link": "Sign in"
+    },
+    "passwordVisibility": {
+        "hide": "Hide",
+        "show": "Show"
+    },
+    "email": "Email",
+    "name": "Name",
+    "noName": "Please add a name to your account",
+    "wrongMethod": "Account created with different sign in method. Please sign in with one of the following: ",
+    "tryAgain": "Error occurred. Please try to sign in with a different method.",
+    "popUpsBlocked": "Sign in pop up blocked. Enable pop ups in your browser or sign in with email",
+    "needAccount": "Need an account? ",
+    "signUpLink": "Sign up",
+    "noUser": "No user",
+    "noEmail": "No email",
+    "accessDenied": {
+        "heading": "Access Denied",
+        "reasonLeadUp": "You do not have access to this page because ",
+        "returnHome": "Return to Home",
+
+        "shouldHaveAccess": "If you think you should have access to this page, please contact a site administrator or a member of the South Gate CEHAT."
+    },
+    "manageAccount":{
+        "methodFetchError": "Error occurred when fetching user sign in methods",
+        "connectedToGoogle": "Account connected to Google",
+        "heading": "Manage Your Account",
+        "manageSignInMethodsHeader": "Manage Sign In Methods"
+    },
+    "returnAdmin": "Return to Admin Home",
+    "notSignedIn": "you are not signed in",
+    "notAdmin": "you are not an admin user",
+    "manageSensors": "Manage Sensors",
+    "manageAccountButtonText": "Manage Account",
+    "manageUsers": "Manage Users",
+    "header": "Admin Page",
+    "users":{
+        "cantFetch": "Unable to fetch users: ",
+        "heading": "Current Admins Users",
+        "name": "Name",
+        "allCurrent": "All Current Users",
+        "isAdmin": "Admin?"
+    }
+}

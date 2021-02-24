@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
 import AQIDial from '../components/AQIDial';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Home screen component
@@ -10,11 +11,11 @@ const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
   const [currentSensor, setCurrentSensor] = useState('');
 
+  const {t} = useTranslation('home');
+
   return (
     <Box>
-      <Text>
-        NOTE: This Website Is Under Construction. Check Back in April 2021.
-      </Text>
+      <Text>{t('constructionNotice')}</Text>
       <Flex direction={['column', 'column', 'row', 'row']} marginTop={4}>
         <Box flex="2" marginX={4} height={['100%']}>
           <Map updateCurrentSensor={setCurrentSensor} />
@@ -36,7 +37,7 @@ const Home: () => JSX.Element = () => {
               <AQIDial currentReading={currentSensor} />
             ) : (
               <Text marginTop={[null, null, '20%', null]}>
-                Click a sensor on the map to see its AQI value here!
+                {t('noActiveSensor')}
               </Text>
             )}
           </Box>
@@ -49,7 +50,7 @@ const Home: () => JSX.Element = () => {
             height={['100%', null, '100%', null]}
             borderRadius={6}
           >
-            <Heading>Data Visualizion Box</Heading>
+            <Heading>{t('dataVizBox')}</Heading>
           </Box>
         </Flex>
       </Flex>

@@ -9,6 +9,7 @@ import {
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import ForgotPasswordModal from './ForgotPassword';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component to sign in.
@@ -31,6 +32,8 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
   const [isLoadingEmail, setIsLoadingEmail] = useState(false);
   // -------------- End state maintenance variables -------------------------
 
+  const {t} = useTranslation(['administration', 'common']);
+
   /**
    * Signs in a user with email and password using Firebase authentication
    * @param event - submit form event
@@ -48,29 +51,23 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       // Error codes from Firebase documentation
       switch (error.code) {
         case 'auth/invalid-email': {
-          setEmailError('Please enter a valid email');
+          setEmailError(t('invalidEmail'));
           break;
         }
         case 'auth/user-disabled': {
-          setGeneralEmailError(
-            'Account has been disabled. Please contact an administrator ' +
-              'if you believe this is a mistake'
-          );
+          setGeneralEmailError(t('accountDisabled'));
           break;
         }
         case 'auth/user-not-found': {
-          setEmailError('No account found for the given email address');
+          setEmailError(t('userNotFound' + email));
           break;
         }
         case 'auth/wrong-password': {
-          setPasswordError(
-            'Wrong password. Try again or reset your password. ' +
-              'You may also have created your account with a different method'
-          );
+          setPasswordError(t('incorrectPassword'));
           break;
         }
         default: {
-          setGeneralEmailError('Error occurred. Please try again');
+          setGeneralEmailError(t('common:generalError'));
           break;
         }
       }
@@ -81,15 +78,15 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
 
   return (
     <>
-      <Heading textAlign="center">Sign In</Heading>
+      <Heading textAlign="center">{t('pageHeader.signIn')}</Heading>
       <form
         onSubmit={event => {
-          signInWithGoogle(event, setGoogleError, setIsLoadingGoogle);
+          signInWithGoogle(event, setGoogleError, setIsLoadingGoogle, t);
         }}
       >
         <SubmitButton
           color={'blue'}
-          label={'Sign in with Google'}
+          label={t('signIn.google')}
           error={googleError}
           isLoading={isLoadingGoogle}
         ></SubmitButton>
@@ -117,7 +114,7 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           value={password}
         ></PasswordFormInput>
         <SubmitButton
-          label={'Sign in with email'}
+          label={t('signIn.email')}
           error={generalEmailError}
           isLoading={isLoadingEmail}
         ></SubmitButton>
@@ -125,9 +122,9 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       <ForgotPasswordModal />
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
-        Need an account?{' '}
+        {t('needAccount')}
         <Link color="teal.500" onClick={() => setIsNewUser(true)}>
-          Sign up
+          {t('signUpLink')}
         </Link>
       </Text>
     </>

@@ -17,6 +17,7 @@ import {
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {EmailFormInput, SubmitButton} from './Util';
 import {firebaseAuth} from '../../../firebase';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for users to reset their password by email on the sign in page.
@@ -36,6 +37,8 @@ function ForgotPasswordModal(): JSX.Element {
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   // --------------- End state maintenance variables ------------------------
+
+  const {t} = useTranslation(['administration', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -76,13 +79,11 @@ function ForgotPasswordModal(): JSX.Element {
           break;
         }
         case 'auth/user-not-found': {
-          setModalError(`No user found for ${modalEmail}`);
+          setModalError(t('userNotFound') + modalEmail);
           break;
         }
         default: {
-          setModalError(
-            'Error occurred when trying to send email. Please try again'
-          );
+          setModalError(t('emailSendFailure'));
           break;
         }
       }
@@ -94,21 +95,21 @@ function ForgotPasswordModal(): JSX.Element {
   return (
     <Box>
       <Text>
-        Forgot your password?{' '}
+        {t('passwordModalLaunch.forgot.text')}
         <Link color="teal.500" onClick={onOpen}>
-          Reset your password
+          {t('passwordModalLaunch.forgot.link')}
         </Link>
       </Text>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Send Password Reset Email</ModalHeader>
+          <ModalHeader>{t('passwordModalHeader.forgot')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handlePasswordReset}>
             {emailSent ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">Password reset email sent</Text>
+                <Text fontSize="lg">{t('passwordModalSuccess.forgot')}</Text>
               </Flex>
             ) : (
               <ModalBody>
@@ -125,12 +126,12 @@ function ForgotPasswordModal(): JSX.Element {
             <ModalFooter>
               {!emailSent && (
                 <SubmitButton
-                  label="Send password reset email"
+                  label={t('passwordSubmitLabel.forgot')}
                   isLoading={modalIsLoading}
                 />
               )}
               <Button colorScheme="red" margin={4} onClick={handleClose}>
-                Close
+                {t('common:close')}
               </Button>
             </ModalFooter>
           </form>

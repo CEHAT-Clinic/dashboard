@@ -20,6 +20,7 @@ import {
   SubmitButton,
 } from './Util';
 import {firebaseAuth} from '../../../firebase';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Component for changing an authenticated user's password. Includes button that
@@ -51,6 +52,8 @@ function ChangePasswordModal(): JSX.Element {
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [passwordResetComplete, setPasswordResetComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
+
+  const {t} = useTranslation(['administration', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -96,13 +99,16 @@ function ChangePasswordModal(): JSX.Element {
     event.preventDefault();
 
     setModalIsLoading(true);
-    if (!firebaseAuth.currentUser) throw Error('User undefined');
+    if (!firebaseAuth.currentUser) throw Error(t('userUndefined'));
 
     if (newPassword !== confirmNewPassword) {
-      setConfirmNewPasswordError('Passwords do not match');
+      setConfirmNewPasswordError(t('passwordMismatch'));
       setModalIsLoading(false);
     } else {
-      const error = await handleReauthenticationWithPassword(currentPassword);
+      const error = await handleReauthenticationWithPassword(
+        currentPassword,
+        t
+      );
       if (error) {
         setCurrentPasswordError(error);
       } else {
@@ -116,14 +122,11 @@ function ChangePasswordModal(): JSX.Element {
           // Error codes from Firebase documentation
           switch (error.code) {
             case 'auth/weak-password': {
-              setNewPasswordError(
-                'Password is not strong enough. ' +
-                  'Please enter a password longer than six characters'
-              );
+              setNewPasswordError(t('notStrongEnough'));
               break;
             }
             default: {
-              setGeneralModalError(`Error occurred: ${error.message}`);
+              setGeneralModalError(t('unknownError') + error.message);
               break;
             }
           }
@@ -135,25 +138,25 @@ function ChangePasswordModal(): JSX.Element {
   }
 
   return (
-    <Box>
-      <Button colorScheme="teal" onClick={onOpen} width="full">
-        Update your password
+    <Box marginY={2}>
+      <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
+        {t('passwordModalLaunch.change')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Update Password</ModalHeader>
+          <ModalHeader>{t('passwordModalHeader.change')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handlePasswordUpdate}>
             {passwordResetComplete ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">Password updated</Text>
+                <Text fontSize="lg">{t('passwordModalSuccess.change')}</Text>
               </Flex>
             ) : (
               <ModalBody>
                 <PasswordFormInput
-                  label="Current Password"
+                  label={t('currentPassword')}
                   handlePasswordChange={event => {
                     setCurrentPassword(event.target.value);
                     resetErrors();
@@ -166,7 +169,7 @@ function ChangePasswordModal(): JSX.Element {
                   value={currentPassword}
                 />
                 <PasswordFormInput
-                  label="New Password"
+                  label={t('newPassword')}
                   handlePasswordChange={event => {
                     setNewPassword(event.target.value);
                     resetErrors();
@@ -179,7 +182,7 @@ function ChangePasswordModal(): JSX.Element {
                   value={newPassword}
                 />
                 <PasswordFormInput
-                  label="Confirm New Password"
+                  label={t('confirmNewPassword')}
                   handlePasswordChange={event => {
                     setConfirmNewPassword(event.target.value);
                     resetErrors();
@@ -196,18 +199,13 @@ function ChangePasswordModal(): JSX.Element {
             <ModalFooter>
               {!passwordResetComplete && (
                 <SubmitButton
-                  label="Update password"
+                  label={t('passwordSubmitLabel.change')}
                   isLoading={modalIsLoading}
                   error={generalModalError}
                 />
               )}
-              <Button
-                colorScheme="red"
-                marginLeft={4}
-                marginTop={4}
-                onClick={handleClose}
-              >
-                Close
+              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
+                {t('common:close')}
               </Button>
             </ModalFooter>
           </form>

@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import AppProviders from './contexts/AppProviders';
+import './i18n';
 
 ReactDOM.render(
   <React.StrictMode>

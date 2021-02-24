@@ -8,8 +8,12 @@ import {
   FormLabel,
   Input,
   InputGroup,
+  Box,
+  FormHelperText,
 } from '@chakra-ui/react';
 import firebase, {firebaseAuth} from '../../../firebase';
+import {useTranslation} from 'react-i18next';
+import {TFunction} from 'i18next';
 
 /**
  * Props for PasswordVisibilityToggle component. Used for type safety.
@@ -33,10 +37,13 @@ const PasswordVisibilityToggle: ({
   showPassword,
   handlePasswordVisibility,
 }: PasswordVisibilityProps) => {
+  const {t} = useTranslation('administration');
   return (
     <InputRightElement width="4.5rem">
       <Button height="1.75rem" size="sm" onClick={handlePasswordVisibility}>
-        {showPassword ? 'Hide' : 'Show'}
+        {showPassword
+          ? t('passwordVisibility.hide')
+          : t('passwordVisibility.show')}
       </Button>
     </InputRightElement>
   );
@@ -67,9 +74,10 @@ const EmailFormInput: ({
   value,
   error = '',
 }: EmailFormInputProps) => {
+  const {t} = useTranslation('administration');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>Email</FormLabel>
+      <FormLabel>{t('email')}</FormLabel>
       <Input
         type="email"
         placeholder="example@test.com"
@@ -92,17 +100,19 @@ interface PasswordFormInputProps {
   value: string;
   handlePasswordVisibility?: () => void;
   error?: string;
+  helpMessage?: string;
 }
 
 /**
  * Component for password input field in authentication forms.
  * @param props - label, showPassword, handlePasswordChange, handlePasswordVisibility, error
- * - `label` (optional) label for password input. Defaults to 'Password'
+ * - `label` (optional) label for password input. Defaults to t('password')
  * - `showPassword` (optional) if password is hidden or not. Defaults to false
  * - `handlePasswordChange` handles change in password input field
  * - `value` value that tracks the form value
  * - `handlePasswordVisibility` (optional) changes showPassword. Defaults to toggle showPassword.
  * - `error` (optional) error message to be displayed. Defaults to ''
+ * - `helpMessage` (optional) message to explain the form field to users
  */
 const PasswordFormInput: ({
   label,
@@ -111,17 +121,21 @@ const PasswordFormInput: ({
   value,
   handlePasswordVisibility,
   error,
+  helpMessage,
 }: PasswordFormInputProps) => JSX.Element = ({
-  label = 'Password',
+  label,
   showPassword = false,
   handlePasswordChange,
   value,
   handlePasswordVisibility = () => !showPassword,
   error = '',
+  helpMessage = '',
 }: PasswordFormInputProps) => {
+  const {t} = useTranslation('administration');
+  const safeLabel = label ? label : t('password');
   return (
     <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-      <FormLabel>{label}</FormLabel>
+      <FormLabel>{safeLabel}</FormLabel>
       <InputGroup>
         <Input
           type={showPassword ? 'text' : 'password'}
@@ -135,6 +149,7 @@ const PasswordFormInput: ({
           handlePasswordVisibility={handlePasswordVisibility}
         />
       </InputGroup>
+      <FormHelperText>{helpMessage}</FormHelperText>
       <FormErrorMessage>{error}</FormErrorMessage>
     </FormControl>
   );
@@ -154,7 +169,7 @@ interface SubmitButtonProps {
 /**
  * Component for submit button in authentication forms.
  * @param props - label, isLoading, color, error, isDisabled
- * - `label` (optional) label for button. Defaults to "Submit"
+ * - `label` (optional) label for button. Defaults to t('submit')
  * - `isLoading` (optional) if application is currently loading, used to display
  *   loading circle on button. Defaults to false
  * - `color` (optional) color of button. Defaults to "teal"
@@ -168,30 +183,34 @@ const SubmitButton: ({
   error,
   isDisabled,
 }: SubmitButtonProps) => JSX.Element = ({
-  label = 'Submit',
+  label,
   isLoading = false,
   color = 'teal',
   error = '',
   isDisabled = false,
 }: SubmitButtonProps) => {
+  const {t} = useTranslation('common');
+  const safeLabel = label ? label : t('submit');
   return (
-    <FormControl isInvalid={error !== ''}>
-      <Button
-        colorScheme={color}
-        variant="solid"
-        type="submit"
-        width="full"
-        marginY={4}
-        isDisabled={isDisabled}
-      >
-        {isLoading ? (
-          <CircularProgress isIndeterminate size="24px" color={color} />
-        ) : (
-          label
-        )}
-      </Button>
-      <FormErrorMessage>{error}</FormErrorMessage>
-    </FormControl>
+    <Box align="center">
+      <FormControl isInvalid={error !== ''}>
+        <Button
+          colorScheme={color}
+          variant="solid"
+          type="submit"
+          minWidth="50%"
+          marginY={4}
+          isDisabled={isDisabled}
+        >
+          {isLoading ? (
+            <CircularProgress isIndeterminate size="24px" color={color} />
+          ) : (
+            safeLabel
+          )}
+        </Button>
+        <FormErrorMessage>{error}</FormErrorMessage>
+      </FormControl>
+    </Box>
   );
 };
 
@@ -200,17 +219,18 @@ const SubmitButton: ({
  * @param event - submit form event
  * @param setError - function to set error state for any errors from Google
  * @param setIsLoading - function to set loading state
+ * @param translate - function to translate text using i18n-next
  */
 async function signInWithGoogle(
   event: React.FormEvent<HTMLFormElement>,
   setError: React.Dispatch<React.SetStateAction<string>>,
-  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
+  translate: TFunction
 ): Promise<void> {
   // Prevents submission before sign in is complete
   event.preventDefault();
 
   setIsLoading(true);
-
   try {
     await firebaseAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
   } catch (error) {
@@ -220,25 +240,18 @@ async function signInWithGoogle(
         firebaseAuth
           .fetchSignInMethodsForEmail(error.email)
           .then(signInMethodArray => {
-            const errorMessageTemplate =
-              'Account created with different sign in method. ' +
-              'Please sign in with one of the following: ';
+            const errorMessageTemplate = translate('wrongMethod');
             const methods = signInMethodArray.join(', ');
             setError(errorMessageTemplate + methods);
           })
           .catch(error => {
             switch (error.code) {
               case 'auth/invalid-email': {
-                setError(
-                  'Invalid email. Please try signing in again' +
-                    ' with a valid email address'
-                );
+                setError(translate('invalidEmail'));
                 break;
               }
               default: {
-                setError(
-                  'Error occurred. Please try to sign in with a different method.'
-                );
+                setError(translate('tryAgain'));
                 break;
               }
             }
@@ -254,13 +267,11 @@ async function signInWithGoogle(
         break;
       }
       case 'auth/popup-blocked': {
-        setError(
-          'Sign in pop up blocked. Enable pop ups in your browser or sign in with email'
-        );
+        setError(translate('popUpsBlocked'));
         break;
       }
       default: {
-        setError('Error occurred. Please try again');
+        setError(translate('common:error'));
         break;
       }
     }
@@ -279,10 +290,11 @@ async function signInWithGoogle(
  * Thrown if the currentUser's email is null
  */
 async function handleReauthenticationWithPassword(
-  password: string
+  password: string,
+  translate: TFunction
 ): Promise<string> {
-  if (!firebaseAuth.currentUser) throw new Error('No user');
-  if (!firebaseAuth.currentUser.email) throw new Error('No email');
+  if (!firebaseAuth.currentUser) throw new Error(translate('noUser'));
+  if (!firebaseAuth.currentUser.email) throw new Error(translate('noEmail'));
   const credential = firebase.auth.EmailAuthProvider.credential(
     firebaseAuth.currentUser.email,
     password
@@ -304,10 +316,10 @@ async function handleReauthenticationWithPassword(
 
     switch (error.code) {
       case 'auth/wrong-password': {
-        return 'Wrong current password';
+        return translate('incorrectPassword');
       }
       default: {
-        return `Error occurred: ${error.message}`;
+        return translate('unknownError') + error.message;
       }
     }
   }
