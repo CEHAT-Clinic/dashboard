@@ -80,7 +80,8 @@ function NavigationBar(): JSX.Element {
                   {t('changeLanguage')}
                 </span>
               ) : (
-                <Icon as={FaGlobeAmericas}
+                <Icon
+                  as={FaGlobeAmericas}
                   aria-label={t('globeIcon')}
                   title={t('changeLanguage')}
                 />
