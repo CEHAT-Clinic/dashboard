@@ -232,16 +232,16 @@ const ManageUsers: () => JSX.Element = () => {
               </Thead>
               <Tbody>
                 {users
-                .filter(user => !user.admin)
-                .map((user, id) => (
-                  <Tr key={id}>
-                    <Td>{user.name}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>
-                      <ToggleUserPopover user={user} />
-                    </Td>
-                  </Tr>
-                ))}
+                  .filter(user => !user.admin)
+                  .map((user, id) => (
+                    <Tr key={id}>
+                      <Td>{user.name}</Td>
+                      <Td>{user.email}</Td>
+                      <Td>
+                        <ToggleUserPopover user={user} />
+                      </Td>
+                    </Tr>
+                  ))}
               </Tbody>
             </Table>
           </Box>
