@@ -71,6 +71,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         setIsAuthenticated(true);
       } else {
         resetState();
+        setIsAuthenticated(false);
       }
       setIsLoading(false);
     });
