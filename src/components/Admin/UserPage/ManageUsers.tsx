@@ -84,7 +84,7 @@ const ManageUsers: () => JSX.Element = () => {
   /**
    *
    * @param event - click button event
-   * @param userId - Firebase uid of the user to toggle the admin status
+   * @param user - user for which to toggle admin status
    */
   function toggleAdminStatus(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -113,7 +113,10 @@ const ManageUsers: () => JSX.Element = () => {
   }
 
   /**
-   * Creates a button that when clicked, creates a confirmation popup to change a user's status
+   * Creates a button that when clicked, creates a confirmation popup to change
+   * a user's status. If a user tries to remove their own admin status, a
+   * warning is shown that the action cannot be undone without another admin
+   * user changing their status back.
    * @param user - The current user for a row
    */
   const ToggleUserPopover: ({user}: ToggleUserPopoverProps) => JSX.Element = ({
