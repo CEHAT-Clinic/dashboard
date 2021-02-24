@@ -3,6 +3,7 @@ import './NavigationBar.css';
 import cehatLogo from './CEHATLogo.png';
 import {useTranslation} from 'react-i18next';
 import {FaBars, FaGlobeAmericas} from 'react-icons/fa';
+import {Icon} from '@chakra-ui/react';
 
 /** Element for the navigation bar for use on all pages */
 function NavigationBar(): JSX.Element {
@@ -18,6 +19,7 @@ function NavigationBar(): JSX.Element {
 
   /** Adjust UI for switching between narrow/mobile and wide/desktop modes */
   function handleScreenChange(this: MediaQueryList): void {
+    // Is the screen size mobile size
     if (this.matches) {
       setIsNavVisible(false);
       setIsMobile(true);
@@ -70,11 +72,15 @@ function NavigationBar(): JSX.Element {
               {/* Display globe on desktop, but text in menu bar on mobile */}
               {isMobile ? (
                 <span>
-                  <FaGlobeAmericas id="mobileGlobe" title={t('globeIcon')} />{' '}
+                  <Icon
+                    as={FaGlobeAmericas}
+                    id="mobileGlobe"
+                    title={t('globeIcon')}
+                  />{' '}
                   {t('changeLanguage')}
                 </span>
               ) : (
-                <FaGlobeAmericas
+                <Icon as={FaGlobeAmericas}
                   aria-label={t('globeIcon')}
                   title={t('changeLanguage')}
                 />
@@ -83,7 +89,11 @@ function NavigationBar(): JSX.Element {
           </nav>
         )}
         <button onClick={toggleNav} className="Burger">
-          <FaBars className="menu-icon" aria-label={t('menuButton')} />
+          <Icon
+            as={FaBars}
+            className="menu-icon"
+            aria-label={t('menuButton')}
+          />
         </button>
       </header>
     </div>

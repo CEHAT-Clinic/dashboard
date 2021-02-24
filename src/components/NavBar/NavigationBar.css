@@ -53,7 +53,8 @@ nav a:hover, #changeLanguage:hover {
   }
 
   #mobileGlobe {
-    display: inline
+    display: inline;
+    margin-bottom: 1.75%;
   }
 
 /* Conditional formatting for small screens */
