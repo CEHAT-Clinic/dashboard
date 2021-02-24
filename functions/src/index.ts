@@ -34,13 +34,19 @@ const defaultPm25BufferElement: pm25BufferElement = {
 };
 
 interface AQIBufferElement {
-  timestamp: FirebaseFirestore.Timestamp | null;
+  timestamp: FirebaseFirestore.FieldValue | null;
   aqi: number;
 }
 const defaultAQIBufferElement: AQIBufferElement = {
   timestamp: null,
   aqi: NaN,
 };
+
+enum bufferStatus {
+  Exists = 1 /* eslint-disable-line no-magic-numbers */,
+  InProgress,
+  DoesNotExist,
+}
 
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
@@ -60,7 +66,7 @@ async function getThingspeakKeysFromPurpleAir(
 /**
  * Increment the buffer index, circling back to 0 if the index is at the last point
  * @param index - current index
- * @param length - length of the array
+ * @param length - length of the buffer array
  */
 const incrementIndex = (index: number, length: number) => {
   let newIndex = index + 1; // eslint-disable-line no-magic-numbers
@@ -105,36 +111,9 @@ exports.thingspeakToFirestore = functions
       const resolvedPath = readingsSubcollection(knownSensor.id);
       const readingsRef = firestore.collection(resolvedPath);
 
-      const docRef = firestore.collection('sensors').doc(knownSensor.id);
-
-      // If the PM 2.5 circular buffer or the buffer index are not present,
-      // add them to the document with initial values
-      let pm25BufferIndex = 0;
-      let pm25Buffer: Array<pm25BufferElement> = [];
-      // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
-      // the AQI nowcast calculation
-      const bufferSize = 10; // TODO: change this from testing size
-      for (let i = 0; i < bufferSize; ++i) {
-        pm25Buffer.push(defaultPm25BufferElement);
-      }
-
-      // Get pm25 Buffer if it exists in the database
-      await docRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            if (doc.get('pm25BufferIndex') && doc.get('pm25Buffer')) {
-              pm25BufferIndex = doc.get('pm25BufferIndex');
-              pm25Buffer = doc.get('pm25Buffer');
-            }
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
-      // If data is not already present in the databse, add it to the historical
-      // readings and to the circular buffer
+      // If data is not already present in the database add
+      // it to the historical readings
+      let firestoreSafeReading = defaultPm25BufferElement;
       if (
         (
           await readingsRef
@@ -142,8 +121,8 @@ exports.thingspeakToFirestore = functions
             .get()
         ).empty
       ) {
-        // Add to historical readings
-        const firestoreSafeReading = {
+        // Update reading with values
+        firestoreSafeReading = {
           timestamp: Timestamp.fromDate(reading.timestamp),
           channelAPm25: reading.channelAPm25,
           channelBPm25: reading.channelBPm25,
@@ -151,34 +130,38 @@ exports.thingspeakToFirestore = functions
           latitude: reading.latitude,
           longitude: reading.longitude,
         };
+        // Add to historical readings
         await readingsRef.add(firestoreSafeReading);
-
-        // Add to circular buffer
-        pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
-      } else {
-        // Else, the value is the same as the previous value, so this data is
-        // already present in the database. We don't add to the historical
-        // readings, but still add a default element to the circular buffer.
-        // This happens when a sensor is down.
-        pm25Buffer[pm25BufferIndex] = defaultPm25BufferElement; // Add default element
       }
 
-      // Increment index
-      pm25BufferIndex = incrementIndex(pm25BufferIndex, pm25Buffer.length);
-      // Write to document
-      await docRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
+      // Add readings to the historical buffer
+      const docRef = firestore.collection('sensors').doc(knownSensor.id);
+
+      // Get pm25 Buffer if it exists in the database
+      await docRef.get().then(doc => {
+        if (doc.exists) {
+          const status = doc.get('pm25BufferStatus');
+          if (status === bufferStatus.Exists) {
+            let pm25BufferIndex = doc.get('pm25BufferIndex');
+            const pm25Buffer = doc.get('pm25Buffer');
+            // Add to circular buffer
+            pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
+            // Increment index
+            pm25BufferIndex = incrementIndex(
+              pm25BufferIndex,
+              pm25Buffer.length
+            );
+            // Update document with new buffer and index
             docRef.update({
               pm25BufferIndex: pm25BufferIndex,
               pm25Buffer: pm25Buffer,
             });
+          } else if (status === bufferStatus.DoesNotExist) {
+            // Populate the buffer with default values, skip it this round
+            populateBuffer(false, docRef);
           }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+        }
+      });
 
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
       // our program from getting blocked.
@@ -306,36 +289,6 @@ exports.calculateAqi = functions.pubsub
       const hourlyAverages = await getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
-      // Document reference for current sensor
-      // (to update last-24-hours AQI buffer)
-      const sensorDocRef = firestore.collection('/sensors').doc(docId);
-
-      // If the last 24 hours AQI circular buffer or the buffer index are not
-      // present, add them to the document with initial values
-      let aqiBufferIndex = 0;
-      let aqiBuffer: Array<AQIBufferElement> = [];
-      // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
-      // create a graph with 24 hours of data
-      const bufferSize = 3; // TODO: change this from testing size
-      for (let i = 0; i < bufferSize; ++i) {
-        aqiBuffer.push(defaultAQIBufferElement);
-      }
-
-      // Get AQI Buffer if it exists in the database
-      await sensorDocRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
-            if (doc.get('aqiBufferIndex') && doc.get('aqiBuffer')) {
-              aqiBufferIndex = doc.get('aqiBufferIndex');
-              aqiBuffer = doc.get('aqiBuffer');
-            }
-          }
-        })
-        .catch(error => {
-          console.error(error);
-        });
-
       // NowCast formula from the EPA requires 2 out of the last 3 hours
       // to be available
       let validEntriesLastThreeHours = 0;
@@ -352,7 +305,10 @@ exports.calculateAqi = functions.pubsub
       const NOWCAST_RECENT_DATA_THRESHOLD = 2;
       const containsEnoughInfo =
         validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
-      // If there is not enough info, the sensor's data is not reported
+
+      // If there's enough info, the sensor's data is updated
+      // If there isn't, we send the default AQI buffer element
+      let aqiBufferData = defaultAQIBufferElement; // New data to add
       if (containsEnoughInfo) {
         const purpleAirId: string = knownSensor.data()['purpleAirId'];
         const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
@@ -365,38 +321,46 @@ exports.calculateAqi = functions.pubsub
           nowCastPm25: nowcastPm25.reading,
           aqi: aqi,
         };
-        const aqiBufferData = {
+        aqiBufferData = {
           aqi: aqi,
-          timestamp: null,
+          timestamp: FieldValue.serverTimestamp(),
         };
-        aqiBuffer[aqiBufferIndex] = aqiBufferData; // Update circular buffer
-      } else {
-        // If there's not enough info, use the default circular buffer element
-        aqiBuffer[aqiBufferIndex] = defaultAQIBufferElement;
       }
+      // Send AQI reading to current-readings to be displayed on the map
+      await firestore.collection('current-reading').doc('pm25').set({
+        lastUpdated: FieldValue.serverTimestamp(),
+        data: currentData,
+      });
 
-      // Increment index
-      aqiBufferIndex = incrementIndex(aqiBufferIndex, aqiBuffer.length);
-      // Write to document
-      await sensorDocRef
-        .get()
-        .then(doc => {
-          if (doc.exists) {
+      /// / -------- Update the AQI Circular Buffer -------- ////
+
+      // Document reference for current sensor
+      const sensorDocRef = firestore.collection('/sensors').doc(docId);
+
+      await sensorDocRef.get().then(doc => {
+        if (doc.exists) {
+          const status = doc.get('aqiBufferStatus');
+          if (status === bufferStatus.Exists) {
+            // The buffer exists, proceed with normal update
+            let aqiBufferIndex = doc.get('aqiBufferIndex');
+            const aqiBuffer = doc.get('aqiBuffer');
+
+            // Update circular buffer
+            aqiBuffer[aqiBufferIndex] = aqiBufferData;
+            // Increment buffer index
+            aqiBufferIndex = incrementIndex(aqiBufferIndex, aqiBuffer.length);
+            // Update document
             sensorDocRef.update({
               aqiBufferIndex: aqiBufferIndex,
               aqiBuffer: aqiBuffer,
             });
+          } else if (status === bufferStatus.DoesNotExist) {
+            // Populate the buffer with default values, skip this sensor
+            populateBuffer(true, sensorDocRef);
           }
-        })
-        .catch(error => {
-          console.error(error);
-        });
+        }
+      });
     }
-
-    await firestore.collection('current-reading').doc('pm25').set({
-      lastUpdated: FieldValue.serverTimestamp(),
-      data: currentData,
-    });
   });
 
 // When there are many readings to get, extra time beyond the default 120 seconds
@@ -404,6 +368,57 @@ exports.calculateAqi = functions.pubsub
 const generateReadingsCsvRuntimeOptions: functions.RuntimeOptions = {
   timeoutSeconds: 540,
 };
+
+/**
+ * This function populates the given sensor doc with a default circular buffer
+ * for eitherAQI or PM2.5
+ * @param aqiBuffer - true if AQI buffer, false if PM25 buffer
+ * @param docRef - document reference for the sensor to update
+ */
+async function populateBuffer(
+  aqiBuffer: boolean,
+  docRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
+) {
+  let bufferSize = 0;
+  const bufferIndex = 0;
+  if (aqiBuffer) {
+    // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
+    // create a graph with 24 hours of data
+    bufferSize = 144; /* eslint-disable-line no-magic-numbers */
+    const aqiBuffer: Array<AQIBufferElement> = [];
+    for (let i = 0; i < bufferSize; ++i) {
+      aqiBuffer.push(defaultAQIBufferElement);
+    }
+    // Update document
+    await docRef.get().then(doc => {
+      if (doc.exists) {
+        docRef.update({
+          aqiBufferIndex: bufferIndex,
+          aqiBuffer: aqiBuffer,
+          aqiBufferStatus: bufferStatus.Exists,
+        });
+      }
+    });
+  } else {
+    // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
+    // the AQI nowcast calculation
+    bufferSize = 3600; /* eslint-disable-line no-magic-numbers */
+    const pm25Buffer: Array<pm25BufferElement> = [];
+    for (let i = 0; i < bufferSize; ++i) {
+      pm25Buffer.push(defaultPm25BufferElement);
+    }
+    // Update document
+    await docRef.get().then(doc => {
+      if (doc.exists) {
+        docRef.update({
+          pm25BufferIndex: bufferIndex,
+          pm25Buffer: pm25Buffer,
+          pm25BufferStatus: bufferStatus.Exists,
+        });
+      }
+    });
+  }
+}
 
 exports.generateReadingsCsv = functions
   .runWith(generateReadingsCsvRuntimeOptions)
