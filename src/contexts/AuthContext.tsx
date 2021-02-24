@@ -8,11 +8,15 @@ import {Props} from './AppProviders';
  * - `isAuthenticated` if user is signed in
  * - `isLoading` if authentication status is being fetched
  * - `isAdmin` if user is an admin
+ * - `name` user's name or empty string
+ * - `email` user's email
  */
 interface AuthInterface {
   isAuthenticated: boolean;
   isLoading: boolean;
   isAdmin: boolean;
+  name: string;
+  email: string;
 }
 
 /**
@@ -30,43 +34,96 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [name, setName] = useState('');
   // --------------- End state maintenance variables ------------------------
+
+  /**
+   *
+   * @param value - the value being checked for validity
+   * @param type - the valid type for the value being checked
+   *
+   * @returns true if the inputted value is not undefined and is of the type `type`
+   */
+  function validData(
+    value: any, // eslint-disable-line @typescript-eslint/no-explicit-any
+    type: string
+  ) {
+    return value !== undefined && typeof value === type;
+  }
+
+  /**
+   * Function to reset all state variables to defaults
+   */
+  function resetState(): void {
+    setIsAdmin(false);
+    setEmail('');
+    setName('');
+  }
 
   useEffect(() => {
     setIsLoading(true);
+
+    // Creates listener for authentication status
     const unsubscribe = firebaseAuth.onAuthStateChanged(user => {
+      setIsLoading(true);
       if (user) {
         setIsAuthenticated(true);
-
-        // Check if user is an admin user
-        firestore
-          .collection('users')
-          .doc(user.uid)
-          .get()
-          .then(doc => {
-            if (doc.exists) {
-              const userData = doc.data();
-              if (userData) {
-                if (userData.admin) setIsAdmin(true);
-              }
-            }
-          })
-          .catch(error => {
-            // Error thrown upon failure to fetch the users doc from Firestore
-            throw new Error(`Unable to fetch users doc: ${error}`);
-          })
-          .finally(() => {
-            // Loading is only finished after the async calls to Firestore complete
-            setIsLoading(false);
-          });
       } else {
+        resetState();
         setIsAuthenticated(false);
-        setIsAdmin(false);
-        setIsLoading(false);
       }
+      setIsLoading(false);
     });
     return unsubscribe;
   }, []);
+
+  // Watch a user's document for account updates if a user is signed in
+  useEffect(() => {
+    if (isAuthenticated && firebaseAuth.currentUser) {
+      setIsLoading(true);
+      const user = firebaseAuth.currentUser;
+
+      // This creates a listener for changes on the document so that if a user
+      // updates their account information, this change is reflected on the user's
+      // account page.
+      const unsubscribe = firestore
+        .collection('users')
+        .doc(user.uid)
+        .onSnapshot(snapshot => {
+          if (snapshot.exists) {
+            const userData = snapshot.data();
+
+            if (userData) {
+              if (validData(userData.admin, 'boolean'))
+                setIsAdmin(userData.admin);
+              if (validData(userData.name, 'string')) setName(userData.name);
+              if (validData(userData.email, 'string')) setEmail(userData.email);
+            }
+            setIsLoading(false);
+          } else {
+            // If a user doc doesn't exist, create one using the information
+            // attached to the Firebase User object
+            const newUserData = {
+              name: user.displayName ?? '',
+              email: user.email ?? '',
+              admin: false,
+            };
+            firestore
+              .collection('users')
+              .doc(user.uid)
+              .update(newUserData)
+              .catch(error => {
+                // Error thrown upon failure to create the users doc in Firestore
+                throw new Error('Unable to create user doc: ' + error);
+              })
+              .finally(() => setIsLoading(false));
+          }
+        });
+      return unsubscribe;
+    }
+    return;
+  }, [isAuthenticated]);
 
   return (
     <AuthContext.Provider
@@ -74,6 +131,8 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         isAuthenticated: isAuthenticated,
         isAdmin: isAdmin,
         isLoading: isLoading,
+        name: name,
+        email: email,
       }}
     >
       {children}
@@ -82,8 +141,8 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 };
 
 /**
- * Custom hook to allow other components to use and set authentication status
- * @returns `{isAuthenticated, isLoading, isAdmin}`
+ * Custom hook to allow other components to use authentication status
+ * @returns `{isAuthenticated, isLoading, isAdmin, name, email}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 

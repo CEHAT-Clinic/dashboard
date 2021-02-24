@@ -95,21 +95,21 @@ function ForgotPasswordModal(): JSX.Element {
   return (
     <Box>
       <Text>
-        {t('modalLaunch.forgot.text')}
+        {t('passwordModalLaunch.forgot.text')}
         <Link color="teal.500" onClick={onOpen}>
-          {t('modalLaunch.forgot.link')}
+          {t('passwordModalLaunch.forgot.link')}
         </Link>
       </Text>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t('modalHeader.forgot')}</ModalHeader>
+          <ModalHeader>{t('passwordModalHeader.forgot')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handlePasswordReset}>
             {emailSent ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">{t('success.forgot')}</Text>
+                <Text fontSize="lg">{t('passwordModalSuccess.forgot')}</Text>
               </Flex>
             ) : (
               <ModalBody>
@@ -126,7 +126,7 @@ function ForgotPasswordModal(): JSX.Element {
             <ModalFooter>
               {!emailSent && (
                 <SubmitButton
-                  label={t('submitLabel.forgot')}
+                  label={t('passwordSubmitLabel.forgot')}
                   isLoading={modalIsLoading}
                 />
               )}

@@ -1,6 +1,8 @@
 {
     "close": "Close",
+    "submit": "Submit",
     "generalError": "Error occurred. Please try again",
+    "generalErrorTemplate": "Error occurred: ",
     "yes": "Yes",
     "no": "No"
 }
