@@ -134,14 +134,14 @@ exports.thingspeakToFirestore = functions
         await readingsRef.add(firestoreSafeReading);
       }
 
-      // Add readings to the historical buffer
+      // Add readings to the pm25 buffer
       const docRef = firestore.collection('sensors').doc(knownSensor.id);
 
-      // Get pm25 Buffer if it exists in the database
       await docRef.get().then(doc => {
         if (doc.exists) {
           const status = doc.get('pm25BufferStatus');
           if (status === bufferStatus.Exists) {
+            // If the buffer exists, update normally
             let pm25BufferIndex = doc.get('pm25BufferIndex');
             const pm25Buffer = doc.get('pm25Buffer');
             // Add to circular buffer
@@ -156,11 +156,15 @@ exports.thingspeakToFirestore = functions
               pm25BufferIndex: pm25BufferIndex,
               pm25Buffer: pm25Buffer,
             });
-          } else if (status === bufferStatus.DoesNotExist || status === undefined) {
-            // Populate the buffer with default values, skip it this round
+          } else if (
+            status === bufferStatus.DoesNotExist ||
+            status === undefined
+          ) {
+            // If the buffer does not exist, populate it with default values so
+            // it can be updated in the future
             docRef.update({
-              pm25BufferStatus: bufferStatus.InProgress
-            })
+              pm25BufferStatus: bufferStatus.InProgress,
+            });
             populateBuffer(false, docRef);
           }
         }
@@ -357,11 +361,14 @@ exports.calculateAqi = functions.pubsub
               aqiBufferIndex: aqiBufferIndex,
               aqiBuffer: aqiBuffer,
             });
-          } else if (status === bufferStatus.DoesNotExist || status == undefined) {
+          } else if (
+            status === bufferStatus.DoesNotExist ||
+            status === undefined
+          ) {
             // Populate the buffer with default values, skip this sensor
             sensorDocRef.update({
-              aqiBufferStatus: bufferStatus.InProgress
-            })
+              aqiBufferStatus: bufferStatus.InProgress,
+            });
             populateBuffer(true, sensorDocRef);
           }
         }
