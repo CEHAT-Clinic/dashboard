@@ -10,6 +10,10 @@ const thingspeakUrl: (channelId: string) => string = (channelId: string) =>
 const readingsSubcollection: (docId: string) => string = (docId: string) =>
   `/sensors/${docId}/readings`;
 
+/**
+ * Fetches the Thingspeak API key from PurpleAir using the PurpleAir sensor ID
+ * @param purpleAirId - PurpleAir sensor ID
+ */
 async function getThingspeakKeysFromPurpleAir(
   purpleAirId: string
 ): Promise<PurpleAirResponse> {
