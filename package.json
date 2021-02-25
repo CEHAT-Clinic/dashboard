@@ -20,7 +20,7 @@
     "@types/react-router-dom": "^5.1.7",
     "firebase": "^8.2.9",
     "framer-motion": "^3.7.0",
-    "i18next": "^19.8.9",
+    "i18next": "^19.9.0",
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-http-backend": "^1.1.1",
     "navi": "^0.14.0",
