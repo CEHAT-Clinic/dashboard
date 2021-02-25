@@ -96,9 +96,21 @@
     "header": "Admin Page",
     "users":{
         "cantFetch": "Unable to fetch users: ",
-        "heading": "Current Admins Users",
+        "adminUsers": "Admin Users",
         "name": "Name",
-        "allCurrent": "All Current Users",
-        "isAdmin": "Admin?"
+        "nonAdminUsers": "Non-Admin Users",
+        "makeAdmin": {
+            "button": "Make admin",
+            "confirmStart": "Are you sure you want to make ",
+            "confirmEnd": " an admin user?"
+        },
+        "removeAdmin": {
+            "button": "Remove admin",
+            "confirmStart": "Are you sure you want to remove ",
+            "confirmEnd": " as an admin user?",
+            "cannotBeUndone": "This change cannot be undone without another administrator"
+        },
+        "changeAdminError": "Unable to change admin status for ",
+        "confirmChange": "Confirm Admin Status Change"
     }
 }
