@@ -96,9 +96,9 @@
     "header": "Admin Page",
     "users":{
         "cantFetch": "Unable to fetch users: ",
-        "adminUsers": "Current Admin Users",
+        "adminUsers": "Admin Users",
         "name": "Name",
-        "nonAdminUsers": "Current Non-Admin Users",
+        "nonAdminUsers": "Non-Admin Users",
         "makeAdmin": {
             "button": "Make admin",
             "confirmStart": "Are you sure you want to make ",
