@@ -27,6 +27,8 @@ interface Sensor {
   latitude: number;
   longitude: number;
   online: boolean;
+  active: boolean;
+  isValid: boolean;
   mostRecentReading: Date;
 }
 
@@ -59,10 +61,12 @@ const ManageSensors: () => JSX.Element = () => {
               if (sensorData && validData(sensorData.purpleAirId, 'string')) {
                 sensorList.push({
                   purpleAirId: sensorData.purpleAirId,
-                  name: sensorData.name,
+                  name: sensorData.name ?? '',
                   latitude: 0,
                   longitude: 0,
                   online: true, // TODO: update cloud function with this value
+                  active: true,
+                  isValid: true,
                   mostRecentReading: now, // TODO: update cloud function
                 });
               }
