@@ -1,15 +1,15 @@
 import * as functions from 'firebase-functions';
 import axios from 'axios';
-import PurpleAirResponse from './purple-air-response';
-import SensorReading from './sensor-reading';
-import CleanedReadings from './cleaned-reading';
-import NowCastConcentration from './nowcast-concentration';
+import PurpleAirResponse from './aqi-calculation/purple-air-response';
+import SensorReading from './aqi-calculation/sensor-reading';
+import CleanedReadings from './aqi-calculation/cleaned-reading';
+import NowCastConcentration from './aqi-calculation/nowcast-concentration';
 import {
   generateReadingsCsv,
   generateAverageReadingsCsv,
 } from './download-readings';
 import {firestore, Timestamp, FieldValue} from './admin';
-import {aqiFromPm25} from './calculate-aqi';
+import {aqiFromPm25} from './aqi-calculation/calculate-aqi';
 
 const thingspeakUrl = (channelId: string) =>
   `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
