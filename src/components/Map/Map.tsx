@@ -156,7 +156,7 @@ class Map extends React.Component<MapProps> {
     };
 
     // Add the Sensor Markers to the map
-    const docRef = firestore.collection('current-reading').doc('pm25');
+    const docRef = firestore.collection('current-reading').doc('sensors');
     docRef.get().then(doc => {
       if (doc.exists) {
         const data = doc.data();
