@@ -136,7 +136,7 @@ exports.calculateAqi = functions.pubsub
         nowCastPm25 = nowCastPm25Result.reading;
         isValid = true;
       }
-      
+
       const currentSensorData: SensorData = {
         purpleAirId: purpleAirId,
         name: sensorName,
