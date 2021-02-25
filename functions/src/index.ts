@@ -156,8 +156,11 @@ exports.thingspeakToFirestore = functions
               pm25BufferIndex: pm25BufferIndex,
               pm25Buffer: pm25Buffer,
             });
-          } else if (status === bufferStatus.DoesNotExist) {
+          } else if (status === bufferStatus.DoesNotExist || status === undefined) {
             // Populate the buffer with default values, skip it this round
+            docRef.update({
+              pm25BufferStatus: bufferStatus.InProgress
+            })
             populateBuffer(false, docRef);
           }
         }
@@ -354,8 +357,11 @@ exports.calculateAqi = functions.pubsub
               aqiBufferIndex: aqiBufferIndex,
               aqiBuffer: aqiBuffer,
             });
-          } else if (status === bufferStatus.DoesNotExist) {
+          } else if (status === bufferStatus.DoesNotExist || status == undefined) {
             // Populate the buffer with default values, skip this sensor
+            sensorDocRef.update({
+              aqiBufferStatus: bufferStatus.InProgress
+            })
             populateBuffer(true, sensorDocRef);
           }
         }
