@@ -96,9 +96,21 @@
     "header": "Página administrativa",
     "users":{
         "cantFetch": "No se pudieron obtener los usuarios: ",
-        "heading": "Los administradores",
+        "adminUsers": "Los administradores",
         "name": "Nombre",
-        "allCurrent": "Todos usuarios actuales",
-        "isAdmin": "¿Administrador(a)?"
+        "nonAdminUsers": "Los usuarios que no son administradores",
+        "makeAdmin": {
+            "button": "Hacer administrador(a)",
+            "confirmStart": "¿Estás seguro de que quieres hacer de ",
+            "confirmEnd": " un usuario administrador?"
+        },
+        "removeAdmin": {
+            "button": "Eliminar administrador(a)",
+            "confirmStart": "¿Estás seguro de que quieres eliminar a ",
+            "confirmEnd": " como usario administrador?",
+            "cannotBeUndone": "Esta acción no se puede deshacer sin otro/a administrador(a)"
+        },
+        "changeAdminError": "No se puede cambiar el status de administrador(a) de ",
+        "confirmChange": "Confirma el cambio de status de administrador"
     }
 }
