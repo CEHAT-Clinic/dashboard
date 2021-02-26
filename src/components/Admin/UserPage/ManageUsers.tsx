@@ -84,7 +84,7 @@ const ManageUsers: () => JSX.Element = () => {
   /**
    *
    * @param event - click button event
-   * @param userId - Firebase uid of the user to toggle the admin status
+   * @param user - user for which to toggle admin status
    */
   function toggleAdminStatus(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -113,7 +113,10 @@ const ManageUsers: () => JSX.Element = () => {
   }
 
   /**
-   * Creates a button that when clicked, creates a confirmation popup to change a user's status
+   * Creates a button that when clicked, creates a confirmation popup to change
+   * a user's status. If a user tries to remove their own admin status, a
+   * warning is shown that the action cannot be undone without another admin
+   * user changing their status back.
    * @param user - The current user for a row
    */
   const ToggleUserPopover: ({user}: ToggleUserPopoverProps) => JSX.Element = ({
@@ -186,9 +189,10 @@ const ManageUsers: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading>{t('manageUsers')}</Heading>
+          {/* Admin users table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              {t('users.heading')}
+              {t('users.adminUsers')}
             </Heading>
             <Table>
               <Thead>
@@ -213,28 +217,31 @@ const ManageUsers: () => JSX.Element = () => {
               </Tbody>
             </Table>
           </Box>
+          {/* Non Admin Users Table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              {t('users.allCurrent')}
+              {t('users.nonAdminUsers')}
             </Heading>
             <Table>
               <Thead>
                 <Tr>
                   <Th>{t('users.name')}</Th>
                   <Th>{t('email')}</Th>
-                  <Th>{t('users.adminStatus')}</Th>
+                  <Th>{t('users.makeAdmin.button')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((user, id) => (
-                  <Tr key={id}>
-                    <Td>{user.name}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>
-                      <ToggleUserPopover user={user} />
-                    </Td>
-                  </Tr>
-                ))}
+                {users
+                  .filter(user => !user.admin)
+                  .map((user, id) => (
+                    <Tr key={id}>
+                      <Td>{user.name}</Td>
+                      <Td>{user.email}</Td>
+                      <Td>
+                        <ToggleUserPopover user={user} />
+                      </Td>
+                    </Tr>
+                  ))}
               </Tbody>
             </Table>
           </Box>

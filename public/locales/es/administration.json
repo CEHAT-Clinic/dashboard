@@ -96,10 +96,9 @@
     "header": "Página administrativa",
     "users":{
         "cantFetch": "No se pudieron obtener los usuarios: ",
-        "heading": "Los administradores",
+        "adminUsers": "Los administradores",
         "name": "Nombre",
-        "allCurrent": "Todos usuarios actuales",
-        "adminStatus": "Status de administrador(a)",
+        "nonAdminUsers": "Los usuarios que no son administradores",
         "makeAdmin": {
             "button": "Hacer administrador(a)",
             "confirmStart": "¿Estás seguro de que quieres hacer de ",
