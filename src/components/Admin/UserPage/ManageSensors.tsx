@@ -16,7 +16,6 @@ import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import {firestore} from '../../../firebase';
-import {validData} from '../../../util';
 
 /**
  * Interface for a PurpleAir sensor
@@ -26,7 +25,7 @@ interface Sensor {
   purpleAirId: string;
   latitude: number;
   longitude: number;
-  online: boolean;
+  isActive: boolean;
   isValid: boolean;
   mostRecentReading: Date;
 }
@@ -66,9 +65,9 @@ const ManageSensors: () => JSX.Element = () => {
                 sensorList.push({
                   purpleAirId: sensorData.purpleAirId ?? '',
                   name: sensorData.name ?? '',
-                  latitude: sensorData.latitude ?? 0,
-                  longitude: sensorData.longitude ?? 0,
-                  online: true, // TODO: update cloud function with this value
+                  latitude: sensorData.latitude ?? NaN,
+                  longitude: sensorData.longitude ?? NaN,
+                  isActive: true, // TODO: update cloud function with this value
                   isValid: sensorData.isValid ?? false,
                   mostRecentReading: now, // TODO: update cloud function
                 });
@@ -103,11 +102,6 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Box>
-            <Button marginY={2} colorScheme="green">
-              {t('sensors.add')}
-            </Button>
-          </Box>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
               {t('sensors.heading')}
@@ -132,9 +126,9 @@ const ManageSensors: () => JSX.Element = () => {
                     <Td>{String(sensor.latitude)}</Td>
                     <Td>{String(sensor.longitude)}</Td>
                     <Td>
-                      {sensor.online
-                        ? t('sensors.online')
-                        : t('sensors.offline')}
+                      {sensor.isActive
+                        ? t('sensors.active')
+                        : t('sensors.inactive')}
                     </Td>
                     <Td>
                       {sensor.mostRecentReading.toLocaleDateString() +
@@ -142,7 +136,8 @@ const ManageSensors: () => JSX.Element = () => {
                         sensor.mostRecentReading.toLocaleTimeString()}
                     </Td>
                     <Td>
-                      <Button>{t('sensors.remove')}</Button>
+                      {/* TODO: Add confirmation pop up that explains this is not connected to PurpleAir */}
+                      <Button>{t('sensors.deactivate')}</Button>
                     </Td>
                   </Tr>
                 ))}

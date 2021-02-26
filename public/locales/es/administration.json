@@ -121,9 +121,9 @@
         "longitude": "Longitud",
         "status": "Estado actual",
         "recentReading": "Hora de la lectura del sensor más reciente",
-        "remove": "Eliminar el sensor",
-        "online": "conectado",
-        "offline": "desconectado",
+        "remove": "Desactivar el sensor",
+        "active": "activo",
+        "inactive": "inactivo",
         "add": "Añadir un sensor nuevo"
     }
 }
