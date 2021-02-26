@@ -114,6 +114,11 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
     );
   }
 
+  /**
+   * Note: the path d="M0.84 5.961e-08L0...." is svg code to create the triangle
+   * that acts as the needle in our gauge. This was created in Figma and exported
+   * as svg code.
+   */
   return (
     <div className="svg">
       <svg height="150" width="300" viewBox={' -1.05 -1.05 2.1 1.15'}>
