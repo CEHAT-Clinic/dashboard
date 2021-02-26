@@ -52,13 +52,14 @@ nav a:hover, #changeLanguage:hover {
     transition: 0.1s;
   }
 
-  #mobileGlobe {
+  #globe {
     display: inline;
-    margin-bottom: 1.75%;
+    margin-bottom: 0.25em;
+    margin-right: 0.25em;
   }
 
 /* Conditional formatting for small screens */
-@media (max-width: 700px) {
+@media (max-width: 800px) {
     .Navigation_Header {
       grid-template-areas: "logo burger" "nav nav";
     }
