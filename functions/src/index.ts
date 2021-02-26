@@ -15,6 +15,7 @@ import {
   getThingspeakKeysFromPurpleAir,
   getHourlyAverages,
   cleanAverages,
+  SensorData,
 } from './aqi-calculation/util';
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
@@ -86,10 +87,15 @@ exports.thingspeakToFirestore = functions
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
-    const sensorList = (await firestore.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('sensors').get()).docs;
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
+      // Get sensor metadata
+      const sensorName: string = knownSensor.data()?.name ?? '';
+      const purpleAirId: string = knownSensor.data()?.purpleAirId ?? '';
       const docId = knownSensor.id;
+
+      // Get current sensor readings
       const hourlyAverages = await getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
@@ -109,23 +115,42 @@ exports.calculateAqi = functions.pubsub
       const NOWCAST_RECENT_DATA_THRESHOLD = 2;
       const containsEnoughInfo =
         validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
-      // If there is not enough info, the sensor's data is not reported
+
+      // TODO: Use the most recent latitude and longitude values from the previous
+      // current-reading collection's doc
+      let latitude = NaN;
+      let longitude = NaN;
+      let nowCastPm25 = NaN;
+      let aqi = NaN;
+      let isValid = false;
+
+      // If there is not enough info, the sensor's status is not valid
       if (containsEnoughInfo) {
-        const purpleAirId: string = knownSensor.data()['purpleAirId'];
-        const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
+        // Only calculate the NowCast PM 2.5 value and the AQI if there is enough data
+        const nowCastPm25Result = NowCastConcentration.fromCleanedAverages(
           cleanedAverages
         );
-        const aqi = aqiFromPm25(nowcastPm25.reading);
-        currentData[purpleAirId] = {
-          latitude: nowcastPm25.latitude,
-          longitude: nowcastPm25.longitude,
-          nowCastPm25: nowcastPm25.reading,
-          aqi: aqi,
-        };
+        aqi = aqiFromPm25(nowCastPm25Result.reading);
+        latitude = nowCastPm25Result.latitude;
+        longitude = nowCastPm25Result.longitude;
+        nowCastPm25 = nowCastPm25Result.reading;
+        isValid = true;
       }
+
+      const currentSensorData: SensorData = {
+        purpleAirId: purpleAirId,
+        name: sensorName,
+        latitude: latitude,
+        longitude: longitude,
+        nowCastPm25: nowCastPm25,
+        aqi: aqi,
+        isValid: isValid,
+      };
+
+      currentData[purpleAirId] = currentSensorData;
     }
 
-    await firestore.collection('current-reading').doc('pm25').set({
+    await firestore.collection('current-reading').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });

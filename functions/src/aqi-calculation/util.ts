@@ -136,6 +136,20 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
   return new CleanedReadings(latitude, longitude, cleanedAverages);
 }
 
+/**
+ * Interface for the structure of a sensor's data, used in the current-reading
+ * collection.
+ */
+interface SensorData {
+  purpleAirId: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  isValid: boolean;
+  aqi: number;
+  nowCastPm25: number;
+}
+
 export {
   thingspeakUrl,
   readingsSubcollection,
@@ -143,3 +157,5 @@ export {
   getHourlyAverages,
   cleanAverages,
 };
+
+export type {SensorData};
