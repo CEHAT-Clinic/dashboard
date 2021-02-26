@@ -156,38 +156,41 @@ class Map extends React.Component<MapProps> {
     };
 
     // Add the Sensor Markers to the map
-    firestore.collection('current-reading').doc('sensors').get().then(doc => {
-      const data = doc.data();
-      if (data) {
-        // Map of sensorID to readings and properties stored in data field
-        const sensorMap = data.data;
+    const docRef = firestore.collection('current-reading').doc('sensors');
+    docRef.get().then(doc => {
+      if (doc.exists) {
+        const data = doc.data();
+        if (data) {
+          // Map of sensorID to readings and properties stored in data field
+          const sensorMap = data.data;
 
-        for (const sensorID in sensorMap) {
-          const sensorVal = sensorMap[sensorID];
+          for (const sensorID in sensorMap) {
+            const sensorVal = sensorMap[sensorID];
 
-          // Only show a sensor on the map if it's current reading is valid
-          // TODO: Add indicator for invalid sensors
-          if (sensorVal.isValid) {
-            // The label for this sensor is the most recent hour average
-            // We strip to round to the ones place
-            const aqi = sensorVal.aqi.toString().split('.')[0];
-            const icon = createSensorIcon(aqi, false, false);
+            // Only show a sensor on the map if it's current reading is valid
+            // TODO: Add indicator for invalid sensors
+            if (sensorVal.isValid) {
+              // The label for this sensor is the most recent hour average
+              // We strip to round to the ones place
+              const aqi = sensorVal.aqi.toString().split('.')[0];
+              const icon = createSensorIcon(aqi, false, false);
 
-            // Create marker
-            const marker = new H.map.Marker(
-              {
-                lat: sensorVal.latitude,
-                lng: sensorVal.longitude,
-              },
-              {icon: icon}
-            );
-            marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
-            marker.addEventListener('tap', registerClick); // Tap event
-            marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
-            marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+              // Create marker
+              const marker = new H.map.Marker(
+                {
+                  lat: sensorVal.latitude,
+                  lng: sensorVal.longitude,
+                },
+                {icon: icon}
+              );
+              marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
+              marker.addEventListener('tap', registerClick); // Tap event
+              marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
+              marker.addEventListener('pointerleave', registerHoverEnd); // End hover
 
-            // Add marker to the map
-            map.addObject(marker);
+              // Add marker to the map
+              map.addObject(marker);
+            }
           }
         }
       }

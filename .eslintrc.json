@@ -61,6 +61,9 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "Figma",
+          "Aqi",
+          "Svg",
           "evt",
           "pointerenter",
           "pointerleave",

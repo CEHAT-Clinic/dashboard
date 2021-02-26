@@ -1,9 +1,10 @@
 {
     "aqi": "Air Quality Index: ",
     "moreInfo": "For more information on air quality and the Air Quality Index (AQI), check out our ",
-    "good": "Good",
-    "moderate": "Moderate",
-    "sensitive": "Unhealthy for Sensitive Groups",
-    "all": "Unhealthy",
-    "very": "Very Unhealthy"
+    "good": "Good (0-50)",
+    "moderate": "Moderate (51-100)",
+    "sensitive": "Unhealthy For Sensitive Groups (101-150)",
+    "unhealthy": "Unhealthy (151-200)",
+    "very": "Very Unhealthy (201-300)",
+    "hazardous": "Hazardous (301+)"
 }

@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
-import AQIDial from '../components/AQIDial';
+import AqiDial from '../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
 
 /**
@@ -29,12 +29,13 @@ const Home: () => JSX.Element = () => {
             background="#E2E8F0"
             marginX={4}
             marginBottom={2}
+            padding={2}
             marginTop={['4', null, '0', null]}
             height={['100%', null, '100%', null]}
             borderRadius={6}
           >
             {currentSensor ? (
-              <AQIDial currentReading={currentSensor} />
+              <AqiDial currentAqi={currentSensor} />
             ) : (
               <Text marginTop={[null, null, '20%', null]}>
                 {t('noActiveSensor')}
