@@ -55,6 +55,7 @@ nav a:hover, #changeLanguage:hover {
   #globe {
     display: inline;
     margin-bottom: 0.25em;
+    margin-right: 0.25em;
   }
 
 /* Conditional formatting for small screens */
