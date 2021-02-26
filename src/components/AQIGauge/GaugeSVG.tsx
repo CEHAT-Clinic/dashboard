@@ -91,15 +91,25 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
   };
 
   const needleColor = '#636360';
+  const aqiColor = assignColor(aqi); // Color that needle points to
   const pathObjects = [];
   for (let i = 0; i < arcs.length; i++) {
+    const arcColor = assignColor(categories[i]);
+    /* eslint-disable no-magic-numbers */
+    let opacity = 0.3;
+    if (arcColor === aqiColor) {
+      opacity = 1;
+    } else {
+      opacity = 0.3;
+    }
+    /* eslint-enable no-magic-numbers */
     pathObjects.push(
       <path
         d={arcs[i]}
-        fill={assignColor(categories[i])}
+        fill={arcColor}
         stroke="black"
         strokeWidth={0.002}
-        fillOpacity={1}
+        fillOpacity={opacity}
       />
     );
   }
