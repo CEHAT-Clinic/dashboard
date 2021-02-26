@@ -11,13 +11,22 @@ import {
   Th,
   Tbody,
   Text,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
+  Center,
 } from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
-import {firestore} from '../../../firebase';
+import {firebaseAuth, firestore} from '../../../firebase';
 import {User} from '../Authentication/Util';
 import {useTranslation} from 'react-i18next';
+import {validData} from '../../../util';
 
 /**
  * Component for administrative page to manage site users.
@@ -38,10 +47,11 @@ const ManageUsers: () => JSX.Element = () => {
     // Only fetch all user data if user is an admin user
     if (isAdmin) {
       setIsLoading(true);
-      firestore
+
+      // Creates a listener that updates the data on any changes
+      const unsubscribe = firestore
         .collection('users')
-        .get()
-        .then(querySnapshot => {
+        .onSnapshot(querySnapshot => {
           const userList: User[] = [];
           querySnapshot.docs.forEach(doc => {
             if (doc.exists) {
@@ -50,29 +60,114 @@ const ManageUsers: () => JSX.Element = () => {
               // Make sure that the doc data and relevant fields exist
               if (
                 userData &&
-                userData.name !== undefined &&
-                userData.email !== undefined &&
-                userData.admin !== undefined
+                validData(userData.name, 'string') &&
+                validData(userData.email, 'string') &&
+                validData(userData.admin, 'boolean')
               ) {
                 userList.push({
                   email: userData.email,
                   name: userData.name,
                   admin: userData.admin,
+                  userId: doc.id,
                 });
               }
             }
           });
           setUsers(userList);
+        });
+      setIsLoading(false);
+      return unsubscribe;
+    }
+    return;
+  }, [isAdmin]);
+
+  /**
+   *
+   * @param event - click button event
+   * @param user - user for which to toggle admin status
+   */
+  function toggleAdminStatus(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    user: User
+  ) {
+    event.preventDefault();
+
+    if (isAdmin) {
+      firestore
+        .collection('users')
+        .doc(user.userId)
+        .update({
+          admin: !user.admin,
         })
-        .catch(error => {
-          // Error thrown upon failure to fetch users collection from Firestore
-          setError(t('users.cantFetch') + error);
-        })
-        .finally(() => {
-          setIsLoading(false);
+        .catch(() => {
+          setError(t('users.changeAdminError') + user.name);
         });
     }
-  }, [isAdmin, t]);
+  }
+
+  /**
+   * Interface for ToggleUserPopover used for type safety
+   */
+  interface ToggleUserPopoverProps {
+    user: User;
+  }
+
+  /**
+   * Creates a button that when clicked, creates a confirmation popup to change
+   * a user's status. If a user tries to remove their own admin status, a
+   * warning is shown that the action cannot be undone without another admin
+   * user changing their status back.
+   * @param user - The current user for a row
+   */
+  const ToggleUserPopover: ({user}: ToggleUserPopoverProps) => JSX.Element = ({
+    user,
+  }: ToggleUserPopoverProps) => {
+    const popoverMessage = user.admin
+      ? t('users.removeAdmin.confirmStart') +
+        user.name +
+        t('users.removeAdmin.confirmEnd')
+      : t('users.makeAdmin.confirmStart') +
+        user.name +
+        t('users.makeAdmin.confirmEnd');
+
+    const isSelf = user.userId === firebaseAuth.currentUser?.uid;
+
+    return (
+      <Popover>
+        <PopoverTrigger>
+          <Button colorScheme={user.admin ? 'red' : 'green'} width="full">
+            {user.admin
+              ? t('users.removeAdmin.button')
+              : t('users.makeAdmin.button')}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader>
+            <Heading fontSize="medium">{t('users.confirmChange')}</Heading>
+          </PopoverHeader>
+          <PopoverBody>
+            <Text>{popoverMessage}</Text>
+            {isSelf && (
+              <Text color="red.500">
+                {t('users.removeAdmin.cannotBeUndone')}
+              </Text>
+            )}
+            <Center>
+              <Button
+                paddingY={2}
+                colorScheme={user.admin ? 'red' : 'green'}
+                onClick={event => toggleAdminStatus(event, user)}
+              >
+                {t('common:confirm')}
+              </Button>
+            </Center>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
+    );
+  };
 
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
@@ -94,15 +189,17 @@ const ManageUsers: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading>{t('manageUsers')}</Heading>
+          {/* Admin users table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              {t('users.heading')}
+              {t('users.adminUsers')}
             </Heading>
             <Table>
               <Thead>
                 <Tr>
                   <Th>{t('users.name')}</Th>
                   <Th>{t('email')}</Th>
+                  <Th>{t('users.removeAdmin.button')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -112,31 +209,39 @@ const ManageUsers: () => JSX.Element = () => {
                     <Tr key={id}>
                       <Td>{user.name}</Td>
                       <Td>{user.email}</Td>
+                      <Td>
+                        <ToggleUserPopover user={user} />
+                      </Td>
                     </Tr>
                   ))}
               </Tbody>
             </Table>
           </Box>
+          {/* Non Admin Users Table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              {t('users.allCurrent')}
+              {t('users.nonAdminUsers')}
             </Heading>
             <Table>
               <Thead>
                 <Tr>
                   <Th>{t('users.name')}</Th>
                   <Th>{t('email')}</Th>
-                  <Th>{t('users.isAdmin')}</Th>
+                  <Th>{t('users.makeAdmin.button')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((user, id) => (
-                  <Tr key={id}>
-                    <Td>{user.name}</Td>
-                    <Td>{user.email}</Td>
-                    <Td>{user.admin ? t('common:yes') : t('common:no')}</Td>
-                  </Tr>
-                ))}
+                {users
+                  .filter(user => !user.admin)
+                  .map((user, id) => (
+                    <Tr key={id}>
+                      <Td>{user.name}</Td>
+                      <Td>{user.email}</Td>
+                      <Td>
+                        <ToggleUserPopover user={user} />
+                      </Td>
+                    </Tr>
+                  ))}
               </Tbody>
             </Table>
           </Box>

@@ -1,18 +1,31 @@
 import React, {useState, useEffect} from 'react';
 import './NavigationBar.css';
 import cehatLogo from './CEHATLogo.png';
-import menuIcon from './menuIcon.png';
 import {useTranslation} from 'react-i18next';
+import {FaBars, FaGlobeAmericas} from 'react-icons/fa';
+import {Icon} from '@chakra-ui/react';
 
+/** Element for the navigation bar for use on all pages */
 function NavigationBar(): JSX.Element {
-  // State of nav bar (always visible in large screen)
-  const [isNavVisible, setIsNavVisible] = useState(true);
+  // State for whether to use globe or text, must be kept
+  // separate because mobile should always be text, even
+  // when nav bar is hidden
+  const [isMobile, setIsMobile] = useState(
+    window.matchMedia('(max-width: 700px)')?.matches ?? false
+  );
 
+  // State of nav bar (always visible in large screen)
+  const [isNavVisible, setIsNavVisible] = useState(!isMobile);
+
+  /** Adjust UI for switching between narrow/mobile and wide/desktop modes */
   function handleScreenChange(this: MediaQueryList): void {
+    // Is the screen size mobile size
     if (this.matches) {
       setIsNavVisible(false);
+      setIsMobile(true);
     } else {
       setIsNavVisible(true);
+      setIsMobile(false);
     }
   }
 
@@ -35,24 +48,53 @@ function NavigationBar(): JSX.Element {
     setIsNavVisible(!isNavVisible);
   }
 
-  const {t} = useTranslation('menu');
+  /** Toggle the language of the website between English and Spanish. Close menu bar after toggling if on mobile. */
+  function toggleLanguage(): void {
+    i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
+    if (isMobile) {
+      toggleNav();
+    }
+  }
+
+  const {t, i18n} = useTranslation('menu');
   return (
     <div>
       <header className="Navigation_Header">
-        {}
         {/* Logo in Spanish and English are the same */}
         <img src={cehatLogo} className="Logo" alt="Logo" />
-        {/* CEHAT logo */}
         {isNavVisible && (
-          <nav className="Nav">
+          <nav>
             <a href="/">{t('home')}</a>
             <a href="/health">{t('healthInfo')}</a>
             <a href="/about">{t('about')}</a>
             <a href="/admin">{t('admin')}</a>
+            <button id="changeLanguage" onClick={toggleLanguage}>
+              {/* Display globe on desktop, but text in menu bar on mobile */}
+              {isMobile ? (
+                <span>
+                  <Icon
+                    as={FaGlobeAmericas}
+                    id="mobileGlobe"
+                    title={t('globeIcon')}
+                  />{' '}
+                  {t('changeLanguage')}
+                </span>
+              ) : (
+                <Icon
+                  as={FaGlobeAmericas}
+                  aria-label={t('globeIcon')}
+                  title={t('changeLanguage')}
+                />
+              )}
+            </button>
           </nav>
         )}
         <button onClick={toggleNav} className="Burger">
-          <img src={menuIcon} className="menu-icon" alt={t('menuButton')} />
+          <Icon
+            as={FaBars}
+            className="menu-icon"
+            aria-label={t('menuButton')}
+          />
         </button>
       </header>
     </div>
