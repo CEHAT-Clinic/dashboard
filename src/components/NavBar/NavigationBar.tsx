@@ -11,7 +11,7 @@ function NavigationBar(): JSX.Element {
   // separate because mobile should always be text, even
   // when nav bar is hidden
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 700px)')?.matches ?? false
+    window.matchMedia('(max-width: 800px)')?.matches ?? false
   );
 
   // State of nav bar (always visible in large screen)
@@ -69,23 +69,8 @@ function NavigationBar(): JSX.Element {
             <a href="/about">{t('about')}</a>
             <a href="/admin">{t('admin')}</a>
             <button id="changeLanguage" onClick={toggleLanguage}>
-              {/* Display globe on desktop, but text in menu bar on mobile */}
-              {isMobile ? (
-                <span>
-                  <Icon
-                    as={FaGlobeAmericas}
-                    id="mobileGlobe"
-                    title={t('globeIcon')}
-                  />{' '}
-                  {t('changeLanguage')}
-                </span>
-              ) : (
-                <Icon
-                  as={FaGlobeAmericas}
-                  aria-label={t('globeIcon')}
-                  title={t('changeLanguage')}
-                />
-              )}
+              <Icon as={FaGlobeAmericas} id="globe" title={t('globeIcon')} />
+              {t('changeLanguage')}
             </button>
           </nav>
         )}
