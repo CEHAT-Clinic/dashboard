@@ -61,6 +61,8 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "Aqi",
+          "Svg",
           "evt",
           "pointerenter",
           "pointerleave",

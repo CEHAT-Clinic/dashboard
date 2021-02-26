@@ -1,10 +1,10 @@
 import React from 'react';
 import {arc} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
-import {DialProps} from './AQIDial';
+import {DialProps} from './AqiDial';
 
-const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
-  currentAQI,
+const GaugeSVG: ({currentAqi}: DialProps) => JSX.Element = ({
+  currentAqi,
 }: DialProps) => {
   /* eslint-disable no-magic-numbers */
   // Arc properties
@@ -23,7 +23,7 @@ const GaugeSVG: ({currentAQI}: DialProps) => JSX.Element = ({
   // Values to display
   const min = 0;
   const max = 300;
-  const aqi: number = +currentAQI;
+  const aqi: number = +currentAqi;
   /* eslint-enable no-magic-numbers */
 
   /**

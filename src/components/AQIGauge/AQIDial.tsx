@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, Box, Tag, Link, Center} from '@chakra-ui/react';
-import GaugeSVG from './GaugeSVG';
+import GaugeSvg from './GaugeSvg';
 import {useTranslation} from 'react-i18next';
 
 /**
@@ -8,7 +8,7 @@ import {useTranslation} from 'react-i18next';
  * - `currentAQI` is the AQI value that the dial should display
  */
 interface DialProps {
-  currentAQI: string;
+  currentAqi: string;
 }
 
 /**
@@ -16,11 +16,11 @@ interface DialProps {
  * This component displays the label for the AQI displayed by the dial.
  * @example if the AQI is less than 50, it will show the label "Good"
  */
-const AQILabel: ({currentAQI}: DialProps) => JSX.Element = ({
-  currentAQI,
+const AqiLabel: ({currentAqi}: DialProps) => JSX.Element = ({
+  currentAqi,
 }: DialProps) => {
   // Convert the AQI from a string to a number
-  const aqi: number = +currentAQI;
+  const aqi: number = +currentAqi;
   // AQI boundary values from https://www.airnow.gov/aqi/aqi-basics/
   const good = 50; // Air quality is good (0-50)
   const moderate = 100; // Air quality is acceptable (51-100)
@@ -82,17 +82,17 @@ const AQILabel: ({currentAQI}: DialProps) => JSX.Element = ({
  * reading for the currently selected sensor. Additionally, there is a key below
  * the dial to label each color on the dial with how severe the health risk is.
  */
-const AQIDial: ({currentAQI}: DialProps) => JSX.Element = ({
-  currentAQI,
+const AqiDial: ({currentAqi}: DialProps) => JSX.Element = ({
+  currentAqi,
 }: DialProps) => {
   const {t} = useTranslation(['dial', 'menu']);
 
   return (
     <Box>
       <Center>
-        <GaugeSVG currentAQI={currentAQI} />
+        <GaugeSvg currentAqi={currentAqi} />
       </Center>
-      <Text fontSize={30}>{t('aqi') + currentAQI}</Text>
+      <Text fontSize={30}>{t('aqi') + currentAqi}</Text>
       <Text fontSize={14} mb={2}>
         {t('moreInfo')}
         <Link fontSize={14} color="#32bfd1" href="/health">
@@ -100,11 +100,11 @@ const AQIDial: ({currentAQI}: DialProps) => JSX.Element = ({
           {t('menu:healthInfo')}
         </Link>
       </Text>
-      <AQILabel currentAQI={currentAQI} />
+      <AqiLabel currentAqi={currentAqi} />
     </Box>
   );
 };
 
-export default AQIDial;
+export default AqiDial;
 
 export type {DialProps};
