@@ -50,12 +50,16 @@ const ManageSensors: () => JSX.Element = () => {
       // TODO: use the current-readings collection
       // TODO: update cloud function to edit the sensors doc rather than pm25
       const unsubscribe = firestore
-        .collection('sensors')
-        .onSnapshot(querySnapshot => {
+        .collection('current-reading')
+        .doc('sensors')
+        .onSnapshot(docSnapshot => {
           const sensorList: Sensor[] = [];
-          querySnapshot.docs.forEach(doc => {
-            if (doc.exists) {
-              const sensorData = doc.data();
+          if (docSnapshot.data()) {
+            // Map of sensorID to readings and properties stored in data field
+            const sensorMap = docSnapshot.data().data;
+
+            sensorMap.forEach(sensorId => {
+              const sensorVal = sensorMap[sensorId];
               const now = new Date();
 
               if (sensorData && validData(sensorData.purpleAirId, 'string')) {
