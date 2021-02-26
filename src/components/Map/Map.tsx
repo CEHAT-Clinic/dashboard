@@ -156,16 +156,18 @@ class Map extends React.Component<MapProps> {
     };
 
     // Add the Sensor Markers to the map
-    const docRef = firestore.collection('current-reading').doc('sensors');
-    docRef.get().then(doc => {
-      if (doc.exists) {
-        const data = doc.data();
-        if (data) {
-          // Map of sensorID to readings and properties stored in data field
-          const sensorMap = data.data;
+    firestore.collection('current-reading').doc('sensors').get().then(doc => {
+      const data = doc.data();
+      if (data) {
+        // Map of sensorID to readings and properties stored in data field
+        const sensorMap = data.data;
 
-          for (const sensorID in sensorMap) {
-            const sensorVal = sensorMap[sensorID];
+        for (const sensorID in sensorMap) {
+          const sensorVal = sensorMap[sensorID];
+
+          // Only show a sensor on the map if it's current reading is valid
+          // TODO: Add indicator for invalid sensors
+          if (sensorVal.isValid) {
             // The label for this sensor is the most recent hour average
             // We strip to round to the ones place
             const aqi = sensorVal.aqi.toString().split('.')[0];
@@ -187,13 +189,7 @@ class Map extends React.Component<MapProps> {
             // Add marker to the map
             map.addObject(marker);
           }
-        } else {
-          // If doc.data() does not exist
-          throw new Error('No data in the pm25 document');
         }
-      } else {
-        // If doc does not exist
-        throw new Error('No pm25 document in current-reading collection');
       }
     });
 

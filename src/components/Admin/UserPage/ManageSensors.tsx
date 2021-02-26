@@ -27,7 +27,6 @@ interface Sensor {
   latitude: number;
   longitude: number;
   online: boolean;
-  active: boolean;
   isValid: boolean;
   mostRecentReading: Date;
 }
@@ -47,36 +46,36 @@ const ManageSensors: () => JSX.Element = () => {
       setIsLoading(true);
 
       // Create listener that updates on any data changes
-      // TODO: use the current-readings collection
-      // TODO: update cloud function to edit the sensors doc rather than pm25
+      // TODO: update cloud function to edit the sensors doc
       const unsubscribe = firestore
         .collection('current-reading')
         .doc('sensors')
         .onSnapshot(docSnapshot => {
           const sensorList: Sensor[] = [];
-          if (docSnapshot.data()) {
+          const data = docSnapshot.data();
+          if (data) {
             // Map of sensorID to readings and properties stored in data field
-            const sensorMap = docSnapshot.data().data;
+            const sensorMap = data.data;
 
-            sensorMap.forEach(sensorId => {
-              const sensorVal = sensorMap[sensorId];
+            // Iterate through all current sensors
+            for (const sensorId in sensorMap) {
+              const sensorData = sensorMap[sensorId];
               const now = new Date();
 
-              if (sensorData && validData(sensorData.purpleAirId, 'string')) {
+              if (sensorData) {
                 sensorList.push({
-                  purpleAirId: sensorData.purpleAirId,
+                  purpleAirId: sensorData.purpleAirId ?? '',
                   name: sensorData.name ?? '',
-                  latitude: 0,
-                  longitude: 0,
+                  latitude: sensorData.latitude ?? 0,
+                  longitude: sensorData.longitude ?? 0,
                   online: true, // TODO: update cloud function with this value
-                  active: true,
-                  isValid: true,
+                  isValid: sensorData.isValid ?? false,
                   mostRecentReading: now, // TODO: update cloud function
                 });
               }
             }
-          });
-          setSensors(sensorList);
+            setSensors(sensorList);
+          }
         });
       setIsLoading(false);
       return unsubscribe;
@@ -115,21 +114,23 @@ const ManageSensors: () => JSX.Element = () => {
             </Heading>
             <Table>
               <Thead>
-                <Th>{t('sensors.name')}</Th>
-                <Th>{t('sensors.purpleAirId')}</Th>
-                <Th>{t('sensors.latitude')}</Th>
-                <Th>{t('sensors.longitude')}</Th>
-                <Th>{t('sensors.status')}</Th>
-                <Th>{t('sensors.recentReading')}</Th>
-                <Th>{t('sensors.remove')}</Th>
+                <Tr>
+                  <Th>{t('sensors.name')}</Th>
+                  <Th>{t('sensors.purpleAirId')}</Th>
+                  <Th>{t('sensors.latitude')}</Th>
+                  <Th>{t('sensors.longitude')}</Th>
+                  <Th>{t('sensors.status')}</Th>
+                  <Th>{t('sensors.recentReading')}</Th>
+                  <Th>{t('sensors.remove')}</Th>
+                </Tr>
               </Thead>
               <Tbody>
                 {sensors.map((sensor, id) => (
                   <Tr key={id}>
                     <Td>{sensor.name}</Td>
                     <Td>{sensor.purpleAirId}</Td>
-                    <Td>{sensor.latitude}</Td>
-                    <Td>{sensor.longitude}</Td>
+                    <Td>{String(sensor.latitude)}</Td>
+                    <Td>{String(sensor.longitude)}</Td>
                     <Td>
                       {sensor.online
                         ? t('sensors.online')
