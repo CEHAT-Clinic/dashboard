@@ -3,7 +3,7 @@ import {arc} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
 import {DialProps} from './AqiDial';
 
-const GaugeSVG: ({currentAqi}: DialProps) => JSX.Element = ({
+const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
   currentAqi,
 }: DialProps) => {
   /* eslint-disable no-magic-numbers */
@@ -131,4 +131,4 @@ const GaugeSVG: ({currentAqi}: DialProps) => JSX.Element = ({
   );
 };
 
-export default GaugeSVG;
+export default GaugeSvg;

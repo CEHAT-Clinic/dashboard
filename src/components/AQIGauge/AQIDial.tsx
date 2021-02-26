@@ -5,7 +5,7 @@ import {useTranslation} from 'react-i18next';
 
 /**
  * Interface for the props of the dial
- * - `currentAQI` is the AQI value that the dial should display
+ * - `currentAqi` is the AQI value that the dial should display
  */
 interface DialProps {
   currentAqi: string;
