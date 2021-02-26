@@ -166,26 +166,31 @@ class Map extends React.Component<MapProps> {
 
           for (const sensorID in sensorMap) {
             const sensorVal = sensorMap[sensorID];
-            // The label for this sensor is the most recent hour average
-            // We strip to round to the ones place
-            const aqi = sensorVal.aqi.toString().split('.')[0];
-            const icon = createSensorIcon(aqi, false, false);
 
-            // Create marker
-            const marker = new H.map.Marker(
-              {
-                lat: sensorVal.latitude,
-                lng: sensorVal.longitude,
-              },
-              {icon: icon}
-            );
-            marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
-            marker.addEventListener('tap', registerClick); // Tap event
-            marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
-            marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+            // Only show a sensor on the map if it's current reading is valid
+            // TODO: Add indicator for invalid sensors
+            if (sensorVal.isValid) {
+              // The label for this sensor is the most recent hour average
+              // We strip to round to the ones place
+              const aqi = sensorVal.aqi.toString().split('.')[0];
+              const icon = createSensorIcon(aqi, false, false);
 
-            // Add marker to the map
-            map.addObject(marker);
+              // Create marker
+              const marker = new H.map.Marker(
+                {
+                  lat: sensorVal.latitude,
+                  lng: sensorVal.longitude,
+                },
+                {icon: icon}
+              );
+              marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
+              marker.addEventListener('tap', registerClick); // Tap event
+              marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
+              marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+
+              // Add marker to the map
+              map.addObject(marker);
+            }
           }
         } else {
           // If doc.data() does not exist
