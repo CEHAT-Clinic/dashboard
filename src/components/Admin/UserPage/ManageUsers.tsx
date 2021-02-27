@@ -119,6 +119,7 @@ const ManageUsers: () => JSX.Element = () => {
    * warning is shown that the action cannot be undone without another admin
    * user changing their status back.
    * @param user - The current user for a row
+   * @param isLastAdmin - if there is only one remaining admin user
    */
   const ToggleUserPopover: ({
     user,
