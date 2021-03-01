@@ -88,7 +88,9 @@ exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
     const sensorList = (await firestore.collection('sensors').get()).docs;
-    const previousDataDoc = (await firestore.collection('current-reading').doc('sensors').get()).data();
+    const previousDataDoc = (
+      await firestore.collection('current-reading').doc('sensors').get()
+    ).data();
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       // Get sensor metadata
@@ -142,7 +144,8 @@ exports.calculateAqi = functions.pubsub
         // Get the data from the previous reading, if it exists
         latitude = previousData[purpleAirId].latitude ?? latitude;
         longitude = previousData[purpleAirId].longitude ?? longitude;
-        lastValidAqiTime = previousData[purpleAirId].lastValidAqiTime ?? lastValidAqiTime;
+        lastValidAqiTime =
+          previousData[purpleAirId].lastValidAqiTime ?? lastValidAqiTime;
       }
 
       const currentSensorData: SensorData = {
