@@ -109,7 +109,7 @@
             "confirmStart": "¿Estás seguro de que quieres eliminar a ",
             "confirmEnd": " como usario administrador?",
             "cannotBeUndone": "Esta acción no se puede deshacer sin otro/a administrador(a)",
-            "lastAdmin": "Advertencia: Tienes que hacer otro usario un adminstrador para poder eliminar tu status de administrador(a)."
+            "lastAdmin": "Advertencia: Tienes que darle el poder administrativo a otro usuario antes de quitar tu estatus administrativo."
         },
         "changeAdminError": "No se puede cambiar el status de administrador(a) de ",
         "confirmChange": "Confirma el cambio de status de administrador"
