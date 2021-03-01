@@ -109,7 +109,7 @@
             "confirmStart": "Are you sure you want to remove ",
             "confirmEnd": " as an admin user?",
             "cannotBeUndone": "This change cannot be undone without another administrator",
-            "lastAdmin": "Warning: You must make another user an admin user to be able to remove your own admin status."
+            "lastAdmin": "Warning! You must make another user an admin user to be able to remove your own admin status."
         },
         "changeAdminError": "Unable to change admin status for ",
         "confirmChange": "Confirm Admin Status Change"
