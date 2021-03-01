@@ -160,7 +160,7 @@ exports.calculateAqi = functions.pubsub
       currentData[purpleAirId] = currentSensorData;
     }
 
-    await firestore.collection('testing').doc('sensors').set({
+    await firestore.collection('current-reading').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });
