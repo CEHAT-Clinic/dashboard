@@ -88,7 +88,7 @@ exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
     const sensorList = (await firestore.collection('sensors').get()).docs;
-    const previousData = (await firestore.collection('current-reading').doc('sensors').get()).data();
+    const previousDataDoc = (await firestore.collection('current-reading').doc('sensors').get()).data();
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       // Get sensor metadata
@@ -123,7 +123,7 @@ exports.calculateAqi = functions.pubsub
       let nowCastPm25 = NaN;
       let aqi = NaN;
       let isValid = false;
-      let lastValidAqiTime: FirebaseFirestore.Timestamp | undefined = undefined;
+      let lastValidAqiTime: FirebaseFirestore.Timestamp | null = null;
 
       // If there is not enough info, the sensor's status is not valid
       if (containsEnoughInfo) {
@@ -137,11 +137,12 @@ exports.calculateAqi = functions.pubsub
         nowCastPm25 = nowCastPm25Result.reading;
         isValid = true;
         lastValidAqiTime = Timestamp.fromDate(new Date());
-      } else if (previousData) {
+      } else if (previousDataDoc) {
+        const previousData = previousDataDoc.data;
         // Get the data from the previous reading, if it exists
-        latitude = previousData[purpleAirId].latitude;
-        longitude = previousData[purpleAirId].longitude;
-        lastValidAqiTime = previousData[purpleAirId].lastValidAqiTime;
+        latitude = previousData[purpleAirId].latitude ?? latitude;
+        longitude = previousData[purpleAirId].longitude ?? longitude;
+        lastValidAqiTime = previousData[purpleAirId].lastValidAqiTime ?? lastValidAqiTime;
       }
 
       const currentSensorData: SensorData = {
@@ -159,7 +160,7 @@ exports.calculateAqi = functions.pubsub
       currentData[purpleAirId] = currentSensorData;
     }
 
-    await firestore.collection('current-reading').doc('sensors').set({
+    await firestore.collection('testing').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });
