@@ -10,12 +10,21 @@ import {
   Th,
   Tr,
   Td,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+  PopoverArrow,
+  PopoverCloseButton,
+  PopoverHeader,
+  PopoverBody,
+  Center,
+  Text,
 } from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
-import {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase';
 
 /**
  * Interface for a PurpleAir sensor
@@ -25,9 +34,12 @@ interface Sensor {
   purpleAirId: string;
   latitude: number;
   longitude: number;
+  nowCastPm25: number;
+  aqi: number;
   isActive: boolean;
   isValid: boolean;
-  mostRecentReading: Date;
+  lastValidAqiTime: firebase.firestore.Timestamp | null;
+  readingDocId: string;
 }
 
 /**
@@ -38,7 +50,8 @@ const ManageSensors: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading: fetchingAuthInfo} = useAuth();
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const {t} = useTranslation('administration');
+  const [error, setError] = useState('');
+  const {t} = useTranslation(['administration', 'common']);
 
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
@@ -59,8 +72,6 @@ const ManageSensors: () => JSX.Element = () => {
             // Iterate through all current sensors
             for (const sensorId in sensorMap) {
               const sensorData = sensorMap[sensorId];
-              const now = new Date();
-
               if (sensorData) {
                 sensorList.push({
                   purpleAirId: sensorData.purpleAirId ?? '',
@@ -69,7 +80,10 @@ const ManageSensors: () => JSX.Element = () => {
                   longitude: sensorData.longitude ?? NaN,
                   isActive: true, // TODO: update cloud function with this value
                   isValid: sensorData.isValid ?? false,
-                  mostRecentReading: now, // TODO: update cloud function
+                  lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
+                  readingDocId: sensorData.readingDocId ?? '',
+                  aqi: sensorData.aqi ?? NaN,
+                  nowCastPm25: sensorData.nowCastPm25 ?? NaN,
                 });
               }
             }
@@ -81,6 +95,112 @@ const ManageSensors: () => JSX.Element = () => {
     }
     return;
   }, [isAuthenticated, isAdmin]);
+
+  /**
+   *
+   * @param event - click button event
+   * @param currentSensor - sensor for which to toggle isActive status
+   */
+  function toggleActiveSensorStatus(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    currentSensor: Sensor
+  ) {
+    event.preventDefault();
+
+    currentSensor.isActive = !currentSensor.isActive;
+
+    // Recreate sensor data map with updated field
+    const updatedDataMap = Object.create(null);
+    for (const sensor of sensors) {
+      updatedDataMap[sensor.purpleAirId] = sensor;
+    }
+
+    if (isAdmin) {
+      firestore
+        .collection('current-reading')
+        .doc('sensors')
+        .update({
+          data: updatedDataMap,
+        })
+        .catch(() => {
+          setError(
+            t('sensors.changeActiveSensorError') + currentSensor.name ??
+              currentSensor.purpleAirId
+          );
+        });
+    }
+  }
+
+  /**
+   * Interface for ToggleActiveSensorPopover used for type safety
+   */
+  interface ToggleActiveSensorPopoverProps {
+    sensor: Sensor;
+  }
+
+  /**
+   * Creates a button that when clicked, creates a confirmation popup to change
+   * a sensor's active status. Active means that data for the sensor will be
+   * collected and shown on the map, but does not change anything in PurpleAir.
+   * @param sensor - The current sensor for a row
+   */
+  const ToggleActiveSensorPopover: ({
+    sensor,
+  }: ToggleActiveSensorPopoverProps) => JSX.Element = ({
+    sensor,
+  }: ToggleActiveSensorPopoverProps) => {
+    const name = sensor.name ?? sensor.purpleAirId;
+
+    const popoverMessage =
+      (sensor.isActive
+        ? t('sensors.confirmDeactivate')
+        : t('sensors.confirmActivate')) + name;
+
+    return (
+      <Popover>
+        <PopoverTrigger>
+          <Button colorScheme={sensor.isActive ? 'red' : 'green'} width="full">
+            {sensor.isActive ? t('sensors.deactivate') : t('sensors.activate')}
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader>
+            <Heading fontSize="medium">{t('common:confirm')}</Heading>
+          </PopoverHeader>
+          <PopoverBody>
+            <Text>{popoverMessage}</Text>
+            <Center>
+              <Button
+                paddingY={2}
+                colorScheme={sensor.isActive ? 'red' : 'green'}
+                onClick={event => toggleActiveSensorStatus(event, sensor)}
+              >
+                {t('common:confirm')}
+              </Button>
+            </Center>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
+    );
+  };
+
+  /**
+   *
+   * @param sensor - the current sensor
+   * @returns human readable date time string
+   */
+  function timestampToDateString(sensor: Sensor) {
+    if (sensor.lastValidAqiTime == null) {
+      return t('sensors.unknown');
+    } else {
+      const sensorData: Date = sensor.lastValidAqiTime.toDate();
+      return (
+        sensorData.toLocaleDateString() + ' ' + sensorData.toLocaleTimeString()
+      );
+    }
+  }
 
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
@@ -95,7 +215,7 @@ const ManageSensors: () => JSX.Element = () => {
           padding={8}
           margin={8}
           width="full"
-          maxWidth="1000px"
+          maxWidth="1400px"
           borderWidth={1}
           borderRadius={8}
           boxShadow="lg"
@@ -114,8 +234,8 @@ const ManageSensors: () => JSX.Element = () => {
                   <Th>{t('sensors.latitude')}</Th>
                   <Th>{t('sensors.longitude')}</Th>
                   <Th>{t('sensors.status')}</Th>
-                  <Th>{t('sensors.recentReading')}</Th>
-                  <Th>{t('sensors.remove')}</Th>
+                  <Th>{t('sensors.validAqiTime')}</Th>
+                  <Th>{t('sensors.activeHeading')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -130,20 +250,16 @@ const ManageSensors: () => JSX.Element = () => {
                         ? t('sensors.active')
                         : t('sensors.inactive')}
                     </Td>
+                    <Td>{timestampToDateString(sensor)}</Td>
                     <Td>
-                      {sensor.mostRecentReading.toLocaleDateString() +
-                        ' ' +
-                        sensor.mostRecentReading.toLocaleTimeString()}
-                    </Td>
-                    <Td>
-                      {/* TODO: Add confirmation pop up that explains this is not connected to PurpleAir */}
-                      <Button>{t('sensors.deactivate')}</Button>
+                      <ToggleActiveSensorPopover sensor={sensor} />
                     </Td>
                   </Tr>
                 ))}
               </Tbody>
             </Table>
           </Box>
+          {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>

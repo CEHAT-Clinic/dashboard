@@ -121,10 +121,16 @@
         "latitude": "Latitude",
         "longitude": "Longitude",
         "status": "Current Status",
-        "recentReading": "Time of Most Recent Sensor Reading",
+        "validAqiTime": "Time of Most Recent Valid AQI",
+        "activeHeading": "Active?",
         "deactivate": "Deactivate Sensor",
+        "confirmDeactivate": "Are you sure you want to deactivate the sensor: ",
+        "activate": "Activate Sensor",
+        "confirmActivate": "Are you sure you want to activate the sensor: ",
         "active": "active",
         "inactive": "inactive",
-        "add": "Add new sensor"
+        "changeActiveSensorError": "Unable to change active status for sensor ",
+        "add": "Add new sensor",
+        "unknown": "Unknown"
     }
 }
