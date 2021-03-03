@@ -2,7 +2,7 @@
  * Interface for a single element in the pm25Buffer. All fields come from the
  * Thingspeak API
  */
-interface pm25BufferElement {
+interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
   channelAPm25: number;
   channelBPm25: number;
@@ -17,7 +17,7 @@ interface pm25BufferElement {
  * reading that matches that of the last reading), we put this element in the
  * buffer
  */
-const defaultPm25BufferElement: pm25BufferElement = {
+const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
   channelAPm25: NaN,
   channelBPm25: NaN,
@@ -57,6 +57,6 @@ export enum bufferStatus {
   DoesNotExist,
 }
 
-export type {pm25BufferElement, AqiBufferElement};
+export type {Pm25BufferElement, AqiBufferElement};
 
 export {defaultPm25BufferElement, defaultAqiBufferElement};
