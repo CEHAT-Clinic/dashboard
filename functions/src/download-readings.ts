@@ -140,8 +140,8 @@ function generateAverageReadingsCsv(): void {
 
   // Current-reading collection has single doc
   const currentReadingDocRef = firestore
-    .collection('/current-reading')
-    .doc('pm25');
+    .collection('current-reading')
+    .doc('sensors');
   currentReadingDocRef.get().then(doc => {
     if (doc.exists) {
       const docData = doc.data();
