@@ -88,7 +88,7 @@ exports.thingspeakToFirestore = functions
       // Add readings to the pm25 buffer
       const docRef = firestore.collection('sensors').doc(knownSensor.id);
 
-      await docRef.get().then(doc => {
+      docRef.get().then(doc => {
         if (doc.exists) {
           const status = doc.get('pm25BufferStatus');
           if (status === bufferStatus.Exists) {
@@ -177,36 +177,35 @@ exports.calculateAqi = functions.pubsub
         const nowCastPm25Result = NowCastConcentration.fromCleanedAverages(
           cleanedAverages
         );
-        const currentSensorData: SensorData = {
-          purpleAirId: purpleAirId,
-          name: sensorName,
-          latitude: latitude,
-          longitude: longitude,
-          nowCastPm25: nowCastPm25,
-          aqi: aqi,
-          isValid: isValid,
-        };
-
-        currentData[purpleAirId] = currentSensorData;
+        aqi = aqiFromPm25(nowCastPm25Result.reading);
+        latitude = nowCastPm25Result.latitude;
+        longitude = nowCastPm25Result.longitude;
+        nowCastPm25 = nowCastPm25Result.reading;
+        isValid = true;
 
         aqiBufferData = {
           aqi: aqi,
           timestamp: FieldValue.serverTimestamp(),
         };
       }
+      const currentSensorData: SensorData = {
+        purpleAirId: purpleAirId,
+        name: sensorName,
+        latitude: latitude,
+        longitude: longitude,
+        nowCastPm25: nowCastPm25,
+        aqi: aqi,
+        isValid: isValid,
+      };
 
-      // Send AQI reading to current-readings to be displayed on the map
-      await firestore.collection('current-reading').doc('pm25').set({
-        lastUpdated: FieldValue.serverTimestamp(),
-        data: currentData,
-      });
+      currentData[purpleAirId] = currentSensorData;
 
       /* -------- Update the AQI Circular Buffer -------- */
 
       // Document reference for current sensor
       const sensorDocRef = firestore.collection('/sensors').doc(docId);
 
-      await sensorDocRef.get().then(doc => {
+      sensorDocRef.get().then(doc => {
         if (doc.exists) {
           const status = doc.get('aqiBufferStatus');
           if (status === bufferStatus.Exists) {
@@ -234,13 +233,13 @@ exports.calculateAqi = functions.pubsub
         }
       });
     }
-  });
 
-// When there are many readings to get, extra time beyond the default 120 seconds
-// may be necessary. 540 seconds is the maximum allowed value.
-const generateReadingsCsvRuntimeOptions: functions.RuntimeOptions = {
-  timeoutSeconds: 540,
-};
+    // Send AQI reading to current-readings to be displayed on the map
+    await firestore.collection('current-reading').doc('pm25').set({
+      lastUpdated: FieldValue.serverTimestamp(),
+      data: currentData,
+    });
+  });
 
 /**
  * This function populates the given sensor doc with a default circular buffer
@@ -248,7 +247,7 @@ const generateReadingsCsvRuntimeOptions: functions.RuntimeOptions = {
  * @param aqiBuffer - true if AQI buffer, false if PM25 buffer
  * @param docRef - document reference for the sensor to update
  */
-async function populateDefaultBuffer(
+function populateDefaultBuffer(
   aqiBuffer: boolean,
   docRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
 ) {
@@ -261,7 +260,7 @@ async function populateDefaultBuffer(
       defaultAqiBufferElement
     );
     // Update document
-    await docRef.get().then(doc => {
+    docRef.get().then(doc => {
       if (doc.exists) {
         docRef.update({
           aqiBufferIndex: bufferIndex,
@@ -279,7 +278,7 @@ async function populateDefaultBuffer(
     );
 
     // Update document
-    await docRef.get().then(doc => {
+    docRef.get().then(doc => {
       if (doc.exists) {
         docRef.update({
           pm25BufferIndex: bufferIndex,
@@ -290,6 +289,12 @@ async function populateDefaultBuffer(
     });
   }
 }
+
+// When there are many readings to get, extra time beyond the default 120 seconds
+// may be necessary. 540 seconds is the maximum allowed value.
+const generateReadingsCsvRuntimeOptions: functions.RuntimeOptions = {
+  timeoutSeconds: 540,
+};
 
 exports.generateReadingsCsv = functions
   .runWith(generateReadingsCsvRuntimeOptions)

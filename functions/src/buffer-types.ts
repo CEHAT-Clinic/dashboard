@@ -51,7 +51,7 @@ const defaultAqiBufferElement: AqiBufferElement = {
  * is 'InProgress', it is currently being initialized, so we don't start to
  * initialize it again.
  */
-const enum bufferStatus {
+export enum bufferStatus {
   Exists,
   InProgress,
   DoesNotExist,
@@ -59,4 +59,4 @@ const enum bufferStatus {
 
 export type {pm25BufferElement, AqiBufferElement};
 
-export {defaultPm25BufferElement, defaultAqiBufferElement, bufferStatus};
+export {defaultPm25BufferElement, defaultAqiBufferElement};
