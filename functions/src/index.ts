@@ -283,7 +283,7 @@ function populateDefaultBuffer(
   if (aqiBuffer) {
     // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
     // create a graph with 24 hours of data
-    const bufferSize = 5; /* eslint-disable-line no-magic-numbers */
+    const bufferSize = 144; /* eslint-disable-line no-magic-numbers */
     const aqiBuffer: Array<AqiBufferElement> = Array(bufferSize).fill(
       defaultAqiBufferElement
     );
@@ -300,7 +300,7 @@ function populateDefaultBuffer(
   } else {
     // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI nowcast calculation
-    const bufferSize = 10; /* eslint-disable-line no-magic-numbers */
+    const bufferSize = 3600; /* eslint-disable-line no-magic-numbers */
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );
