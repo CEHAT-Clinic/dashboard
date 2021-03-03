@@ -202,6 +202,19 @@ const ManageSensors: () => JSX.Element = () => {
     }
   }
 
+  /**
+   * 
+   * @param number - a number that can be NaN
+   * @returns human readable string for a number, 'unknown' if NaN
+   */
+  function numberToString(number: number) {
+    if (number === NaN) {
+      return 'unknown';
+    } else {
+      return String(number);
+    }
+  }
+
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
   } else if (!isAuthenticated) {
@@ -243,8 +256,8 @@ const ManageSensors: () => JSX.Element = () => {
                   <Tr key={id}>
                     <Td>{sensor.name}</Td>
                     <Td>{sensor.purpleAirId}</Td>
-                    <Td>{String(sensor.latitude)}</Td>
-                    <Td>{String(sensor.longitude)}</Td>
+                    <Td>{numberToString(sensor.latitude)}</Td>
+                    <Td>{numberToString(sensor.longitude)}</Td>
                     <Td>
                       {sensor.isActive
                         ? t('sensors.active')
