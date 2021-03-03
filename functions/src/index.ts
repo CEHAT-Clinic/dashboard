@@ -88,6 +88,9 @@ exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
     const sensorList = (await firestore.collection('sensors').get()).docs;
+    const previousDataDoc = (
+      await firestore.collection('current-reading').doc('sensors').get()
+    ).data();
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       // Get sensor metadata
@@ -116,13 +119,13 @@ exports.calculateAqi = functions.pubsub
       const containsEnoughInfo =
         validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
 
-      // TODO: Use the most recent latitude and longitude values from the previous
-      // current-reading collection's doc
+      // Defaults for a sensor
       let latitude = NaN;
       let longitude = NaN;
       let nowCastPm25 = NaN;
       let aqi = NaN;
       let isValid = false;
+      let lastValidAqiTime: FirebaseFirestore.Timestamp | null = null;
 
       // If there is not enough info, the sensor's status is not valid
       if (containsEnoughInfo) {
@@ -135,6 +138,14 @@ exports.calculateAqi = functions.pubsub
         longitude = nowCastPm25Result.longitude;
         nowCastPm25 = nowCastPm25Result.reading;
         isValid = true;
+        lastValidAqiTime = Timestamp.fromDate(new Date());
+      } else if (previousDataDoc) {
+        const previousData = previousDataDoc.data;
+        // Get the data from the previous reading, if it exists
+        latitude = previousData[purpleAirId].latitude ?? latitude;
+        longitude = previousData[purpleAirId].longitude ?? longitude;
+        lastValidAqiTime =
+          previousData[purpleAirId].lastValidAqiTime ?? lastValidAqiTime;
       }
 
       const currentSensorData: SensorData = {
@@ -145,6 +156,8 @@ exports.calculateAqi = functions.pubsub
         nowCastPm25: nowCastPm25,
         aqi: aqi,
         isValid: isValid,
+        readingDocId: docId,
+        lastValidAqiTime: lastValidAqiTime,
       };
 
       currentData[purpleAirId] = currentSensorData;
