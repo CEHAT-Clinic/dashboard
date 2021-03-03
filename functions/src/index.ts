@@ -102,6 +102,9 @@ exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
     const sensorList = (await firestore.collection('sensors').get()).docs;
+    const previousDataDoc = (
+      await firestore.collection('current-reading').doc('sensors').get()
+    ).data();
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       // Get sensor metadata
@@ -134,13 +137,13 @@ exports.calculateAqi = functions.pubsub
       // If there isn't, we send the default AQI buffer element
       let aqiBufferData = defaultAqiBufferElement; // New data to add
 
-      // TODO: Use the most recent latitude and longitude values from the previous
-      // current-reading collection's doc
+      // Defaults for a sensor
       let latitude = NaN;
       let longitude = NaN;
       let nowCastPm25 = NaN;
       let aqi = NaN;
       let isValid = false;
+      let lastValidAqiTime: FirebaseFirestore.Timestamp | null = null;
 
       // If there is not enough info, the sensor's status is not valid
       if (containsEnoughInfo) {
@@ -153,12 +156,21 @@ exports.calculateAqi = functions.pubsub
         longitude = nowCastPm25Result.longitude;
         nowCastPm25 = nowCastPm25Result.reading;
         isValid = true;
+        lastValidAqiTime = Timestamp.fromDate(new Date());
 
         aqiBufferData = {
           aqi: aqi,
-          timestamp: FieldValue.serverTimestamp(),
+          timestamp: lastValidAqiTime,
         };
+      } else if (previousDataDoc) {
+        const previousData = previousDataDoc.data;
+        // Get the data from the previous reading, if it exists
+        latitude = previousData[purpleAirId].latitude ?? latitude;
+        longitude = previousData[purpleAirId].longitude ?? longitude;
+        lastValidAqiTime =
+          previousData[purpleAirId].lastValidAqiTime ?? lastValidAqiTime;
       }
+
       const currentSensorData: SensorData = {
         purpleAirId: purpleAirId,
         name: sensorName,
@@ -167,6 +179,8 @@ exports.calculateAqi = functions.pubsub
         nowCastPm25: nowCastPm25,
         aqi: aqi,
         isValid: isValid,
+        readingDocId: docId,
+        lastValidAqiTime: lastValidAqiTime,
       };
 
       currentData[purpleAirId] = currentSensorData;
@@ -269,7 +283,7 @@ function populateDefaultBuffer(
   if (aqiBuffer) {
     // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
     // create a graph with 24 hours of data
-    const bufferSize = 144; /* eslint-disable-line no-magic-numbers */
+    const bufferSize = 5; /* eslint-disable-line no-magic-numbers */
     const aqiBuffer: Array<AqiBufferElement> = Array(bufferSize).fill(
       defaultAqiBufferElement
     );
@@ -286,7 +300,7 @@ function populateDefaultBuffer(
   } else {
     // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI nowcast calculation
-    const bufferSize = 3600; /* eslint-disable-line no-magic-numbers */
+    const bufferSize = 10; /* eslint-disable-line no-magic-numbers */
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );
