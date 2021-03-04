@@ -6,6 +6,7 @@ import {
   Link,
   UnorderedList,
   ListItem,
+  Image,
 } from '@chakra-ui/react';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
@@ -20,7 +21,11 @@ const Health: React.FC = () => {
       <Box>
         <Heading>{t('pollution.heading')}</Heading>
         <Text>{t('pollution.paragraph1')}</Text>
-        PUT IN A IMAGE
+        <Image
+          src={t('pollution.image.fileName')}
+          alt={t('pollution.image.caption')}
+        />
+        <Text>{t('pollution.image.caption')}</Text>
         <Text>
           {t('pollution.paragraph2.part1')}{' '}
           <Link href={t('references.health.link')} isExternal>
