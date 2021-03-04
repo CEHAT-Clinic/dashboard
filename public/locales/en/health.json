@@ -1,3 +1,54 @@
 {
-    "heading": "Health Info Page"
+    "pageHeading": "Health Information",
+    "pollution": {
+        "heading": "Air Pollution and Us",
+        "paragraph1": "The air we breathe keeps us alive and it’s important that it’s clean and safe. Living in Southern California, you may notice that during fires it can get harder to breathe.  This is because of air pollutants known as fine particulate matter (often abbreviated to PM2.5, see the sidebar for just how small these pollutants are). Unfortunately, while fires worsen the pollution, South Gate is regularly exposed to PM2.5 from high levels of truck traffic on the 710 and 105 freeways, the trains of the Alameda Corridor, and other sources.",
+        "paragraph2": {
+            "part1": "It’s important we know about PM2.5 pollution because it can have serious health effects. These fine particles can enter the bloodstream and lungs, aggravating existing health conditions and potentially causing new ones. The Environmental Protection Agency (EPA)",
+            "link": "reports",
+            "part2": " that particle pollution has been linked to:",
+            "list": {
+                "death": "premature death in people with heart or lung disease",
+                "heartAttacks": "nonfatal heart attacks",
+                "arrhythmia": "irregular heartbeat",
+                "asthma": "aggravated asthma",
+                "lungs": "decreased lung function",
+                "symptoms": "increased respiratory symptoms, such as irritation of the airways, coughing or difficulty breathing"
+            },
+            "part3": "Those with preexisting heart or lung conditions, young children, and older adults are the most affected by PM2.5, but these particles can affect anyone."
+        }
+    },
+    "aqi": {
+        "heading": "The Air Quality Index (AQI)",
+        "paragraph1": "Given the impacts of PM2.5, the EPA sets standards for safe levels of exposure to PM2.5. Since the EPA also sets standards for other pollutants (such as ozone and carbon monoxide, among others), the Air Quality Index (AQI) was developed to clearly communicate the amount and impact of pollutants on a universal scale.",
+        "paragraph2": {
+            "part1": "Running from 0 to 500, ",
+            "part2": "the AQI tells us how good or bad the air is",
+            "part3": ", with higher numbers meaning higher levels of pollution and health risk. An AQI of 100 represents the national standard for air quality. Values below 100 are generally considered safe, whereas values above 100 mean the air is unhealthy, at first only for sensitive groups but as the AQI goes higher, for everyone. In rare cases, the air may be of such poor quality that the AQI exceeds 500. The EPA considers this \"beyond the AQI.\" The full AQI scale can be seen below:"
+        }
+    },
+    "protection": {
+        "heading": "Protecting Ourselves",
+        "paragraph1": "The best way to protect ourselves during periods of high PM2.5 is to limit our exposure to polluted air. We can do this by staying inside and away from polluted air, keeping doors and windows closed and potentially using an air conditioner with a high efficiency particulate air (HEPA) filter. When staying inside, avoid indoor air pollution, such as candles or gas stoves.",
+        "paragraph2": "However, it isn’t always possible to avoid going outside. You may need to go to work or run errands. When going outside is necessary, try to go during less polluted times and limit your exposure to what is necessary to accomplish your tasks, taking breaks indoors when possible. You may also wish to wear a tight-fitting, respirator-style N95 or KN95 mask. A properly fitting respirator mask can filter out PM2.5, but must be worn properly. Cloth masks with a filter insert can also help filter out PM2.5 particles, but surgical masks generally do not."
+    },
+    "references": {
+        "heading": "References and Additional Resources",
+        "pm25": {
+            "link": "https://www.epa.gov/pm-pollution/particulate-matter-pm-basics",
+            "text": "EPA Website on Particulate Matter"
+        },
+        "health": {
+            "link": "https://www.epa.gov/pm-pollution/health-and-environmental-effects-particulate-matter-pm",
+            "text": "EPA Website on Health Effects of Particulate Matter"
+        },
+        "aqi": {
+            "link": "https://www.airnow.gov/aqi/aqi-basics/",
+            "text": "AirNow Website on the AQI"
+        },
+        "fire": {
+            "link": "https://www.kqed.org/science/1926793/protecting-your-health-from-toxic-wildfire-smoke",
+            "text": "KQED Article on Protecting Yourself from Wildfire Smoke"
+        }
+    }
 }
