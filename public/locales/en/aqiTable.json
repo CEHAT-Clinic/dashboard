@@ -1,0 +1,42 @@
+{
+    "heading": {
+        "level": "Level of Concern",
+        "range": "AQI Range",
+        "meaning": "What This Means"
+    },
+    "good": {
+        "level": "Good",
+        "range": "0 to 50",
+        "meaning": "Air quality is satisfactory, and air pollution poses little or no risk."
+    },
+    "moderate": {
+        "level": "Moderate",
+        "range": "51 to 100",
+        "meaning": "Air quality is acceptable. However, there may be a risk for some people, particularly those who are unusually sensitive to air pollution."
+    },
+    "sensitive": {
+        "level": "Unhealthy For Sensitive Groups",
+        "range": "101 to 150",
+        "meaning": "Members of sensitive groups may experience health effects. The general public is less likely to be affected."
+    },
+    "unhealthy": {
+        "level": "Unhealthy",
+        "range": "151 to 200",
+        "meaning": "Some members of the general public may experience health effects; members of sensitive groups may experience more serious health effects."
+    },
+    "very": {
+        "level": "Very Unhealthy",
+        "range": "201 to 300",
+        "meaning": "Health alert: The risk of health effects is increased for everyone."
+    },
+    "hazardous": {
+        "level": "Hazardous",
+        "range": "301+",
+        "meaning": "Health warning of emergency conditions: everyone is more likely to be affected."
+    },
+    "source": {
+        "lead": "Adapted from ",
+        "link": "https://www.airnow.gov/aqi/aqi-basics/",
+        "text": "AirNow"
+    }
+}
