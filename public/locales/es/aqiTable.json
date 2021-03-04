@@ -1,0 +1,42 @@
+{
+    "heading": {
+        "level": "Niveles de preocupación",
+        "range": "Valor numérico",
+        "meaning": "Significado"
+    },
+    "good": {
+        "level": "Bueno",
+        "range": "0 a 50",
+        "meaning": "La calidad del aire se considera satisfactoria y la contaminación atmosférica presenta un riesgo escaso o nulo."
+    },
+    "moderate": {
+        "level": "Moderado",
+        "range": "51 a 100",
+        "meaning": "La calidad del aire es aceptable pero para algunos contaminantes podría existir una preocupación moderada para la salud de un grupo muy pequeño de personas excepcionalmente sensibles a la contaminación ambiental."
+    },
+    "sensitive": {
+        "level": "Insalubre para grupos sensibles",
+        "range": "101 a 150",
+        "meaning": "Los miembros de grupos sensibles pueden padecer efectos en la salud. Probablemente no afectará a las personas en general."
+    },
+    "unhealthy": {
+        "level": "Insalubres",
+        "range": "151 a 200",
+        "meaning": "Todos pueden comenzar a padecer efectos en la salud y los miembros de grupos sensibles pueden padecer efectos más graves."
+    },
+    "very": {
+        "level": "Muy insalubre",
+        "range": "201 a 300",
+        "meaning": "Advertencias sanitarias de condiciones de emergencia. Son mayores las probabilidades de que toda la población esté afectada."
+    },
+    "hazardous": {
+        "level": "Peligroso",
+        "range": "301+",
+        "meaning": "Alerta sanitaria: todos pueden padecer efectos sanitarios más graves."
+    },
+    "source": {
+        "lead": "Adaptado de ",
+        "link": "https://www.airnow.gov/aqi/aqi-basics-in-spanish",
+        "text": "AirNow"
+    }
+}
