@@ -35,11 +35,10 @@ interface Sensor {
   purpleAirId: string;
   latitude: number;
   longitude: number;
-  nowCastPm25: number;
-  aqi: number;
   isActive: boolean;
   isValid: boolean;
   lastValidAqiTime: firebase.firestore.Timestamp | null;
+  lastSensorReadingTime: firebase.firestore.Timestamp | null;
   readingDocId: string;
 }
 
@@ -61,35 +60,26 @@ const ManageSensors: () => JSX.Element = () => {
       // Create listener that updates on any data changes
       // TODO: use sensors docs
       const unsubscribe = firestore
-        .collection('current-reading')
-        .doc('sensors')
-        .onSnapshot(docSnapshot => {
+        .collection('sensors')
+        .onSnapshot(querySnapshot => {
           const sensorList: Sensor[] = [];
-          const data = docSnapshot.data();
-          if (data) {
-            // Map of sensorID to readings and properties stored in data field
-            const sensorMap = data.data;
-
-            // Iterate through all current sensors
-            for (const sensorId in sensorMap) {
-              const sensorData = sensorMap[sensorId];
-              if (sensorData) {
-                sensorList.push({
-                  purpleAirId: sensorData.purpleAirId ?? '',
-                  name: sensorData.name ?? '',
-                  latitude: sensorData.latitude ?? NaN,
-                  longitude: sensorData.longitude ?? NaN,
-                  isActive: true, // TODO: update cloud function with this value
-                  isValid: sensorData.isValid ?? false,
-                  lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
-                  readingDocId: sensorData.readingDocId ?? '',
-                  aqi: sensorData.aqi ?? NaN,
-                  nowCastPm25: sensorData.nowCastPm25 ?? NaN,
-                });
-              }
+          querySnapshot.docs.forEach(doc => {
+            if (doc.data()) {
+              const sensorData = doc.data();
+              sensorList.push({
+                purpleAirId: sensorData.purpleAirId ?? '',
+                name: sensorData.name ?? '',
+                latitude: sensorData.latitude ?? NaN,
+                longitude: sensorData.longitude ?? NaN,
+                isActive: sensorData.isActive ?? true, // TODO: update cloud function with this value
+                isValid: sensorData.isValid ?? false,
+                lastValidAqiTime: sensorData.lastValidAqiTime ?? null, // TODO: update cloud function to write this value here
+                lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null, // TODO: update cloud function with this value
+                readingDocId: doc.id,
+              });
             }
-            setSensors(sensorList);
-          }
+          });
+          setSensors(sensorList);
         });
       setIsLoading(false);
       return unsubscribe;
@@ -111,19 +101,19 @@ const ManageSensors: () => JSX.Element = () => {
     currentSensor.isActive = !currentSensor.isActive;
 
     if (isAdmin) {
-      // TODO: actually do the call to the database
-      // firestore
-      //   .collection('sensors')
-      //   .doc(currentSensor.readingDocId)
-      //   .update({
-      //     isActive: currentSensor.isActive,
-      //   })
-      //   .catch(() => {
-      //     setError(
-      //       t('sensors.changeActiveSensorError') + currentSensor.name ??
-      //         currentSensor.purpleAirId
-      //     );
-      //   });
+      // Update the sensor doc
+      firestore
+        .collection('sensors')
+        .doc(currentSensor.readingDocId)
+        .update({
+          isActive: currentSensor.isActive,
+        })
+        .catch(() => {
+          setError(
+            t('sensors.changeActiveSensorError') + currentSensor.name ??
+              currentSensor.purpleAirId
+          );
+        });
     }
   }
 
@@ -170,7 +160,7 @@ const ManageSensors: () => JSX.Element = () => {
           </PopoverHeader>
           <PopoverBody>
             <Text>{popoverMessage}</Text>
-            <Divider marginY={1}/>
+            <Divider marginY={1} />
             <Text marginBottom={1}>{popoverNote}</Text>
             <Center>
               <Button
