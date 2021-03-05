@@ -19,6 +19,7 @@ import {
   PopoverBody,
   Center,
   Text,
+  Divider,
 } from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
@@ -58,7 +59,7 @@ const ManageSensors: () => JSX.Element = () => {
       setIsLoading(true);
 
       // Create listener that updates on any data changes
-      // TODO: update cloud function to edit the sensors doc
+      // TODO: use sensors docs
       const unsubscribe = firestore
         .collection('current-reading')
         .doc('sensors')
@@ -109,25 +110,20 @@ const ManageSensors: () => JSX.Element = () => {
 
     currentSensor.isActive = !currentSensor.isActive;
 
-    // Recreate sensor data map with updated field
-    const updatedDataMap = Object.create(null);
-    for (const sensor of sensors) {
-      updatedDataMap[sensor.purpleAirId] = sensor;
-    }
-
     if (isAdmin) {
-      firestore
-        .collection('current-reading')
-        .doc('sensors')
-        .update({
-          data: updatedDataMap,
-        })
-        .catch(() => {
-          setError(
-            t('sensors.changeActiveSensorError') + currentSensor.name ??
-              currentSensor.purpleAirId
-          );
-        });
+      // TODO: actually do the call to the database
+      // firestore
+      //   .collection('sensors')
+      //   .doc(currentSensor.readingDocId)
+      //   .update({
+      //     isActive: currentSensor.isActive,
+      //   })
+      //   .catch(() => {
+      //     setError(
+      //       t('sensors.changeActiveSensorError') + currentSensor.name ??
+      //         currentSensor.purpleAirId
+      //     );
+      //   });
     }
   }
 
@@ -149,12 +145,15 @@ const ManageSensors: () => JSX.Element = () => {
   }: ToggleActiveSensorPopoverProps) => JSX.Element = ({
     sensor,
   }: ToggleActiveSensorPopoverProps) => {
-    const name = sensor.name ?? sensor.purpleAirId;
+    const name = sensor.name ? sensor.name : sensor.purpleAirId;
 
     const popoverMessage =
       (sensor.isActive
         ? t('sensors.confirmDeactivate')
         : t('sensors.confirmActivate')) + name;
+    const popoverNote = sensor.isActive
+      ? t('sensors.deactivateNote')
+      : t('sensors.activateNote');
 
     return (
       <Popover>
@@ -171,6 +170,8 @@ const ManageSensors: () => JSX.Element = () => {
           </PopoverHeader>
           <PopoverBody>
             <Text>{popoverMessage}</Text>
+            <Divider marginY={1}/>
+            <Text marginBottom={1}>{popoverNote}</Text>
             <Center>
               <Button
                 paddingY={2}
@@ -203,13 +204,13 @@ const ManageSensors: () => JSX.Element = () => {
   }
 
   /**
-   * 
+   *
    * @param number - a number that can be NaN
    * @returns human readable string for a number, 'unknown' if NaN
    */
   function numberToString(number: number) {
-    if (number === NaN) {
-      return 'unknown';
+    if (isNaN(number)) {
+      return t('sensors.unknown');
     } else {
       return String(number);
     }

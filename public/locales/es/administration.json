@@ -125,12 +125,14 @@
         "activeHeading": "¿Activo?",
         "activate": "Desactivar el sensor",
         "confirmActivate": "¿Estás seguro de que quieres activar el sensor: ",
+        "activateNote": "Tenga en cuenta que el AQI de este sensor no aparecerá en el mapa durante al menos 2 horas hasta que se recopilen datos suficientes para calcular el AQI de este sensor.",
         "deactivate": "Activar el sensor",
         "confirmDeactivate": "¿Estás seguro de que quieres desactivar el sensor: ",
+        "deactivateNote": "Tenga en cuenta que este sensor puede tardar hasta 10 minutos en eliminarse del mapa del sitio web. La desactivación del sensor no eliminará ningún dato histórico del sensor, pero dejará de recopilar nuevos datos del sensor. Esto tampoco hará cambios en el sitio web de PurpleAir.",
         "active": "activo",
         "inactive": "inactivo",
         "changeActiveSensorError": "No se puede cambiar el status de activo del sensor ",
         "add": "Añadir un sensor nuevo",
-        "unknown": "Desconocido"
+        "unknown": "desconocido"
     }
 }
