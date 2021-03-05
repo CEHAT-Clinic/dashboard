@@ -23,7 +23,8 @@ import {
   bufferStatus,
   defaultPm25BufferElement,
   defaultAqiBufferElement,
-} from './buffer-types';
+  populateDefaultBuffer
+} from './buffer';
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
   timeoutSeconds: 120,
@@ -58,8 +59,9 @@ exports.thingspeakToFirestore = functions
         channelBPrimaryData,
         thingspeakInfo
       );
-
-      const resolvedPath = readingsSubcollection(knownSensor.id);
+      
+      const docId = knownSensor.id;
+      const resolvedPath = readingsSubcollection(docId);
       const readingsRef = firestore.collection(resolvedPath);
 
       // If data is not already present in the database add
@@ -85,9 +87,32 @@ exports.thingspeakToFirestore = functions
         await readingsRef.add(firestoreSafeReading);
       }
 
-      // Add readings to the pm25 buffer
-      const docRef = firestore.collection('sensors').doc(knownSensor.id);
-      addToPm25Buffer(firestoreSafeReading, docRef);
+      // Add readings to the PM 2.5 buffer
+      const sensorDocRef = firestore.collection('sensors').doc(knownSensor.id);
+      const status = knownSensor.data().pm25BufferStatus ?? bufferStatus.DoesNotExist;
+      // If the buffer status is In Progress we don't update the buffer at all
+      if (status === bufferStatus.Exists) {
+        // If the buffer exists, update normally
+        let pm25BufferIndex = knownSensor.data().pm25BufferIndex;
+        const pm25Buffer = knownSensor.data().pm25Buffer;
+
+        pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
+        /* eslint-disable-next-line no-magic-numbers */
+        pm25BufferIndex = (pm25BufferIndex + 1) % pm25Buffer.length;
+
+        await sensorDocRef.update({
+          pm25BufferIndex: pm25BufferIndex,
+          pm25Buffer: pm25Buffer,
+        });
+      } else if (status === bufferStatus.DoesNotExist || status === undefined) {
+        // If the buffer does not exist, populate it with default values so
+        // it can be updated in the future
+        await sensorDocRef.update({
+          pm25BufferStatus: bufferStatus.InProgress,
+        });
+        populateDefaultBuffer(false, docId);
+      }
+    }
 
       // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
       // our program from getting blocked.
@@ -95,7 +120,6 @@ exports.thingspeakToFirestore = functions
       const oneMinuteInMilliseconds = 60000;
       const delayBetweenSensors = oneMinuteInMilliseconds / sensorList.length;
       await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
-    }
   });
 
 exports.calculateAqi = functions.pubsub
@@ -187,136 +211,35 @@ exports.calculateAqi = functions.pubsub
 
       // Update the AQI circular buffer for this element
       const sensorDocRef = firestore.collection('/sensors').doc(docId);
-      addToAqiBuffer(aqiBufferData, sensorDocRef);
+
+      const status = knownSensor.data().aqiBufferStatus ?? bufferStatus.DoesNotExist;
+      // If the buffer status is In Progress we don't update the buffer at all
+      if (status === bufferStatus.Exists) {
+        // The buffer exists, proceed with normal update
+        let aqiBufferIndex: number = knownSensor.data().aqiBufferIndex ;
+        const aqiBuffer: Array<AqiBufferElement> = knownSensor.data().aqiBuffer;
+        aqiBuffer[aqiBufferIndex] = aqiBufferData;
+        /* eslint-disable-next-line no-magic-numbers */
+        aqiBufferIndex = (aqiBufferIndex + 1) % aqiBuffer.length;
+        await sensorDocRef.update({
+          aqiBufferIndex: aqiBufferIndex,
+          aqiBuffer: aqiBuffer,
+        });
+      } else if (status === bufferStatus.DoesNotExist) {
+        // Populate the buffer with default values, skip this sensor
+        await sensorDocRef.update({
+          aqiBufferStatus: bufferStatus.InProgress,
+        });
+        populateDefaultBuffer(true, docId);
+      }
     }
 
     // Send AQI reading to current-readings to be displayed on the map
-    await firestore.collection('current-reading').doc('pm25').set({
+    await firestore.collection('current-reading').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });
   });
-
-/**
- * This function adds an element to a sensor's AQI buffer (if applicable)
- * @param data - the element to add to the buffer
- * @param docRef - the document reference for a particular sensor
- */
-function addToAqiBuffer(
-  data: AqiBufferElement,
-  docRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
-) {
-  docRef.get().then(doc => {
-    if (doc.exists) {
-      const status = doc.get('aqiBufferStatus');
-      if (status === bufferStatus.Exists) {
-        // The buffer exists, proceed with normal update
-        let aqiBufferIndex = doc.get('aqiBufferIndex');
-        const aqiBuffer = doc.get('aqiBuffer');
-        aqiBuffer[aqiBufferIndex] = data;
-        /* eslint-disable-next-line no-magic-numbers */
-        aqiBufferIndex = (aqiBufferIndex + 1) % aqiBuffer.length;
-
-        docRef.update({
-          aqiBufferIndex: aqiBufferIndex,
-          aqiBuffer: aqiBuffer,
-        });
-      } else if (status === bufferStatus.DoesNotExist || status === undefined) {
-        // Populate the buffer with default values, skip this sensor
-        docRef.update({
-          aqiBufferStatus: bufferStatus.InProgress,
-        });
-        populateDefaultBuffer(true, docRef);
-      }
-    }
-  });
-}
-
-/**
- * This function adds an element to a sensor's PM2.5 buffer (if applicable)
- * @param data - the element to add to the buffer
- * @param docRef - the document reference for a particular sensor
- */
-function addToPm25Buffer(
-  data: Pm25BufferElement,
-  docRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
-) {
-  docRef.get().then(doc => {
-    if (doc.exists) {
-      const status = doc.get('pm25BufferStatus');
-      if (status === bufferStatus.Exists) {
-        // If the buffer exists, update normally
-        let pm25BufferIndex = doc.get('pm25BufferIndex');
-        const pm25Buffer = doc.get('pm25Buffer');
-
-        pm25Buffer[pm25BufferIndex] = data;
-        /* eslint-disable-next-line no-magic-numbers */
-        pm25BufferIndex = (pm25BufferIndex + 1) % pm25Buffer.length;
-
-        docRef.update({
-          pm25BufferIndex: pm25BufferIndex,
-          pm25Buffer: pm25Buffer,
-        });
-      } else if (status === bufferStatus.DoesNotExist || status === undefined) {
-        // If the buffer does not exist, populate it with default values so
-        // it can be updated in the future
-        docRef.update({
-          pm25BufferStatus: bufferStatus.InProgress,
-        });
-        populateDefaultBuffer(false, docRef);
-      }
-    }
-  });
-}
-
-/**
- * This function populates the given sensor doc with a default circular buffer
- * for either AQI or PM 2.5
- * @param aqiBuffer - true if AQI buffer, false if PM25 buffer
- * @param docRef - document reference for the sensor to update
- */
-function populateDefaultBuffer(
-  aqiBuffer: boolean,
-  docRef: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>
-) {
-  const bufferIndex = 0;
-  if (aqiBuffer) {
-    // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
-    // create a graph with 24 hours of data
-    const bufferSize = 144; /* eslint-disable-line no-magic-numbers */
-    const aqiBuffer: Array<AqiBufferElement> = Array(bufferSize).fill(
-      defaultAqiBufferElement
-    );
-    // Update document
-    docRef.get().then(doc => {
-      if (doc.exists) {
-        docRef.update({
-          aqiBufferIndex: bufferIndex,
-          aqiBuffer: aqiBuffer,
-          aqiBufferStatus: bufferStatus.Exists,
-        });
-      }
-    });
-  } else {
-    // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
-    // the AQI nowcast calculation
-    const bufferSize = 3600; /* eslint-disable-line no-magic-numbers */
-    const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
-      defaultPm25BufferElement
-    );
-
-    // Update document
-    docRef.get().then(doc => {
-      if (doc.exists) {
-        docRef.update({
-          pm25BufferIndex: bufferIndex,
-          pm25Buffer: pm25Buffer,
-          pm25BufferStatus: bufferStatus.Exists,
-        });
-      }
-    });
-  }
-}
 
 // When there are many readings to get, extra time beyond the default 120 seconds
 // may be necessary. 540 seconds is the maximum allowed value.
