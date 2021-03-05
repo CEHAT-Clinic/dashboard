@@ -44,7 +44,13 @@ const Health: React.FC = () => {
               alt={t('pollution.image.caption')}
               maxWidth={['95%', null, '500px', null]}
             />
-            <Text>{t('pollution.image.caption')}</Text>
+            <Text>
+              {t('pollution.image.caption')}
+              <Link href={t('pollution.image.source.link')} isExternal>
+                {t('pollution.image.source.text')}
+                <ExternalLinkIcon />
+              </Link>
+            </Text>
           </Flex>
         </Flex>
         <Text>
