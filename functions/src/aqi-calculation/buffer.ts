@@ -48,9 +48,12 @@ const defaultAqiBufferElement: AqiBufferElement = {
 };
 
 /**
- * Enumeration for the status of a buffer. This is necessary because if a buffer
- * is 'InProgress', it is currently being initialized, so we don't start to
- * initialize it again.
+ * Enumeration for the status of a buffer. If a buffer is 'InProgress', it is
+ * currently being initialized, so we don't start to initialize it again. This
+ * is necessary because initializing the entire buffer can take non-negligible
+ * time, so we may initialize a buffer in a cloud function and have the same
+ * cloud function called again before the buffer is finished initializing. This
+ * way we avoid having a buffer that begins re-initializing indefinitely.
  */
 export enum bufferStatus {
   Exists,
@@ -70,7 +73,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
   if (aqiBuffer) {
     // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
     // create a graph with 24 hours of data
-    const bufferSize = 144; /* eslint-disable-line no-magic-numbers */
+    const bufferSize = 144;
     const aqiBuffer: Array<AqiBufferElement> = Array(bufferSize).fill(
       defaultAqiBufferElement
     );
@@ -87,7 +90,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
   } else {
     // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI NowCast calculation
-    const bufferSize = 3600; /* eslint-disable-line no-magic-numbers */
+    const bufferSize = 3600;
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );

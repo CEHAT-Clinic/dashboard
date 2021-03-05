@@ -1,14 +1,14 @@
 import * as functions from 'firebase-functions';
 import axios from 'axios';
-import PurpleAirResponse from './purple-air-response';
-import SensorReading from './sensor-reading';
-import NowCastConcentration from './nowcast-concentration';
+import PurpleAirResponse from './aqi-calculation/purple-air-response';
+import SensorReading from './aqi-calculation/sensor-reading';
+import NowCastConcentration from './aqi-calculation/nowcast-concentration';
 import {
   generateReadingsCsv,
   generateAverageReadingsCsv,
-} from '../download-readings';
-import {firestore, Timestamp, FieldValue} from '../admin';
-import {aqiFromPm25} from './calculate-aqi';
+} from './download-readings';
+import {firestore, Timestamp, FieldValue} from './admin';
+import {aqiFromPm25} from './aqi-calculation/calculate-aqi';
 import {
   thingspeakUrl,
   readingsSubcollection,
@@ -16,14 +16,14 @@ import {
   getHourlyAverages,
   cleanAverages,
   SensorData,
-} from './util';
+} from './aqi-calculation/util';
 import {
   AqiBufferElement,
   bufferStatus,
   defaultPm25BufferElement,
   defaultAqiBufferElement,
   populateDefaultBuffer,
-} from './buffer';
+} from './aqi-calculation/buffer';
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
   timeoutSeconds: 120,
@@ -36,8 +36,9 @@ exports.thingspeakToFirestore = functions
     const sensorList = (await firestore.collection('/sensors').get()).docs;
 
     for (const knownSensor of sensorList) {
+      const data = knownSensor.data();
       const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
-        knownSensor.data()['purpleAirId']
+        data['purpleAirId']
       );
       const channelAPrimaryData = await axios({
         url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
@@ -88,13 +89,13 @@ exports.thingspeakToFirestore = functions
 
       // Add readings to the PM 2.5 buffer
       const sensorDocRef = firestore.collection('sensors').doc(knownSensor.id);
-      const status =
-        knownSensor.data().pm25BufferStatus ?? bufferStatus.DoesNotExist;
-      // If the buffer status is In Progress we don't update the buffer at all
+      const status = data.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+      // If the buffer status is In Progress we don't update the buffer
+      // because the buffer is still being initialized
       if (status === bufferStatus.Exists) {
         // If the buffer exists, update normally
-        let pm25BufferIndex = knownSensor.data().pm25BufferIndex;
-        const pm25Buffer = knownSensor.data().pm25Buffer;
+        let pm25BufferIndex = data.pm25BufferIndex;
+        const pm25Buffer = data.pm25Buffer;
 
         pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
         /* eslint-disable-next-line no-magic-numbers */
@@ -110,6 +111,8 @@ exports.thingspeakToFirestore = functions
         await sensorDocRef.update({
           pm25BufferStatus: bufferStatus.InProgress,
         });
+        // This function updates the bufferStatus once the buffer has been
+        // fully initialized, which uses an additional write to the database
         populateDefaultBuffer(false, docId);
       }
     }
@@ -132,8 +135,9 @@ exports.calculateAqi = functions.pubsub
     const currentData = Object.create(null);
     for (const knownSensor of sensorList) {
       // Get sensor metadata
-      const sensorName: string = knownSensor.data()?.name ?? '';
-      const purpleAirId: string = knownSensor.data()?.purpleAirId ?? '';
+      const data = knownSensor.data();
+      const sensorName: string = data?.name ?? '';
+      const purpleAirId: string = data?.purpleAirId ?? '';
       const docId = knownSensor.id;
 
       // Get current sensor readings
@@ -212,13 +216,13 @@ exports.calculateAqi = functions.pubsub
       // Update the AQI circular buffer for this element
       const sensorDocRef = firestore.collection('/sensors').doc(docId);
 
-      const status =
-        knownSensor.data().aqiBufferStatus ?? bufferStatus.DoesNotExist;
-      // If the buffer status is In Progress we don't update the buffer at all
+      const status = data.aqiBufferStatus ?? bufferStatus.DoesNotExist;
+      // If the buffer status is In Progress we don't update the buffer
+      // because the buffer is still being initialized
       if (status === bufferStatus.Exists) {
         // The buffer exists, proceed with normal update
-        let aqiBufferIndex: number = knownSensor.data().aqiBufferIndex;
-        const aqiBuffer: Array<AqiBufferElement> = knownSensor.data().aqiBuffer;
+        let aqiBufferIndex: number = data.aqiBufferIndex;
+        const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer;
         aqiBuffer[aqiBufferIndex] = aqiBufferData;
         /* eslint-disable-next-line no-magic-numbers */
         aqiBufferIndex = (aqiBufferIndex + 1) % aqiBuffer.length;
@@ -227,10 +231,13 @@ exports.calculateAqi = functions.pubsub
           aqiBuffer: aqiBuffer,
         });
       } else if (status === bufferStatus.DoesNotExist) {
-        // Populate the buffer with default values, skip this sensor
+        // Initialize populating the buffer with default values, don't update
+        // any values until the buffer status is Exists
         await sensorDocRef.update({
           aqiBufferStatus: bufferStatus.InProgress,
         });
+        // This function updates the bufferStatus once the buffer has been
+        // fully initialized, which uses an additional write to the database
         populateDefaultBuffer(true, docId);
       }
     }
