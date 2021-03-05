@@ -3,6 +3,7 @@ import CleanedReadings from './cleaned-reading';
 import axios from 'axios';
 import SensorReading from './sensor-reading';
 import {firestore, Timestamp} from '../admin';
+import { Pm25BufferElement } from './buffer';
 
 const thingspeakUrl: (channelId: string) => string = (channelId: string) =>
   `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
@@ -45,38 +46,45 @@ async function getThingspeakKeysFromPurpleAir(
 async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
   const LOOKBACK_PERIOD_HOURS = 12;
   const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
-  const currentHour: Date = new Date();
-  const previousHour = new Date(currentHour);
-  // Only modifies the hour field, keeps minutes field constant
-  previousHour.setUTCHours(previousHour.getUTCHours() - 1); // eslint-disable-line no-magic-numbers
 
-  const resolvedPath = readingsSubcollection(docId);
+  const docRef = firestore.collection('sensors').doc(docId)
+  docRef.get().then(doc => {
+    if (doc.exists) {
+      // Get buffer and buffer index
+      const buffer = doc.get('pm25Buffer');
+      const bufferIndex = doc.get('pm25BufferIndex');
+      let readings:Array<Pm25BufferElement> = [];
+      // Get portion of array that is relevant for this hour
+      for (let i = 0; i < averages.length; i++) {
+        const startIndex = bufferIndex - 30*i;
+        const endIndex = bufferIndex - 30*(i+1);
+        if(startIndex >= 0 && endIndex >= 0){
+          readings = buffer.slice(startIndex,endIndex);
+        } else if(startIndex < 0 && endIndex >= 0){
+          const leftArray = buffer.slice(buffer.length + startIndex,buffer.length)
+          const rightArray = buffer.slice(0,endIndex);
+          readings = leftArray.concat(rightArray);
+        } else{
+          // Start and end indices are both less than 0
+          readings = buffer.slice(bufferIndex+startIndex,bufferIndex + endIndex)
+        }
 
-  for (let i = 0; i < averages.length; i++) {
-    const readings = (
-      await firestore
-        .collection(resolvedPath)
-        .where('timestamp', '>', Timestamp.fromDate(previousHour))
-        .where('timestamp', '<=', Timestamp.fromDate(currentHour))
-        .get()
-    ).docs;
-
-    // If we have 1 reading every two minutes, there are 30 readings in an hour
-    // 90% of 30 readings is 27 readings. We must have 90% of the readings from
-    // a given hour in order to compute the AQI per the EPA.
-    // Expressed this way to avoid imprecision of floating point arithmetic.
-    const MEASUREMENT_COUNT_THRESHOLD = 27;
-    if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-      const reading = SensorReading.averageDocuments(readings);
-      averages[i] = reading;
+        // If we have 1 reading every two minutes, there are 30 readings in an hour
+        // 90% of 30 readings is 27 readings. We must have 90% of the readings from
+        // a given hour in order to compute the AQI per the EPA.
+        // Expressed this way to avoid imprecision of floating point arithmetic.
+        const MEASUREMENT_COUNT_THRESHOLD = 27;
+        // Remove all invalid readings
+        readings.filter(element => element.timestamp !== null);
+        if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
+          const reading = SensorReading.averageDocuments(readings);
+          averages[i] = reading;
+        }
+      }
+    }else{
+      // TODO: Doc doesn't exist, what happens here?
     }
-
-    /* eslint-disable no-magic-numbers */
-    currentHour.setUTCHours(currentHour.getUTCHours() - 1);
-    previousHour.setUTCHours(previousHour.getUTCHours() - 1);
-    /* eslint-enable no-magic-numbers */
-  }
-
+  });
   return averages;
 }
 

@@ -1,4 +1,5 @@
 import {AxiosResponse} from 'axios';
+import { Pm25BufferElement } from './buffer';
 import PurpleAirResponse from './purple-air-response';
 
 export default class SensorReading {
@@ -30,16 +31,17 @@ export default class SensorReading {
    * @param readings - Array of documents containing readings from Firestore
    */
   static averageDocuments(
-    readings: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]
+    readings: Array<Pm25BufferElement>
   ): SensorReading {
     let channelAPmReadingSum = 0;
     let channelBPmReadingSum = 0;
     let humiditySum = 0;
 
     // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0].data();
-    const latitude: number = firstReadingData['latitude'];
-    const longitude: number = firstReadingData['longitude'];
+    const firstReadingData = readings[0];
+    const latitude: number = firstReadingData.latitude;
+    const longitude: number = firstReadingData.longitude;
+    // TODO: stopped fixing this function here.
     const timestamp: FirebaseFirestore.Timestamp =
       firstReadingData['timestamp'];
 
