@@ -18,8 +18,8 @@ const AqiTable: React.FC = () => {
 
   return (
     <Box
-      padding={8}
-      margin={8}
+      padding={4}
+      margin={1}
       borderWidth={1}
       borderRadius={8}
       boxShadow="lg"

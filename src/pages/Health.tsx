@@ -7,6 +7,7 @@ import {
   UnorderedList,
   ListItem,
   Image,
+  Flex,
 } from '@chakra-ui/react';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
@@ -16,16 +17,36 @@ const Health: React.FC = () => {
   const {t} = useTranslation('health');
 
   return (
-    <Box>
+    <Flex width="full" align="center" direction="column" padding={8}>
       <Heading as="h1">{t('pageHeading')}</Heading>
-      <Box>
+      <Flex
+        padding={8}
+        margin={8}
+        width="full"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+        direction="column"
+      >
         <Heading>{t('pollution.heading')}</Heading>
         <Text>{t('pollution.paragraph1')}</Text>
-        <Image
-          src={t('pollution.image.fileName')}
-          alt={t('pollution.image.caption')}
-        />
-        <Text>{t('pollution.image.caption')}</Text>
+        <Flex
+          padding={4}
+          margin={['2', 'auto', '2', 'auto']}
+          borderWidth={1}
+          borderRadius={8}
+          boxShadow="lg"
+          width={['100%', null, '525px', null]}
+        >
+          <Flex direction="column" align="center">
+            <Image
+              src={t('pollution.image.fileName')}
+              alt={t('pollution.image.caption')}
+              maxWidth={['95%', null, '500px', null]}
+            />
+            <Text>{t('pollution.image.caption')}</Text>
+          </Flex>
+        </Flex>
         <Text>
           {t('pollution.paragraph2.part1')}{' '}
           <Link href={t('references.health.link')} isExternal>
@@ -42,8 +63,15 @@ const Health: React.FC = () => {
           </UnorderedList>
           {t('pollution.paragraph2.part3')}
         </Text>
-      </Box>
-      <Box>
+      </Flex>
+      <Box
+        padding={8}
+        margin={8}
+        width="full"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+      >
         <Heading>{t('aqi.heading')}</Heading>
         <Text>{t('aqi.paragraph1')}</Text>
         <Text>
@@ -53,11 +81,26 @@ const Health: React.FC = () => {
         </Text>
         <AqiTable />
       </Box>
-      <Box>
+      <Box
+        padding={8}
+        margin={8}
+        width="full"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+      >
         <Heading>{t('protection.heading')}</Heading>
         <Text>{t('protection.paragraph1')}</Text>
+        <Text>{t('protection.paragraph2')}</Text>
       </Box>
-      <Box>
+      <Box
+        padding={8}
+        margin={8}
+        width="full"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+      >
         <Heading>{t('references.heading')}</Heading>
         <UnorderedList>
           <ListItem>
@@ -86,7 +129,7 @@ const Health: React.FC = () => {
           </ListItem>
         </UnorderedList>
       </Box>
-    </Box>
+    </Flex>
   );
 };
 
