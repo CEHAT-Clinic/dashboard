@@ -69,10 +69,11 @@ exports.thingspeakToFirestore = functions
       let firestoreSafeReading: Pm25BufferElement = defaultPm25BufferElement;
 
       // If the lastSensorReadingTime field isn't set, query the database to find
-      // the timestamp of the most recent reading
+      // the timestamp of the most recent reading. If there are no readings in
+      // Firestore, then lastSensorReading is never changed from null
       let lastSensorReadingTime: FirebaseFirestore.Timestamp | null =
         sensorDocData.lastSensorReadingTime ?? null;
-      if (lastSensorReadingTime === undefined) {
+      if (!lastSensorReadingTime) {
         const maxDocs = 1;
         readingsCollectionRef
           .orderBy('timestamp')
@@ -109,16 +110,13 @@ exports.thingspeakToFirestore = functions
       // because the buffer is still being initialized
       if (status === bufferStatus.Exists) {
         // If the buffer exists, update normally
-        let pm25BufferIndex = sensorDocData.pm25BufferIndex;
         const pm25Buffer = sensorDocData.pm25Buffer;
-
-        pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
-        /* eslint-disable-next-line no-magic-numbers */
-        pm25BufferIndex = (pm25BufferIndex + 1) % pm25Buffer.length;
+        pm25Buffer[sensorDocData.pm25BufferIndex] = firestoreSafeReading;
 
         // Update the sensor doc buffer and metadata
         await sensorDocRef.update({
-          pm25BufferIndex: pm25BufferIndex,
+          pm25BufferIndex:
+            (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
           pm25Buffer: pm25Buffer,
           lastSensorReadingTime: readingTimestamp,
           latitude: reading.latitude,
@@ -223,13 +221,11 @@ exports.calculateAqi = functions.pubsub
       // because the buffer is still being initialized
       if (status === bufferStatus.Exists) {
         // The buffer exists, proceed with normal update
-        let aqiBufferIndex: number = sensorDocData.aqiBufferIndex;
         const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
-        aqiBuffer[aqiBufferIndex] = aqiBufferData;
-        aqiBufferIndex = (aqiBufferIndex + 1) % aqiBuffer.length; // eslint-disable-line no-magic-numbers
+        aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
 
         await sensorDocRef.update({
-          aqiBufferIndex: aqiBufferIndex,
+          aqiBufferIndex: (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
           aqiBuffer: aqiBuffer,
         });
       } else if (status === bufferStatus.DoesNotExist) {
