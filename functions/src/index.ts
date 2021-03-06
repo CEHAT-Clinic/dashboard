@@ -23,6 +23,7 @@ import {
   defaultPm25BufferElement,
   defaultAqiBufferElement,
   populateDefaultBuffer,
+  Pm25BufferElement,
 } from './aqi-calculation/buffer';
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
@@ -35,10 +36,11 @@ exports.thingspeakToFirestore = functions
   .onRun(async () => {
     const sensorList = (await firestore.collection('/sensors').get()).docs;
 
-    for (const knownSensor of sensorList) {
-      const data = knownSensor.data();
+    for (const sensorDoc of sensorList) {
+      const sensorDocData = sensorDoc.data();
+
       const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
-        data['purpleAirId']
+        sensorDocData.purpleAirId
       );
       const channelAPrimaryData = await axios({
         url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
@@ -59,21 +61,33 @@ exports.thingspeakToFirestore = functions
         channelBPrimaryData,
         thingspeakInfo
       );
+      const readingTimestamp = Timestamp.fromDate(reading.timestamp);
 
-      const docId = knownSensor.id;
-      const resolvedPath = readingsSubcollection(docId);
-      const readingsRef = firestore.collection(resolvedPath);
+      const readingsCollectionRef = firestore.collection(
+        readingsSubcollection(sensorDoc.id)
+      );
+      let firestoreSafeReading: Pm25BufferElement = defaultPm25BufferElement;
 
-      // If data is not already present in the database add
-      // it to the historical readings
-      let firestoreSafeReading = defaultPm25BufferElement;
-      if (
-        (
-          await readingsRef
-            .where('timestamp', '==', Timestamp.fromDate(reading.timestamp))
-            .get()
-        ).empty
-      ) {
+      // If the lastSensorReadingTime field isn't set, query the database to find
+      // the timestamp of the most recent reading
+      let lastSensorReadingTime: FirebaseFirestore.Timestamp | null =
+        sensorDocData.lastSensorReadingTime ?? null;
+      if (lastSensorReadingTime === undefined) {
+        const maxDocs = 1;
+        readingsCollectionRef
+          .orderBy('timestamp')
+          .limit(maxDocs)
+          .get()
+          .then(querySnapshot => {
+            querySnapshot.forEach(doc => {
+              lastSensorReadingTime = doc.data().timestamp ?? null;
+            });
+          });
+      }
+
+      // Before adding the reading to the historical database, check that it doesn't
+      // already exist in the database
+      if (lastSensorReadingTime !== readingTimestamp) {
         // Update reading with values
         firestoreSafeReading = {
           timestamp: Timestamp.fromDate(reading.timestamp),
@@ -84,36 +98,44 @@ exports.thingspeakToFirestore = functions
           longitude: reading.longitude,
         };
         // Add to historical readings
-        await readingsRef.add(firestoreSafeReading);
+        await readingsCollectionRef.add(firestoreSafeReading);
       }
 
       // Add readings to the PM 2.5 buffer
-      const sensorDocRef = firestore.collection('sensors').doc(knownSensor.id);
-      const status = data.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+      const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
+      const status =
+        sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
       // If the buffer status is In Progress we don't update the buffer
       // because the buffer is still being initialized
       if (status === bufferStatus.Exists) {
         // If the buffer exists, update normally
-        let pm25BufferIndex = data.pm25BufferIndex;
-        const pm25Buffer = data.pm25Buffer;
+        let pm25BufferIndex = sensorDocData.pm25BufferIndex;
+        const pm25Buffer = sensorDocData.pm25Buffer;
 
         pm25Buffer[pm25BufferIndex] = firestoreSafeReading;
         /* eslint-disable-next-line no-magic-numbers */
         pm25BufferIndex = (pm25BufferIndex + 1) % pm25Buffer.length;
 
+        // Update the sensor doc buffer and metadata
         await sensorDocRef.update({
           pm25BufferIndex: pm25BufferIndex,
           pm25Buffer: pm25Buffer,
+          lastSensorReadingTime: readingTimestamp,
+          latitude: reading.latitude,
+          longitude: reading.longitude,
         });
       } else if (status === bufferStatus.DoesNotExist || status === undefined) {
         // If the buffer does not exist, populate it with default values so
         // it can be updated in the future
         await sensorDocRef.update({
           pm25BufferStatus: bufferStatus.InProgress,
+          lastSensorReadingTime: readingTimestamp,
+          latitude: reading.latitude,
+          longitude: reading.longitude,
         });
         // This function updates the bufferStatus once the buffer has been
         // fully initialized, which uses an additional write to the database
-        populateDefaultBuffer(false, docId);
+        populateDefaultBuffer(false, sensorDoc.id);
       }
     }
 
@@ -129,19 +151,27 @@ exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
     const sensorList = (await firestore.collection('sensors').get()).docs;
-    const previousDataDoc = (
-      await firestore.collection('current-reading').doc('sensors').get()
-    ).data();
     const currentData = Object.create(null);
-    for (const knownSensor of sensorList) {
-      // Get sensor metadata
-      const data = knownSensor.data();
-      const sensorName: string = data?.name ?? '';
-      const purpleAirId: string = data?.purpleAirId ?? '';
-      const docId = knownSensor.id;
+    for (const sensorDoc of sensorList) {
+      const sensorDocData = sensorDoc.data();
+
+      // Data sent to the current-readings collection
+      // Initially the previous data's value or the default values
+      const currentSensorData: SensorData = {
+        purpleAirId: sensorDocData.purpleAirId ?? '',
+        name: sensorDocData.name ?? '',
+        latitude: sensorDocData.latitude ?? NaN,
+        longitude: sensorDocData.latitude ?? NaN,
+        readingDocId: sensorDoc.id,
+        lastValidAqiTime: sensorDocData.lastValidAqiTime ?? null,
+        lastSensorReadingTime: sensorDocData.lastSensorReadingTime ?? null,
+        nowCastPm25: NaN,
+        aqi: NaN,
+        isValid: false,
+      };
 
       // Get current sensor readings
-      const hourlyAverages = await getHourlyAverages(docId);
+      const hourlyAverages = await getHourlyAverages(sensorDoc.id);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
       // NowCast formula from the EPA requires 2 out of the last 3 hours
@@ -163,15 +193,7 @@ exports.calculateAqi = functions.pubsub
 
       // If there's enough info, the sensor's data is updated
       // If there isn't, we send the default AQI buffer element
-      let aqiBufferData = defaultAqiBufferElement; // New data to add
-
-      // Defaults for a sensor
-      let latitude = NaN;
-      let longitude = NaN;
-      let nowCastPm25 = NaN;
-      let aqi = NaN;
-      let isValid = false;
-      let lastValidAqiTime: FirebaseFirestore.Timestamp | null = null;
+      const aqiBufferData = defaultAqiBufferElement; // New data to add
 
       // If there is not enough info, the sensor's status is not valid
       if (containsEnoughInfo) {
@@ -179,53 +201,33 @@ exports.calculateAqi = functions.pubsub
         const nowCastPm25Result = NowCastConcentration.fromCleanedAverages(
           cleanedAverages
         );
-        aqi = aqiFromPm25(nowCastPm25Result.reading);
-        latitude = nowCastPm25Result.latitude;
-        longitude = nowCastPm25Result.longitude;
-        nowCastPm25 = nowCastPm25Result.reading;
-        isValid = true;
-        lastValidAqiTime = Timestamp.fromDate(new Date());
+        currentSensorData.aqi = aqiFromPm25(nowCastPm25Result.reading);
+        currentSensorData.latitude = nowCastPm25Result.latitude;
+        currentSensorData.longitude = nowCastPm25Result.longitude;
+        currentSensorData.nowCastPm25 = nowCastPm25Result.reading;
+        currentSensorData.isValid = true;
+        currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
 
-        aqiBufferData = {
-          aqi: aqi,
-          timestamp: lastValidAqiTime,
-        };
-      } else if (previousDataDoc) {
-        const previousData = previousDataDoc.data;
-        // Get the data from the previous reading, if it exists
-        latitude = previousData[purpleAirId].latitude ?? latitude;
-        longitude = previousData[purpleAirId].longitude ?? longitude;
-        lastValidAqiTime =
-          previousData[purpleAirId].lastValidAqiTime ?? lastValidAqiTime;
+        aqiBufferData.aqi = currentSensorData.aqi;
+        aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
       }
 
-      const currentSensorData: SensorData = {
-        purpleAirId: purpleAirId,
-        name: sensorName,
-        latitude: latitude,
-        longitude: longitude,
-        nowCastPm25: nowCastPm25,
-        aqi: aqi,
-        isValid: isValid,
-        readingDocId: docId,
-        lastValidAqiTime: lastValidAqiTime,
-      };
-
-      currentData[purpleAirId] = currentSensorData;
+      // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
+      currentData[currentSensorData.purpleAirId] = currentSensorData;
 
       // Update the AQI circular buffer for this element
-      const sensorDocRef = firestore.collection('/sensors').doc(docId);
+      const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
+      const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
 
-      const status = data.aqiBufferStatus ?? bufferStatus.DoesNotExist;
       // If the buffer status is In Progress we don't update the buffer
       // because the buffer is still being initialized
       if (status === bufferStatus.Exists) {
         // The buffer exists, proceed with normal update
-        let aqiBufferIndex: number = data.aqiBufferIndex;
-        const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer;
+        let aqiBufferIndex: number = sensorDocData.aqiBufferIndex;
+        const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
         aqiBuffer[aqiBufferIndex] = aqiBufferData;
-        /* eslint-disable-next-line no-magic-numbers */
-        aqiBufferIndex = (aqiBufferIndex + 1) % aqiBuffer.length;
+        aqiBufferIndex = (aqiBufferIndex + 1) % aqiBuffer.length; // eslint-disable-line no-magic-numbers
+
         await sensorDocRef.update({
           aqiBufferIndex: aqiBufferIndex,
           aqiBuffer: aqiBuffer,
@@ -238,11 +240,11 @@ exports.calculateAqi = functions.pubsub
         });
         // This function updates the bufferStatus once the buffer has been
         // fully initialized, which uses an additional write to the database
-        populateDefaultBuffer(true, docId);
+        populateDefaultBuffer(true, sensorDoc.id);
       }
     }
 
-    // Send AQI reading to current-readings to be displayed on the map
+    // Send AQI readings to current-readings to be displayed on the map
     await firestore.collection('current-reading').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,

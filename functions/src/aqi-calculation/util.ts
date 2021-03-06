@@ -148,6 +148,7 @@ function cleanAverages(averages: SensorReading[]): CleanedReadings {
  * - `nowCastPm25` - the current NowCast corrected PM 2.5, or `NaN` if not enough valid data
  * - `readingDocId` - document ID of the for the sensor in the sensors collection in Firestore
  * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
+ * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown
  */
 interface SensorData {
   purpleAirId: string;
@@ -159,6 +160,7 @@ interface SensorData {
   nowCastPm25: number;
   readingDocId: string;
   lastValidAqiTime: FirebaseFirestore.Timestamp | null;
+  lastSensorReadingTime: FirebaseFirestore.Timestamp | null;
 }
 
 export {
