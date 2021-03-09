@@ -124,10 +124,7 @@ exports.thingspeakToFirestore = functions
             latitude: reading.latitude,
             longitude: reading.longitude,
           });
-        } else if (
-          status === bufferStatus.DoesNotExist ||
-          status === undefined
-        ) {
+        } else if (status === bufferStatus.DoesNotExist) {
           // If the buffer does not exist, populate it with default values so
           // it can be updated in the future
           await sensorDocRef.update({
