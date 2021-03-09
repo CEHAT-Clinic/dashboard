@@ -134,6 +134,7 @@
         "inactive": "inactive",
         "changeActiveSensorError": "Unable to change active status for sensor ",
         "add": "Add new sensor",
+        "addComplete": "Sensor added",
         "unknown": "unknown"
     }
 }

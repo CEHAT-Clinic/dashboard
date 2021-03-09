@@ -26,6 +26,7 @@ import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
+import {AddSensorModal} from './AddSensorModal';
 
 /**
  * Interface for a PurpleAir sensor
@@ -222,6 +223,9 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
+          <Box>
+            <AddSensorModal />
+          </Box>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
               {t('sensors.heading')}
