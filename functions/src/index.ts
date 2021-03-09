@@ -234,12 +234,14 @@ exports.calculateAqi = functions.pubsub
             aqiBufferIndex:
               (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
             aqiBuffer: aqiBuffer,
+            lastValidAqiTime: currentSensorData.lastValidAqiTime,
           });
         } else if (status === bufferStatus.DoesNotExist) {
           // Initialize populating the buffer with default values, don't update
           // any values until the buffer status is Exists
           await sensorDocRef.update({
             aqiBufferStatus: bufferStatus.InProgress,
+            lastValidAqiTime: currentSensorData.lastValidAqiTime,
           });
           // This function updates the bufferStatus once the buffer has been
           // fully initialized, which uses an additional write to the database
