@@ -58,7 +58,6 @@ const ManageSensors: () => JSX.Element = () => {
       setIsLoading(true);
 
       // Create listener that updates on any data changes
-      // TODO: use sensors docs
       const unsubscribe = firestore
         .collection('sensors')
         .onSnapshot(querySnapshot => {
@@ -71,10 +70,10 @@ const ManageSensors: () => JSX.Element = () => {
                 name: sensorData.name ?? '',
                 latitude: sensorData.latitude ?? NaN,
                 longitude: sensorData.longitude ?? NaN,
-                isActive: sensorData.isActive ?? true, // TODO: update cloud function with this value
+                isActive: sensorData.isActive ?? true,
                 isValid: sensorData.isValid ?? false,
-                lastValidAqiTime: sensorData.lastValidAqiTime ?? null, // TODO: update cloud function to write this value here
-                lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null, // TODO: update cloud function with this value
+                lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
+                lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null,
                 readingDocId: doc.id,
               });
             }
@@ -98,15 +97,12 @@ const ManageSensors: () => JSX.Element = () => {
   ) {
     event.preventDefault();
 
-    currentSensor.isActive = !currentSensor.isActive;
-
     if (isAdmin) {
-      // Update the sensor doc
       firestore
         .collection('sensors')
         .doc(currentSensor.readingDocId)
         .update({
-          isActive: currentSensor.isActive,
+          isActive: !currentSensor.isActive,
         })
         .catch(() => {
           setError(
@@ -128,7 +124,7 @@ const ManageSensors: () => JSX.Element = () => {
    * Creates a button that when clicked, creates a confirmation popup to change
    * a sensor's active status. Active means that data for the sensor will be
    * collected and shown on the map, but does not change anything in PurpleAir.
-   * @param sensor - The current sensor for a row
+   * @param sensor - sensor for a row
    */
   const ToggleActiveSensorPopover: ({
     sensor,
