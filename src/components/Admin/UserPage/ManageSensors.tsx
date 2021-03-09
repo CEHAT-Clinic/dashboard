@@ -178,14 +178,14 @@ const ManageSensors: () => JSX.Element = () => {
    * @param timestamp - the time to convert
    * @returns human readable date time string, unknown if null
    */
-  function timestampToDateString(timestamp: firebase.firestore.Timestamp | null) {
+  function timestampToDateString(
+    timestamp: firebase.firestore.Timestamp | null
+  ) {
     if (timestamp === null) {
       return t('sensors.unknown');
     } else {
       const date: Date = timestamp.toDate();
-      return (
-        date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
-      );
+      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
     }
   }
 
@@ -252,7 +252,9 @@ const ManageSensors: () => JSX.Element = () => {
                         : t('sensors.inactive')}
                     </Td>
                     <Td>{timestampToDateString(sensor.lastValidAqiTime)}</Td>
-                    <Td>{timestampToDateString(sensor.lastSensorReadingTime)}</Td>
+                    <Td>
+                      {timestampToDateString(sensor.lastSensorReadingTime)}
+                    </Td>
                     <Td>
                       <ToggleActiveSensorPopover sensor={sensor} />
                     </Td>
