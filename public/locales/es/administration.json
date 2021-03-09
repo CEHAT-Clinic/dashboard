@@ -122,6 +122,7 @@
         "longitude": "Longitud",
         "status": "Estado actual",
         "validAqiTime": "Hora de AQI válido más reciente",
+        "readingTime": "Hora de la lectura del sensor más reciente",
         "activeHeading": "¿Activo?",
         "activate": "Activar el sensor",
         "confirmActivate": "¿Estás seguro de que quieres activar el sensor: ",

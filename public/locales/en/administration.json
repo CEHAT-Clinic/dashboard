@@ -122,6 +122,7 @@
         "longitude": "Longitude",
         "status": "Current Status",
         "validAqiTime": "Time of Most Recent Valid AQI",
+        "readingTime": "Time of the Most Recent Sensor Reading",
         "activeHeading": "Active?",
         "deactivate": "Deactivate Sensor",
         "confirmDeactivate": "Are you sure you want to deactivate the sensor: ",
