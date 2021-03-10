@@ -88,7 +88,8 @@ function AddSensorModal(): JSX.Element {
                 setSensorAdded(true);
                 setSensorName('');
                 setSensorPurpleAirId('');
-              }).catch(error => setError(error.message));
+              })
+              .catch(error => setError(error.message));
           } else {
             setError(t('sensors.sensorAlreadyExists'));
           }
