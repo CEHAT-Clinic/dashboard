@@ -17,11 +17,13 @@ import {
   Input,
   Divider,
   Heading,
+  FormErrorMessage,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {useTranslation} from 'react-i18next';
 import {SubmitButton} from '../Authentication/Util';
 import {firestore} from '../../../firebase';
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Component to add a new sensor. Includes a button to make the modal pop up
@@ -30,6 +32,7 @@ import {firestore} from '../../../firebase';
 function AddSensorModal(): JSX.Element {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
+  const {isAdmin} = useAuth();
   const [sensorName, setSensorName] = useState('');
   const [sensorPurpleAirId, setSensorPurpleAirId] = useState('');
   const [showHelp, setShowHelp] = useState(false);
@@ -60,30 +63,39 @@ function AddSensorModal(): JSX.Element {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
-    setIsLoading(true);
-    firestore
-      .collection('test')
-      .add({
-        name: sensorName,
-        purpleAirId: sensorPurpleAirId,
-        latitude: NaN,
-        longitude: NaN,
-        isActive: true,
-        isValid: false,
-        lastValidAqiTime: null,
-        lastSensorReadingTime: null,
-      })
-      .then(() => {
-        setSensorAdded(true);
-        setSensorName('');
-        setSensorPurpleAirId('');
-      })
-      .catch(error => {
-        setError(error);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
+    if (isAdmin) {
+      setIsLoading(true);
+      // Check to see that a sensor with that PurpleAir ID does not already exist
+      firestore
+        .collection('sensors')
+        .where('purpleAirId', '==', sensorPurpleAirId)
+        .get()
+        .then(querySnapshot => {
+          if (querySnapshot.empty) {
+            firestore
+              .collection('sensors')
+              .add({
+                name: sensorName,
+                purpleAirId: sensorPurpleAirId,
+                latitude: NaN,
+                longitude: NaN,
+                isActive: true,
+                isValid: false,
+                lastValidAqiTime: null,
+                lastSensorReadingTime: null,
+              })
+              .then(() => {
+                setSensorAdded(true);
+                setSensorName('');
+                setSensorPurpleAirId('');
+              }).catch(error => setError(error.message));
+          } else {
+            setError(t('sensors.sensorAlreadyExists'));
+          }
+        })
+        .catch(error => setError(error.message))
+        .finally(() => setIsLoading(false));
+    }
   }
 
   return (
@@ -116,7 +128,7 @@ function AddSensorModal(): JSX.Element {
                     value={sensorName}
                   />
                 </FormControl>
-                <FormControl isRequired marginTop={4}>
+                <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
                   <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
                   <Input
                     placeholder="30971"
@@ -127,6 +139,7 @@ function AddSensorModal(): JSX.Element {
                     }}
                     value={sensorPurpleAirId}
                   />
+                  <FormErrorMessage>{error}</FormErrorMessage>
                 </FormControl>
                 <Divider marginY={3} />
                 <Button onClick={() => setShowHelp(!showHelp)}>
@@ -151,7 +164,6 @@ function AddSensorModal(): JSX.Element {
                 <SubmitButton
                   label={t('common:submit')}
                   isLoading={isLoading}
-                  error={error}
                 />
               )}
               <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
