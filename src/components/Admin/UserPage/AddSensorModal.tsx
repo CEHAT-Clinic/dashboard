@@ -137,7 +137,9 @@ function AddSensorModal(): JSX.Element {
                 {showHelp && (
                   <Box marginTop={2}>
                     <Heading fontSize="md">{t('sensors.name')}</Heading>
-                    <Text marginBottom={2}>{t('sensors.addHelpSensorName')}</Text>
+                    <Text marginBottom={2}>
+                      {t('sensors.addHelpSensorName')}
+                    </Text>
                     <Heading fontSize="md">{t('sensors.purpleAirId')}</Heading>
                     <Text>{t('sensors.addHelpPurpleAirId')}</Text>
                   </Box>
