@@ -15,6 +15,8 @@ import {
   FormControl,
   FormLabel,
   Input,
+  Divider,
+  Heading,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {useTranslation} from 'react-i18next';
@@ -30,6 +32,7 @@ function AddSensorModal(): JSX.Element {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [sensorName, setSensorName] = useState('');
   const [sensorPurpleAirId, setSensorPurpleAirId] = useState('');
+  const [showHelp, setShowHelp] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [sensorAdded, setSensorAdded] = useState(false);
@@ -125,6 +128,20 @@ function AddSensorModal(): JSX.Element {
                     value={sensorPurpleAirId}
                   />
                 </FormControl>
+                <Divider marginY={3} />
+                <Button onClick={() => setShowHelp(!showHelp)}>
+                  {showHelp
+                    ? t('sensors.hideAddHelp')
+                    : t('sensors.showAddHelp')}
+                </Button>
+                {showHelp && (
+                  <Box marginTop={2}>
+                    <Heading fontSize="md">{t('sensors.name')}</Heading>
+                    <Text marginBottom={2}>{t('sensors.addHelpSensorName')}</Text>
+                    <Heading fontSize="md">{t('sensors.purpleAirId')}</Heading>
+                    <Text>{t('sensors.addHelpPurpleAirId')}</Text>
+                  </Box>
+                )}
               </ModalBody>
             )}
             <ModalFooter>

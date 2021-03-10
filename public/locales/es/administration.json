@@ -117,7 +117,7 @@
     "sensors": {
         "heading": "Los sensors actuales",
         "name": "Nombre del sensor",
-        "purpleAirId": "Purple Air ID",
+        "purpleAirId": "PurpleAir ID",
         "latitude": "Latitud",
         "longitude": "Longitud",
         "status": "Estado actual",
@@ -135,6 +135,10 @@
         "changeActiveSensorError": "No se puede cambiar el status de activo del sensor ",
         "add": "Añadir un sensor nuevo",
         "addComplete": "Sensor agregado",
+        "showAddHelp": "Mostrar ayuda",
+        "hideAddHelp": "Ocultar ayuda",
+        "addHelpSensorName": "Para encontrar el nombre del sensor, ir al mapa del PurpleAir, y haz click que quieres añadir. En el elemento emergente para el sensor, el nombre del sensor está en negrita con 'Sensor: '. Por ejemplo, para el sensor se llama 'CEHAT 5', aparece como 'Sensor: CEHAT 5'.",
+        "addHelpPurpleAirId": "Para encontrar el PurpleAir ID, ir al mapa del PurpleAir, y haz click que quieres añadir. En el elemento emergente para el sensor, coloca el cursor sobre el 'Get This Widget', que se encuentra en la parte inferior. Esto mostrará un texto como este: '<div id='PurpleAirWidget_39165_module_...'. El PurpleAir ID es el numero después del PurpleAirWidget, entonces en este caso, el PurpleAir ID es 39165.",
         "unknown": "desconocido"
     }
 }
