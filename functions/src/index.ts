@@ -78,7 +78,7 @@ exports.thingspeakToFirestore = functions
         if (!lastSensorReadingTime) {
           const maxDocs = 1;
           readingsCollectionRef
-            .orderBy('timestamp')
+            .orderBy('timestamp', 'desc')
             .limit(maxDocs)
             .get()
             .then(querySnapshot => {
@@ -250,7 +250,7 @@ exports.calculateAqi = functions.pubsub
       }
     }
 
-    // Send AQI readings to current-readings to be displayed on the map
+    // Send AQI readings to current-reading to be displayed on the map
     await firestore.collection('current-reading').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
