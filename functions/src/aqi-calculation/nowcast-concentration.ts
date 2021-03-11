@@ -12,7 +12,7 @@ export default class NowCastConcentration {
   }
 
   /**
-   * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
+   * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM 2.5 readings
    * @param cleanedAverages - A CleanedReadings object representing 12 hours of data,
    *                        where at least two of the last three hours are valid data
    *                        points

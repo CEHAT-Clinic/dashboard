@@ -125,6 +125,93 @@ exports.thingspeakToFirestore = functions
     await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
   });
 
+exports.purpleAirToFirestore = functions.pubsub
+  .schedule('every 2 minutes')
+  .onRun(async () => {
+    // Get the list of docs to make API calls for '5852', '6836'
+    const sensorIds: string[] = [];
+
+    // const sensorDocs = (await firestore.collection('sensors').get()).docs;
+    // For (const sensorDoc of sensorDocs) {
+    //   const data = sensorDoc.data();
+    //   const active = data.isActive ?? true;
+    //   if (active && data.purpleAirId) {
+    //     sensorIds.push(data.purpleAirId);
+    //   }
+    // }
+    const purpleAirApiUrl = 'https://api.purpleair.com/v1/sensors';
+    axios.get(purpleAirApiUrl, {
+      headers: {
+        'X-API-Key': 'B57452CC-81C5-11EB-8C3A-42010A800259',
+      },
+      params: {
+        'fields':
+          'name,latitude,longitude,pm2.5,humidity,confidence,last_seen,channel_flags',
+        'show_only': '2464',
+      },
+    }).then(axiosResponse => {
+      const data = axiosResponse.data;
+      console.log(data);
+    }).catch(error => {
+      if (error.response) {
+        console.log('Error response', error.message)
+      } else {
+        // ?
+        console.log(error);
+      }
+    });
+    axios.get(purpleAirApiUrl + '/2464', {
+      headers: {
+        'X-API-Key': 'B57452CC-81C5-11EB-8C3A-42010A800259',
+      }
+    }).then(axiosResponse => {
+      const data = axiosResponse.data;
+      console.log(data.sensor);
+    }).catch(error => {
+      if (error.response) {
+        console.log('Error response', error.response.data)
+      } else {
+        // ?
+        console.log(error);
+      }
+    });
+
+    const thingspeakInfo: PurpleAirResponse = {
+      latitude: '33.9717',
+      longitude: '-118.2207',
+      channelAPrimaryId: '312419',
+      channelAPrimaryKey: 'K8XNYJPZQXVUWO54',
+      channelASecondaryId: '312420',
+      channelASecondaryKey: '6IJ5K7573RSZITSP',
+      channelBPrimaryId: '312421',
+      channelBPrimaryKey: 'KNQTTDNG3DOQKP00',
+      channelBSecondaryId: '312422',
+      channelBSecondaryKey: '5Q7DPIPWKVTDMPQA',
+    };
+
+    const channelAPrimaryData = await axios({
+      url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
+      params: {
+        api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
+        results: 1,
+      },
+    });
+    const channelBPrimaryData = await axios({
+      url: thingspeakUrl(thingspeakInfo.channelBPrimaryId),
+      params: {
+        api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
+        results: 1,
+      },
+    });
+    const reading = SensorReading.fromThingspeak(
+      channelAPrimaryData,
+      channelBPrimaryData,
+      thingspeakInfo
+    );
+
+    console.log(reading);
+  });
+
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
