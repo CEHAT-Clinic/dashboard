@@ -35,7 +35,3 @@ jobs:
             npm run build --if-present
     - name: Run tests
       run: npm test
-    - name: Test running functions from GitHub
-      run: |
-            cd functions
-            firebase functions:config:get

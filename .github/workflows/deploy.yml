@@ -28,11 +28,6 @@ jobs:
         echo REACT_APP_HERE_API_KEY=${{ secrets.REACT_APP_HERE_API_KEY }} >> .env
         echo REACT_APP_PURPLEAIR_READ_API_KEY=${{ secrets.PURPLEAIR_READ_API_KEY }} >> .env
         echo REACT_APP_PURPLEAIR_WRITE_API_KEY=${{ secrets.PURPLEAIR_WRITE_API_KEY }} >> .env
-    - name: Create backend environment
-      run: |
-        cd functions
-        firebase functions:config:unset purpleair
-        firebase functions:config:set purpleair.read_key=${{ secrets.PURPLEAIR_READ_API_KEY }} purpleair.write_key=${{ secrets.PURPLEAIR_WRITE_API_KEY }}
     - name: Install dependencies
       run: |
         npm ci
