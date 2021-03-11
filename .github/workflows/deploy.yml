@@ -14,7 +14,7 @@ jobs:
     - uses: actions/setup-node@v1
       with:
         node-version: 10
-    - name: Create environment file
+    - name: Create frontend environment file
       run: |
         touch .env
         echo REACT_APP_FIREBASE_API_KEY=${{ secrets.REACT_APP_FIREBASE_API_KEY }} >> .env
@@ -26,11 +26,20 @@ jobs:
         echo REACT_APP_FIREBASE_APP_ID=${{ secrets.REACT_APP_FIREBASE_APP_ID }} >> .env
         echo REACT_APP_FIREBASE_MEASUREMENT_ID=${{ secrets.REACT_APP_FIREBASE_MEASUREMENT_ID }} >> .env
         echo REACT_APP_HERE_API_KEY=${{ secrets.REACT_APP_HERE_API_KEY }} >> .env
-    - run: |
+        echo REACT_APP_PURPLEAIR_READ_API_KEY=${{ secrets.PURPLEAIR_READ_API_KEY }} >> .env
+        echo REACT_APP_PURPLEAIR_WRITE_API_KEY=${{ secrets.PURPLEAIR_WRITE_API_KEY }} >> .env
+    - name: Create backend environment
+      run: |
+        cd functions
+        firebase functions:config:unset purpleair
+        firebase functions:config:set purpleair.read_key=${{ secrets.PURPLEAIR_READ_API_KEY }} purpleair.write_key=${{ secrets.PURPLEAIR_WRITE_API_KEY }}
+    - name: Install dependencies
+      run: |
         npm ci
         cd functions
         npm ci
-    - run: |
+    - name: Build project
+      run: |
         npm run build
         cd functions
         npm run build
