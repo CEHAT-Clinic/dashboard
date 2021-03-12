@@ -1,4 +1,3 @@
-import * as functions from 'firebase-functions';
 import axios from 'axios';
 import PurpleAirResponse from './aqi-calculation/purple-air-response';
 import SensorReading from './aqi-calculation/sensor-reading';
@@ -7,8 +6,8 @@ import {
   generateReadingsCsv,
   generateAverageReadingsCsv,
 } from './download-readings';
-import {firestore, Timestamp, FieldValue} from './admin';
-import {aqiFromPm25} from './aqi-calculation/calculate-aqi';
+import { firestore, Timestamp, FieldValue, functions, config } from './admin';
+import { aqiFromPm25 } from './aqi-calculation/calculate-aqi';
 import {
   thingspeakUrl,
   readingsSubcollection,
@@ -128,88 +127,82 @@ exports.thingspeakToFirestore = functions
 exports.purpleAirToFirestore = functions.pubsub
   .schedule('every 2 minutes')
   .onRun(async () => {
-    // Get the list of docs to make API calls for '5852', '6836'
-    const sensorIds: string[] = [];
+    enum ChannelStatus {
+      Normal,
+      aDowngraded,
+      bDowngraded,
+      bothDowngraded
+    }
+    interface PurpleAirSensorReading {
+      'name': string;
+      'latitude': number;
+      'longitude': number;
+      'pm.25': number;
+      'humidity': number;
+      'last_seen': number;
+      'confidence': number;
+      'channelStatus': ChannelStatus;
+    }
 
-    // const sensorDocs = (await firestore.collection('sensors').get()).docs;
-    // For (const sensorDoc of sensorDocs) {
-    //   const data = sensorDoc.data();
-    //   const active = data.isActive ?? true;
-    //   if (active && data.purpleAirId) {
-    //     sensorIds.push(data.purpleAirId);
-    //   }
-    // }
-    const purpleAirApiUrl = 'https://api.purpleair.com/v1/sensors';
-    axios.get(purpleAirApiUrl, {
-      headers: {
-        'X-API-Key': 'B57452CC-81C5-11EB-8C3A-42010A800259',
-      },
-      params: {
-        'fields':
-          'name,latitude,longitude,pm2.5,humidity,confidence,last_seen,channel_flags',
-        'show_only': '2464',
-      },
-    }).then(axiosResponse => {
-      const data = axiosResponse.data;
-      console.log(data);
-    }).catch(error => {
-      if (error.response) {
-        console.log('Error response', error.message)
-      } else {
-        // ?
-        console.log(error);
-      }
-    });
-    axios.get(purpleAirApiUrl + '/2464', {
-      headers: {
-        'X-API-Key': 'B57452CC-81C5-11EB-8C3A-42010A800259',
-      }
-    }).then(axiosResponse => {
-      const data = axiosResponse.data;
-      console.log(data.sensor);
-    }).catch(error => {
-      if (error.response) {
-        console.log('Error response', error.response.data)
-      } else {
-        // ?
-        console.log(error);
-      }
-    });
+    const fieldList = [
+      'sensor_index',
+      'name',
+      'latitude',
+      'longitude',
+      'last_seen',
+      'channel_state',
+      'channel_flags',
+      'confidence',
+      'pm2.5',
+      'humidity'
+    ];
 
-    const thingspeakInfo: PurpleAirResponse = {
-      latitude: '33.9717',
-      longitude: '-118.2207',
-      channelAPrimaryId: '312419',
-      channelAPrimaryKey: 'K8XNYJPZQXVUWO54',
-      channelASecondaryId: '312420',
-      channelASecondaryKey: '6IJ5K7573RSZITSP',
-      channelBPrimaryId: '312421',
-      channelBPrimaryKey: 'KNQTTDNG3DOQKP00',
-      channelBSecondaryId: '312422',
-      channelBSecondaryKey: '5Q7DPIPWKVTDMPQA',
-    };
+    // Fetch data from PurpleAir API
+    const purpleAirApiUrl = 'https://api.purpleair.com/v1/groups/490/members';
+    const readingsListPromise = axios
+      .get(purpleAirApiUrl, {
+        headers: {
+          'X-API-Key': config.purpleair.read_key,
+        },
+        params: {
+          fields: fieldList.join(),
+        },
+      })
+      .then(axiosResponse => {
+        type Value = string | number;
+        const readings: PurpleAirSensorReading[] = [];
+        const data = axiosResponse.data;
+        // Create index map
+        const fields: string[] = data.fields;
+        const indexToField = new Map<number, string>();
+        fields.forEach((field, index) => indexToField.set(index, field))
 
-    const channelAPrimaryData = await axios({
-      url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
-      params: {
-        api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
-        results: 1,
-      },
-    });
-    const channelBPrimaryData = await axios({
-      url: thingspeakUrl(thingspeakInfo.channelBPrimaryId),
-      params: {
-        api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
-        results: 1,
-      },
-    });
-    const reading = SensorReading.fromThingspeak(
-      channelAPrimaryData,
-      channelBPrimaryData,
-      thingspeakInfo
-    );
+        const dataTimeStamp: number = data.data_time_stamp;
+        const channelStates: string[] = data.channel_states;
+        const channelFlags: string[] = data.channelFlags;
 
-    console.log(reading);
+        for (const sensorData of data.data) {
+          const data: Value[] = sensorData;
+          const reading: PurpleAirSensorReading = {} as PurpleAirSensorReading;
+          data.forEach((value, index) => {
+            const fieldName = indexToField.get(index);
+            if (fieldName) {
+              // TODO: figure out how to match up values
+              // reading[fieldName] = value;
+            }
+          })
+          readings.push()
+        }
+        return readings;
+      })
+      .catch(error => {
+        if (error.response) {
+          console.log(error.response.data);
+          return [] as PurpleAirSensorReading[];
+        } else {
+          throw new Error(error);
+        }
+      });
   });
 
 exports.calculateAqi = functions.pubsub

@@ -98,14 +98,10 @@ export default class SensorReading {
     const channelAData = channelAPrimaryResponse.data.feeds[0];
     const channelAAtmPm: number = +channelAData.field2;
     const channelACf1Pm: number = +channelAData.field8;
-    console.log('A CF_1', channelACf1Pm);
-    console.log('A CF_ATM', channelAAtmPm);
 
     const channelBData = channelBPrimaryResponse.data.feeds[0];
     const channelBAtmPm: number = +channelBData.field2;
     const channelBCf1Pm: number = +channelBData.field8;
-    console.log('B CF_1', channelBCf1Pm);
-    console.log('B CF_ATM', channelBAtmPm);
 
     const humidity = +channelAData.field7;
 

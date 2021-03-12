@@ -11,4 +11,4 @@ node_modules/
 lib/
 
 # env file with API keys
-env.json
+.runtimeconfig.json
