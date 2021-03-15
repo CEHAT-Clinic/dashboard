@@ -38,8 +38,7 @@ exports.thingspeakToFirestore = functions
 
     for (const sensorDoc of sensorList) {
       const sensorDocData = sensorDoc.data();
-      const isActive =
-        sensorDocData.isActive === undefined ? true : sensorDocData.isActive;
+      const isActive = sensorDocData.isActive ?? true;
       if (isActive && sensorDocData.purpleAirId) {
         const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
           sensorDocData.purpleAirId
