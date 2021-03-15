@@ -1,5 +1,5 @@
 import {AxiosResponse} from 'axios';
-import { Pm25BufferElement } from './buffer';
+import {Pm25BufferElement} from './buffer';
 import PurpleAirResponse from './purple-air-response';
 
 export default class SensorReading {
@@ -28,11 +28,9 @@ export default class SensorReading {
   /**
    * Computes an average reading for the time block provided by the first element
    *
-   * @param readings - Array of documents containing readings from Firestore
+   * @param readings - Array of non-null Pm25 buffer elements
    */
-  static averageDocuments(
-    readings: Array<Pm25BufferElement>
-  ): SensorReading {
+  static averageReadings(readings: Array<Pm25BufferElement>): SensorReading {
     let channelAPmReadingSum = 0;
     let channelBPmReadingSum = 0;
     let humiditySum = 0;
@@ -42,15 +40,17 @@ export default class SensorReading {
     const latitude: number = firstReadingData.latitude;
     const longitude: number = firstReadingData.longitude;
     // TODO: stopped fixing this function here.
-    const timestamp: FirebaseFirestore.Timestamp =
-      firstReadingData['timestamp'];
+    const timestamp = firstReadingData['timestamp'];
+    // Force that the timestamp is not null. This function is called on an array
+    // where we filter by timestamp !== null, so we know that the timestamps are
+    // non-null.
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    const safeTimestamp: FirebaseFirestore.Timestamp = timestamp!;
 
     for (const reading of readings) {
-      const data = reading.data();
-
-      channelAPmReadingSum += data['channelAPm25'];
-      channelBPmReadingSum += data['channelBPm25'];
-      humiditySum += data['humidity'];
+      channelAPmReadingSum += reading['channelAPm25'];
+      channelBPmReadingSum += reading['channelBPm25'];
+      humiditySum += reading['humidity'];
     }
 
     const channelAPmReadingAverage = channelAPmReadingSum / readings.length;
@@ -58,7 +58,7 @@ export default class SensorReading {
     const humidityAverage = humiditySum / readings.length;
 
     return new this(
-      timestamp.toDate(),
+      safeTimestamp.toDate(),
       channelAPmReadingAverage,
       channelBPmReadingAverage,
       humidityAverage,

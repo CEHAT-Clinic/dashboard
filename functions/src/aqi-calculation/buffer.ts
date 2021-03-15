@@ -1,4 +1,5 @@
 import {firestore} from '../admin';
+
 /**
  * Interface for a single element in the pm25Buffer. All fields come from the
  * Thingspeak API
