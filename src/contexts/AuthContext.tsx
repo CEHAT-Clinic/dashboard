@@ -11,6 +11,7 @@ import {validData} from '../util';
  * - `isAdmin` if user is an admin
  * - `name` user's name or empty string
  * - `email` user's email
+ * - `emailVerified` if a user's email has been verified
  */
 interface AuthInterface {
   isAuthenticated: boolean;
@@ -18,6 +19,7 @@ interface AuthInterface {
   isAdmin: boolean;
   name: string;
   email: string;
+  emailVerified: boolean;
 }
 
 /**
@@ -37,6 +39,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
+  const [emailVerified, setEmailVerified] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
   /**
@@ -46,6 +49,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     setIsAdmin(false);
     setEmail('');
     setName('');
+    setEmailVerified(false);
   }
 
   useEffect(() => {
@@ -70,6 +74,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     if (isAuthenticated && firebaseAuth.currentUser) {
       setIsLoading(true);
       const user = firebaseAuth.currentUser;
+      setEmailVerified(user.emailVerified);
 
       // This creates a listener for changes on the document so that if a user
       // updates their account information, this change is reflected on the user's
@@ -95,11 +100,12 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               name: user.displayName ?? '',
               email: user.email ?? '',
               admin: false,
+              emailVerified: user.emailVerified
             };
             firestore
               .collection('users')
               .doc(user.uid)
-              .update(newUserData)
+              .set(newUserData)
               .catch(error => {
                 // Error thrown upon failure to create the users doc in Firestore
                 throw new Error('Unable to create user doc: ' + error);
@@ -120,6 +126,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         isLoading: isLoading,
         name: name,
         email: email,
+        emailVerified: emailVerified,
       }}
     >
       {children}
@@ -129,7 +136,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use authentication status
- * @returns `{isAuthenticated, isLoading, isAdmin, name, email}`
+ * @returns `{isAuthenticated, isLoading, isAdmin, name, email, emailVerified}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 

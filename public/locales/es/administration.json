@@ -85,7 +85,8 @@
         "methodFetchError": "Occurió un error al recoger metódos de inciar sesión",
         "connectedToGoogle": "Cuenta conectada con Google",
         "heading": "Administra tu cuenta",
-        "manageSignInMethodsHeader": "Administra métodos de inicio de sesión"
+        "manageSignInMethodsHeader": "Administra métodos de inicio de sesión",
+        "sendEmailVerificationEmail": "Enviar correo electrónico de verificación"
     },
     "returnAdmin": "Regresa a la página administrativa",
     "notSignedIn": "no has iniciado la sesión",

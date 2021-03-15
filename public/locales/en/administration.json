@@ -85,7 +85,8 @@
         "methodFetchError": "Error occurred when fetching user sign in methods",
         "connectedToGoogle": "Account connected to Google",
         "heading": "Manage Your Account",
-        "manageSignInMethodsHeader": "Manage Sign In Methods"
+        "manageSignInMethodsHeader": "Manage Sign In Methods",
+        "sendEmailVerificationEmail": "Send email verification email"
     },
     "returnAdmin": "Return to Admin Home",
     "notSignedIn": "you are not signed in",

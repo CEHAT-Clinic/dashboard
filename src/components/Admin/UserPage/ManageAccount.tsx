@@ -19,14 +19,26 @@ const ManageAccount: () => JSX.Element = () => {
     isLoading: fetchingAuthContext,
     name,
     email,
+    emailVerified,
   } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [passwordUser, setPasswordUser] = useState(false);
   const [googleUser, setGoogleUser] = useState(false);
   const [error, setError] = useState('');
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation(['administration', 'common']);
+
+  // TODO: this should happen before creating an account by email
+  function sendEmailVerificationEmail() {
+    if (isAuthenticated && firebaseAuth.currentUser && !verificationEmailSent) {
+      const user = firebaseAuth.currentUser;
+      user.sendEmailVerification().then(() => setVerificationEmailSent(true)).catch(error => {
+        setError(t('common:generalErrorTemplate') + error.message)
+      });
+    }
+  }
 
   // Runs on mount and on authentication status change
   useEffect(() => {
@@ -76,6 +88,7 @@ const ManageAccount: () => JSX.Element = () => {
           <Text textAlign="left" fontSize="md">
             {email}
           </Text>
+          {!emailVerified && !verificationEmailSent && <Button onClick={sendEmailVerificationEmail}>{t('manageAccount.sendEmailVerificationEmail')}</Button>}
           <Divider marginY={2} />
           <Text textAlign="left" fontSize="lg" fontWeight="bold">
             {t('name')}
