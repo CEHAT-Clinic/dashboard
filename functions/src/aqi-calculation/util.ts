@@ -185,6 +185,20 @@ interface SensorData {
   lastSensorReadingTime: FirebaseFirestore.Timestamp | null;
 }
 
+/**
+ * Interface for a sensor's non-meta data values. Specifically this interface
+ * contains information related to the Pm25Buffer.
+ * - `pm25BufferStatus` - The status of the buffer
+ * - `pm25BufferIndex` - The index of the buffer that should be written to next
+ * - `pm25Buffer` - The array of Pm25BufferElements that holds PM2 .5 data for the
+ *                  last 12 hours
+ */
+interface SensorValues {
+  pm25BufferStatus: bufferStatus;
+  pm25BufferIndex: number;
+  pm25Buffer: Array<Pm25BufferElement>;
+}
+
 export {
   thingspeakUrl,
   readingsSubcollection,
