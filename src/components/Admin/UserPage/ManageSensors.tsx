@@ -20,7 +20,9 @@ import {
   Center,
   Text,
   Divider,
+  Tooltip,
 } from '@chakra-ui/react';
+import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
@@ -174,6 +176,41 @@ const ManageSensors: () => JSX.Element = () => {
   };
 
   /**
+   * Interface for MoreInfoPopover used for type safety
+   */
+  interface MoreInfoPopoverProps {
+    message: string;
+  }
+
+  /**
+   * Creates a clickable question mark icon and popover that explains the table field
+   * @param message - help message displayed in popover when clicked
+   */
+  const MoreInfoPopover: ({message}: MoreInfoPopoverProps) => JSX.Element = ({
+    message,
+  }: MoreInfoPopoverProps) => {
+    return (
+      <Popover>
+        <PopoverTrigger>
+          <QuestionOutlineIcon />
+        </PopoverTrigger>
+        <PopoverContent>
+          <PopoverArrow />
+          <PopoverCloseButton />
+          <PopoverHeader>
+            <Heading fontSize="medium">{t('common:moreInformation')}</Heading>
+          </PopoverHeader>
+          <PopoverBody>
+            <Text fontWeight="normal" fontSize="md" textTransform="none">
+              {message}
+            </Text>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
+    );
+  };
+
+  /**
    *
    * @param timestamp - the time to convert
    * @returns human readable date time string, unknown if null
@@ -233,9 +270,21 @@ const ManageSensors: () => JSX.Element = () => {
                   <Th>{t('sensors.purpleAirId')}</Th>
                   <Th>{t('sensors.latitude')}</Th>
                   <Th>{t('sensors.longitude')}</Th>
-                  <Th>{t('sensors.status')}</Th>
-                  <Th>{t('sensors.validAqiTime')}</Th>
-                  <Th>{t('sensors.readingTime')}</Th>
+                  <Th>
+                    {/* TODO: get the popover on the same line as the text */}
+                    <Box>
+                      <Text>{t('sensors.status')}</Text>
+                      <MoreInfoPopover message={t('sensors.activeNote')} />
+                    </Box>
+                  </Th>
+                  <Th>
+                    <Text>{t('sensors.validAqiTime')}</Text>
+                    <MoreInfoPopover message={t('sensors.lastValidAqiTimeNote')} />
+                  </Th>
+                  <Th>
+                    <Text>{t('sensors.readingTime')}</Text>
+                    <MoreInfoPopover message={t('sensors.lastReadingTimeNote')} />
+                  </Th>
                   <Th>{t('sensors.activeHeading')}</Th>
                 </Tr>
               </Thead>

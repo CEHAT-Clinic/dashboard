@@ -134,6 +134,9 @@
         "inactive": "inactive",
         "changeActiveSensorError": "Unable to change active status for sensor ",
         "add": "Add new sensor",
-        "unknown": "unknown"
+        "unknown": "unknown",
+        "activeNote": "Active denotes whether this website is collecting data for and displaying a sensor. This does not reflect any changes on the PurpleAir site.",
+        "lastReadingTimeNote": "The time of the most recent sensor reading is the last time that this website received a new sensor reading from PurpleAir. If the sensor is active and the time is old, this may mean that the sensor is no longer sending new readings.",
+        "lastValidAqiTimeNote": "The time of the last valid AQI time refers to the last time that a sensor had enough good data to calculate an AQI. PurpleAir sensors have two sensors called channel A and channel B, and if the two channels readings are too different over a period of 24 hours, then we don't use the sensor reading from that time."
     }
 }
