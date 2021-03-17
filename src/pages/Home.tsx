@@ -3,13 +3,15 @@ import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
 import AqiDial from '../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
+import AqiGraph from '../components/AqiGraph';
 
 /**
  * Home screen component
  */
 const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
-  const [currentSensor, setCurrentSensor] = useState('');
+  const [currentSensorReading, setCurrentSensorReading] = useState('');
+  const [currentSensorDocId, setCurrentSensorDocId] = useState('');
 
   const {t} = useTranslation('home');
 
@@ -18,7 +20,10 @@ const Home: () => JSX.Element = () => {
       <Text>{t('constructionNotice')}</Text>
       <Flex direction={['column', 'column', 'row', 'row']} marginTop={4}>
         <Box flex="2" marginX={4} height={['100%']}>
-          <Map updateCurrentSensor={setCurrentSensor} />
+          <Map
+            updateCurrentReading={setCurrentSensorReading}
+            updateCurrentSensorDoc={setCurrentSensorDocId}
+          />
         </Box>
         <Flex
           direction="column"
@@ -34,8 +39,8 @@ const Home: () => JSX.Element = () => {
             height={['100%', null, '100%', null]}
             borderRadius={6}
           >
-            {currentSensor ? (
-              <AqiDial currentAqi={currentSensor} />
+            {currentSensorReading ? (
+              <AqiDial currentAqi={currentSensorReading} />
             ) : (
               <Text marginTop={[null, null, '20%', null]}>
                 {t('noActiveSensor')}
@@ -52,6 +57,7 @@ const Home: () => JSX.Element = () => {
             borderRadius={6}
           >
             <Heading>{t('dataVizBox')}</Heading>
+            <AqiGraph sensorDocId={currentSensorDocId} />
           </Box>
         </Flex>
       </Flex>
