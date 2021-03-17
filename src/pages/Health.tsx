@@ -63,6 +63,8 @@ const Health: React.FC = () => {
             {t('pollution.paragraph2.link')} <ExternalLinkIcon />
           </Link>
           {t('pollution.paragraph2.part2')}
+        </Text>
+        <Box>
           <UnorderedList>
             <ListItem>{t('pollution.paragraph2.list.death')}</ListItem>
             <ListItem>{t('pollution.paragraph2.list.heartAttacks')}</ListItem>
@@ -72,7 +74,7 @@ const Health: React.FC = () => {
             <ListItem>{t('pollution.paragraph2.list.symptoms')}</ListItem>
           </UnorderedList>
           {t('pollution.paragraph2.part3')}
-        </Text>
+        </Box>
       </Flex>
       <Box
         padding={8}
