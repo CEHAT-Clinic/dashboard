@@ -271,66 +271,47 @@ exports.generateAverageReadingsCsv = functions.pubsub
   .topic('generate-average-readings-csv')
   .onPublish(generateAverageReadingsCsv);
 
-exports.checkDuplicateValidity = functions.pubsub
-  .topic('check-duplicate-sensor-collections')
-  .onPublish(() => {
-    /* eslint-disable no-magic-numbers */
-    /* eslint-disable no-console */
-    /* eslint-disable spellcheck/spell-checker */
-    // const november11 = 1605081600000;
-    // Const december1 = 1606809600000;
-    const january1 = 1609488000000;
-    const february1 = 1612166400000;
-    // const march1 = 1614585600000;
-    const startDate = new Date(january1);
-    const endDate = new Date(february1);
+exports.deleteReadingCollection = functions.pubsub
+  .topic('delete-reading-collections')
+  .onPublish(async () => {
+    const batchSize = 5000;
 
-    const oldReadingDoc = 'P88zFw3le2YKltOcFzCH';
-    const oldCollectionPath = readingsSubcollection(oldReadingDoc);
-    const oldCollectionRef = firestore.collection(oldCollectionPath);
-
-    const newReadingDoc = 'TOQBSNhD53Rf2t12lj5r';
+    const newReadingDoc = 'TOQBSNhD53Rf2t12lj5r'; // eslint-disable-line
     const newReadingsPath = readingsSubcollection(newReadingDoc);
-    const newCollectionRef = firestore.collection(newReadingsPath);
-    newCollectionRef
-      .where('timestamp', '>', Timestamp.fromDate(startDate))
-      .where('timestamp', '<=', Timestamp.fromDate(endDate))
-      .get()
-      .then(querySnapshot => {
-        if (querySnapshot.docs) {
-          console.log(`Number of docs: ${querySnapshot.docs.length}`);
-          querySnapshot.docs.forEach(docSnapshot => {
-            // Check if each reading has the reading in the old collection
-            const reading = docSnapshot.data();
-            if (reading) {
-              oldCollectionRef
-                .where('timestamp', '==', reading.timestamp)
-                .get()
-                .then(smallQuerySnapshot => {
-                  if (smallQuerySnapshot.empty) {
-                    // If the old collection does not have the reading, add it
-                    console.log('Missing reading found');
-                    oldCollectionRef.add({
-                      timestamp: reading.timestamp,
-                      channelAPm25: reading.channelAPm25,
-                      channelBPm25: reading.channelBPm25,
-                      humidity: reading.humidity,
-                      latitude: reading.latitude,
-                      longitude: reading.longitude,
-                    });
-                  }
-                });
-            }
-          });
-        }
-      })
-      .catch(error => {
-        console.log(error);
-      }).finally(() => console.log('Finished'));
 
-    return 0; // Meaningless return value to follow Firebase rules
+    function deleteCollection(collectionPath: string, batchSize: number) {
+      const collectionRef = firestore.collection(collectionPath);
+      const query = collectionRef.limit(batchSize);
 
-    /* eslint-enable no-magic-numbers */
-    /* eslint-enable no-console */
-    /* eslint-enable spellcheck/spell-checker */
+      return new Promise((resolve, reject) => {
+        deleteQueryBatch(query, resolve).catch(reject);
+      });
+    }
+
+    async function deleteQueryBatch(
+      query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
+      resolve: (value?: unknown) => void
+    ) {
+      const snapshot = await query.get();
+      if (snapshot.empty) {
+        // When there are no documents left, we are done
+        resolve();
+        return;
+      }
+
+      // Delete documents in a batch
+      const batch = firestore.batch();
+      snapshot.docs.forEach(doc => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+
+      // Recurse on the next process tick, to avoid
+      // exploding the stack.
+      process.nextTick(() => {
+        deleteQueryBatch(query, resolve);
+      });
+    }
+
+    return await deleteCollection(newReadingsPath, batchSize);
   });
