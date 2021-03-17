@@ -3,7 +3,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as admin from 'firebase-admin';
-import SensorReading from './sensor-reading';
+import SensorReading from './aqi-calculation/sensor-reading';
 import {firestore} from './admin';
 
 /**
@@ -140,8 +140,8 @@ function generateAverageReadingsCsv(): void {
 
   // Current-reading collection has single doc
   const currentReadingDocRef = firestore
-    .collection('/current-reading')
-    .doc('pm25');
+    .collection('current-reading')
+    .doc('sensors');
   currentReadingDocRef.get().then(doc => {
     if (doc.exists) {
       const docData = doc.data();

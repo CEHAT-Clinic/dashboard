@@ -96,10 +96,9 @@
     "header": "Admin Page",
     "users":{
         "cantFetch": "Unable to fetch users: ",
-        "heading": "Current Admins Users",
+        "adminUsers": "Admin Users",
         "name": "Name",
-        "allCurrent": "All Current Users",
-        "adminStatus": "Admin Status",
+        "nonAdminUsers": "Non-Admin Users",
         "makeAdmin": {
             "button": "Make admin",
             "confirmStart": "Are you sure you want to make ",
@@ -109,7 +108,8 @@
             "button": "Remove admin",
             "confirmStart": "Are you sure you want to remove ",
             "confirmEnd": " as an admin user?",
-            "cannotBeUndone": "This change cannot be undone without another administrator"
+            "cannotBeUndone": "This change cannot be undone without another administrator",
+            "lastAdmin": "Warning! You must make another user an admin user to be able to remove your own admin status."
         },
         "changeAdminError": "Unable to change admin status for ",
         "confirmChange": "Confirm Admin Status Change"

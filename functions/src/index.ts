@@ -1,34 +1,30 @@
 import * as functions from 'firebase-functions';
 import axios from 'axios';
-import PurpleAirResponse from './purple-air-response';
-import SensorReading from './sensor-reading';
-import CleanedReadings from './cleaned-reading';
-import NowCastConcentration from './nowcast-concentration';
+import PurpleAirResponse from './aqi-calculation/purple-air-response';
+import SensorReading from './aqi-calculation/sensor-reading';
+import NowCastConcentration from './aqi-calculation/nowcast-concentration';
 import {
   generateReadingsCsv,
   generateAverageReadingsCsv,
 } from './download-readings';
 import {firestore, Timestamp, FieldValue} from './admin';
-import {aqiFromPm25} from './calculate-aqi';
-
-const thingspeakUrl = (channelId: string) =>
-  `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
-const readingsSubcollection = (docId: string) => `/sensors/${docId}/readings`;
-
-async function getThingspeakKeysFromPurpleAir(
-  purpleAirId: string
-): Promise<PurpleAirResponse> {
-  const PURPLE_AIR_API_ADDRESS = 'https://www.purpleair.com/json';
-
-  const purpleAirApiResponse = await axios({
-    url: PURPLE_AIR_API_ADDRESS,
-    params: {
-      show: purpleAirId,
-    },
-  });
-
-  return new PurpleAirResponse(purpleAirApiResponse);
-}
+import {aqiFromPm25} from './aqi-calculation/calculate-aqi';
+import {
+  thingspeakUrl,
+  readingsSubcollection,
+  getThingspeakKeysFromPurpleAir,
+  getHourlyAverages,
+  cleanAverages,
+  SensorData,
+} from './aqi-calculation/util';
+import {
+  AqiBufferElement,
+  bufferStatus,
+  defaultPm25BufferElement,
+  defaultAqiBufferElement,
+  populateDefaultBuffer,
+  Pm25BufferElement,
+} from './aqi-calculation/buffer';
 
 const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
   timeoutSeconds: 120,
@@ -40,212 +36,221 @@ exports.thingspeakToFirestore = functions
   .onRun(async () => {
     const sensorList = (await firestore.collection('/sensors').get()).docs;
 
-    for (const knownSensor of sensorList) {
-      const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
-        knownSensor.data()['purpleAirId']
-      );
-      const channelAPrimaryData = await axios({
-        url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
-        params: {
-          api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
-          results: 1,
-        },
-      });
-      const channelBPrimaryData = await axios({
-        url: thingspeakUrl(thingspeakInfo.channelBPrimaryId),
-        params: {
-          api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
-          results: 1,
-        },
-      });
-      const reading = SensorReading.fromThingspeak(
-        channelAPrimaryData,
-        channelBPrimaryData,
-        thingspeakInfo
-      );
+    for (const sensorDoc of sensorList) {
+      const sensorDocData = sensorDoc.data();
+      const isActive = sensorDocData.isActive ?? true;
+      if (isActive && sensorDocData.purpleAirId) {
+        const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
+          sensorDocData.purpleAirId
+        );
+        const channelAPrimaryData = await axios({
+          url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
+          params: {
+            api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
+            results: 1,
+          },
+        });
+        const channelBPrimaryData = await axios({
+          url: thingspeakUrl(thingspeakInfo.channelBPrimaryId),
+          params: {
+            api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
+            results: 1,
+          },
+        });
+        const reading = SensorReading.fromThingspeak(
+          channelAPrimaryData,
+          channelBPrimaryData,
+          thingspeakInfo
+        );
+        const readingTimestamp = Timestamp.fromDate(reading.timestamp);
 
-      const resolvedPath = readingsSubcollection(knownSensor.id);
+        const readingsCollectionRef = firestore.collection(
+          readingsSubcollection(sensorDoc.id)
+        );
+        let firestoreSafeReading: Pm25BufferElement = defaultPm25BufferElement;
 
-      // Only add data if not already present in database.
-      // This happens if a sensor is down, so only old data is returned.
-      const readingsRef = firestore.collection(resolvedPath);
-      if (
-        (
-          await readingsRef
-            .where('timestamp', '==', Timestamp.fromDate(reading.timestamp))
+        // If the lastSensorReadingTime field isn't set, query the database to find
+        // the timestamp of the most recent reading. If there are no readings in
+        // Firestore, then lastSensorReading is never changed from null
+        let lastSensorReadingTime: FirebaseFirestore.Timestamp | null =
+          sensorDocData.lastSensorReadingTime ?? null;
+        if (!lastSensorReadingTime) {
+          const maxDocs = 1;
+          readingsCollectionRef
+            .orderBy('timestamp', 'desc')
+            .limit(maxDocs)
             .get()
-        ).empty
-      ) {
-        const firestoreSafeReading = {
-          timestamp: Timestamp.fromDate(reading.timestamp),
-          channelAPm25: reading.channelAPm25,
-          channelBPm25: reading.channelBPm25,
-          humidity: reading.humidity,
-          latitude: reading.latitude,
-          longitude: reading.longitude,
-        };
-        await readingsRef.add(firestoreSafeReading);
-      }
+            .then(querySnapshot => {
+              querySnapshot.forEach(doc => {
+                lastSensorReadingTime = doc.data().timestamp ?? null;
+              });
+            });
+        }
 
-      // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
-      // our program from getting blocked.
-      // Allocates up to a minute of the two minute runtime for delaying
-      const oneMinuteInMilliseconds = 60000;
-      const delayBetweenSensors = oneMinuteInMilliseconds / sensorList.length;
-      await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
+        // Before adding the reading to the historical database, check that it doesn't
+        // already exist in the database
+        if (lastSensorReadingTime !== readingTimestamp) {
+          // Update reading with values
+          firestoreSafeReading = {
+            timestamp: Timestamp.fromDate(reading.timestamp),
+            channelAPm25: reading.channelAPm25,
+            channelBPm25: reading.channelBPm25,
+            humidity: reading.humidity,
+            latitude: reading.latitude,
+            longitude: reading.longitude,
+          };
+          // Add to historical readings
+          await readingsCollectionRef.add(firestoreSafeReading);
+        }
+
+        // Add readings to the PM 2.5 buffer
+        const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
+        const status =
+          sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+        // If the buffer status is In Progress we don't update the buffer
+        // because the buffer is still being initialized
+        if (status === bufferStatus.Exists) {
+          // If the buffer exists, update normally
+          const pm25Buffer = sensorDocData.pm25Buffer;
+          pm25Buffer[sensorDocData.pm25BufferIndex] = firestoreSafeReading;
+
+          // Update the sensor doc buffer and metadata
+          await sensorDocRef.update({
+            pm25BufferIndex:
+              (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
+            pm25Buffer: pm25Buffer,
+            lastSensorReadingTime: readingTimestamp,
+            latitude: reading.latitude,
+            longitude: reading.longitude,
+          });
+        } else if (status === bufferStatus.DoesNotExist) {
+          // If the buffer does not exist, populate it with default values so
+          // it can be updated in the future
+          await sensorDocRef.update({
+            pm25BufferStatus: bufferStatus.InProgress,
+            lastSensorReadingTime: readingTimestamp,
+            latitude: reading.latitude,
+            longitude: reading.longitude,
+          });
+          // This function updates the bufferStatus once the buffer has been
+          // fully initialized, which uses an additional write to the database
+          populateDefaultBuffer(false, sensorDoc.id);
+        }
+      }
     }
+
+    // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
+    // our program from getting blocked.
+    // Allocates up to a minute of the two minute runtime for delaying
+    const oneMinuteInMilliseconds = 60000;
+    const delayBetweenSensors = oneMinuteInMilliseconds / sensorList.length;
+    await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
   });
-
-/**
- * Gets the hourly averages for the past 12 hours for a single sensor. If less than
- * 90% of the readings are available for a time period, it leaves the data for that hour
- * as undefined per the EPA guidance to ignore hours without 90% of the data.
- *
- * Note: In the event that a sensor is moved, this function will report meaningless data for
- * the twelve hour period after the sensor is moved. This is because data from both locations
- * will be treated as if they came from the same location because the function assumes a sensor
- * is stationary.
- *
- * @param docId - Firestore document id for the sensor to be getting averages for
- * @param purpleAirId - PurpleAir ID for the sensor
- */
-async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
-  const LOOKBACK_PERIOD_HOURS = 12;
-  const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
-  const currentHour: Date = new Date();
-  const previousHour = new Date(currentHour);
-  // Only modifies the hour field, keeps minutes field constant
-  previousHour.setUTCHours(previousHour.getUTCHours() - 1); // eslint-disable-line no-magic-numbers
-
-  const resolvedPath = readingsSubcollection(docId);
-
-  for (let i = 0; i < averages.length; i++) {
-    const readings = (
-      await firestore
-        .collection(resolvedPath)
-        .where('timestamp', '>', Timestamp.fromDate(previousHour))
-        .where('timestamp', '<=', Timestamp.fromDate(currentHour))
-        .get()
-    ).docs;
-
-    // If we have 1 reading every two minutes, there are 30 readings in an hour
-    // 90% of 30 readings is 27 readings. We must have 90% of the readings from
-    // a given hour in order to compute the AQI per the EPA.
-    // Expressed this way to avoid imprecision of floating point arithmetic.
-    const MEASUREMENT_COUNT_THRESHOLD = 27;
-    if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-      const reading = SensorReading.averageDocuments(readings);
-      averages[i] = reading;
-    }
-
-    /* eslint-disable no-magic-numbers */
-    currentHour.setUTCHours(currentHour.getUTCHours() - 1);
-    previousHour.setUTCHours(previousHour.getUTCHours() - 1);
-    /* eslint-enable no-magic-numbers */
-  }
-
-  return averages;
-}
-
-/**
- * Cleans hourly averages of PM2.5 readings using the published EPA formula,
- * excluding thoses data points that indicate sensor malfunction. Those
- * data points are represented by NaN.
- *
- * @param averages - array containing sensor readings representing hourly averages
- * @returns an array of numbers representing the corrected PM2.5 values pursuant
- *          to the EPA formula
- */
-function cleanAverages(averages: SensorReading[]): CleanedReadings {
-  // These thresholds for the EPA indicate when diverging sensor readings
-  // indicate malfunction. The EPA requires that the raw difference between
-  // the readings be less than 5 and the percent difference be less than 70%
-  const RAW_THRESHOLD = 5;
-  const PERCENT_THRESHOLD = 0.7;
-
-  const cleanedAverages = new Array<number>(averages.length);
-  let latitude = NaN;
-  let longitude = NaN;
-  for (let i = 0; i < cleanedAverages.length; i++) {
-    const reading = averages[i];
-    if (reading !== undefined) {
-      // Use first hour's location
-      if (isNaN(latitude) || isNaN(longitude)) {
-        latitude = reading.latitude;
-        longitude = reading.longitude;
-      }
-
-      const averagePmReading =
-        (reading.channelAPm25 + reading.channelBPm25) / 2; // eslint-disable-line no-magic-numbers
-      const difference = Math.abs(reading.channelAPm25 - reading.channelBPm25);
-      if (
-        !(
-          difference > RAW_THRESHOLD &&
-          difference / averagePmReading > PERCENT_THRESHOLD
-        )
-      ) {
-        // Formula from EPA to correct PurpleAir PM 2.5 readings
-        // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
-        /* eslint-disable no-magic-numbers */
-        cleanedAverages[i] =
-          0.534 * averagePmReading - 0.0844 * reading.humidity + 5.604;
-        /* eslint-enable no-magic-numbers */
-      } else {
-        // If reading exceeds thresholds above
-        cleanedAverages[i] = Number.NaN;
-      }
-    } else {
-      // If less than 27 data points were available for that hour, the reading
-      // would have been undefined
-      cleanedAverages[i] = Number.NaN;
-    }
-  }
-  return new CleanedReadings(latitude, longitude, cleanedAverages);
-}
 
 exports.calculateAqi = functions.pubsub
   .schedule('every 10 minutes')
   .onRun(async () => {
-    const sensorList = (await firestore.collection('/sensors').get()).docs;
+    const sensorList = (await firestore.collection('sensors').get()).docs;
     const currentData = Object.create(null);
-    for (const knownSensor of sensorList) {
-      const docId = knownSensor.id;
-      const hourlyAverages = await getHourlyAverages(docId);
-      const cleanedAverages = cleanAverages(hourlyAverages);
+    for (const sensorDoc of sensorList) {
+      const sensorDocData = sensorDoc.data();
 
-      // NowCast formula from the EPA requires 2 out of the last 3 hours
-      // to be available
-      let validEntriesLastThreeHours = 0;
-      const THREE_HOURS = 3;
-      for (
-        let i = 0;
-        i < Math.min(THREE_HOURS, cleanedAverages.readings.length);
-        i++
-      ) {
-        if (!Number.isNaN(cleanedAverages.readings[i])) {
-          validEntriesLastThreeHours++;
+      // Data sent to the current-readings collection
+      // Initially the previous data's value or the default values
+      const currentSensorData: SensorData = {
+        purpleAirId: sensorDocData.purpleAirId ?? '',
+        name: sensorDocData.name ?? '',
+        latitude: sensorDocData.latitude ?? NaN,
+        longitude: sensorDocData.latitude ?? NaN,
+        readingDocId: sensorDoc.id,
+        lastValidAqiTime: sensorDocData.lastValidAqiTime ?? null,
+        lastSensorReadingTime: sensorDocData.lastSensorReadingTime ?? null,
+        isActive: sensorDocData.isActive ?? true,
+        nowCastPm25: NaN,
+        aqi: NaN,
+        isValid: false,
+      };
+
+      if (currentSensorData.isActive) {
+        // Get current sensor readings
+        const hourlyAverages = await getHourlyAverages(sensorDoc.id);
+        const cleanedAverages = cleanAverages(hourlyAverages);
+
+        // NowCast formula from the EPA requires 2 out of the last 3 hours
+        // to be available
+        let validEntriesLastThreeHours = 0;
+        const THREE_HOURS = 3;
+        for (
+          let i = 0;
+          i < Math.min(THREE_HOURS, cleanedAverages.readings.length);
+          i++
+        ) {
+          if (!Number.isNaN(cleanedAverages.readings[i])) {
+            validEntriesLastThreeHours++;
+          }
         }
-      }
-      const NOWCAST_RECENT_DATA_THRESHOLD = 2;
-      const containsEnoughInfo =
-        validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
-      // If there is not enough info, the sensor's data is not reported
-      if (containsEnoughInfo) {
-        const purpleAirId: string = knownSensor.data()['purpleAirId'];
-        const nowcastPm25 = NowCastConcentration.fromCleanedAverages(
-          cleanedAverages
-        );
-        const aqi = aqiFromPm25(nowcastPm25.reading);
-        currentData[purpleAirId] = {
-          latitude: nowcastPm25.latitude,
-          longitude: nowcastPm25.longitude,
-          nowCastPm25: nowcastPm25.reading,
-          aqi: aqi,
-        };
+        const NOWCAST_RECENT_DATA_THRESHOLD = 2;
+        const containsEnoughInfo =
+          validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD;
+
+        // If there's enough info, the sensor's data is updated
+        // If there isn't, we send the default AQI buffer element
+        const aqiBufferData = defaultAqiBufferElement; // New data to add
+
+        // If there is not enough info, the sensor's status is not valid
+        if (containsEnoughInfo) {
+          // Only calculate the NowCast PM 2.5 value and the AQI if there is enough data
+          const nowCastPm25Result = NowCastConcentration.fromCleanedAverages(
+            cleanedAverages
+          );
+          currentSensorData.aqi = aqiFromPm25(nowCastPm25Result.reading);
+          currentSensorData.latitude = nowCastPm25Result.latitude;
+          currentSensorData.longitude = nowCastPm25Result.longitude;
+          currentSensorData.nowCastPm25 = nowCastPm25Result.reading;
+          currentSensorData.isValid = true;
+          currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
+
+          aqiBufferData.aqi = currentSensorData.aqi;
+          aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
+        }
+
+        // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
+        currentData[currentSensorData.purpleAirId] = currentSensorData;
+
+        // Update the AQI circular buffer for this element
+        const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
+        const status =
+          sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
+
+        // If the buffer status is In Progress we don't update the buffer
+        // because the buffer is still being initialized
+        if (status === bufferStatus.Exists) {
+          // The buffer exists, proceed with normal update
+          const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+          aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
+
+          await sensorDocRef.update({
+            aqiBufferIndex:
+              (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
+            aqiBuffer: aqiBuffer,
+            lastValidAqiTime: currentSensorData.lastValidAqiTime,
+          });
+        } else if (status === bufferStatus.DoesNotExist) {
+          // Initialize populating the buffer with default values, don't update
+          // any values until the buffer status is Exists
+          await sensorDocRef.update({
+            aqiBufferStatus: bufferStatus.InProgress,
+            lastValidAqiTime: currentSensorData.lastValidAqiTime,
+          });
+          // This function updates the bufferStatus once the buffer has been
+          // fully initialized, which uses an additional write to the database
+          populateDefaultBuffer(true, sensorDoc.id);
+        }
       }
     }
 
-    await firestore.collection('current-reading').doc('pm25').set({
+    // Send AQI readings to current-reading to be displayed on the map
+    await firestore.collection('current-reading').doc('sensors').set({
       lastUpdated: FieldValue.serverTimestamp(),
       data: currentData,
     });

@@ -84,7 +84,7 @@ const ManageUsers: () => JSX.Element = () => {
   /**
    *
    * @param event - click button event
-   * @param userId - Firebase uid of the user to toggle the admin status
+   * @param user - user for which to toggle admin status
    */
   function toggleAdminStatus(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -110,14 +110,23 @@ const ManageUsers: () => JSX.Element = () => {
    */
   interface ToggleUserPopoverProps {
     user: User;
+    isLastAdmin: boolean;
   }
 
   /**
-   * Creates a button that when clicked, creates a confirmation popup to change a user's status
+   * Creates a button that when clicked, creates a confirmation popup to change
+   * a user's status. If a user tries to remove their own admin status, a
+   * warning is shown that the action cannot be undone without another admin
+   * user changing their status back.
    * @param user - The current user for a row
+   * @param isLastAdmin - if there is only one remaining admin user
    */
-  const ToggleUserPopover: ({user}: ToggleUserPopoverProps) => JSX.Element = ({
+  const ToggleUserPopover: ({
     user,
+    isLastAdmin,
+  }: ToggleUserPopoverProps) => JSX.Element = ({
+    user,
+    isLastAdmin,
   }: ToggleUserPopoverProps) => {
     const popoverMessage = user.admin
       ? t('users.removeAdmin.confirmStart') +
@@ -132,7 +141,11 @@ const ManageUsers: () => JSX.Element = () => {
     return (
       <Popover>
         <PopoverTrigger>
-          <Button colorScheme={user.admin ? 'red' : 'green'} width="full">
+          <Button
+            colorScheme={user.admin ? 'red' : 'green'}
+            width="full"
+            isDisabled={isLastAdmin && user.admin}
+          >
             {user.admin
               ? t('users.removeAdmin.button')
               : t('users.makeAdmin.button')}
@@ -173,6 +186,11 @@ const ManageUsers: () => JSX.Element = () => {
   } else if (!isAdmin) {
     return <AccessDenied reason={t('notAdmin')} />;
   } else {
+    const adminUsers = users.filter(user => user.admin);
+    const nonAdminUsers = users.filter(user => !user.admin);
+
+    // eslint-disable-next-line no-magic-numbers
+    const isLastAdmin = adminUsers.length === 1;
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
@@ -186,9 +204,10 @@ const ManageUsers: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading>{t('manageUsers')}</Heading>
+          {/* Admin users table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              {t('users.heading')}
+              {t('users.adminUsers')}
             </Heading>
             <Table>
               <Thead>
@@ -199,39 +218,47 @@ const ManageUsers: () => JSX.Element = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {users
-                  .filter(user => user.admin)
-                  .map((user, id) => (
-                    <Tr key={id}>
-                      <Td>{user.name}</Td>
-                      <Td>{user.email}</Td>
-                      <Td>
-                        <ToggleUserPopover user={user} />
-                      </Td>
-                    </Tr>
-                  ))}
+                {adminUsers.map((user, id) => (
+                  <Tr key={id}>
+                    <Td>{user.name}</Td>
+                    <Td>{user.email}</Td>
+                    <Td>
+                      <ToggleUserPopover
+                        isLastAdmin={isLastAdmin}
+                        user={user}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
               </Tbody>
             </Table>
+            {isLastAdmin && (
+              <Text color="red.500">{t('users.removeAdmin.lastAdmin')}</Text>
+            )}
           </Box>
+          {/* Non Admin Users Table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">
-              {t('users.allCurrent')}
+              {t('users.nonAdminUsers')}
             </Heading>
             <Table>
               <Thead>
                 <Tr>
                   <Th>{t('users.name')}</Th>
                   <Th>{t('email')}</Th>
-                  <Th>{t('users.adminStatus')}</Th>
+                  <Th>{t('users.makeAdmin.button')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
-                {users.map((user, id) => (
+                {nonAdminUsers.map((user, id) => (
                   <Tr key={id}>
                     <Td>{user.name}</Td>
                     <Td>{user.email}</Td>
                     <Td>
-                      <ToggleUserPopover user={user} />
+                      <ToggleUserPopover
+                        isLastAdmin={isLastAdmin}
+                        user={user}
+                      />
                     </Td>
                   </Tr>
                 ))}

@@ -3,5 +3,7 @@
     "about": "About",
     "healthInfo": "Health Information",
     "admin": "Admin",
-    "menuButton": "Menu button"
+    "menuButton": "Menu button",
+    "changeLanguage": "Español",
+    "globeIcon": "Icono del globo"
 }
