@@ -46,7 +46,11 @@ const Health: React.FC = () => {
             />
             <Text>
               {t('pollution.image.caption')}
-              <Link href={t('pollution.image.source.link')} isExternal>
+              <Link
+                color="#32bfd1"
+                href={t('pollution.image.source.link')}
+                isExternal
+              >
                 {t('pollution.image.source.text')}
                 <ExternalLinkIcon />
               </Link>
@@ -55,7 +59,7 @@ const Health: React.FC = () => {
         </Flex>
         <Text>
           {t('pollution.paragraph2.part1')}{' '}
-          <Link href={t('references.health.link')} isExternal>
+          <Link color="#32bfd1" href={t('references.health.link')} isExternal>
             {t('pollution.paragraph2.link')} <ExternalLinkIcon />
           </Link>
           {t('pollution.paragraph2.part2')}
@@ -110,25 +114,25 @@ const Health: React.FC = () => {
         <Heading>{t('references.heading')}</Heading>
         <UnorderedList>
           <ListItem>
-            <Link href={t('references.pm25.link')} isExternal>
+            <Link color="#32bfd1" href={t('references.pm25.link')} isExternal>
               {t('references.pm25.text')}
               <ExternalLinkIcon />
             </Link>
           </ListItem>
           <ListItem>
-            <Link href={t('references.health.link')} isExternal>
+            <Link color="#32bfd1" href={t('references.health.link')} isExternal>
               {t('references.health.text')}
               <ExternalLinkIcon />
             </Link>
           </ListItem>
           <ListItem>
-            <Link href={t('references.aqi.link')} isExternal>
+            <Link color="#32bfd1" href={t('references.aqi.link')} isExternal>
               {t('references.aqi.text')}
               <ExternalLinkIcon />
             </Link>
           </ListItem>
           <ListItem>
-            <Link href={t('references.fire.link')} isExternal>
+            <Link color="#32bfd1" href={t('references.fire.link')} isExternal>
               {t('references.fire.text')}
               <ExternalLinkIcon />
             </Link>
