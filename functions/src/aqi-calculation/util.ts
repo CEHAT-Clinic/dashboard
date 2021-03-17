@@ -96,7 +96,7 @@ function getHourlyAverages(
       readings.filter(element => element.timestamp !== null);
       if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
         const reading = SensorReading.averageReadings(readings);
-        averages[i] = reading;
+        averages[hoursAgo] = reading;
       }
     }
   }
