@@ -114,9 +114,18 @@ exports.thingspeakToFirestore = functions
           const pm25Buffer = sensorDocData.pm25Buffer;
           // This if/else statement is temporary to correct the length of the buffers
           // TODO: remove this code after the bug has been fixed
-          if( pm25Buffer.length != 360){
-            populateDefaultBuffer(false,sensorDoc.id)
-          }else{
+          // eslint-disable-next-line no-magic-numbers
+          if (pm25Buffer.length !== 360) {
+            // Buffer is in progress
+            await sensorDocRef.update({
+              pm25BufferStatus: bufferStatus.InProgress,
+              lastSensorReadingTime: readingTimestamp,
+              latitude: reading.latitude,
+              longitude: reading.longitude,
+            });
+            // Repopulate with defaults
+            populateDefaultBuffer(false, sensorDoc.id);
+          } else {
             pm25Buffer[sensorDocData.pm25BufferIndex] = firestoreSafeReading;
             // Update the sensor doc buffer and metadata
             await sensorDocRef.update({
