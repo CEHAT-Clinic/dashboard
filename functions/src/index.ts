@@ -171,10 +171,20 @@ exports.calculateAqi = functions.pubsub
         isValid: false,
       };
 
-      
       if (currentSensorData.isActive) {
+        // Data used to calculate hourly averages
+        const pm25BufferStatus: bufferStatus =
+          sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+        const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
+        const pm25Buffer: Array<Pm25BufferElement> =
+          sensorDocData.pm25Buffer ?? [];
+
         // Get current sensor readings
-        const hourlyAverages = getHourlyAverages(sensorDoc.id);
+        const hourlyAverages = getHourlyAverages(
+          pm25BufferStatus,
+          pm25BufferIndex,
+          pm25Buffer
+        );
         const cleanedAverages = cleanAverages(hourlyAverages);
 
         // NowCast formula from the EPA requires 2 out of the last 3 hours

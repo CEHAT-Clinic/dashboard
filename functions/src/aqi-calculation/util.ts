@@ -2,7 +2,6 @@ import PurpleAirResponse from './purple-air-response';
 import CleanedReadings from './cleaned-reading';
 import axios from 'axios';
 import SensorReading from './sensor-reading';
-import {firestore} from '../admin';
 import {Pm25BufferElement, bufferStatus} from './buffer';
 
 const thingspeakUrl: (channelId: string) => string = (channelId: string) =>
@@ -40,63 +39,67 @@ async function getThingspeakKeysFromPurpleAir(
  * will be treated as if they came from the same location because the function assumes a sensor
  * is stationary.
  *
- * @param docId - Firestore document id for the sensor to be getting averages for
- * @param purpleAirId - PurpleAir ID for the sensor
+ * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
+ * @param bufferIndex - the next index to write to in the buffer
+ * @param buffer - the pm25Buffer with the last 12 hours of data
+ * @returns - a SensorReading array of length 12 with the average pm2.5 value for each of the last 12 hours
  */
-function getHourlyAverages(docId: string): SensorReading[] {
+function getHourlyAverages(
+  status: bufferStatus,
+  bufferIndex: number,
+  buffer: Array<Pm25BufferElement>
+): SensorReading[] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
   const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
 
-  const docRef = firestore.collection('sensors').doc(docId);
-  docRef.get().then(doc => {
-    if (doc.exists) {
-      // Get buffer and buffer index
-      const status = doc.get('pm25BufferStatus');
-      const buffer = doc.get('pm25Buffer');
-      const bufferIndex = doc.get('pm25BufferIndex');
-      // If we have the relevant fields:
-      if (status === bufferStatus.Exists && buffer && bufferIndex) {
-        let readings: Array<Pm25BufferElement> = [];
-        // Get sub-array that is relevant for each hour
-        for (let i = 0; i < averages.length; i++) {
-          const endIndex = bufferIndex - ELEMENTS_PER_HOUR * i;
-          const startIndex = bufferIndex - ELEMENTS_PER_HOUR * (i + 1);
-          if (startIndex >= 0 && endIndex > 0) {
-            readings = buffer.slice(startIndex, endIndex);
-          } else if (startIndex < 0 && endIndex > 0) {
-            const leftArray = buffer.slice(
-              buffer.length + startIndex,
-              buffer.length
-            );
-            const rightArray = buffer.slice(0, endIndex);
-            readings = leftArray.concat(rightArray);
-          } else {
-            // Start and end indices are both less than 0
-            readings = buffer.slice(
-              buffer.length + startIndex,
-              buffer.length + endIndex
-            );
-          }
+  // If we have the relevant fields:
+  if (status === bufferStatus.Exists && buffer && bufferIndex) {
+    let readings: Array<Pm25BufferElement> = [];
+    // Get sub-array that is relevant for each hour
+    let endIndex = bufferIndex;
+    let startIndex = bufferIndex - ELEMENTS_PER_HOUR;
+    for (let hoursAgo = 0; hoursAgo < LOOKBACK_PERIOD_HOURS; hoursAgo++) {
+      if (startIndex >= 0 && endIndex > 0) {
+        readings = buffer.slice(startIndex, endIndex);
+      } else if (startIndex < 0 && endIndex > 0) {
+        // This case occurs when we reach the end of the circular buffer, so some
+        // data is at the end of the buffer and some is at the beginning.
 
-          // If we have 1 reading every two minutes, there are 30 readings in an hour
-          // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use
-          // 75% instead of 90% so that sensors are less likely to not have enough valid
-          // data. The acceptability of 75% instead of 95% can be found in the additional
-          // slides of the PDF located at the following URL:
-          // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
-          // Expressed this way to avoid imprecision of floating point arithmetic.
-          const MEASUREMENT_COUNT_THRESHOLD = 23;
-          // Remove all invalid readings
-          readings.filter(element => element.timestamp !== null);
-          if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-            const reading = SensorReading.averageReadings(readings);
-            averages[i] = reading;
-          }
-        }
+        // Segment from the end of the buffer
+        const leftArray = buffer.slice(
+          buffer.length + startIndex,
+          buffer.length
+        );
+        // Segment from the beginning of the buffer
+        const rightArray = buffer.slice(0, endIndex);
+        readings = leftArray.concat(rightArray);
+      } else {
+        // Start and end indices are both less than 0
+        readings = buffer.slice(
+          buffer.length + startIndex,
+          buffer.length + endIndex
+        );
+      }
+      endIndex = startIndex;
+      startIndex -= ELEMENTS_PER_HOUR;
+
+      // If we have 1 reading every two minutes, there are 30 readings in an hour.
+      // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use
+      // 75% instead of 90% so that sensors are more likely to have enough valid
+      // data. The acceptability of 75% instead of 95% can be found in the additional
+      // slides of the PDF located at the following URL:
+      // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
+      // Expressed this way to avoid imprecision of floating point arithmetic.
+      const MEASUREMENT_COUNT_THRESHOLD = 23;
+      // Remove all invalid readings
+      readings.filter(element => element.timestamp !== null);
+      if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
+        const reading = SensorReading.averageReadings(readings);
+        averages[i] = reading;
       }
     }
-  });
+  }
   return averages;
 }
 
@@ -183,20 +186,6 @@ interface SensorData {
   readingDocId: string;
   lastValidAqiTime: FirebaseFirestore.Timestamp | null;
   lastSensorReadingTime: FirebaseFirestore.Timestamp | null;
-}
-
-/**
- * Interface for a sensor's non-meta data values. Specifically this interface
- * contains information related to the Pm25Buffer.
- * - `pm25BufferStatus` - The status of the buffer
- * - `pm25BufferIndex` - The index of the buffer that should be written to next
- * - `pm25Buffer` - The array of Pm25BufferElements that holds PM2 .5 data for the
- *                  last 12 hours
- */
-interface SensorValues {
-  pm25BufferStatus: bufferStatus;
-  pm25BufferIndex: number;
-  pm25Buffer: Array<Pm25BufferElement>;
 }
 
 export {
