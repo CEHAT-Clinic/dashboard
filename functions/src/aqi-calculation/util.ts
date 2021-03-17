@@ -60,11 +60,11 @@ function getHourlyAverages(docId: string): SensorReading[] {
         let readings: Array<Pm25BufferElement> = [];
         // Get sub-array that is relevant for each hour
         for (let i = 0; i < averages.length; i++) {
-          const startIndex = bufferIndex - ELEMENTS_PER_HOUR * i;
-          const endIndex = bufferIndex - ELEMENTS_PER_HOUR * (i + 1);
-          if (startIndex >= 0 && endIndex >= 0) {
+          const endIndex = bufferIndex - ELEMENTS_PER_HOUR * i;
+          const startIndex = bufferIndex - ELEMENTS_PER_HOUR * (i + 1);
+          if (startIndex >= 0 && endIndex > 0) {
             readings = buffer.slice(startIndex, endIndex);
-          } else if (startIndex < 0 && endIndex >= 0) {
+          } else if (startIndex < 0 && endIndex > 0) {
             const leftArray = buffer.slice(
               buffer.length + startIndex,
               buffer.length
@@ -74,16 +74,19 @@ function getHourlyAverages(docId: string): SensorReading[] {
           } else {
             // Start and end indices are both less than 0
             readings = buffer.slice(
-              bufferIndex + startIndex,
-              bufferIndex + endIndex
+              buffer.length + startIndex,
+              buffer.length + endIndex
             );
           }
 
           // If we have 1 reading every two minutes, there are 30 readings in an hour
-          // 90% of 30 readings is 27 readings. We must have 90% of the readings from
-          // a given hour in order to compute the AQI per the EPA.
+          // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use
+          // 75% instead of 90% so that sensors are less likely to not have enough valid
+          // data. The acceptability of 75% instead of 95% can be found in the additional
+          // slides of the PDF located at the following URL:
+          // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
           // Expressed this way to avoid imprecision of floating point arithmetic.
-          const MEASUREMENT_COUNT_THRESHOLD = 27;
+          const MEASUREMENT_COUNT_THRESHOLD = 23;
           // Remove all invalid readings
           readings.filter(element => element.timestamp !== null);
           if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
