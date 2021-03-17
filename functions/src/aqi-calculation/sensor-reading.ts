@@ -37,10 +37,9 @@ export default class SensorReading {
 
     // Guaranteed to be okay because this function should only be called with >= 27 items
     const firstReadingData = readings[0];
-    const latitude: number = firstReadingData.latitude;
-    const longitude: number = firstReadingData.longitude;
-    // TODO: stopped fixing this function here.
-    const timestamp = firstReadingData['timestamp'];
+    const latitude = firstReadingData.latitude;
+    const longitude = firstReadingData.longitude;
+    const timestamp = firstReadingData.timestamp;
     // Force that the timestamp is not null. This function is called on an array
     // where we filter by timestamp !== null, so we know that the timestamps are
     // non-null.
@@ -48,9 +47,9 @@ export default class SensorReading {
     const safeTimestamp: FirebaseFirestore.Timestamp = timestamp!;
 
     for (const reading of readings) {
-      channelAPmReadingSum += reading['channelAPm25'];
-      channelBPmReadingSum += reading['channelBPm25'];
-      humiditySum += reading['humidity'];
+      channelAPmReadingSum += reading.channelAPm25;
+      channelBPmReadingSum += reading.channelBPm25;
+      humiditySum += reading.humidity;
     }
 
     const channelAPmReadingAverage = channelAPmReadingSum / readings.length;

@@ -141,7 +141,7 @@ exports.calculateAqi = functions.pubsub
       const docId = knownSensor.id;
 
       // Get current sensor readings
-      const hourlyAverages = await getHourlyAverages(docId);
+      const hourlyAverages = getHourlyAverages(docId);
       const cleanedAverages = cleanAverages(hourlyAverages);
 
       // NowCast formula from the EPA requires 2 out of the last 3 hours

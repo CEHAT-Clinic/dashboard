@@ -43,7 +43,7 @@ async function getThingspeakKeysFromPurpleAir(
  * @param docId - Firestore document id for the sensor to be getting averages for
  * @param purpleAirId - PurpleAir ID for the sensor
  */
-function getHourlyAverages(docId: string): Promise<SensorReading[]> {
+function getHourlyAverages(docId: string): SensorReading[] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
   const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
