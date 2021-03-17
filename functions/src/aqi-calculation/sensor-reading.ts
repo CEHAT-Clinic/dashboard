@@ -28,7 +28,7 @@ export default class SensorReading {
   /**
    * Computes an average reading for the time block provided by the first element
    *
-   * @param readings - Array of non-null Pm25 buffer elements
+   * @param readings - Array of non-null Pm25BufferElements
    */
   static averageReadings(readings: Array<Pm25BufferElement>): SensorReading {
     let channelAPmReadingSum = 0;
