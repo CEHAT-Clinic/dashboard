@@ -1,4 +1,4 @@
-import {AxiosResponse} from 'axios';
+import { AxiosResponse } from 'axios';
 
 export default class PurpleAirResponse {
   latitude: string;
@@ -29,4 +29,18 @@ export default class PurpleAirResponse {
     this.channelBSecondaryKey =
       data.results[1]['THINGSPEAK_SECONDARY_ID_READ_KEY'];
   }
+}
+
+/**
+ * 
+ * @param a - sum of psuedo averages for channel A
+ * @param b - sum of psuedo averages for channel B
+ * @returns confidence value
+ */
+function getConfidence(a: number, b: number) {
+  const diff = Math.abs(a - b);
+  const avg = (a + b) / 2;
+  const meanPercentDiff = (diff / avg) * 100;
+  const pc = Math.max(Math.round((meanPercentDiff) / 1.6) - 25, 0);
+  return Math.max(100 - pc, 0);
 }
