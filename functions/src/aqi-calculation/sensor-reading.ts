@@ -39,7 +39,7 @@ export default class SensorReading {
     const firstReadingData = readings[0];
     const latitude = firstReadingData.latitude;
     const longitude = firstReadingData.longitude;
-    
+
     // Force that the timestamp is not null. This function is called on an array
     // where we filter by timestamp !== null, so we know that the timestamps are
     // non-null.
