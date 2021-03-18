@@ -112,31 +112,16 @@ exports.thingspeakToFirestore = functions
         if (status === bufferStatus.Exists) {
           // If the buffer exists, update normally
           const pm25Buffer = sensorDocData.pm25Buffer;
-          // This if/else statement is temporary to correct the length of the buffers
-          // TODO: remove this code after the bug has been fixed
-          // eslint-disable-next-line no-magic-numbers
-          if (pm25Buffer.length !== 360) {
-            // Buffer is in progress
-            await sensorDocRef.update({
-              pm25BufferStatus: bufferStatus.InProgress,
-              lastSensorReadingTime: readingTimestamp,
-              latitude: reading.latitude,
-              longitude: reading.longitude,
-            });
-            // Repopulate with defaults
-            populateDefaultBuffer(false, sensorDoc.id);
-          } else {
-            pm25Buffer[sensorDocData.pm25BufferIndex] = firestoreSafeReading;
-            // Update the sensor doc buffer and metadata
-            await sensorDocRef.update({
-              pm25BufferIndex:
-                (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
-              pm25Buffer: pm25Buffer,
-              lastSensorReadingTime: readingTimestamp,
-              latitude: reading.latitude,
-              longitude: reading.longitude,
-            });
-          }
+          pm25Buffer[sensorDocData.pm25BufferIndex] = firestoreSafeReading;
+          // Update the sensor doc buffer and metadata
+          await sensorDocRef.update({
+            pm25BufferIndex:
+              (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
+            pm25Buffer: pm25Buffer,
+            lastSensorReadingTime: readingTimestamp,
+            latitude: reading.latitude,
+            longitude: reading.longitude,
+          });
         } else if (status === bufferStatus.DoesNotExist) {
           // If the buffer does not exist, populate it with default values so
           // it can be updated in the future
