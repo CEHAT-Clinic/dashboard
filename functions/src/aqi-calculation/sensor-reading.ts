@@ -1,22 +1,30 @@
+import {Pm25BufferElement} from './buffer';
+
+/**
+ * TODO: Fill comment
+ * pm25 is the average of channels A and B
+ * percentDifference is calculated from PurpleAir's confidence value
+ * a and b are the psuedo averages
+ */
 export default class SensorReading {
   timestamp: Date;
-  channelAPm25: number;
-  channelBPm25: number;
+  pm25: number;
+  percentDifference: number;
   humidity: number;
   latitude: number;
   longitude: number;
 
   constructor(
     timestamp: Date,
-    channelAPm25: number,
-    channelBPm25: number,
+    pm25: number,
+    percentDifference: number,
     humidity: number,
     latitude: number,
     longitude: number
   ) {
     this.timestamp = timestamp;
-    this.channelAPm25 = channelAPm25;
-    this.channelBPm25 = channelBPm25;
+    this.pm25 = pm25;
+    this.percentDifference = percentDifference;
     this.humidity = humidity;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -24,38 +32,41 @@ export default class SensorReading {
   /**
    * Computes an average reading for the time block provided by the first element
    *
-   * @param readings - Array of documents containing readings from Firestore
+   * @param readings - Array of non-null Pm25BufferElements
    */
-  static averageDocuments(
-    readings: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]
-  ): SensorReading {
-    let channelAPmReadingSum = 0;
-    let channelBPmReadingSum = 0;
+  static averageReadings(readings: Array<Pm25BufferElement>): SensorReading {
+    let pmReadingSum = 0;
     let humiditySum = 0;
 
+    // TODO: decide how to handle percentDifference
+    // Perhaps don't bother here? Filter out bad readings beforehand?
+    let percentDifferenceSum = 0;
+
     // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0].data();
-    const latitude: number = firstReadingData['latitude'];
-    const longitude: number = firstReadingData['longitude'];
-    const timestamp: FirebaseFirestore.Timestamp =
-      firstReadingData['timestamp'];
+    const firstReadingData = readings[0];
+    const latitude = firstReadingData.latitude;
+    const longitude = firstReadingData.longitude;
+
+    // Force that the timestamp is not null. This function is called on an array
+    // where we filter by timestamp !== null, so we know that the timestamps are
+    // non-null.
+    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+    const timestamp: FirebaseFirestore.Timestamp = firstReadingData.timestamp!;
 
     for (const reading of readings) {
-      const data = reading.data();
-
-      channelAPmReadingSum += data['channelAPm25'];
-      channelBPmReadingSum += data['channelBPm25'];
-      humiditySum += data['humidity'];
+      pmReadingSum += reading.pm25;
+      humiditySum += reading.humidity;
+      percentDifferenceSum += reading.percentDifference;
     }
 
-    const channelAPmReadingAverage = channelAPmReadingSum / readings.length;
-    const channelBPmReadingAverage = channelBPmReadingSum / readings.length;
+    const pmReadingAverage = pmReadingSum / readings.length;
     const humidityAverage = humiditySum / readings.length;
+    const percentDifferenceAverage = percentDifferenceSum = readings.length;
 
     return new this(
       timestamp.toDate(),
-      channelAPmReadingAverage,
-      channelBPmReadingAverage,
+      pmReadingAverage,
+      percentDifferenceAverage,
       humidityAverage,
       latitude,
       longitude
@@ -82,11 +93,10 @@ export default class SensorReading {
    * Values should be in same order as getCsvHeader.
    */
   toCsvLine(): string {
-    // TODO: update with percent difference and one channel reading
     return (
       `${this.timestamp.toISOString()}, ` +
-      `${this.channelAPm25}, ` +
-      `${this.channelBPm25}, ` +
+      `${this.pm25}, ` +
+      `${this.percentDifference}, ` +
       `${this.humidity}, ` +
       `${this.latitude}, ` +
       `${this.longitude}\n`
@@ -98,7 +108,6 @@ export default class SensorReading {
    * Values should be in same order as toCsvLine.
    */
   static getCsvHeader(): string {
-    // TODO: update with percent difference and one channel reading
     return (
       'timestamp, ' +
       'pm25, ' +
@@ -113,9 +122,9 @@ export default class SensorReading {
    * TODO: invert this to getPercentDifference
    * @param a - sum of psuedo averages for channel A
    * @param b - sum of psuedo averages for channel B
-   * @returns confidence value
+   * @returns percentDifference value
    */
-  static getConfidence(a: number, b: number) {
+  static getpercentDifference(a: number, b: number) {
     const diff = Math.abs(a - b);
     const avg = (a + b) / 2;
     const meanPercentDiff = (diff / avg) * 100;
@@ -131,7 +140,7 @@ export class PurpleAirReading {
   longitude: number;
   pm25: number;
   humidity: number;
-  confidence: number;
+  percentDifference: number;
   timestamp: Date;
 
   constructor(
@@ -141,7 +150,7 @@ export class PurpleAirReading {
     longitude: number,
     pm25: number,
     humidity: number,
-    confidence: number,
+    percentDifference: number,
     timestamp: Date
   ) {
     this.name = name;
@@ -150,7 +159,7 @@ export class PurpleAirReading {
     this.longitude = longitude;
     this.pm25 = pm25;
     this.humidity = humidity;
-    this.confidence = confidence;
+    this.percentDifference = percentDifference;
     this.timestamp = timestamp;
   }
 }

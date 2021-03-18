@@ -1,4 +1,5 @@
 import {firestore} from '../admin';
+
 /**
  * Interface for a single element in the pm25Buffer. All fields come from the
  * Thingspeak API
@@ -6,7 +7,7 @@ import {firestore} from '../admin';
 interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
   pm25: number;
-  confidence: number;
+  percentDifference: number;
   humidity: number;
   latitude: number;
   longitude: number;
@@ -21,7 +22,7 @@ interface Pm25BufferElement {
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
   pm25: NaN,
-  confidence: NaN,
+  percentDifference: NaN,
   humidity: NaN,
   latitude: NaN,
   longitude: NaN,
@@ -88,9 +89,9 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
       }
     });
   } else {
-    // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
+    // 360 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI NowCast calculation
-    const bufferSize = 3600;
+    const bufferSize = 360;
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );

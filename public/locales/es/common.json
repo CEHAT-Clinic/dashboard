@@ -5,5 +5,6 @@
     "generalError": "Ha ocurrido un error. Por favor, vuelve a intentar",
     "generalErrorTemplate": "Ha ocurrido un error: ",
     "yes": "Sí",
-    "no": "No"
+    "no": "No",
+    "moreInformation": "Más información"
 }
