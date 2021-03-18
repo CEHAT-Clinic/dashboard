@@ -65,7 +65,7 @@ const Health: React.FC = () => {
           {t('pollution.paragraph2.part2')}
         </Text>
         <Box>
-          <UnorderedList>
+          <UnorderedList paddingLeft={4}>
             <ListItem>{t('pollution.paragraph2.list.death')}</ListItem>
             <ListItem>{t('pollution.paragraph2.list.heartAttacks')}</ListItem>
             <ListItem>{t('pollution.paragraph2.list.arrhythmia')}</ListItem>
@@ -114,7 +114,7 @@ const Health: React.FC = () => {
         boxShadow="lg"
       >
         <Heading>{t('references.heading')}</Heading>
-        <UnorderedList>
+        <UnorderedList paddingLeft={4}>
           <ListItem>
             <Link color="#32bfd1" href={t('references.pm25.link')} isExternal>
               {t('references.pm25.text')}
