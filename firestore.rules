@@ -18,11 +18,9 @@ service cloud.firestore {
         // Admins are allowed to read data for downloading it
         allow read: if isAdmin();
 
-        // Admins can delete data
-        allow delete: if isAdmin();
-
-        // Only cloud functions can modify data otherwise
-        allow create, update: if false;
+        // Only cloud functions can modify data
+        // Deletes triggered by an admin user are still handled by cloud functions
+        allow write: if false;
       }
     }
 
