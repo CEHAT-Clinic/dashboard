@@ -89,9 +89,9 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
       }
     });
   } else {
-    // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
+    // 360 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI NowCast calculation
-    const bufferSize = 3600;
+    const bufferSize = 360;
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );
