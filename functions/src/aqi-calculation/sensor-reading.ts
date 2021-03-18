@@ -1,6 +1,3 @@
-import {AxiosResponse} from 'axios';
-import PurpleAirResponse from './purple-air-response';
-
 export default class SensorReading {
   timestamp: Date;
   channelAPm25: number;
@@ -81,47 +78,11 @@ export default class SensorReading {
   }
 
   /**
-   * Creates a SensorReading object from Thingspeak response
-   * @param channelAPrimaryResponse - Channel A response from ThingSpeak
-   * @param channelBPrimaryResponse - Channel B response from ThingSpeak
-   * @param purpleAirResponse - PurpleAirResponse metadata
-   *
-   * @returns SensorReading object
-   */
-  static fromThingspeak(
-    channelAPrimaryResponse: AxiosResponse,
-    channelBPrimaryResponse: AxiosResponse,
-    purpleAirResponse: PurpleAirResponse
-  ): SensorReading {
-    // PurpleAir stores two different types of PM_2.5 readings.
-    // The EPA wants us to use the higher one.
-    const channelAData = channelAPrimaryResponse.data.feeds[0];
-    const channelAAtmPm: number = +channelAData.field2;
-    const channelACf1Pm: number = +channelAData.field8;
-
-    const channelBData = channelBPrimaryResponse.data.feeds[0];
-    const channelBAtmPm: number = +channelBData.field2;
-    const channelBCf1Pm: number = +channelBData.field8;
-
-    const humidity = +channelAData.field7;
-
-    const timestamp = new Date(channelAData.created_at);
-
-    return new this(
-      timestamp,
-      Math.max(channelAAtmPm, channelACf1Pm),
-      Math.max(channelBAtmPm, channelBCf1Pm),
-      humidity,
-      +purpleAirResponse.latitude,
-      +purpleAirResponse.longitude
-    );
-  }
-
-  /**
    * Creates single line of CSV code, used for exporting data.
    * Values should be in same order as getCsvHeader.
    */
   toCsvLine(): string {
+    // TODO: update with percent difference and one channel reading
     return (
       `${this.timestamp.toISOString()}, ` +
       `${this.channelAPm25}, ` +
@@ -137,13 +98,59 @@ export default class SensorReading {
    * Values should be in same order as toCsvLine.
    */
   static getCsvHeader(): string {
+    // TODO: update with percent difference and one channel reading
     return (
       'timestamp, ' +
-      'channelAPm25, ' +
-      'channelBPm25, ' +
+      'pm25, ' +
+      'percentDifference, ' +
       'humidity, ' +
       'latitude, ' +
       'longitude\n'
     );
+  }
+
+  /**
+   * TODO: invert this to getPercentDifference
+   * @param a - sum of psuedo averages for channel A
+   * @param b - sum of psuedo averages for channel B
+   * @returns confidence value
+   */
+  static getConfidence(a: number, b: number) {
+    const diff = Math.abs(a - b);
+    const avg = (a + b) / 2;
+    const meanPercentDiff = (diff / avg) * 100;
+    const pc = Math.max(Math.round((meanPercentDiff) / 1.6) - 25, 0);
+    return Math.max(100 - pc, 0);
+  }
+}
+
+export class PurpleAirReading {
+  name: string;
+  id: number;
+  latitude: number;
+  longitude: number;
+  pm25: number;
+  humidity: number;
+  confidence: number;
+  timestamp: Date;
+
+  constructor(
+    name: string,
+    id: number,
+    latitude: number,
+    longitude: number,
+    pm25: number,
+    humidity: number,
+    confidence: number,
+    timestamp: Date
+  ) {
+    this.name = name;
+    this.id = id;
+    this.latitude = latitude;
+    this.longitude = longitude;
+    this.pm25 = pm25;
+    this.humidity = humidity;
+    this.confidence = confidence;
+    this.timestamp = timestamp;
   }
 }

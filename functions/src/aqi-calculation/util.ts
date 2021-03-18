@@ -1,33 +1,11 @@
-import PurpleAirResponse from './purple-air-response';
 import CleanedReadings from './cleaned-reading';
 import axios from 'axios';
 import SensorReading from './sensor-reading';
 import {firestore, Timestamp} from '../admin';
 
-const thingspeakUrl: (channelId: string) => string = (channelId: string) =>
-  `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
-
 const readingsSubcollection: (docId: string) => string = (docId: string) =>
   `/sensors/${docId}/readings`;
 
-/**
- * Fetches the Thingspeak API key from PurpleAir using the PurpleAir sensor ID
- * @param purpleAirId - PurpleAir sensor ID
- */
-async function getThingspeakKeysFromPurpleAir(
-  purpleAirId: string
-): Promise<PurpleAirResponse> {
-  const PURPLE_AIR_API_ADDRESS = 'https://www.purpleair.com/json';
-
-  const purpleAirApiResponse = await axios({
-    url: PURPLE_AIR_API_ADDRESS,
-    params: {
-      show: purpleAirId,
-    },
-  });
-
-  return new PurpleAirResponse(purpleAirApiResponse);
-}
 
 /**
  * Gets the hourly averages for the past 12 hours for a single sensor. If less than
@@ -162,9 +140,7 @@ interface SensorData {
 }
 
 export {
-  thingspeakUrl,
   readingsSubcollection,
-  getThingspeakKeysFromPurpleAir,
   getHourlyAverages,
   cleanAverages,
 };

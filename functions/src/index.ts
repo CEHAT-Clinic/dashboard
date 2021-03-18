@@ -1,6 +1,5 @@
 import axios from 'axios';
-import PurpleAirResponse from './aqi-calculation/purple-air-response';
-import SensorReading from './aqi-calculation/sensor-reading';
+import SensorReading, {PurpleAirReading} from './aqi-calculation/sensor-reading';
 import NowCastConcentration from './aqi-calculation/nowcast-concentration';
 import {
   generateReadingsCsv,
@@ -9,9 +8,7 @@ import {
 import { firestore, Timestamp, FieldValue, functions, config } from './admin';
 import { aqiFromPm25 } from './aqi-calculation/calculate-aqi';
 import {
-  thingspeakUrl,
   readingsSubcollection,
-  getThingspeakKeysFromPurpleAir,
   getHourlyAverages,
   cleanAverages,
   SensorData,
@@ -24,42 +21,114 @@ import {
   populateDefaultBuffer,
 } from './aqi-calculation/buffer';
 
-const thingspeakToFirestoreRuntimeOpts: functions.RuntimeOptions = {
-  timeoutSeconds: 120,
-};
-
-exports.thingspeakToFirestore = functions
-  .runWith(thingspeakToFirestoreRuntimeOpts)
-  .pubsub.schedule('every 2 minutes')
+exports.purpleAirToFirestore = functions.pubsub
+  .schedule('every 2 minutes')
   .onRun(async () => {
-    const sensorList = (await firestore.collection('/sensors').get()).docs;
+    const fieldList = [
+      'sensor_index',
+      'name',
+      'latitude',
+      'longitude',
+      'confidence',
+      'pm2.5',
+      'humidity',
+      'last_seen'
+    ];
 
-    for (const knownSensor of sensorList) {
-      const data = knownSensor.data();
-      const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
-        data['purpleAirId']
-      );
-      const channelAPrimaryData = await axios({
-        url: thingspeakUrl(thingspeakInfo.channelAPrimaryId),
-        params: {
-          api_key: thingspeakInfo.channelAPrimaryKey, // eslint-disable-line camelcase
-          results: 1,
-        },
-      });
-      const channelBPrimaryData = await axios({
-        url: thingspeakUrl(thingspeakInfo.channelBPrimaryId),
-        params: {
-          api_key: thingspeakInfo.channelBPrimaryKey, // eslint-disable-line camelcase
-          results: 1,
-        },
-      });
-      const reading = SensorReading.fromThingspeak(
-        channelAPrimaryData,
-        channelBPrimaryData,
-        thingspeakInfo
-      );
+    // Fetch data from PurpleAir API
+    // The Group ID for the CEHAT's sensors is 490
+    const purpleAirApiUrl = 'https://api.purpleair.com/v1/groups/490/members';
+    try {
+      const purpleAirResponse = await axios
+        .get(purpleAirApiUrl, {
+          headers: {
+            'X-API-Key': config.purpleair.read_key,
+          },
+          params: {
+            fields: fieldList.join(),
+          },
+        });
+      const readingsMap: Map<number, PurpleAirReading> = new Map();
+      const purpleAirData = purpleAirResponse.data;
 
-      const docId = knownSensor.id;
+      // Create index map
+      const fields: string[] = purpleAirData.fields;
+
+      function addReadingToMap(data: (string | number)[]): void {
+        const reading = {} as PurpleAirReading;
+        data.forEach((value, index) => {
+          const fieldName = fields[index];
+          switch (fieldName) {
+            case ('sensor_index'): {
+              if (typeof value === 'number') {
+                reading.id = value;
+              }
+              break;
+            }
+            case ('name'): {
+              if (typeof value === 'string') {
+                reading.name = value;
+              }
+              break;
+            }
+            case ('latitude'): {
+              if (typeof value === 'number') {
+                reading.latitude = value;
+              }
+              break;
+            }
+            case ('longitude'): {
+              if (typeof value === 'number') {
+                reading.longitude = value;
+              }
+              break;
+            }
+            case ('confidence'): {
+              if (typeof value === 'number') {
+                reading.confidence = value;
+              }
+              break;
+            }
+            case ('pm2.5'): {
+              if (typeof value === 'number') {
+                reading.pm25 = value;
+              }
+              break;
+            }
+            case ('humidity'): {
+              if (typeof value === 'number') {
+                reading.humidity = value;
+              }
+              break;
+            }
+            case ('last_seen'): {
+              if (typeof value === 'number') {
+                // TODO: verify that this is the correct number
+                reading.timestamp = new Date(value);
+              }
+              break;
+            }
+            default: {
+              // Unknown field
+              break;
+            }
+          }
+        })
+        if (reading && reading.id) {
+          readingsMap.set(reading.id, reading);
+        }
+      }
+
+      // Use the fields indices to get the data
+      const readingList: (string | number)[][] = purpleAirData.data;
+      readingList.forEach(reading => addReadingToMap(reading));
+
+      const dataTimeStamp: number = purpleAirData.data_time_stamp;
+
+      // Add the readings to the historical database
+    for (const [purpleAirId, reading] of readingsMap) {
+      // TODO: get docId from current-readings
+      const docId = '';
       const resolvedPath = readingsSubcollection(docId);
       const readingsRef = firestore.collection(resolvedPath);
 
@@ -76,18 +145,19 @@ exports.thingspeakToFirestore = functions
         // Update reading with values
         firestoreSafeReading = {
           timestamp: Timestamp.fromDate(reading.timestamp),
-          channelAPm25: reading.channelAPm25,
-          channelBPm25: reading.channelBPm25,
+          pm25: reading.pm25,
           humidity: reading.humidity,
           latitude: reading.latitude,
           longitude: reading.longitude,
+          confidence: reading.confidence
         };
         // Add to historical readings
         await readingsRef.add(firestoreSafeReading);
       }
 
       // Add readings to the PM 2.5 buffer
-      const sensorDocRef = firestore.collection('sensors').doc(knownSensor.id);
+      const sensorDocRef = firestore.collection('sensors').doc(docId);
+      const data = (await sensorDocRef.get()).data() ?? {};
       const status = data.pm25BufferStatus ?? bufferStatus.DoesNotExist;
       // If the buffer status is In Progress we don't update the buffer
       // because the buffer is still being initialized
@@ -115,94 +185,11 @@ exports.thingspeakToFirestore = functions
         populateDefaultBuffer(false, docId);
       }
     }
-
-    // Delays the loop so that we hopefully don't overload Thingspeak, avoiding
-    // our program from getting blocked.
-    // Allocates up to a minute of the two minute runtime for delaying
-    const oneMinuteInMilliseconds = 60000;
-    const delayBetweenSensors = oneMinuteInMilliseconds / sensorList.length;
-    await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
-  });
-
-exports.purpleAirToFirestore = functions.pubsub
-  .schedule('every 2 minutes')
-  .onRun(async () => {
-    enum ChannelStatus {
-      Normal,
-      aDowngraded,
-      bDowngraded,
-      bothDowngraded
-    }
-    interface PurpleAirSensorReading {
-      'name': string;
-      'latitude': number;
-      'longitude': number;
-      'pm.25': number;
-      'humidity': number;
-      'last_seen': number;
-      'confidence': number;
-      'channelStatus': ChannelStatus;
+    } catch (error) {
+      // TODO: handle error codes from Firestore and PurpleAir
     }
 
-    const fieldList = [
-      'sensor_index',
-      'name',
-      'latitude',
-      'longitude',
-      'last_seen',
-      'channel_state',
-      'channel_flags',
-      'confidence',
-      'pm2.5',
-      'humidity'
-    ];
-
-    // Fetch data from PurpleAir API
-    const purpleAirApiUrl = 'https://api.purpleair.com/v1/groups/490/members';
-    const readingsListPromise = axios
-      .get(purpleAirApiUrl, {
-        headers: {
-          'X-API-Key': config.purpleair.read_key,
-        },
-        params: {
-          fields: fieldList.join(),
-        },
-      })
-      .then(axiosResponse => {
-        type Value = string | number;
-        const readings: PurpleAirSensorReading[] = [];
-        const data = axiosResponse.data;
-        // Create index map
-        const fields: string[] = data.fields;
-        const indexToField = new Map<number, string>();
-        fields.forEach((field, index) => indexToField.set(index, field))
-
-        const dataTimeStamp: number = data.data_time_stamp;
-        const channelStates: string[] = data.channel_states;
-        const channelFlags: string[] = data.channelFlags;
-
-        for (const sensorData of data.data) {
-          const data: Value[] = sensorData;
-          const reading: PurpleAirSensorReading = {} as PurpleAirSensorReading;
-          data.forEach((value, index) => {
-            const fieldName = indexToField.get(index);
-            if (fieldName) {
-              // TODO: figure out how to match up values
-              // reading[fieldName] = value;
-            }
-          })
-          readings.push()
-        }
-        return readings;
-      })
-      .catch(error => {
-        if (error.response) {
-          console.log(error.response.data);
-          return [] as PurpleAirSensorReading[];
-        } else {
-          throw new Error(error);
-        }
-      });
+    
   });
 
 exports.calculateAqi = functions.pubsub
