@@ -20,8 +20,8 @@ const Health: React.FC = () => {
     <Flex width="full" align="center" direction="column" padding={8}>
       <Heading as="h1">{t('pageHeading')}</Heading>
       <Flex
-        padding={8}
-        margin={8}
+        padding={2}
+        margin={2}
         width="full"
         borderWidth={1}
         borderRadius={8}
@@ -77,8 +77,8 @@ const Health: React.FC = () => {
         </Box>
       </Flex>
       <Box
-        padding={8}
-        margin={8}
+        padding={2}
+        margin={2}
         width="full"
         borderWidth={1}
         borderRadius={8}
@@ -94,8 +94,8 @@ const Health: React.FC = () => {
         <AqiTable />
       </Box>
       <Box
-        padding={8}
-        margin={8}
+        padding={2}
+        margin={2}
         width="full"
         borderWidth={1}
         borderRadius={8}
@@ -106,8 +106,8 @@ const Health: React.FC = () => {
         <Text>{t('protection.paragraph2')}</Text>
       </Box>
       <Box
-        padding={8}
-        margin={8}
+        padding={2}
+        margin={2}
         width="full"
         borderWidth={1}
         borderRadius={8}
