@@ -192,13 +192,7 @@ class Map extends React.Component<MapProps> {
               map.addObject(marker);
             }
           }
-        } else {
-          // If doc.data() does not exist
-          throw new Error('No data in the pm25 document');
         }
-      } else {
-        // If doc does not exist
-        throw new Error('No pm25 document in current-reading collection');
       }
     });
 
