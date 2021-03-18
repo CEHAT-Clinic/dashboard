@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import Map from '../components/Map/Map';
-import {Text, Heading, Box, Flex, Spacer} from '@chakra-ui/react';
+import {Text, Box, Flex, Spacer} from '@chakra-ui/react';
 import AqiDial from '../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
 import AqiGraph from '../components/AqiGraph';
@@ -56,7 +56,6 @@ const Home: () => JSX.Element = () => {
             height={['100%', null, '100%', null]}
             borderRadius={6}
           >
-            <Heading>{t('dataVizBox')}</Heading>
             <AqiGraph sensorDocId={currentSensorDocId} />
           </Box>
         </Flex>
