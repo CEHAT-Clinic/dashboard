@@ -20,7 +20,7 @@ import {
   Center,
   Text,
   Divider,
-  Tooltip,
+  IconButton,
 } from '@chakra-ui/react';
 import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -178,35 +178,52 @@ const ManageSensors: () => JSX.Element = () => {
   /**
    * Interface for MoreInfoPopover used for type safety
    */
-  interface MoreInfoPopoverProps {
+  interface MoreInfoHeadingProps {
     message: string;
+    heading: string;
   }
 
   /**
-   * Creates a clickable question mark icon and popover that explains the table field
-   * @param message - help message displayed in popover when clicked
+   * Table heading that includes a clickable question mark icon.
+   * When the question mark icon is clicked, a popover appears that explains the
+   * table field.
+   * @param heading - heading for the column with the help icon
+   * @param message - help message displayed in popover when help icon clicked
    */
-  const MoreInfoPopover: ({message}: MoreInfoPopoverProps) => JSX.Element = ({
+  const MoreInfoHeading: ({
     message,
-  }: MoreInfoPopoverProps) => {
+    heading,
+  }: MoreInfoHeadingProps) => JSX.Element = ({
+    message,
+    heading,
+  }: MoreInfoHeadingProps) => {
     return (
-      <Popover>
-        <PopoverTrigger>
-          <QuestionOutlineIcon />
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Heading fontSize="medium">{t('common:moreInformation')}</Heading>
-          </PopoverHeader>
-          <PopoverBody>
-            <Text fontWeight="normal" fontSize="md" textTransform="none">
-              {message}
-            </Text>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
+      <Flex alignItems="center">
+        <Text>{heading}</Text>
+        <Popover>
+          <PopoverTrigger>
+            <IconButton
+              size="xs"
+              variant="unstyled"
+              isRound
+              aria-label={t('common:moreInformation')}
+              icon={<QuestionOutlineIcon />}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
+              <Heading fontSize="medium">{t('common:moreInformation')}</Heading>
+            </PopoverHeader>
+            <PopoverBody>
+              <Text fontWeight="normal" fontSize="md" textTransform="none">
+                {message}
+              </Text>
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      </Flex>
     );
   };
 
@@ -271,19 +288,22 @@ const ManageSensors: () => JSX.Element = () => {
                   <Th>{t('sensors.latitude')}</Th>
                   <Th>{t('sensors.longitude')}</Th>
                   <Th>
-                    {/* TODO: get the popover on the same line as the text */}
-                    <Box>
-                      <Text>{t('sensors.status')}</Text>
-                      <MoreInfoPopover message={t('sensors.activeNote')} />
-                    </Box>
+                    <MoreInfoHeading
+                      heading={t('sensors.status')}
+                      message={t('sensors.activeNote')}
+                    />
                   </Th>
                   <Th>
-                    <Text>{t('sensors.validAqiTime')}</Text>
-                    <MoreInfoPopover message={t('sensors.lastValidAqiTimeNote')} />
+                    <MoreInfoHeading
+                      heading={t('sensors.validAqiTime')}
+                      message={t('sensors.lastValidAqiTimeNote')}
+                    />
                   </Th>
                   <Th>
-                    <Text>{t('sensors.readingTime')}</Text>
-                    <MoreInfoPopover message={t('sensors.lastReadingTimeNote')} />
+                    <MoreInfoHeading
+                      heading={t('sensors.readingTime')}
+                      message={t('sensors.lastReadingTimeNote')}
+                    />
                   </Th>
                   <Th>{t('sensors.activeHeading')}</Th>
                 </Tr>

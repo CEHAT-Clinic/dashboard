@@ -110,7 +110,8 @@
           "Td",
           "Tbody",
           "Lngs",
-          "Idioma"
+          "Idioma",
+          "unstyled"
         ],
         "skipWords": [
           "Pv"
