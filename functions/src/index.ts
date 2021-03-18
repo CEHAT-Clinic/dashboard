@@ -180,7 +180,7 @@ exports.calculateAqi = functions.pubsub
           sensorDocData.pm25Buffer ?? [];
 
         // Get current sensor readings
-        const hourlyAverages = getHourlyAverages(
+        const hourlyAverages: SensorReading[] = getHourlyAverages(
           pm25BufferStatus,
           pm25BufferIndex,
           pm25Buffer

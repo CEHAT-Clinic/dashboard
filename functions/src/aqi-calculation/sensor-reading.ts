@@ -39,12 +39,12 @@ export default class SensorReading {
     const firstReadingData = readings[0];
     const latitude = firstReadingData.latitude;
     const longitude = firstReadingData.longitude;
-    const timestamp = firstReadingData.timestamp;
+    
     // Force that the timestamp is not null. This function is called on an array
     // where we filter by timestamp !== null, so we know that the timestamps are
     // non-null.
     /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    const safeTimestamp: FirebaseFirestore.Timestamp = timestamp!;
+    const timestamp: FirebaseFirestore.Timestamp = firstReadingData.timestamp!;
 
     for (const reading of readings) {
       channelAPmReadingSum += reading.channelAPm25;
@@ -57,7 +57,7 @@ export default class SensorReading {
     const humidityAverage = humiditySum / readings.length;
 
     return new this(
-      safeTimestamp.toDate(),
+      timestamp.toDate(),
       channelAPmReadingAverage,
       channelBPmReadingAverage,
       humidityAverage,

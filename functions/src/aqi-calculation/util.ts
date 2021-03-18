@@ -42,7 +42,7 @@ async function getThingspeakKeysFromPurpleAir(
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns - a SensorReading array of length 12 with the average pm2.5 value for each of the last 12 hours
+ * @returns - a SensorReading array of length 12 with the average PM 2.5 value for each of the last 12 hours
  */
 function getHourlyAverages(
   status: bufferStatus,
@@ -65,7 +65,6 @@ function getHourlyAverages(
       } else if (startIndex < 0 && endIndex > 0) {
         // This case occurs when we reach the end of the circular buffer, so some
         // data is at the end of the buffer and some is at the beginning.
-
         // Segment from the end of the buffer
         const leftArray = buffer.slice(
           buffer.length + startIndex,
@@ -95,8 +94,7 @@ function getHourlyAverages(
       // Remove all invalid readings
       readings.filter(element => element.timestamp !== null);
       if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-        const reading = SensorReading.averageReadings(readings);
-        averages[hoursAgo] = reading;
+        averages[hoursAgo] = SensorReading.averageReadings(readings);
       }
     }
   }
