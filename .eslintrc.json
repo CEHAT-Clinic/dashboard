@@ -111,7 +111,8 @@
           "Tbody",
           "Lngs",
           "Idioma",
-          "Unordered"
+          "Unordered",
+          "unstyled"
         ],
         "skipWords": [
           "Pv"

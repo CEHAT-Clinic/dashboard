@@ -45,7 +45,7 @@ export default class NowCastConcentration {
     let currentHourWeight = 1;
     // Most recent hour has index 0, older readings have larger indices
     // Formula from the EPA at
-    // https://www.airnow.gov/faqs/how-nowcast-algorithm-used-report/
+    // https://usepa.servicenowservices.com/airnow?id=kb_article&sys_id=fed0037b1b62545040a1a7dbe54bcbd4
     for (let i = 0; i < cleanedAverages.readings.length; i++) {
       if (!Number.isNaN(cleanedAverages.readings[i])) {
         weightedAverageSum += currentHourWeight * cleanedAverages.readings[i];
