@@ -20,7 +20,7 @@ const Home: () => JSX.Element = () => {
   return (
     <Box>
       <Text>{t('constructionNotice')}</Text>
-      <Flex direction={['column', 'column', 'row', 'row']} marginTop={4}>
+      <Flex direction={['column', 'column', 'row', 'row']} marginY={5}>
         <Box flex="2" marginX={4} height={['100%']}>
           <Map
             updateCurrentReading={setCurrentSensorReading}
@@ -31,6 +31,7 @@ const Home: () => JSX.Element = () => {
           direction="column"
           textAlign="center"
           width={['100%', null, '40%', null]}
+          height={'85vh'}
         >
           <Box
             background="#E2E8F0"

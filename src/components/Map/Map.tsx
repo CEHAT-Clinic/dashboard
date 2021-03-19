@@ -242,7 +242,7 @@ class Map extends React.Component<MapProps> {
 
   render(): JSX.Element {
     return (
-      <Box height="500px">
+      <Box height={["450px", null,"85vh", null]}>
         <div ref={this.mapRef} style={{height: '100%'}} />
       </Box>
     );
