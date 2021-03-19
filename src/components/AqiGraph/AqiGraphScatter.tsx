@@ -1,7 +1,16 @@
 import React, {useEffect, useState} from 'react';
-import {Text, Box, Button} from '@chakra-ui/react';
-import {ScatterChart, XAxis, YAxis, Scatter} from 'recharts';
-import firebase, {firestore} from '../firebase';
+import {Text, Box, Button, Flex} from '@chakra-ui/react';
+import {
+  ScatterChart,
+  XAxis,
+  YAxis,
+  Scatter,
+  CartesianGrid,
+  LineChart,
+  Line,
+  ResponsiveContainer,
+} from 'recharts';
+import firebase, {firestore} from '../../firebase';
 
 /**
  * Enumeration for the status of a buffer. If a buffer is 'InProgress', it is
@@ -56,7 +65,7 @@ interface GraphData {
  * reading for the currently selected sensor. Additionally, there is a key below
  * the dial to label each color on the dial with how severe the health risk is.
  */
-const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
+const AqiGraphScatter: ({sensorDocId}: GraphProps) => JSX.Element = ({
   sensorDocId,
 }: GraphProps) => {
   const [data, setData] = useState<GraphData>({
@@ -67,7 +76,9 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     veryUnhealthy: [],
     hazardous: [],
   });
+  // Const [data, setData] = useState<GraphElement[]>([]);
   const [displayGraph, setDisplayGraph] = useState(false);
+  const [yAxisLimit, setYAxisLimit] = useState(0);
 
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
@@ -85,6 +96,8 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
           const data = doc.data();
           if (data) {
             const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? [];
+            const aqiBufferIndex: number = data.aqiBufferIndex ?? 0;
+            // Const allData: Array<GraphElement> = [];
             const allData: GraphData = {
               good: [],
               moderate: [],
@@ -93,12 +106,33 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               veryUnhealthy: [],
               hazardous: [],
             };
+
+            // TODO: fix this for wrapping
+            const currentDate = new Date();
+            const currentDay = currentDate.getDay();
+            const currentHour =
+              currentDate.getHours() + currentDate.getMinutes() / 60;
+            let maxAqi = 0;
             for (let i = 0; i < aqiBuffer.length; i++) {
-              const element = aqiBuffer[i];
+              const index = (aqiBufferIndex + i) % aqiBuffer.length;
+              const element = aqiBuffer[index];
               if (element.timestamp) {
                 const date = element.timestamp.toDate();
-                const hours = date.getHours();
-                const newElement: GraphElement = {x: hours, y: element.aqi};
+                const hour = date.getHours() + date.getMinutes() / 60;
+                let hoursAgo = 0;
+                // If it's today
+                if (date.getDay() === currentDay) {
+                  hoursAgo = currentHour - hour;
+                } else {
+                  // If it's yesterday
+                  hoursAgo = currentHour + (24 - hour);
+                }
+                hoursAgo = Math.max(Math.min(hoursAgo, 24), 0);
+                if (element.aqi > maxAqi) {
+                  maxAqi = element.aqi;
+                }
+                const newElement: GraphElement = {x: hoursAgo, y: element.aqi};
+                // AllData.push(newElement);
                 if (element.aqi <= good) {
                   allData.good.push(newElement);
                 } else if (element.aqi < moderate) {
@@ -114,6 +148,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
                 }
               }
             }
+            setYAxisLimit(Math.max(maxAqi, 300));
             setData(allData);
           }
         }
@@ -124,8 +159,8 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     return (
       <Box>
         <Button
-          paddingY={2}
-          marginTop={10}
+          paddingY={0.25}
+          marginTop={0.5}
           colorScheme={'blue'}
           onClick={event => setDisplayGraph(!displayGraph)}
         >
@@ -135,22 +170,67 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
             <Text>Click to Display Data</Text>
           )}
         </Button>
-        <Text>{sensorDocId}</Text>
         {displayGraph ? (
-          <ScatterChart width={400} height={400}>
-            <XAxis dataKey="x" name="hour" unit="" />
-            <YAxis dataKey="y" name="AQI" unit="" />
-            <Scatter name="Good" data={data.good} fill="#08E400" />
-            <Scatter name="Moderate" data={data.moderate} fill="#FEFF00" />
-            <Scatter name="Sensitive" data={data.sensitive} fill="#FF7E02" />
-            <Scatter name="Unhealthy" data={data.unhealthy} fill="#FF0202" />
-            <Scatter
-              name="Very Unhealthy"
-              data={data.veryUnhealthy}
-              fill="#8F3F97"
-            />
-            <Scatter name="Hazardous" data={data.hazardous} fill="#7E0224" />
-          </ScatterChart>
+          <Flex justifyContent="center" paddingY={3}>
+            <ResponsiveContainer height={250} width="90%">
+              <ScatterChart>
+                <CartesianGrid
+                  horizontalFill={[
+                    '#7E0224',
+                    '#8F3F97',
+                    '#FF0202',
+                    '#FF7E02',
+                    '#FEFF00',
+                    '#08E400',
+                  ]}
+                  fillOpacity={0.2}
+                />
+                <XAxis
+                  type="number"
+                  dataKey="x"
+                  label={{value: 'Hours Ago', position: 'Bottom', dy: 15}}
+                  height={40}
+                  name="Hours Ago"
+                  ticks={[0, 6, 12, 18, 24]}
+                  reversed={true}
+                  padding={{left: 4, right: 4}}
+                  interval={0}
+                  domain={[0, 24]}
+                />
+                <YAxis
+                  dataKey="y"
+                  name="AQI"
+                  unit=""
+                  label={{value: 'AQI', position: 'Right', dx: -20, rotate: 0}}
+                  ticks={[0, 50, 100, 150, 200, 300, 320]}
+                  interval={0}
+                  range={[0, yAxisLimit + 10]}
+                />
+                <Scatter name="Good" data={data.good} fill="#08E400" />
+                <Scatter name="Moderate" data={data.moderate} fill="#FEFF00" />
+                <Scatter
+                  name="Sensitive"
+                  data={data.sensitive}
+                  fill="#FF7E02"
+                />
+                <Scatter
+                  name="Unhealthy"
+                  data={data.unhealthy}
+                  fill="#FF0202"
+                />
+                <Scatter
+                  name="Very Unhealthy"
+                  data={data.veryUnhealthy}
+                  fill="#8F3F97"
+                />
+                <Scatter
+                  name="Hazardous"
+                  data={data.hazardous}
+                  fill="#7E0224"
+                />
+              </ScatterChart>
+            </ResponsiveContainer>
+          </Flex>
         ) : (
           <></>
         )}
@@ -165,4 +245,4 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   }
 };
 
-export default AqiGraph;
+export default AqiGraphScatter;
