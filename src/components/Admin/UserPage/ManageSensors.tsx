@@ -20,7 +20,9 @@ import {
   Center,
   Text,
   Divider,
+  IconButton,
 } from '@chakra-ui/react';
+import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
@@ -175,6 +177,58 @@ const ManageSensors: () => JSX.Element = () => {
   };
 
   /**
+   * Interface for MoreInfoPopover used for type safety
+   */
+  interface MoreInfoHeadingProps {
+    message: string;
+    heading: string;
+  }
+
+  /**
+   * Table heading that includes a clickable question mark icon.
+   * When the question mark icon is clicked, a popover appears that explains the
+   * table field.
+   * @param heading - heading for the column with the help icon
+   * @param message - help message displayed in popover when help icon clicked
+   */
+  const MoreInfoHeading: ({
+    message,
+    heading,
+  }: MoreInfoHeadingProps) => JSX.Element = ({
+    message,
+    heading,
+  }: MoreInfoHeadingProps) => {
+    return (
+      <Flex alignItems="center">
+        <Text>{heading}</Text>
+        <Popover>
+          <PopoverTrigger>
+            <IconButton
+              size="xs"
+              variant="unstyled"
+              isRound
+              aria-label={t('common:moreInformation')}
+              icon={<QuestionOutlineIcon />}
+            />
+          </PopoverTrigger>
+          <PopoverContent>
+            <PopoverArrow />
+            <PopoverCloseButton />
+            <PopoverHeader>
+              <Heading fontSize="medium">{t('common:moreInformation')}</Heading>
+            </PopoverHeader>
+            <PopoverBody>
+              <Text fontWeight="normal" fontSize="md" textTransform="none">
+                {message}
+              </Text>
+            </PopoverBody>
+          </PopoverContent>
+        </Popover>
+      </Flex>
+    );
+  };
+
+  /**
    *
    * @param timestamp - the time to convert
    * @returns human readable date time string, unknown if null
@@ -237,9 +291,24 @@ const ManageSensors: () => JSX.Element = () => {
                   <Th>{t('sensors.purpleAirId')}</Th>
                   <Th>{t('sensors.latitude')}</Th>
                   <Th>{t('sensors.longitude')}</Th>
-                  <Th>{t('sensors.status')}</Th>
-                  <Th>{t('sensors.validAqiTime')}</Th>
-                  <Th>{t('sensors.readingTime')}</Th>
+                  <Th>
+                    <MoreInfoHeading
+                      heading={t('sensors.status')}
+                      message={t('sensors.activeNote')}
+                    />
+                  </Th>
+                  <Th>
+                    <MoreInfoHeading
+                      heading={t('sensors.validAqiTime')}
+                      message={t('sensors.lastValidAqiTimeNote')}
+                    />
+                  </Th>
+                  <Th>
+                    <MoreInfoHeading
+                      heading={t('sensors.readingTime')}
+                      message={t('sensors.lastReadingTimeNote')}
+                    />
+                  </Th>
                   <Th>{t('sensors.activeHeading')}</Th>
                 </Tr>
               </Thead>

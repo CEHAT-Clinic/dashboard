@@ -121,14 +121,14 @@
         "latitude": "Latitud",
         "longitude": "Longitud",
         "status": "Estado actual",
-        "validAqiTime": "Hora de AQI válido más reciente",
-        "readingTime": "Hora de la lectura del sensor más reciente",
+        "validAqiTime": "Hora de AQI",
+        "readingTime": "Hora de la lectura del PM2.5",
         "activeHeading": "¿Activo?",
-        "activate": "Activar el sensor",
-        "confirmActivate": "¿Estás seguro de que quieres activar el sensor: ",
+        "activate": "Activar",
+        "confirmActivate": "Confirma que quieres activar el sensor ",
         "activateNote": "Tenga en cuenta que el AQI de este sensor no aparecerá en el mapa durante al menos 2 horas hasta que se recopilen datos suficientes para calcular el AQI de este sensor.",
-        "deactivate": "Desactivar el sensor",
-        "confirmDeactivate": "¿Estás seguro de que quieres desactivar el sensor: ",
+        "deactivate": "Desactivar",
+        "confirmDeactivate": "Confirma que quieres desactivar el sensor ",
         "deactivateNote": "Tenga en cuenta que este sensor puede tardar hasta 10 minutos en eliminarse del mapa del sitio web. La desactivación del sensor no eliminará ningún dato histórico del sensor, pero dejará de recopilar nuevos datos del sensor. Esto tampoco hará cambios en el sitio web de PurpleAir.",
         "active": "activo",
         "inactive": "inactivo",
@@ -139,6 +139,9 @@
         "hideAddHelp": "Ocultar ayuda",
         "addHelpPurpleAirId": "Para encontrar el PurpleAir ID, ir al mapa del PurpleAir, y haz click que quieres añadir. En el elemento emergente para el sensor, coloca el cursor sobre el 'Get This Widget', que se encuentra en la parte inferior. Esto mostrará un texto como este: '<div id='PurpleAirWidget_39165_module_...'. El PurpleAir ID es el numero después del PurpleAirWidget, entonces en este caso, el PurpleAir ID es 39165.",
         "sensorAlreadyExists": "Un sensor con este PurpleAir ID ya existe",
-        "unknown": "desconocido"
+        "unknown": "desconocido",
+        "activeNote": "Activo indica si este sitio web recopila datos y muestra un sensor. Esto no refleja ningún cambio en el sitio de PurpleAir.",
+        "lastReadingTimeNote": "La hora de la lectura de sensor más reciente es la última vez que este sitio web recibió una nueva lectura de sensor de PurpleAir. Si el sensor está activo y el tiempo es antiguo, esto puede significar que el sensor ya no envía nuevas lecturas.",
+        "lastValidAqiTimeNote": "La hora del último tiempo válido de AQI se refiere a la última vez que un sensor tuvo suficientes datos buenos para calcular un AQI. Los sensores PurpleAir tienen dos sensores llamados canal A y canal B, y si las lecturas de los dos canales son demasiado diferentes durante un período de 24 horas, entonces no usamos la lectura del sensor de ese momento."
     }
 }

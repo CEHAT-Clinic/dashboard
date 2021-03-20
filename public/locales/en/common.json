@@ -5,5 +5,6 @@
     "generalError": "Error occurred. Please try again",
     "generalErrorTemplate": "Error occurred: ",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "moreInformation": "More Information"
 }

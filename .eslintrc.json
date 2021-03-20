@@ -111,6 +111,8 @@
           "Tbody",
           "Lngs",
           "Idioma",
+          "Unordered",
+          "unstyled",
           "axios",
           "camelcase"
         ],
