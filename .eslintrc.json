@@ -48,7 +48,8 @@
     "no-magic-numbers": [
       "warn",
       {
-        "ignoreArrayIndexes": true
+        "ignoreArrayIndexes": true,
+        "ignore": [0,1]
       }
     ],
     "no-multi-spaces": "warn",
@@ -60,6 +61,9 @@
       "warn",
       {
         "skipWordIfMatch": [
+          "85vh",
+          "dx",
+          "dy",
           "aqi",
           "Figma",
           "Aqi",

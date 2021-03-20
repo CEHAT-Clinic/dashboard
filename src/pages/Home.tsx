@@ -45,7 +45,7 @@ const Home: () => JSX.Element = () => {
             {currentSensorReading ? (
               <AqiDial currentAqi={currentSensorReading} />
             ) : (
-              <Text marginTop={[null, null, '20%', null]}>
+              <Text marginTop={[null, null, '20%', null]} fontSize={20}>
                 {t('noActiveSensor')}
               </Text>
             )}
@@ -59,7 +59,7 @@ const Home: () => JSX.Element = () => {
             height={['100%', null, '100%', null]}
             borderRadius={6}
           >
-            <AqiGraphScatterStack sensorDocId={currentSensorDocId} />
+            <AqiGraphScatter sensorDocId={currentSensorDocId} />
           </Box>
         </Flex>
       </Flex>
