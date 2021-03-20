@@ -3,13 +3,13 @@ import {Pm25BufferElement} from './buffer';
 /**
  * TODO: Fill comment
  * pm25 is the average of channels A and B
- * percentDifference is calculated from PurpleAir's confidence value
- * a and b are the psuedo averages
+ * meanPercentDifference is calculated from PurpleAir's confidence value
+ * a and b are the pseudo averages
  */
 export default class SensorReading {
   timestamp: Date;
   pm25: number;
-  percentDifference: number;
+  meanPercentDifference: number;
   humidity: number;
   latitude: number;
   longitude: number;
@@ -17,14 +17,14 @@ export default class SensorReading {
   constructor(
     timestamp: Date,
     pm25: number,
-    percentDifference: number,
+    meanPercentDifference: number,
     humidity: number,
     latitude: number,
     longitude: number
   ) {
     this.timestamp = timestamp;
     this.pm25 = pm25;
-    this.percentDifference = percentDifference;
+    this.meanPercentDifference = meanPercentDifference;
     this.humidity = humidity;
     this.latitude = latitude;
     this.longitude = longitude;
@@ -34,18 +34,20 @@ export default class SensorReading {
    *
    * @param readings - Array of non-null Pm25BufferElements
    */
-  static averageReadings(readings: Array<Pm25BufferElement>): SensorReading {
+  static averageReadings(
+    latitude: number,
+    longitude: number,
+    readings: Array<Pm25BufferElement>
+  ): SensorReading {
     let pmReadingSum = 0;
     let humiditySum = 0;
 
-    // TODO: decide how to handle percentDifference
+    // TODO: decide how to handle meanPercentDifference
     // Perhaps don't bother here? Filter out bad readings beforehand?
-    let percentDifferenceSum = 0;
+    let meanPercentDifferenceSum = 0;
 
     // Guaranteed to be okay because this function should only be called with >= 27 items
     const firstReadingData = readings[0];
-    const latitude = firstReadingData.latitude;
-    const longitude = firstReadingData.longitude;
 
     // Force that the timestamp is not null. This function is called on an array
     // where we filter by timestamp !== null, so we know that the timestamps are
@@ -56,17 +58,18 @@ export default class SensorReading {
     for (const reading of readings) {
       pmReadingSum += reading.pm25;
       humiditySum += reading.humidity;
-      percentDifferenceSum += reading.percentDifference;
+      meanPercentDifferenceSum += reading.meanPercentDifference;
     }
 
     const pmReadingAverage = pmReadingSum / readings.length;
     const humidityAverage = humiditySum / readings.length;
-    const percentDifferenceAverage = percentDifferenceSum = readings.length;
+    const meanPercentDifferenceAverage =
+      meanPercentDifferenceSum / readings.length;
 
     return new this(
       timestamp.toDate(),
       pmReadingAverage,
-      percentDifferenceAverage,
+      meanPercentDifferenceAverage,
       humidityAverage,
       latitude,
       longitude
@@ -78,10 +81,23 @@ export default class SensorReading {
    * @param data - Firestore document from sensors/sensorDocId/readings collection
    */
   static fromFirestore(data: FirebaseFirestore.DocumentData): SensorReading {
+    if (data.channelAPm25) {
+      const pm25Average = (data.channelAPm25 + data.channelBPm25) / 2; // eslint-disable-line no-magic-numbers
+      const difference = Math.abs(data.channelAPm25 - data.channelBPm25);
+      const meanPercentDifference = difference / pm25Average;
+      return new this(
+        data.timestamp.toDate(),
+        pm25Average,
+        meanPercentDifference,
+        data.humidity,
+        data.latitude,
+        data.longitude
+      );
+    }
     return new this(
       data.timestamp.toDate(),
-      data.channelAPm25,
-      data.channelBPm25,
+      data.pm25,
+      data.meanPercentDifference,
       data.humidity,
       data.latitude,
       data.longitude
@@ -96,7 +112,7 @@ export default class SensorReading {
     return (
       `${this.timestamp.toISOString()}, ` +
       `${this.pm25}, ` +
-      `${this.percentDifference}, ` +
+      `${this.meanPercentDifference}, ` +
       `${this.humidity}, ` +
       `${this.latitude}, ` +
       `${this.longitude}\n`
@@ -111,55 +127,10 @@ export default class SensorReading {
     return (
       'timestamp, ' +
       'pm25, ' +
-      'percentDifference, ' +
+      'meanPercentDifference, ' +
       'humidity, ' +
       'latitude, ' +
       'longitude\n'
     );
-  }
-
-  /**
-   * TODO: invert this to getPercentDifference
-   * @param a - sum of psuedo averages for channel A
-   * @param b - sum of psuedo averages for channel B
-   * @returns percentDifference value
-   */
-  static getpercentDifference(a: number, b: number) {
-    const diff = Math.abs(a - b);
-    const avg = (a + b) / 2;
-    const meanPercentDiff = (diff / avg) * 100;
-    const pc = Math.max(Math.round((meanPercentDiff) / 1.6) - 25, 0);
-    return Math.max(100 - pc, 0);
-  }
-}
-
-export class PurpleAirReading {
-  name: string;
-  id: number;
-  latitude: number;
-  longitude: number;
-  pm25: number;
-  humidity: number;
-  percentDifference: number;
-  timestamp: Date;
-
-  constructor(
-    name: string,
-    id: number,
-    latitude: number,
-    longitude: number,
-    pm25: number,
-    humidity: number,
-    percentDifference: number,
-    timestamp: Date
-  ) {
-    this.name = name;
-    this.id = id;
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.pm25 = pm25;
-    this.humidity = humidity;
-    this.percentDifference = percentDifference;
-    this.timestamp = timestamp;
   }
 }

@@ -7,10 +7,8 @@ import {firestore} from '../admin';
 interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
   pm25: number;
-  percentDifference: number;
+  meanPercentDifference: number;
   humidity: number;
-  latitude: number;
-  longitude: number;
 }
 
 /**
@@ -22,10 +20,8 @@ interface Pm25BufferElement {
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
   pm25: NaN,
-  percentDifference: NaN,
+  meanPercentDifference: NaN,
   humidity: NaN,
-  latitude: NaN,
-  longitude: NaN,
 };
 
 /**

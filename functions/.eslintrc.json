@@ -99,7 +99,9 @@
           "Subcollection",
           "breakpoint",
           "Breakpoint",
-          "micrograms"
+          "micrograms",
+          "pc",
+          "purpleair"
         ]
       }
     ]

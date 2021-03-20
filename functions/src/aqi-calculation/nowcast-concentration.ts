@@ -1,5 +1,7 @@
-import CleanedReadings from './cleaned-reading';
-
+import {CleanedReadings} from './cleaned-readings';
+/**
+ * TODO: Add description
+ */
 export default class NowCastConcentration {
   latitude: number;
   longitude: number;
