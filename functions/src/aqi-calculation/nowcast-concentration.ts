@@ -1,4 +1,4 @@
-import {CleanedReadings} from './cleaned-readings';
+import {CleanedReadings} from './cleaned-reading';
 /**
  * TODO: Add description
  */

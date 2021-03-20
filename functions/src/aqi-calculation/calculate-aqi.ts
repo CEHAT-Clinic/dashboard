@@ -9,7 +9,7 @@ import {
 import {CurrentReadingSensorData} from './util';
 import NowCastConcentration from './nowcast-concentration';
 import SensorReading from './sensor-reading';
-import {cleanAverages, getHourlyAverages} from './cleaned-readings';
+import {cleanAverages, getHourlyAverages} from './cleaned-reading';
 
 /**
  * Computes the AQI for PM 2.5 given the appropriate AQI breakpoints.
