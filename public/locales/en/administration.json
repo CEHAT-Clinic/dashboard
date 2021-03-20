@@ -137,7 +137,6 @@
         "addComplete": "Sensor added",
         "showAddHelp": "Show help",
         "hideAddHelp": "Hide help",
-        "addHelpSensorName": "To find the sensor name, go to the PurpleAir map, and click on the sensor you want to add. On the popup for the sensor, the sensor's name is bolded after 'Sensor: '. For example, for the sensor named 'CEHAT 5', this looks like 'Sensor: CEHAT 5'.",
         "addHelpPurpleAirId": "To find the PurpleAir ID, go to the PurpleAir map, and click on the sensor you want to add. On the popup for the sensor, hover over 'Get This Widget', which is at the bottom. This will show text like this: '<div id='PurpleAirWidget_39165_module_...'. The PurpleAir ID is the number after the PurpleAirWidget, so in this case, the PurpleAir ID is 39165.",
         "sensorAlreadyExists": "A sensor with this PurpleAir ID already exists",
         "unknown": "unknown"

@@ -24,6 +24,7 @@ import {useTranslation} from 'react-i18next';
 import {SubmitButton} from '../Authentication/Util';
 import {firestore} from '../../../firebase';
 import {useAuth} from '../../../contexts/AuthContext';
+import axios from 'axios';
 
 /**
  * Component to add a new sensor. Includes a button to make the modal pop up
@@ -33,8 +34,7 @@ function AddSensorModal(): JSX.Element {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isAdmin} = useAuth();
-  const [sensorName, setSensorName] = useState('');
-  const [sensorPurpleAirId, setSensorPurpleAirId] = useState('');
+  const [sensorPurpleAirId, setSensorPurpleAirId] = useState(NaN);
   const [showHelp, setShowHelp] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -48,8 +48,7 @@ function AddSensorModal(): JSX.Element {
    */
   function handleClose() {
     setError('');
-    setSensorName('');
-    setSensorPurpleAirId('');
+    setSensorPurpleAirId(NaN);
     setIsLoading(false);
     setSensorAdded(false);
     onClose();
@@ -65,34 +64,49 @@ function AddSensorModal(): JSX.Element {
 
     if (isAdmin) {
       setIsLoading(true);
-      // Check to see that a sensor with that PurpleAir ID does not already exist
-      firestore
-        .collection('sensors')
-        .where('purpleAirId', '==', sensorPurpleAirId)
-        .get()
-        .then(querySnapshot => {
-          if (querySnapshot.empty) {
-            firestore
-              .collection('sensors')
-              .add({
-                name: sensorName,
-                purpleAirId: sensorPurpleAirId,
-                latitude: NaN,
-                longitude: NaN,
-                isActive: true,
-                isValid: false,
-                lastValidAqiTime: null,
-                lastSensorReadingTime: null,
-              })
-              .then(() => {
-                setSensorAdded(true);
-                setSensorName('');
-                setSensorPurpleAirId('');
-              })
-              .catch(error => setError(error.message));
-          } else {
-            setError(t('sensors.sensorAlreadyExists'));
-          }
+      // Add to PurpleAir Group
+      // TODO: test this
+      const purpleAirGroupApiUrl =
+        'https://api.purpleair.com/v1/groups/490/members';
+
+      // Add the sensor to the sensor group 490
+      axios
+        .post(purpleAirGroupApiUrl, {
+          headers: {
+            'X-API-Key': process.env.REACT_APP_PURPLEAIR_WRITE_API_KEY,
+          },
+          params: {
+            sensor_index: sensorPurpleAirId, // eslint-disable-line camelcase
+          },
+        })
+        .then(purpleAirResponse => {
+          const sensorData = purpleAirResponse.data.sensor;
+          // Check to see that a sensor with that PurpleAir ID does not already exist
+          firestore
+            .collection('sensors')
+            .where('purpleAirId', '==', sensorPurpleAirId)
+            .get()
+            .then(querySnapshot => {
+              if (querySnapshot.empty) {
+                firestore
+                  .collection('sensors')
+                  .add({
+                    name: sensorData.name,
+                    purpleAirId: sensorPurpleAirId,
+                    latitude: sensorData.latitude,
+                    longitude: sensorData.longitude,
+                    isActive: true,
+                    isValid: false,
+                    lastValidAqiTime: null,
+                    lastSensorReadingTime: null,
+                  })
+                  .then(() => setSensorAdded(true))
+                  .catch(error => setError(error.message));
+              } else {
+                setError(t('sensors.sensorAlreadyExists'));
+              }
+            })
+          .catch(error => setError(error.message));
         })
         .catch(error => setError(error.message))
         .finally(() => setIsLoading(false));
@@ -117,25 +131,14 @@ function AddSensorModal(): JSX.Element {
               </Flex>
             ) : (
               <ModalBody>
-                <FormControl isRequired marginTop={4}>
-                  <FormLabel>{t('sensors.name')}</FormLabel>
-                  <Input
-                    placeholder="CEHAT 14"
-                    size="md"
-                    onChange={event => {
-                      setSensorName(event.target.value);
-                      setError('');
-                    }}
-                    value={sensorName}
-                  />
-                </FormControl>
                 <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
                   <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
                   <Input
                     placeholder="30971"
+                    type="number"
                     size="md"
                     onChange={event => {
-                      setSensorPurpleAirId(event.target.value);
+                      setSensorPurpleAirId(+event.target.value);
                       setError('');
                     }}
                     value={sensorPurpleAirId}
@@ -150,10 +153,6 @@ function AddSensorModal(): JSX.Element {
                 </Button>
                 {showHelp && (
                   <Box marginTop={2}>
-                    <Heading fontSize="md">{t('sensors.name')}</Heading>
-                    <Text marginBottom={2}>
-                      {t('sensors.addHelpSensorName')}
-                    </Text>
                     <Heading fontSize="md">{t('sensors.purpleAirId')}</Heading>
                     <Text>{t('sensors.addHelpPurpleAirId')}</Text>
                   </Box>
