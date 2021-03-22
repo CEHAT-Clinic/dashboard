@@ -70,21 +70,21 @@ exports.thingspeakToFirestore = functions
 
         // If the lastSensorReadingTime field isn't set, query the readings
         // collection to find the timestamp of the most recent reading.
-        const lastSensorReadingTime: FirebaseFirestore.Timestamp | null =
+        const lastSensorReadingTimestamp: FirebaseFirestore.Timestamp | null =
           sensorDocData.lastSensorReadingTime ??
           (await getLastSensorReadingTime(readingsCollectionRef));
 
         // Timestamp of the current reading
-        const readingTimestamp: FirebaseFirestore.Timestamp | null = Timestamp.fromDate(
+        const currentSensorReadingTimestamp: FirebaseFirestore.Timestamp = Timestamp.fromDate(
           reading.timestamp
         );
 
         // Before adding the reading to the historical database, check that it doesn't
         // already exist in the database
-        if (lastSensorReadingTime !== readingTimestamp) {
+        if (lastSensorReadingTimestamp !== currentSensorReadingTimestamp) {
           // Update the buffer element from the default element
           pm25BufferElement = {
-            timestamp: Timestamp.fromDate(reading.timestamp),
+            timestamp: currentSensorReadingTimestamp,
             channelAPm25: reading.channelAPm25,
             channelBPm25: reading.channelBPm25,
             humidity: reading.humidity,
@@ -92,7 +92,7 @@ exports.thingspeakToFirestore = functions
 
           // Add to historical readings
           const historicalSensorReading: HistoricalSensorReading = {
-            timestamp: Timestamp.fromDate(reading.timestamp),
+            timestamp: currentSensorReadingTimestamp,
             channelAPm25: reading.channelAPm25,
             channelBPm25: reading.channelBPm25,
             humidity: reading.humidity,
@@ -116,7 +116,7 @@ exports.thingspeakToFirestore = functions
               pm25BufferIndex:
                 (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
               pm25Buffer: pm25Buffer,
-              lastSensorReadingTime: readingTimestamp,
+              lastSensorReadingTime: currentSensorReadingTimestamp,
               latitude: reading.latitude,
               longitude: reading.longitude,
             });
@@ -128,7 +128,7 @@ exports.thingspeakToFirestore = functions
             // initializing the buffer is time consuming
             await sensorDocRef.update({
               pm25BufferStatus: bufferStatus.InProgress,
-              lastSensorReadingTime: readingTimestamp,
+              lastSensorReadingTime: currentSensorReadingTimestamp,
               latitude: reading.latitude,
               longitude: reading.longitude,
             });

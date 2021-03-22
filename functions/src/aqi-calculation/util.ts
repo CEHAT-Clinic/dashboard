@@ -40,9 +40,12 @@ async function getLastSensorReadingTime(
     .orderBy('timestamp', 'desc')
     .limit(maxDocs)
     .get();
-  querySnapshot.forEach(doc => {
-    lastSensorReadingTime = doc.data().timestamp ?? null;
-  });
+  // There should only be one document in docs, but loops over docs since it's an array
+  for (const sensorDoc of querySnapshot.docs) {
+    if (sensorDoc.data().timestamp) {
+      lastSensorReadingTime = sensorDoc.data().timestamp;
+    }
+  }
   return lastSensorReadingTime;
 }
 
