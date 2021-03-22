@@ -9,8 +9,6 @@ interface Pm25BufferElement {
   channelAPm25: number;
   channelBPm25: number;
   humidity: number;
-  latitude: number;
-  longitude: number;
 }
 
 /**
@@ -24,8 +22,6 @@ const defaultPm25BufferElement: Pm25BufferElement = {
   channelAPm25: NaN,
   channelBPm25: NaN,
   humidity: NaN,
-  latitude: NaN,
-  longitude: NaN,
 };
 
 /**
