@@ -2,8 +2,8 @@ import {Pm25BufferElement, bufferStatus} from './buffer';
 
 /**
  * Basic sensor reading used in data cleaning
- * - `channelAPm25` - channelA PM 2.5 reading
- * - `channelBPm25` - channelB PM 2.5 reading
+ * - `channelAPm25` - channelA PM2.5 reading
+ * - `channelBPm25` - channelB PM2.5 reading
  * - `humidity` - humidity reading
  */
 interface BasicReading {
@@ -43,7 +43,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns - a BasicReading array of length 12 with the average PM 2.5 value for each of the last 12 hours
+ * @returns - a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
@@ -137,7 +137,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
           difference / averagePmReading > PERCENT_THRESHOLD
         )
       ) {
-        // Formula from EPA to correct PurpleAir PM 2.5 readings
+        // Formula from EPA to correct PurpleAir PM2.5 readings
         // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
         /* eslint-disable no-magic-numbers */
         cleanedAverages[i] =
@@ -161,7 +161,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns an array of numbers representing the corrected PM 2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
  */
 function getCleanedAverages(
   status: bufferStatus,
@@ -179,7 +179,7 @@ function getCleanedAverages(
 }
 
 /**
- * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM 2.5 readings
+ * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
  * @param cleanedAverages - A list of numbers with 12 hours of data where at
  *                         least two of the last three hours are valid data points
  */

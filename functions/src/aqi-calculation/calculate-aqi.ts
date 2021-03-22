@@ -13,14 +13,14 @@ import {
 } from './cleaned-reading';
 
 /**
- * Computes the AQI for PM 2.5 given the appropriate AQI breakpoints.
+ * Computes the AQI for PM2.5 given the appropriate AQI breakpoints.
  * In most use cases, this function will be called from a function which knows those breakpoints.
  *
  * Adapted from EPA function available at https://www.airnow.gov/sites/default/files/custom-js/conc-aqi.js
  *
- * @param pm25Concentration - the PM 2.5 concentration (in micrograms per cubic meter) to calculate the AQI for
- * @param lowConcentrationBreakpoint - the low breakpoint for PM 2.5 that the concentration falls within
- * @param highConcentrationBreakpoint - the high breakpoint for PM 2.5 that the concentration falls within
+ * @param pm25Concentration - the PM2.5 concentration (in micrograms per cubic meter) to calculate the AQI for
+ * @param lowConcentrationBreakpoint - the low breakpoint for PM2.5 that the concentration falls within
+ * @param highConcentrationBreakpoint - the high breakpoint for PM2.5 that the concentration falls within
  * @param lowIndexBreakpoint - the low breakpoint for AQI that the AQI will fall between
  * @param highIndexBreakpoint - the high breakpoint for AQI that the AQI will fall between
  */
@@ -44,18 +44,18 @@ function indexCalculation(
 }
 
 /**
- * Computes the AQI for a given PM 2.5 concentration in micrograms per cubic meter.
+ * Computes the AQI for a given PM2.5 concentration in micrograms per cubic meter.
  *
  * Adapted from EPA functions available at https://www.airnow.gov/sites/default/files/custom-js/conc-aqi.js
- * @param pm25Concentration - the PM 2.5 concentration (in micrograms per cubic meter) to calculate the AQI for
- * @returns the AQI for a given PM 2.5 concentration
- * @remarks The value is rounded to the nearest integer for valid AQI ranges. If the PM 2.5 concentration is less than zero, the reported AQI is negative infinity. If the PM 2.5 concentration is too high ("beyond the AQI" in EPA parlance), positive infinity is reported.
+ * @param pm25Concentration - the PM2.5 concentration (in micrograms per cubic meter) to calculate the AQI for
+ * @returns the AQI for a given PM2.5 concentration
+ * @remarks The value is rounded to the nearest integer for valid AQI ranges. If the PM2.5 concentration is less than zero, the reported AQI is negative infinity. If the PM2.5 concentration is too high ("beyond the AQI" in EPA parlance), positive infinity is reported.
  */
 function aqiFromPm25(pm25Concentration: number): number {
   // Source of bound values is Table 6 of the paper at
   // https://www.airnow.gov/sites/default/files/2018-05/aqi-technical-assistance-document-may2016.pdf
   /* eslint-disable no-magic-numbers */
-  // EPA formulas require PM 2.5 to be truncated to one decimal place
+  // EPA formulas require PM2.5 to be truncated to one decimal place
   const truncatedPm25 = Math.floor(10 * pm25Concentration) / 10;
 
   let aqi = 0;
@@ -189,7 +189,7 @@ async function calculateAqi(): Promise<void> {
       const NOWCAST_RECENT_DATA_THRESHOLD = 2;
       if (validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD) {
         // If the calculated AQI is infinity, then the sensor value is not valid
-        // Only calculate the NowCast PM 2.5 value and the AQI if there is enough data
+        // Only calculate the NowCast PM2.5 value and the AQI if there is enough data
         const nowCastPm25 = cleanedReadingsToNowCastPm25(cleanedAverages);
         const aqi = aqiFromPm25(nowCastPm25);
         if (

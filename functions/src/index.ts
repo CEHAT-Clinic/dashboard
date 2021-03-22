@@ -102,7 +102,7 @@ exports.thingspeakToFirestore = functions
           await readingsCollectionRef.add(historicalSensorReading);
         }
 
-        // Add readings to the PM 2.5 buffer
+        // Add readings to the PM2.5 buffer
         const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
         const status =
           sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;

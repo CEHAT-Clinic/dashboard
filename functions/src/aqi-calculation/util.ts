@@ -50,8 +50,8 @@ async function getLastSensorReadingTime(
  * Sensor reading data that is stored in the readings subcollection
  * - `latitude` - latitude of a sensor
  * - `longitude` - longitude of a sensor
- * - `channelAPm25` - PM 2.5 reading for channel A
- * - `channelBPm25` - PM 2.5 reading for channel B
+ * - `channelAPm25` - PM2.5 reading for channel A
+ * - `channelBPm25` - PM2.5 reading for channel B
  * - `humidity` - humidity reading for a sensor
  * - `timestamp` - the timestamp of the current reading
  */
@@ -71,10 +71,10 @@ interface HistoricalSensorReading {
  * - `name` - PurpleAir sensor name
  * - `latitude` - latitude of sensor
  * - `longitude` - longitude of sensor
- * - `isValid` - if the current NowCast PM 2.5 and AQI value are valid
+ * - `isValid` - if the current NowCast PM2.5 and AQI value are valid
  * - `isActive` - if we should be actively gathering data for the sensor
  * - `aqi` - the current AQI for the sensor, or `NaN` if not enough valid data
- * - `nowCastPm25` - the current NowCast corrected PM 2.5, or `NaN` if not enough valid data
+ * - `nowCastPm25` - the current NowCast corrected PM2.5, or `NaN` if not enough valid data
  * - `readingDocId` - document ID of the for the sensor in the sensors collection in Firestore
  * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
  * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown

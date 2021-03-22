@@ -4,7 +4,7 @@ import PurpleAirResponse from './purple-air-response';
 /**
  * Complete sensor reading from PurpleAir used for data processing
  * - `timestamp` - timestamp of the sensor reading
- * - `channelAPm25` - channelA PM 2.5 reading
+ * - `channelAPm25` - channelA PM2.5 reading
  * - `channelBPm25` - channelB Pm 2.5 reading
  * - `humidity` - humidity reading
  * - `latitude` - latitude of the sensor
