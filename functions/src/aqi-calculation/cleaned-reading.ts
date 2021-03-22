@@ -29,7 +29,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
 
   const averageReading: BasicReading = {
     channelAPm25: channelAPm25Sum / readings.length,
-    channelBPm25: channelAPm25Sum / readings.length,
+    channelBPm25: channelBPm25Sum / readings.length,
     humidity: humiditySum / readings.length,
   };
 
