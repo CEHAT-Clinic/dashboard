@@ -36,7 +36,7 @@ interface AqiBufferElement {
 
 /**
  * This is the default element for the AQI buffer. The buffer is initialized
- * with default elements at every index. When we don't have enough valid PM 2.5
+ * with default elements at every index. When we don't have enough valid PM2.5
  * data to calculate AQI, we put a default element in the buffer.
  */
 const defaultAqiBufferElement: AqiBufferElement = {
@@ -60,8 +60,8 @@ export enum bufferStatus {
 
 /**
  * This function populates the given sensor doc with a default circular buffer
- * for either AQI or PM 2.5
- * @param aqiBuffer - true if AQI buffer, false if PM 2.5 buffer
+ * for either AQI or PM2.5
+ * @param aqiBuffer - true if AQI buffer, false if PM2.5 buffer
  * @param docId - document ID for the sensor to update
  */
 function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {

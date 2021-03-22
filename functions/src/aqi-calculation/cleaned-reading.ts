@@ -43,17 +43,17 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
 /**
  * Gets the hourly averages for the past 12 hours for a single sensor. If less than
  * 90% of the readings are available for a time period, it leaves the data for that hour
- * as undefined per the EPA guidance to ignore hours without 90% of the data.
- *
- * Note: In the event that a sensor is moved, this function will report meaningless data for
- * the twelve hour period after the sensor is moved. This is because data from both locations
- * will be treated as if they came from the same location because the function assumes a sensor
- * is stationary.
- *
+ * as undefined per the EPA guidance to ignore hours without 75% of the data.
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns - a SensorReading array of length 12 with the average PM 2.5 value for each of the last 12 hours
+ * @returns - a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours
+ *
+ * @remarks
+ * In the event that a sensor is moved, this function will report meaningless data for
+ * the twelve hour period after the sensor is moved. This is because data from both locations
+ * will be treated as if they came from the same location because the function assumes a sensor
+ * is stationary.
  */
 function getHourlyAverages(
   status: bufferStatus,
@@ -113,12 +113,12 @@ function getHourlyAverages(
 }
 
 /**
- * Cleans hourly averages of PM 2.5 readings using the published EPA formula,
+ * Cleans hourly averages of PM2.5 readings using the published EPA formula,
  * excluding thoses data points that indicate sensor malfunction. Those
  * data points are represented by NaN.
  *
  * @param averages - array containing sensor readings representing hourly averages
- * @returns an array of numbers representing the corrected PM 2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
  *
  * @remarks
  * The EPA recommends that you only use a reading if the raw difference between
@@ -159,7 +159,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns an array of numbers representing the corrected PM 2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
  */
 function getCleanedAverages(
   status: bufferStatus,
@@ -177,7 +177,7 @@ function getCleanedAverages(
 }
 
 /**
- * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM 2.5 readings
+ * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
  * @param cleanedAverages - A list of numbers with 12 hours of data where at
  *                         least two of the last three hours are valid data points
  */
