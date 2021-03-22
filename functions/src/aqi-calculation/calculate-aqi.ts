@@ -134,7 +134,6 @@ function aqiFromPm25(pm25Concentration: number): number {
  * updates the `current-readings` AQI data and AQI-validity status. Also updates
  * the aqiBuffer in each sensor doc.
  */
-  
 
 async function calculateAqi(): Promise<void> {
   // Initialize the currentData map
@@ -145,7 +144,7 @@ async function calculateAqi(): Promise<void> {
     .collection('sensors')
     .where('isActive', '==', true)
     .get();
-    
+
   for (const sensorDoc of activeSensorDocsSnapshot.docs) {
     const sensorDocData = sensorDoc.data();
 
