@@ -17,19 +17,19 @@ interface BasicReading {
  * @param readings - Array of non-null Pm25BufferElements
  */
 function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
-  let channelAPmSum = 0;
-  let channelBPmSum = 0;
+  let channelAPm25Sum = 0;
+  let channelBPm25Sum = 0;
   let humiditySum = 0;
 
   for (const reading of readings) {
-    channelAPmSum += reading.channelAPm25;
-    channelBPmSum += reading.channelBPm25;
+    channelAPm25Sum += reading.channelAPm25;
+    channelBPm25Sum += reading.channelBPm25;
     humiditySum += reading.humidity;
   }
 
   const averageReading: BasicReading = {
-    channelAPm25: channelAPmSum / readings.length,
-    channelBPm25: channelAPmSum / readings.length,
+    channelAPm25: channelAPm25Sum / readings.length,
+    channelBPm25: channelAPm25Sum / readings.length,
     humidity: humiditySum / readings.length,
   };
 
