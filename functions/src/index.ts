@@ -30,12 +30,12 @@ exports.thingspeakToFirestore = functions
   .runWith(thingspeakToFirestoreRuntimeOpts)
   .pubsub.schedule('every 2 minutes')
   .onRun(async () => {
-    const sensorDocQuerySnapshot = await firestore
+    const activeSensorDocsSnapshot = await firestore
       .collection('sensors')
       .where('isActive', '==', true)
       .get();
 
-    for (const sensorDoc of sensorDocQuerySnapshot.docs) {
+    for (const sensorDoc of activeSensorDocsSnapshot.docs) {
       const sensorDocData = sensorDoc.data();
       if (sensorDocData.purpleAirId) {
         const thingspeakInfo: PurpleAirResponse = await getThingspeakKeysFromPurpleAir(
@@ -151,7 +151,7 @@ exports.thingspeakToFirestore = functions
     // Allocates up to a minute of the two minute runtime for delaying
     const oneMinuteInMilliseconds = 60000;
     const delayBetweenSensors =
-      oneMinuteInMilliseconds / sensorDocQuerySnapshot.docs.length;
+      oneMinuteInMilliseconds / activeSensorDocsSnapshot.docs.length;
     await new Promise(resolve => setTimeout(resolve, delayBetweenSensors));
   });
 

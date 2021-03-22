@@ -39,7 +39,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
 /**
  * Gets the hourly averages for the past 12 hours for a single sensor. If less than
  * 90% of the readings are available for a time period, it leaves the data for that hour
- * as undefined per the EPA guidance to ignore hours without 90% of the data.
+ * as undefined per the EPA guidance to ignore hours without 75% of the data.
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
@@ -148,7 +148,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
         cleanedAverages[i] = Number.NaN;
       }
     } else {
-      // If less than 27 data points were available for that hour, the reading
+      // If less than 23 data points were available for that hour, the reading
       // would have been undefined
       cleanedAverages[i] = Number.NaN;
     }
