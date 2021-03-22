@@ -1,9 +1,15 @@
+/**
+ * Get the readings subcollection path from a sensor's doc ID
+ * @param docId - document ID of the sensor in the sensors collection
+ * @returns the path to the readings subcollection for a sensor
+ *
+ */
 const readingsSubcollection: (docId: string) => string = (docId: string) =>
   `/sensors/${docId}/readings`;
 
 /**
- * Interface for the structure of a sensor's data, used in the current-reading
- * collection.
+ * Interface for the structure of a sensor's data, used in the `current-reading`
+ * collection in the `sensors` doc.
  * - `purpleAirId` - PurpleAir sensor ID
  * - `name` - PurpleAir sensor name
  * - `latitude` - latitude of sensor

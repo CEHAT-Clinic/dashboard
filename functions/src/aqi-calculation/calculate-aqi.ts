@@ -7,9 +7,10 @@ import {
   Pm25BufferElement,
 } from './buffer';
 import {CurrentReadingSensorData} from './util';
-import NowCastConcentration from './nowcast-concentration';
-import SensorReading from './sensor-reading';
-import {cleanAverages, getHourlyAverages} from './cleaned-reading';
+import {
+  getCleanedAverages,
+  cleanedReadingsToNowCastPm25,
+} from './cleaned-reading';
 
 /**
  * Computes the AQI for PM 2.5 given the appropriate AQI breakpoints.
@@ -166,24 +167,19 @@ async function calculateAqi(): Promise<void> {
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
     const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? [];
 
-    // Get current sensor readings
-    const hourlyAverages: SensorReading[] = getHourlyAverages(
+    // Get cleaned hourly averages from the PM2.5 Buffer
+    const cleanedAverages: number[] = getCleanedAverages(
       pm25BufferStatus,
       pm25BufferIndex,
       pm25Buffer
     );
-    const cleanedAverages = cleanAverages(hourlyAverages);
 
     // NowCast formula from the EPA requires 2 out of the last 3 hours
     // to be available
     let validEntriesLastThreeHours = 0;
     const THREE_HOURS = 3;
-    for (
-      let i = 0;
-      i < Math.min(THREE_HOURS, cleanedAverages.readings.length);
-      i++
-    ) {
-      if (!Number.isNaN(cleanedAverages.readings[i])) {
+    for (let i = 0; i < Math.min(THREE_HOURS, cleanedAverages.length); i++) {
+      if (!Number.isNaN(cleanedAverages[i])) {
         validEntriesLastThreeHours++;
       }
     }
@@ -195,19 +191,22 @@ async function calculateAqi(): Promise<void> {
 
     // If there is not enough info, the sensor's status is not valid
     if (validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD) {
+      // If the calculated AQI is infinity, then the sensor value is not valid
       // Only calculate the NowCast PM 2.5 value and the AQI if there is enough data
-      const nowCastPm25Result = NowCastConcentration.fromCleanedAverages(
-        cleanedAverages
-      );
-      currentSensorData.aqi = aqiFromPm25(nowCastPm25Result.reading);
-      currentSensorData.latitude = nowCastPm25Result.latitude;
-      currentSensorData.longitude = nowCastPm25Result.longitude;
-      currentSensorData.nowCastPm25 = nowCastPm25Result.reading;
-      currentSensorData.isValid = true;
-      currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
+      const nowCastPm25 = cleanedReadingsToNowCastPm25(cleanedAverages);
+      const aqi = aqiFromPm25(nowCastPm25);
+      if (
+        aqi !== Number.POSITIVE_INFINITY &&
+        aqi !== Number.NEGATIVE_INFINITY
+      ) {
+        currentSensorData.aqi = aqi;
+        currentSensorData.nowCastPm25 = nowCastPm25;
+        currentSensorData.isValid = true;
+        currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
 
-      aqiBufferData.aqi = currentSensorData.aqi;
-      aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
+        aqiBufferData.aqi = currentSensorData.aqi;
+        aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
+      }
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data

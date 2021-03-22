@@ -123,8 +123,9 @@ function getMeanPercentDifference(confidence: number): number {
       // then the value is data is good enough to meet the EPA recommendation.
       return 0;
     default:
+      // Otherwise, undo the calculation from the PurpleAir confidence value
       /* eslint-disable-next-line no-magic-numbers */
-      return (maxConfidence - confidence + 25) * 1.6;
+      return ((maxConfidence - confidence + 25) * 1.6) / 100;
   }
 }
 

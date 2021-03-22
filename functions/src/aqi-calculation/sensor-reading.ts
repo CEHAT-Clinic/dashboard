@@ -1,10 +1,12 @@
-import {Pm25BufferElement} from './buffer';
-
 /**
- * TODO: Fill comment
- * pm25 is the average of channels A and B
- * meanPercentDifference is calculated from PurpleAir's confidence value
- * a and b are the pseudo averages
+ * Complete sensor reading from PurpleAir used for data processing
+ * - `timestamp` - timestamp of the sensor reading
+ * - `pm25` - PM 2.5 reading, average of the channelA and channelB PM 2.5 readings
+ * - `meanPercentDifference` - mean percent difference between channelA reading
+ *   and channelB reading
+ * - `humidity` - humidity reading
+ * - `latitude` - latitude of the sensor
+ * - `longitude` - longitude of the sensor
  */
 export default class SensorReading {
   timestamp: Date;
@@ -29,56 +31,24 @@ export default class SensorReading {
     this.latitude = latitude;
     this.longitude = longitude;
   }
-  /**
-   * Computes an average reading for the time block provided by the first element
-   *
-   * @param readings - Array of non-null Pm25BufferElements
-   */
-  static averageReadings(
-    latitude: number,
-    longitude: number,
-    readings: Array<Pm25BufferElement>
-  ): SensorReading {
-    let pmReadingSum = 0;
-    let humiditySum = 0;
-
-    // TODO: decide how to handle meanPercentDifference
-    // Perhaps don't bother here? Filter out bad readings beforehand?
-    let meanPercentDifferenceSum = 0;
-
-    // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0];
-
-    // Force that the timestamp is not null. This function is called on an array
-    // where we filter by timestamp !== null, so we know that the timestamps are
-    // non-null.
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    const timestamp: FirebaseFirestore.Timestamp = firstReadingData.timestamp!;
-
-    for (const reading of readings) {
-      pmReadingSum += reading.pm25;
-      humiditySum += reading.humidity;
-      meanPercentDifferenceSum += reading.meanPercentDifference;
-    }
-
-    const pmReadingAverage = pmReadingSum / readings.length;
-    const humidityAverage = humiditySum / readings.length;
-    const meanPercentDifferenceAverage =
-      meanPercentDifferenceSum / readings.length;
-
-    return new this(
-      timestamp.toDate(),
-      pmReadingAverage,
-      meanPercentDifferenceAverage,
-      humidityAverage,
-      latitude,
-      longitude
-    );
-  }
 
   /**
    * Creates a SensorReading object from a Firestore reading doc
    * @param data - Firestore document from sensors/sensorDocId/readings collection
+   *
+   * @remarks
+   * There are two structures to the Firestore historical readings. Through
+   * March 2021, the historical readings include a channelA and channelB PM 2.5
+   * reading. Afterwards, there is only one PM 2.5 reading (the average of the
+   * PM 2.5 readings from channelA and channelB) and the meanPercentDifference,
+   * which is an estimate of the difference over the average of the pseudo averages
+   * of the PM 2.5 readings from channelA and channelB.
+   *
+   * Thus, for data through March 2021, the `meanPercentDifference` field will
+   * be the percent difference between the channelA and channelB reading. For
+   * data after March 2021, the `meanPercentDifference` field will be the mean
+   * percent difference between channelA and channelB, as calculated from the
+   * PurpleAir confidence value.
    */
   static fromFirestore(data: FirebaseFirestore.DocumentData): SensorReading {
     if (data.channelAPm25) {
