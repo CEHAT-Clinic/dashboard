@@ -146,7 +146,7 @@ async function calculateAqi(): Promise<void> {
       purpleAirId: sensorDocData.purpleAirId ?? '',
       name: sensorDocData.name ?? '',
       latitude: sensorDocData.latitude ?? NaN,
-      longitude: sensorDocData.latitude ?? NaN,
+      longitude: sensorDocData.longitude ?? NaN,
       readingDocId: sensorDoc.id,
       lastValidAqiTime: sensorDocData.lastValidAqiTime ?? null,
       lastSensorReadingTime: sensorDocData.lastSensorReadingTime ?? null,
