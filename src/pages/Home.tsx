@@ -123,14 +123,14 @@ const Home: () => JSX.Element = () => {
               </Box>
             )}
             {(!isMobile || showGaugeUI) && (
-              <Box>
+              <Box paddingY={[null,null,1,4]}>
                 {currentSensor ? (
                   <AqiDial currentAqi={currentSensor} />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
                     {t('noActiveSensor')}
                   </Heading>
-                )}{' '}
+                )}
               </Box>
             )}
           </Box>
