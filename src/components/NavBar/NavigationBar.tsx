@@ -11,7 +11,7 @@ function NavigationBar(): JSX.Element {
   // separate because mobile should always be text, even
   // when nav bar is hidden
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 800px)')?.matches ?? false
+    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
 
   // State of nav bar (always visible in large screen)
@@ -31,7 +31,7 @@ function NavigationBar(): JSX.Element {
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 700px)');
+    const screenSize = window.matchMedia('(max-width: 47.9em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
