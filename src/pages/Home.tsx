@@ -12,14 +12,15 @@ const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
   const [currentSensor, setCurrentSensor] = useState('');
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 800px)')?.matches ?? false
+    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
   const [showGraphUI, setShowGraphUI] = useState(false);
   const [showGaugeUI, setShowGaugeUI] = useState(false);
+  const [showMapUI, setShowMapUI] = useState(true);
 
   const {t} = useTranslation('home');
 
-  // -------- Start Code copied from Nav --------- //
+  // -------- Detect screen size for conditional formatting --------- //
   /** Adjust UI for switching between mobile and desktop modes */
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
@@ -32,7 +33,7 @@ const Home: () => JSX.Element = () => {
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 700px)');
+    const screenSize = window.matchMedia('(max-width: 47.9em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
@@ -43,15 +44,51 @@ const Home: () => JSX.Element = () => {
       }
     };
   }, []);
-  // -------- End Code copied from Nav --------- //
+  // -----------------  End detect screen size ----------------- //
 
   return (
     <Box>
       <Text>{t('constructionNotice')}</Text>
-      <Flex direction={['column', 'column', 'row', 'row']} marginY={5}>
-        <Box flex="2" marginX={4} height={['100%']}>
-          <Map updateCurrentSensor={setCurrentSensor} />
-        </Box>
+      <Flex direction={['column', 'column', 'row', 'row']} textAlign="center">
+        {isMobile ? (
+          <Box
+            background="#E2E8F0"
+            flex="2"
+            marginX={4}
+            borderRadius={6}
+            marginTop={5}
+            padding={2}
+          >
+            <Box paddingBottom={1}>
+              <IconButton
+                position="relative"
+                float="right"
+                size="md"
+                aria-label="Toggle Aqi Gauge"
+                variant="ghost"
+                icon={showMapUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                onClick={() => setShowMapUI(!showMapUI)}
+              />
+              {showMapUI ? (
+                <Text paddingY={2}>{t('hideMap')}</Text>
+              ) : (
+                <Text paddingY={2}>{t('expandMap')}</Text>
+              )}
+            </Box>
+            {showMapUI && (
+              <Box>
+                <Map
+                  updateCurrentSensor={setCurrentSensor}
+                  isMobile={isMobile}
+                />
+              </Box>
+            )}
+          </Box>
+        ) : (
+          <Box flex="2" marginX={4} height={['100%']}>
+            <Map updateCurrentSensor={setCurrentSensor} isMobile={isMobile} />
+          </Box>
+        )}
         <Flex
           direction="column"
           textAlign="center"
@@ -78,8 +115,10 @@ const Home: () => JSX.Element = () => {
                   icon={showGaugeUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
                   onClick={() => setShowGaugeUI(!showGaugeUI)}
                 />
-                {!showGaugeUI && (
-                  <Text>Expand to see more about the AQI at this sensor</Text>
+                {showGaugeUI ? (
+                  <Text paddingY={2}>{t('hideAqiGauge')}</Text>
+                ) : (
+                  <Text paddingY={2}>{t('expandAqiGauge')}</Text>
                 )}
               </Box>
             )}
@@ -88,9 +127,9 @@ const Home: () => JSX.Element = () => {
                 {currentSensor ? (
                   <AqiDial currentAqi={currentSensor} />
                 ) : (
-                  <Text marginTop={[null, null, '20%', null]}>
+                  <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
                     {t('noActiveSensor')}
-                  </Text>
+                  </Heading>
                 )}{' '}
               </Box>
             )}
@@ -116,8 +155,10 @@ const Home: () => JSX.Element = () => {
                   icon={showGraphUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
                   onClick={() => setShowGraphUI(!showGraphUI)}
                 />
-                {!showGraphUI && (
-                  <Text>Expand to see a graph of the AQI at this sensor</Text>
+                {showGraphUI ? (
+                  <Text paddingY={2}>{t('hideAqiGraph')}</Text>
+                ) : (
+                  <Text paddingY={2}>{t('expandAqiGraph')}</Text>
                 )}
               </Box>
             )}
