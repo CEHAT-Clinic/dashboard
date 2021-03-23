@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.9",
-    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react": "^7.23.0",
     "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.11",
     "gts": "^3.1.0"
