@@ -123,7 +123,7 @@ const Home: () => JSX.Element = () => {
               </Box>
             )}
             {(!isMobile || showGaugeUI) && (
-              <Box paddingY={[null,null,1,4]}>
+              <Box paddingY={[null, null, '1', '4']}>
                 {currentSensor ? (
                   <AqiDial currentAqi={currentSensor} />
                 ) : (
