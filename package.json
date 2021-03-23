@@ -28,7 +28,7 @@
     "i18next-browser-languagedetector": "^6.0.1",
     "i18next-http-backend": "^1.1.1",
     "navi": "^0.14.0",
-    "react": "^17.0.1",
+    "react": "^17.0.2",
     "react-dom": "^17.0.1",
     "react-gauge-chart": "^0.3.0",
     "react-i18next": "^11.8.10",
@@ -78,7 +78,7 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.9",
-    "eslint-plugin-react": "^7.22.0",
+    "eslint-plugin-react": "^7.23.0",
     "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.11",
     "gts": "^3.1.0"
