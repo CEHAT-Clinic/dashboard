@@ -1,5 +1,11 @@
 {
     "constructionNotice": "NOTE: This Website Is Under Construction. Check Back in April 2021.",
     "noActiveSensor": "Click a sensor on the map to see its AQI value here!",
-    "dataVizBox": "Data Visualization Box"
+    "dataVizBox": "Data Visualization Box",
+    "expandMap": "Expand to see the sensor map",
+    "expandAqiGauge": "Expand to see information about the selected sensor",
+    "expandAqiGraph": "Expand to see a graph of the last 24 hours",
+    "hideMap": "Compress to hide the sensor map",
+    "hideAqiGauge": "Compress to hide information about the selected sensor",
+    "hideAqiGraph": "Compress to hide the graph of the last 24 hours"
 }
