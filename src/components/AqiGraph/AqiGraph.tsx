@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {Text, Box, Button, Flex} from '@chakra-ui/react';
 import {
+  ScatterChart,
   XAxis,
   YAxis,
+  Scatter,
   CartesianGrid,
-  LineChart,
-  Line,
   ResponsiveContainer,
 } from 'recharts';
 import firebase, {firestore} from '../../firebase';
@@ -20,9 +20,6 @@ interface AqiBufferElement {
   aqi: number;
 }
 
-/**
- * Interface for a coordinate pair on our graph
- */
 interface GraphElement {
   x: number;
   y: number;
@@ -37,29 +34,50 @@ interface GraphProps {
   sensorDocId: string;
 }
 
+interface GraphData {
+  good: Array<GraphElement>;
+  moderate: Array<GraphElement>;
+  sensitive: Array<GraphElement>;
+  unhealthy: Array<GraphElement>;
+  veryUnhealthy: Array<GraphElement>;
+  hazardous: Array<GraphElement>;
+}
+
 /**
  * AQI Graph Display Component
  * This component displays a graph for the last 24 hours of AQI data for the
  * currently selected sensor.
  */
-const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
+const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   sensorDocId,
 }: GraphProps) => {
   const defaultYLimit = 300;
-  const minutesPerHour = 60;
   const hoursPerDay = 24;
+  const minutesPerHour = 60;
   /* --------------- state maintenance variables ---------------  */
-  const [data, setData] = useState<GraphElement[]>([]);
+  const [data, setData] = useState<GraphData>({
+    good: [],
+    moderate: [],
+    sensitive: [],
+    unhealthy: [],
+    veryUnhealthy: [],
+    hazardous: [],
+  });
+  // Const [data, setData] = useState<GraphElement[]>([]);
   const [displayGraph, setDisplayGraph] = useState(false);
-  const [yAxisLimit, setYAxisLimit] = useState(defaultYLimit);
+  const [yAxisLimit, setYAxisLimit] = useState(0);
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
 
-  // This effect updates the data every time the user clicks on a new sensor.
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
     if (sensorDocId) {
       const docRef = firestore.collection('sensors').doc(sensorDocId);
+      const good = 50; // Air quality is good (0-50)
+      const moderate = 100; // Air quality is acceptable (51-100)
+      const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
+      const unhealthy = 200; // Health risk for all individuals (151-200)
+      const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
 
       docRef.get().then(doc => {
         if (doc.exists) {
@@ -67,7 +85,14 @@ const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
           if (data) {
             const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? [];
             const aqiBufferIndex: number = data.aqiBufferIndex ?? 0;
-            const allData: Array<GraphElement> = [];
+            const allData: GraphData = {
+              good: [],
+              moderate: [],
+              sensitive: [],
+              unhealthy: [],
+              veryUnhealthy: [],
+              hazardous: [],
+            };
 
             // Get the local time from the user's browser
             const currentDate = new Date();
@@ -75,8 +100,7 @@ const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
             const currentHour =
               currentDate.getHours() +
               currentDate.getMinutes() / minutesPerHour;
-            // Keep track of the highest AQI value to scale the graph
-            let maxAqi = 0;
+            let maxAqi = 0; // Keep track of the highest AQI value to scale the graph
             for (let i = 0; i < aqiBuffer.length; i++) {
               // Get the index starting at the oldest reading and wrapping
               // once we reach the end of the buffer
@@ -97,7 +121,20 @@ const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
                   maxAqi = element.aqi;
                 }
                 const newElement: GraphElement = {x: hoursAgo, y: element.aqi};
-                allData.push(newElement);
+                // Add element to data
+                if (element.aqi <= good) {
+                  allData.good.push(newElement);
+                } else if (element.aqi < moderate) {
+                  allData.moderate.push(newElement);
+                } else if (element.aqi < sensitiveGroups) {
+                  allData.sensitive.push(newElement);
+                } else if (element.aqi < unhealthy) {
+                  allData.unhealthy.push(newElement);
+                } else if (element.aqi < veryUnhealthy) {
+                  allData.veryUnhealthy.push(newElement);
+                } else {
+                  allData.hazardous.push(newElement);
+                }
               }
             }
             setYAxisLimit(Math.max(maxAqi, defaultYLimit));
@@ -158,7 +195,7 @@ const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
         {displayGraph && (
           <Flex justifyContent="center" paddingY={3}>
             <ResponsiveContainer height={250} width="90%">
-              <LineChart data={data}>
+              <ScatterChart>
                 <CartesianGrid
                   horizontalFill={horizontalFill}
                   fillOpacity={0.2}
@@ -186,15 +223,29 @@ const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
                   padding={{top: 1}}
                   domain={[0, yAxisLimit]}
                 />
-                <Line
-                  dataKey="y"
-                  type={'monotone'}
-                  name="Good"
-                  stroke="black"
-                  strokeWidth={2}
-                  dot={false}
+                <Scatter name="Good" data={data.good} fill="#08E400" />
+                <Scatter name="Moderate" data={data.moderate} fill="#FEFF00" />
+                <Scatter
+                  name="Sensitive"
+                  data={data.sensitive}
+                  fill="#FF7E02"
                 />
-              </LineChart>
+                <Scatter
+                  name="Unhealthy"
+                  data={data.unhealthy}
+                  fill="#FF0202"
+                />
+                <Scatter
+                  name="Very Unhealthy"
+                  data={data.veryUnhealthy}
+                  fill="#8F3F97"
+                />
+                <Scatter
+                  name="Hazardous"
+                  data={data.hazardous}
+                  fill="#7E0224"
+                />
+              </ScatterChart>
             </ResponsiveContainer>
           </Flex>
         )}
@@ -202,13 +253,11 @@ const AqiGraphLine: ({sensorDocId}: GraphProps) => JSX.Element = ({
     );
   } else {
     return (
-      <Box>
-        <Text marginTop={[null, null, '20%', null]} fontSize={20}>
-          Select a sensor to see its data
-        </Text>
+      <Box marginTop={[null, null, '20%', null]} fontSize={20}>
+        <Text> Select a sensor to see its data </Text>
       </Box>
     );
   }
 };
 
-export default AqiGraphLine;
+export default AqiGraph;
