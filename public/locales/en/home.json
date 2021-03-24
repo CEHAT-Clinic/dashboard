@@ -5,7 +5,10 @@
     "expandMap": "Expand to see the sensor map",
     "expandAqiGauge": "Expand to see information about the selected sensor",
     "expandAqiGraph": "Expand to see a graph of the last 24 hours",
-    "hideMap": "Compress to hide the sensor map",
-    "hideAqiGauge": "Compress to hide information about the selected sensor",
-    "hideAqiGraph": "Compress to hide the graph of the last 24 hours"
+    "hideMap": "Collapse to hide the sensor map",
+    "hideAqiGauge": "Collapse to hide information about the selected sensor",
+    "hideAqiGraph": "Collapse to hide the graph of the last 24 hours",
+    "toggleMap": "Toggle Sensor Map",
+    "toggleGauge": "Toggle AQI Gauge",
+    "toggleGraph": "Toggle AQI Graph"
 }

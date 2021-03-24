@@ -21,10 +21,15 @@ const Home: () => JSX.Element = () => {
   const {t} = useTranslation('home');
 
   // -------- Detect screen size for conditional formatting --------- //
-  /** Adjust UI for switching between mobile and desktop modes */
+  /**
+   * Adjust UI depending on screenwidth. This function is called from event
+   * listeners with a max-width match media query.
+   * @param this - a media query that either matches or doesn't
+   */
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
     if (this.matches) {
+      // True when the screen-width is at most 47.9em
       setIsMobile(true);
     } else {
       setIsMobile(false);
@@ -64,7 +69,7 @@ const Home: () => JSX.Element = () => {
                 position="relative"
                 float="right"
                 size="md"
-                aria-label="Toggle Aqi Gauge"
+                aria-label={t('toggleMap')}
                 variant="ghost"
                 icon={showMapUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
                 onClick={() => setShowMapUI(!showMapUI)}
@@ -110,7 +115,7 @@ const Home: () => JSX.Element = () => {
                   position="relative"
                   float="right"
                   size="md"
-                  aria-label="Toggle Aqi Gauge"
+                  aria-label={t('toggleGauge')}
                   variant="ghost"
                   icon={showGaugeUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
                   onClick={() => setShowGaugeUI(!showGaugeUI)}
@@ -150,7 +155,7 @@ const Home: () => JSX.Element = () => {
                   position="relative"
                   float="right"
                   size="md"
-                  aria-label="Toggle Aqi Graph"
+                  aria-label={t('toggleGraph')}
                   variant="ghost"
                   icon={showGraphUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
                   onClick={() => setShowGraphUI(!showGraphUI)}
