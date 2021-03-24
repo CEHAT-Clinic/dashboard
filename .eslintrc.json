@@ -115,7 +115,10 @@
           "Td",
           "Tbody",
           "Lngs",
-          "Idioma"
+          "Idioma",
+          "Unordered",
+          "unstyled",
+          "instagram"
         ],
         "skipWords": [
           "Pv"

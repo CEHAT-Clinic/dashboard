@@ -1,6 +1,15 @@
 import {AxiosResponse} from 'axios';
 import PurpleAirResponse from './purple-air-response';
 
+/**
+ * Complete sensor reading from PurpleAir used for data processing
+ * - `timestamp` - timestamp of the sensor reading
+ * - `channelAPm25` - channelA PM2.5 reading
+ * - `channelBPm25` - channelB Pm 2.5 reading
+ * - `humidity` - humidity reading
+ * - `latitude` - latitude of the sensor
+ * - `longitude` - longitude of the sensor
+ */
 export default class SensorReading {
   timestamp: Date;
   channelAPm25: number;
@@ -23,46 +32,6 @@ export default class SensorReading {
     this.humidity = humidity;
     this.latitude = latitude;
     this.longitude = longitude;
-  }
-  /**
-   * Computes an average reading for the time block provided by the first element
-   *
-   * @param readings - Array of documents containing readings from Firestore
-   */
-  static averageDocuments(
-    readings: FirebaseFirestore.QueryDocumentSnapshot<FirebaseFirestore.DocumentData>[]
-  ): SensorReading {
-    let channelAPmReadingSum = 0;
-    let channelBPmReadingSum = 0;
-    let humiditySum = 0;
-
-    // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0].data();
-    const latitude: number = firstReadingData['latitude'];
-    const longitude: number = firstReadingData['longitude'];
-    const timestamp: FirebaseFirestore.Timestamp =
-      firstReadingData['timestamp'];
-
-    for (const reading of readings) {
-      const data = reading.data();
-
-      channelAPmReadingSum += data['channelAPm25'];
-      channelBPmReadingSum += data['channelBPm25'];
-      humiditySum += data['humidity'];
-    }
-
-    const channelAPmReadingAverage = channelAPmReadingSum / readings.length;
-    const channelBPmReadingAverage = channelBPmReadingSum / readings.length;
-    const humidityAverage = humiditySum / readings.length;
-
-    return new this(
-      timestamp.toDate(),
-      channelAPmReadingAverage,
-      channelBPmReadingAverage,
-      humidityAverage,
-      latitude,
-      longitude
-    );
   }
 
   /**
