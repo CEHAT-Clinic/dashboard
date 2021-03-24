@@ -237,7 +237,7 @@ async function getReadingsMap(): Promise<Map<number, PurpleAirReading>> {
  * @param readingsCollectionRef - reference to readings collection for sensor to get the most recent reading time
  * @returns a Promise of the Timestamp of the most recent sensor reading time, or null if no readings
  */
-async function getLastSensorReadingTime(
+ async function getLastSensorReadingTime(
   readingsCollectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>
 ): Promise<FirebaseFirestore.Timestamp | null> {
   let lastSensorReadingTime: FirebaseFirestore.Timestamp | null = null;
@@ -246,21 +246,24 @@ async function getLastSensorReadingTime(
     .orderBy('timestamp', 'desc')
     .limit(maxDocs)
     .get();
-  querySnapshot.forEach(doc => {
-    lastSensorReadingTime = doc.data().timestamp ?? null;
-  });
+  // There should only be one document in docs, but loops over docs since it's an array
+  for (const sensorDoc of querySnapshot.docs) {
+    if (sensorDoc.data().timestamp) {
+      lastSensorReadingTime = sensorDoc.data().timestamp;
+    }
+  }
   return lastSensorReadingTime;
 }
 
 /**
- * Get the PurpleAirReading for a single sensor
+ * Add a PurpleAir sensor to the 490 PurpleAir group. Also returns a reading for the sensor.
  * @param sensorId - the PurpleAir ID for the sensor
  * @returns PurpleAirReading for a sensor
  *
  * @remarks
  * This function is only called when a sensor is not in the 490 group
  */
-async function getPurpleAirReading(
+async function addSensorToPurpleAirGroup(
   sensorId: number
 ): Promise<PurpleAirReading> {
   const purpleAirGroupApiUrl =
@@ -340,7 +343,7 @@ async function purpleAirToFirestore(): Promise<void> {
     const sensorDocData = sensorDoc.data() ?? {};
     const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
     const reading =
-      readingsMap.get(purpleAirId) ?? (await getPurpleAirReading(purpleAirId));
+      readingsMap.get(purpleAirId) ?? (await addSensorToPurpleAirGroup(purpleAirId));
     const readingsCollectionRef = firestore.collection(
       readingsSubcollection(sensorDoc.id)
     );

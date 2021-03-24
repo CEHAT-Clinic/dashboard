@@ -132,6 +132,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
   // indicate malfunction. The EPA requires that the raw difference between
   // the readings be less than 5 and the percent difference be less than 70%
   // We only check the percent threshold due to the data we have access to.
+  // TODO: Choice: discard average when average mPD is >= 0.7, or each individual reading?
   const PERCENT_THRESHOLD = 0.7;
 
   const cleanedAverages = new Array<number>(averages.length);
