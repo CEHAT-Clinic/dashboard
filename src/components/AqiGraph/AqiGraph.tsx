@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, Box, Flex} from '@chakra-ui/react';
+import {Text, Flex} from '@chakra-ui/react';
 import {
   ScatterChart,
   XAxis,
@@ -177,22 +177,53 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     }
   }, [yAxisLimit]);
 
+  const formatLabels = (hoursAgo: number): string => {
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const hoursPerPeriod = 12;
+    const sunday = 6;
+    // Get the local time from the user's browser
+    const date = new Date();
+    let day = date.getDay() - 1; // Subtract 1 to put in [0,6] range
+    let hour = date.getHours() - hoursAgo;
+    const minutes = date.getMinutes();
+    // Adjust values if the label is from the previous day
+    if (hour < 0) {
+      if (day === 0) {
+        day = sunday;
+      } else {
+        day -= 1;
+      }
+      hour = hoursPerDay + hour;
+    }
+    // Update AM or PM
+    let period = '';
+    if (hour > hoursPerPeriod) {
+      hour = hour % hoursPerPeriod;
+      period = ' PM';
+    } else {
+      period = ' AM';
+    }
+    return weekdays[day] + ' ' + hour + ':' + minutes + period;
+  };
+
   if (sensorDocId) {
     return (
       <Flex height="100%" width="100%" justifyContent="center" align="center">
-        <ResponsiveContainer height={250} width="90%">
+        <ResponsiveContainer height={300} width="90%">
           <ScatterChart>
             <CartesianGrid horizontalFill={horizontalFill} fillOpacity={0.2} />
             <XAxis
               type="number"
               dataKey="x"
-              label={{value: 'Hours Ago', position: 'Bottom', dy: 15}}
-              height={40}
+              height={70}
               name="Hours Ago"
+              tick={{dy: 25, dx: -30}}
               /* eslint-disable-next-line no-magic-numbers */
               ticks={[0, 6, 12, 18, 24]}
+              tickFormatter={tick => formatLabels(tick)}
+              angle={-40}
               reversed={true}
-              padding={{left: 4, right: 4}}
+              padding={{left: 10, right: 10}}
               interval={0}
               domain={[0, hoursPerDay]}
             />
@@ -222,9 +253,15 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     );
   } else {
     return (
-      <Box marginTop={[null, null, '20%', null]} fontSize={20}>
+      <Flex
+        height="100%"
+        width="100%"
+        justifyContent="center"
+        align="center"
+        fontSize={20}
+      >
         <Text> Select a sensor to see its data </Text>
-      </Box>
+      </Flex>
     );
   }
 };

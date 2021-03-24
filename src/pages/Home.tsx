@@ -43,9 +43,14 @@ const Home: () => JSX.Element = () => {
             {currentSensorReading ? (
               <AqiDial currentAqi={currentSensorReading} />
             ) : (
-              <Text marginTop={[null, null, '20%', null]} fontSize={20}>
-                {t('noActiveSensor')}
-              </Text>
+              <Flex
+                height="100%"
+                width="100%"
+                justifyContent="center"
+                align="center"
+              >
+                <Text fontSize={20}>{t('noActiveSensor')}</Text>
+              </Flex>
             )}
           </Box>
           <Spacer />
