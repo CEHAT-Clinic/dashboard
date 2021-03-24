@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, Box, Button, Flex} from '@chakra-ui/react';
+import {Text, Box, Flex} from '@chakra-ui/react';
 import {
   ScatterChart,
   XAxis,
@@ -64,7 +64,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     hazardous: [],
   });
   // Const [data, setData] = useState<GraphElement[]>([]);
-  const [displayGraph, setDisplayGraph] = useState(false);
+  // const [displayGraph, setDisplayGraph] = useState(false);
   const [yAxisLimit, setYAxisLimit] = useState(0);
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
@@ -179,77 +179,46 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
 
   if (sensorDocId) {
     return (
-      <Box>
-        <Button
-          paddingY={0.25}
-          marginTop={0.5}
-          colorScheme={'blue'}
-          onClick={event => setDisplayGraph(!displayGraph)}
-        >
-          {displayGraph ? (
-            <Text>Click to Hide Data</Text>
-          ) : (
-            <Text>Click to Display Data</Text>
-          )}
-        </Button>
-        {displayGraph && (
-          <Flex justifyContent="center" paddingY={3}>
-            <ResponsiveContainer height={250} width="90%">
-              <ScatterChart>
-                <CartesianGrid
-                  horizontalFill={horizontalFill}
-                  fillOpacity={0.2}
-                />
-                <XAxis
-                  type="number"
-                  dataKey="x"
-                  label={{value: 'Hours Ago', position: 'Bottom', dy: 15}}
-                  height={40}
-                  name="Hours Ago"
-                  /* eslint-disable-next-line no-magic-numbers */
-                  ticks={[0, 6, 12, 18, 24]}
-                  reversed={true}
-                  padding={{left: 4, right: 4}}
-                  interval={0}
-                  domain={[0, hoursPerDay]}
-                />
-                <YAxis
-                  dataKey="y"
-                  name="AQI"
-                  unit=""
-                  label={{value: 'AQI', position: 'Right', dx: -20, rotate: 0}}
-                  ticks={yAxisTicks}
-                  interval={0}
-                  padding={{top: 1}}
-                  domain={[0, yAxisLimit]}
-                />
-                <Scatter name="Good" data={data.good} fill="#08E400" />
-                <Scatter name="Moderate" data={data.moderate} fill="#FEFF00" />
-                <Scatter
-                  name="Sensitive"
-                  data={data.sensitive}
-                  fill="#FF7E02"
-                />
-                <Scatter
-                  name="Unhealthy"
-                  data={data.unhealthy}
-                  fill="#FF0202"
-                />
-                <Scatter
-                  name="Very Unhealthy"
-                  data={data.veryUnhealthy}
-                  fill="#8F3F97"
-                />
-                <Scatter
-                  name="Hazardous"
-                  data={data.hazardous}
-                  fill="#7E0224"
-                />
-              </ScatterChart>
-            </ResponsiveContainer>
-          </Flex>
-        )}
-      </Box>
+      <Flex height="100%" width="100%" justifyContent="center" align="center">
+        <ResponsiveContainer height={250} width="90%">
+          <ScatterChart>
+            <CartesianGrid horizontalFill={horizontalFill} fillOpacity={0.2} />
+            <XAxis
+              type="number"
+              dataKey="x"
+              label={{value: 'Hours Ago', position: 'Bottom', dy: 15}}
+              height={40}
+              name="Hours Ago"
+              /* eslint-disable-next-line no-magic-numbers */
+              ticks={[0, 6, 12, 18, 24]}
+              reversed={true}
+              padding={{left: 4, right: 4}}
+              interval={0}
+              domain={[0, hoursPerDay]}
+            />
+            <YAxis
+              dataKey="y"
+              name="AQI"
+              unit=""
+              label={{value: 'AQI', position: 'Right', dx: -20, rotate: 0}}
+              ticks={yAxisTicks}
+              interval={0}
+              padding={{top: 1}}
+              domain={[0, yAxisLimit]}
+            />
+            <Scatter name="Good" data={data.good} fill="#08E400" />
+            <Scatter name="Moderate" data={data.moderate} fill="#FEFF00" />
+            <Scatter name="Sensitive" data={data.sensitive} fill="#FF7E02" />
+            <Scatter name="Unhealthy" data={data.unhealthy} fill="#FF0202" />
+            <Scatter
+              name="Very Unhealthy"
+              data={data.veryUnhealthy}
+              fill="#8F3F97"
+            />
+            <Scatter name="Hazardous" data={data.hazardous} fill="#7E0224" />
+          </ScatterChart>
+        </ResponsiveContainer>
+      </Flex>
     );
   } else {
     return (

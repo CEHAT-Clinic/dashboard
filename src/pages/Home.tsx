@@ -35,7 +35,7 @@ const Home: () => JSX.Element = () => {
             background="#E2E8F0"
             marginX={4}
             marginBottom={2}
-            padding={2}
+            paddingX={2}
             marginTop={['4', null, '0', null]}
             height={['100%', null, '100%', null]}
             borderRadius={6}
@@ -57,7 +57,9 @@ const Home: () => JSX.Element = () => {
             height={['100%', null, '100%', null]}
             borderRadius={6}
           >
-            <AqiGraph sensorDocId={currentSensorDocId} />
+            <Flex height="100%" width="100%" alignContent="center">
+              <AqiGraph sensorDocId={currentSensorDocId} />
+            </Flex>
           </Box>
         </Flex>
       </Flex>
