@@ -203,12 +203,30 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     } else {
       period = ' AM';
     }
-    return weekdays[day] + ' ' + hour + ':' + minutes + period;
+
+    // Formatting
+    let minutesString = '' + minutes;
+    // Convert hour 0 to 12
+    if (hour === 0) {
+      hour = hoursPerPeriod;
+    }
+    // Add leading 0 to single-digit minutes
+    /* eslint-disable-next-line no-magic-numbers */
+    if (minutes < 10) {
+      minutesString = '0' + minutes;
+    }
+    return weekdays[day] + ' ' + hour + ':' + minutesString + period;
   };
 
   if (sensorDocId) {
     return (
-      <Flex height="100%" width="100%" justifyContent="center" align="center">
+      <Flex
+        height="100%"
+        width="100%"
+        justifyContent="center"
+        align="center"
+        padding={1}
+      >
         <ResponsiveContainer height={300} width="90%">
           <ScatterChart>
             <CartesianGrid horizontalFill={horizontalFill} fillOpacity={0.2} />
