@@ -67,7 +67,6 @@ function NavigationBar(): JSX.Element {
             <a href="/">{t('home')}</a>
             <a href="/health">{t('healthInfo')}</a>
             <a href="/about">{t('about')}</a>
-            <a href="/admin">{t('admin')}</a>
             <button id="changeLanguage" onClick={toggleLanguage}>
               <Icon as={FaGlobeAmericas} id="globe" title={t('globeIcon')} />
               {t('changeLanguage')}
