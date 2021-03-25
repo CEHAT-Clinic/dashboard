@@ -55,6 +55,7 @@ const Home: () => JSX.Element = () => {
     <Box>
       <Text>{t('constructionNotice')}</Text>
       <Flex direction={['column', 'column', 'row', 'row']} textAlign="center">
+        {/* Start map */}
         {isMobile ? (
           <Box
             background="#E2E8F0"
@@ -94,12 +95,14 @@ const Home: () => JSX.Element = () => {
             <Map updateCurrentSensor={setCurrentSensor} isMobile={isMobile} />
           </Box>
         )}
+        {/* End map */}
         <Flex
           direction="column"
           textAlign="center"
           width={['100%', null, '40%', null]}
           height={[null, null, '80vh', null]}
         >
+          {/* Start AQI Gauge */}
           <Box
             background="#E2E8F0"
             marginX={4}
@@ -139,7 +142,9 @@ const Home: () => JSX.Element = () => {
               </Box>
             )}
           </Box>
+          {/* End AQI gauge */}
           <Spacer />
+          {/* Start last 24 hours graph */}
           <Box
             background="#E2E8F0"
             marginX={4}
@@ -169,6 +174,7 @@ const Home: () => JSX.Element = () => {
             )}
             {(!isMobile || showGraphUI) && <Heading>{t('dataVizBox')}</Heading>}
           </Box>
+          {/* End last 24 hours graph */}
         </Flex>
       </Flex>
     </Box>
