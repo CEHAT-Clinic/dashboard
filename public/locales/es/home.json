@@ -10,5 +10,5 @@
     "hideAqiGraph": "Colapsar para ocultar el gráfico de las últimas 24 horas",
     "toggleMap": "Alternar Mapa de Sensores",
     "toggleGauge": "Alternar Indicador AQI",
-    "toggleGraph": "Toggle Gráfico del AQI"
+    "toggleGraph": "Alternar Gráfico del AQI"
 }
