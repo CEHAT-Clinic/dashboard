@@ -361,10 +361,13 @@ async function purpleAirToFirestore(): Promise<void> {
 
     // Before adding the reading to the historical database, check that it
     // doesn't already exist in the database
-    if (lastSensorReadingTime !== readingTimestamp) {
+    if (
+      lastSensorReadingTime === null ||
+      lastSensorReadingTime.seconds !== readingTimestamp.seconds
+    ) {
       // Update the buffer element from the default element
       pm25BufferElement = {
-        timestamp: Timestamp.fromDate(reading.timestamp),
+        timestamp: readingTimestamp,
         pm25: reading.pm25,
         meanPercentDifference: reading.meanPercentDifference,
         humidity: reading.humidity,
@@ -372,7 +375,7 @@ async function purpleAirToFirestore(): Promise<void> {
 
       // Add to historical readings
       const historicalSensorReading: HistoricalSensorReading = {
-        timestamp: Timestamp.fromDate(reading.timestamp),
+        timestamp: readingTimestamp,
         pm25: reading.pm25,
         meanPercentDifference: reading.meanPercentDifference,
         humidity: reading.humidity,
