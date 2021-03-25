@@ -307,7 +307,6 @@ async function addSensorToPurpleAirGroup(
     meanPercentDifference: getMeanPercentDifference(confidence),
     humidity: sensorData.humidity_a,
   };
-
   return reading;
 }
 
