@@ -3,13 +3,10 @@ import {Pm25BufferElement, bufferStatus} from './buffer';
 /**
  * Basic sensor reading used in data cleaning
  * - `pm25` - PM 2.5 reading, average of channelA and channelB of PurpleAir sensor
- * - `meanPercentDifference` - mean percent difference between channelA reading
- *   and channelB reading
  * - `humidity` - humidity reading
  */
 interface BasicReading {
   pm25: number;
-  meanPercentDifference: number;
   humidity: number;
 }
 
@@ -21,19 +18,13 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
   let pmReadingSum = 0;
   let humiditySum = 0;
 
-  // TODO: decide how to handle meanPercentDifference
-  // Perhaps don't bother here? Filter out bad readings beforehand?
-  let meanPercentDifferenceSum = 0;
-
   for (const reading of readings) {
     pmReadingSum += reading.pm25;
     humiditySum += reading.humidity;
-    meanPercentDifferenceSum += reading.meanPercentDifference;
   }
 
   const averageReading: BasicReading = {
     pm25: pmReadingSum / readings.length,
-    meanPercentDifference: meanPercentDifferenceSum / readings.length,
     humidity: humiditySum / readings.length,
   };
 
@@ -47,13 +38,27 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns - a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours
+ * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
  * the twelve hour period after the sensor is moved. This is because data from both locations
  * will be treated as if they came from the same location because the function assumes a sensor
  * is stationary.
+ *
+ * @remarks
+ * A sensor reading for a given slot in the circular buffer is considered invalid
+ * for two possible reasons. The reading is invalid if the timestamp is null
+ * because we use the null to indicate that a new reading was not available at
+ * the time of the query. The reading is also invalid if the mean percent difference
+ * between the readings from channelA and channelB of a sensor has gotten too
+ * large, since this possibly indicates sensor malfunction.
+ *
+ * The EPA recommends that you only use a reading if the raw difference between
+ * channel A and channel B PM2.5 readings is less than 5 units and that the mean percent
+ * difference is less than 70%. Due to limitations in the PurpleAir group query API,
+ * we can only access the mean percent difference for a sensor, so we do not check
+ * the raw threshold.
  */
 function getHourlyAverages(
   status: bufferStatus,
@@ -94,6 +99,20 @@ function getHourlyAverages(
       endIndex = startIndex;
       startIndex -= ELEMENTS_PER_HOUR;
 
+      // This threshold for the EPA indicates when readings from the channelA and
+      // channelB of a sensor have diverged. The EPA requires that the raw
+      // difference between each channel be less than 5 and the percent
+      // difference be less than 70%. We only check the percent threshold due to
+      // the data we have access to through the PurpleAir group sensor query.
+      const PERCENT_THRESHOLD = 0.7;
+
+      // Remove all invalid readings. A reading is invalid if its timestamp is
+      // null, meaning that a new reading was not available for that two-minute
+      // time period, or if the meanPercentDifference is greater than 0.7.
+      readings
+        .filter(element => element.timestamp !== null)
+        .filter(element => element.meanPercentDifference >= PERCENT_THRESHOLD);
+
       // If we have 1 reading every two minutes, there are 30 readings in an hour.
       // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use
       // 75% instead of 90% so that sensors are more likely to have enough valid
@@ -102,8 +121,6 @@ function getHourlyAverages(
       // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
       // Expressed this way to avoid imprecision of floating point arithmetic.
       const MEASUREMENT_COUNT_THRESHOLD = 23;
-      // Remove all invalid readings
-      readings.filter(element => element.timestamp !== null);
       if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
         averages[hoursAgo] = averageReadings(readings);
       }
@@ -116,29 +133,15 @@ function getHourlyAverages(
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
  * excluding thoses data points that indicate sensor malfunction. Those
  * data points are represented by NaN.
- *
  * @param averages - array containing sensor readings representing hourly averages
- * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  *
- * @remarks
- * The EPA recommends that you only use a reading if the raw difference between
- * channel A and channel B PM2.5 readings is less than 5 units and that the mean percent
- * difference is less than 70%. Due to limitations in the PurpleAir group query API,
- * we can only access the mean percent difference for a sensor, so we do not check
- * the raw threshold.
  */
 function cleanAverages(averages: BasicReading[]): number[] {
-  // These thresholds for the EPA indicate when diverging sensor readings
-  // indicate malfunction. The EPA requires that the raw difference between
-  // the readings be less than 5 and the percent difference be less than 70%
-  // We only check the percent threshold due to the data we have access to.
-  // TODO: Choice: discard average when average mPD is >= 0.7, or each individual reading?
-  const PERCENT_THRESHOLD = 0.7;
-
   const cleanedAverages = new Array<number>(averages.length);
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
-    if (reading && !(reading.meanPercentDifference > PERCENT_THRESHOLD)) {
+    if (reading) {
       // Formula from EPA to correct PurpleAir PM 2.5 readings
       // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
       /* eslint-disable no-magic-numbers */
@@ -146,9 +149,8 @@ function cleanAverages(averages: BasicReading[]): number[] {
         0.534 * reading.pm25 - 0.0844 * reading.humidity + 5.604;
       /* eslint-enable no-magic-numbers */
     } else {
-      // If less than 27 data points were available for that hour, the reading
-      // would have been undefined, and this hour is discarded. The reading
-      // is also discarded if it exceeds the meanPercentDifference threshold.
+      // If less than 23 data points were available for that hour, the reading
+      // would have been undefined, and this hour is discarded.
       cleanedAverages[i] = Number.NaN;
     }
   }
@@ -167,13 +169,14 @@ function getCleanedAverages(
   bufferIndex: number,
   buffer: Array<Pm25BufferElement>
 ): number[] {
-  // Get hourly averages from the PM2.5 Buffer
+  // Get hourly averages from the PM2.5 Buffer, and mark any hours without enough
+  // valid readings as invalid
   const hourlyAverages: BasicReading[] = getHourlyAverages(
     status,
     bufferIndex,
     buffer
   );
-  // Discard invalid readings
+  // Apply EPA correction factor to the PurpleAir readings
   return cleanAverages(hourlyAverages);
 }
 

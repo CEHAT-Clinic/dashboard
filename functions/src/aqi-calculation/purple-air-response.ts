@@ -237,7 +237,7 @@ async function getReadingsMap(): Promise<Map<number, PurpleAirReading>> {
  * @param readingsCollectionRef - reference to readings collection for sensor to get the most recent reading time
  * @returns a Promise of the Timestamp of the most recent sensor reading time, or null if no readings
  */
- async function getLastSensorReadingTime(
+async function getLastSensorReadingTime(
   readingsCollectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>
 ): Promise<FirebaseFirestore.Timestamp | null> {
   let lastSensorReadingTime: FirebaseFirestore.Timestamp | null = null;
@@ -343,7 +343,8 @@ async function purpleAirToFirestore(): Promise<void> {
     const sensorDocData = sensorDoc.data() ?? {};
     const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
     const reading =
-      readingsMap.get(purpleAirId) ?? (await addSensorToPurpleAirGroup(purpleAirId));
+      readingsMap.get(purpleAirId) ??
+      (await addSensorToPurpleAirGroup(purpleAirId));
     const readingsCollectionRef = firestore.collection(
       readingsSubcollection(sensorDoc.id)
     );
