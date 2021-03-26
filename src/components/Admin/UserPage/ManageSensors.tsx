@@ -28,6 +28,7 @@ import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
+import DownloadCSV from './DownloadCSV';
 
 /**
  * Interface for a PurpleAir sensor
@@ -336,6 +337,8 @@ const ManageSensors: () => JSX.Element = () => {
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>
+          {/* AMBER's CODE STARTS HERE: */}
+          <DownloadCSV />
         </Box>
       </Flex>
     );
