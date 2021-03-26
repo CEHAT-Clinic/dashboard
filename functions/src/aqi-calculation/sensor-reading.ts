@@ -33,48 +33,6 @@ export default class SensorReading {
   }
 
   /**
-   * Creates a SensorReading object from a Firestore reading doc
-   * @param data - Firestore document from sensors/sensorDocId/readings collection
-   *
-   * @remarks
-   * There are two structures to the Firestore historical readings. Through
-   * March 2021, the historical readings include a channelA and channelB PM 2.5
-   * reading. Afterwards, there is only one PM 2.5 reading (the average of the
-   * PM 2.5 readings from channelA and channelB) and the meanPercentDifference,
-   * which is an estimate of the difference over the average of the pseudo averages
-   * of the PM 2.5 readings from channelA and channelB.
-   *
-   * Thus, for data through March 2021, the `meanPercentDifference` field will
-   * be the percent difference between the channelA and channelB reading. For
-   * data after March 2021, the `meanPercentDifference` field will be the mean
-   * percent difference between channelA and channelB, as calculated from the
-   * PurpleAir confidence value.
-   */
-  static fromFirestore(data: FirebaseFirestore.DocumentData): SensorReading {
-    if (data.channelAPm25) {
-      const pm25Average = (data.channelAPm25 + data.channelBPm25) / 2; // eslint-disable-line no-magic-numbers
-      const difference = Math.abs(data.channelAPm25 - data.channelBPm25);
-      const meanPercentDifference = difference / pm25Average;
-      return new this(
-        data.timestamp.toDate(),
-        pm25Average,
-        meanPercentDifference,
-        data.humidity,
-        data.latitude,
-        data.longitude
-      );
-    }
-    return new this(
-      data.timestamp.toDate(),
-      data.pm25,
-      data.meanPercentDifference,
-      data.humidity,
-      data.latitude,
-      data.longitude
-    );
-  }
-
-  /**
    * Creates single line of CSV code, used for exporting data.
    * Values should be in same order as getCsvHeader.
    */

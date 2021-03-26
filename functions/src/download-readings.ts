@@ -3,8 +3,15 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as os from 'os';
 import * as admin from 'firebase-admin';
-import SensorReading from './aqi-calculation/sensor-reading';
 import {firestore} from './admin';
+
+const oldCsvHeader: string =
+  'timestamp, ' +
+  'pm25, ' +
+  'meanPercentDifference, ' +
+  'humidity, ' +
+  'latitude, ' +
+  'longitude\n';
 
 /**
  * Uploads a file with name filename and specified data to the default storage
@@ -84,7 +91,8 @@ async function generateReadingsCsv(
   }
 
   // Initialize csv with headers
-  const headings = SensorReading.getCsvHeader();
+  // TODO: set headers based on the type of data
+  const headings = oldCsvHeader;
 
   const sensorList = (await firestore.collection('/sensors').get()).docs;
   const readingsArrays = new Array<Array<string>>(sensorList.length);
@@ -103,16 +111,20 @@ async function generateReadingsCsv(
     // Contains readings for this sensor
     const readingsArray = new Array<string>(readingsList.length);
 
+    // TODO: Create separate files for different types of readings
     for (
       let readingIndex = 0;
       readingIndex < readingsList.length;
       readingIndex++
     ) {
-      const reading = SensorReading.fromFirestore(
-        readingsList[readingIndex].data()
-      );
+      const data = readingsList[readingIndex].data();
 
-      readingsArray[readingIndex] = reading.toCsvLine();
+      const reading = `
+        ${data.timestamp.toDate()}, ${data.channelAPm25}, ${data.channelBPm25}, 
+        ${data.humidity}, ${data.latitude}, ${data.longitude}\n
+      `;
+
+      readingsArray[readingIndex] = reading;
     }
     readingsArrays[sensorIndex] = readingsArray;
   }
