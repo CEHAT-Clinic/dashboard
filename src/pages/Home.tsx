@@ -14,9 +14,9 @@ const Home: () => JSX.Element = () => {
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
-  const [showGraphUI, setShowGraphUI] = useState(false);
-  const [showGaugeUI, setShowGaugeUI] = useState(false);
-  const [showMapUI, setShowMapUI] = useState(true);
+  const [showGraphUi, setShowGraphUi] = useState(false);
+  const [showGaugeUi, setShowGaugeUi] = useState(false);
+  const [showMapUi, setShowMapUi] = useState(true);
 
   const {t} = useTranslation('home');
 
@@ -72,16 +72,16 @@ const Home: () => JSX.Element = () => {
                 size="md"
                 aria-label={t('toggleMap')}
                 variant="ghost"
-                icon={showMapUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                onClick={() => setShowMapUI(!showMapUI)}
+                icon={showMapUi ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                onClick={() => setShowMapUi(!showMapUi)}
               />
-              {showMapUI ? (
+              {showMapUi ? (
                 <Text paddingY={2}>{t('hideMap')}</Text>
               ) : (
                 <Text paddingY={2}>{t('expandMap')}</Text>
               )}
             </Box>
-            {showMapUI && (
+            {showMapUi && (
               <Box>
                 <Map
                   updateCurrentSensor={setCurrentSensor}
@@ -120,17 +120,17 @@ const Home: () => JSX.Element = () => {
                   size="md"
                   aria-label={t('toggleGauge')}
                   variant="ghost"
-                  icon={showGaugeUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                  onClick={() => setShowGaugeUI(!showGaugeUI)}
+                  icon={showGaugeUi ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  onClick={() => setShowGaugeUi(!showGaugeUi)}
                 />
-                {showGaugeUI ? (
+                {showGaugeUi ? (
                   <Text paddingY={2}>{t('hideAqiGauge')}</Text>
                 ) : (
                   <Text paddingY={2}>{t('expandAqiGauge')}</Text>
                 )}
               </Box>
             )}
-            {(!isMobile || showGaugeUI) && (
+            {(!isMobile || showGaugeUi) && (
               <Box paddingY={[null, null, '1', '4']}>
                 {currentSensor ? (
                   <AqiDial currentAqi={currentSensor} />
@@ -162,17 +162,17 @@ const Home: () => JSX.Element = () => {
                   size="md"
                   aria-label={t('toggleGraph')}
                   variant="ghost"
-                  icon={showGraphUI ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                  onClick={() => setShowGraphUI(!showGraphUI)}
+                  icon={showGraphUi ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                  onClick={() => setShowGraphUi(!showGraphUi)}
                 />
-                {showGraphUI ? (
+                {showGraphUi ? (
                   <Text paddingY={2}>{t('hideAqiGraph')}</Text>
                 ) : (
                   <Text paddingY={2}>{t('expandAqiGraph')}</Text>
                 )}
               </Box>
             )}
-            {(!isMobile || showGraphUI) && <Heading>{t('dataVizBox')}</Heading>}
+            {(!isMobile || showGraphUi) && <Heading>{t('dataVizBox')}</Heading>}
           </Box>
           {/* End last 24 hours graph */}
         </Flex>
