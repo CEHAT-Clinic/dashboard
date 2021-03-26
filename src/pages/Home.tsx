@@ -95,10 +95,11 @@ const Home: () => JSX.Element = () => {
           </Box>
         ) : (
           <Box flex="2" marginX={4} height={['100%']}>
-            <Map 
+            <Map
               updateCurrentReading={setCurrentSensorReading}
-              updateCurrentSensorDoc={setCurrentSensorDocId} 
-              isMobile={isMobile} />
+              updateCurrentSensorDoc={setCurrentSensorDocId}
+              isMobile={isMobile}
+            />
           </Box>
         )}
         {/* End map */}
@@ -178,9 +179,11 @@ const Home: () => JSX.Element = () => {
                 )}
               </Box>
             )}
-            {(!isMobile || showGraphUi) && <Flex height="100%" width="100%" alignContent="center">
-              <AqiGraph sensorDocId={currentSensorDocId} />
-            </Flex>}
+            {(!isMobile || showGraphUi) && (
+              <Flex height="100%" width="100%" alignContent="center">
+                <AqiGraph sensorDocId={currentSensorDocId} />
+              </Flex>
+            )}
           </Box>
           {/* End last 24 hours graph */}
         </Flex>
