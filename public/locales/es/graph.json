@@ -1,0 +1,10 @@
+{
+    "Monday":"Lu",
+    "Tuesday": "Ma",
+    "Wednesday": "Mi",
+    "Thursday": "Ju",
+    "Friday": "Vi",
+    "Saturday":"Sá",
+    "Sunday": "Do",
+    "noSensor": "¡Haz clic en un sensor para ver sus datos!"
+}

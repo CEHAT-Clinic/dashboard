@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import firebase, {firestore} from '../../firebase';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Interface for a single element in the AQI buffer
@@ -63,11 +64,11 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     veryUnhealthy: [],
     hazardous: [],
   });
-  // Const [data, setData] = useState<GraphElement[]>([]);
-  // const [displayGraph, setDisplayGraph] = useState(false);
   const [yAxisLimit, setYAxisLimit] = useState(0);
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
+
+  const {t} = useTranslation('graph');
 
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
@@ -178,7 +179,15 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   }, [yAxisLimit]);
 
   const formatLabels = (hoursAgo: number): string => {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const weekdays = [
+      t('Monday'),
+      t('Tuesday'),
+      t('Wednesday'),
+      t('Thursday'),
+      t('Friday'),
+      t('Saturday'),
+      t('Sunday'),
+    ];
     const hoursPerPeriod = 12;
     const sunday = 6;
     // Get the local time from the user's browser
@@ -278,7 +287,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         align="center"
         fontSize={20}
       >
-        <Text> Select a sensor to see its data </Text>
+        <Text> {t('noSensor')} </Text>
       </Flex>
     );
   }
