@@ -103,11 +103,12 @@ const Home: () => JSX.Element = () => {
           </Box>
         )}
         {/* End map */}
+        {/* Start right side UI components */}
         <Flex
           direction="column"
           textAlign="center"
           width={['100%', null, '40%', null]}
-          height={[null, null, '80vh', null]}
+          height={[null, null, '85vh', null]}
         >
           {/* Start AQI Gauge */}
           <Box
@@ -187,6 +188,7 @@ const Home: () => JSX.Element = () => {
           </Box>
           {/* End last 24 hours graph */}
         </Flex>
+        {/* End right side UI components */}
       </Flex>
     </Box>
   );

@@ -251,7 +251,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         align="center"
         padding={1}
       >
-        <ResponsiveContainer height={300} width="90%">
+        <ResponsiveContainer height={250} width="90%">
           <ScatterChart>
             <CartesianGrid horizontalFill={horizontalFill} fillOpacity={0.2} />
             <XAxis

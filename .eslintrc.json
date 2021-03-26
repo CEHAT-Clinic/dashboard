@@ -62,7 +62,7 @@
       {
         "skipWordIfMatch": [
           "sunday",
-          "80vh",
+          "85vh",
           "dx",
           "dy",
           "aqi",

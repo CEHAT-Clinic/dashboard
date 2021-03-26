@@ -237,7 +237,7 @@ class Map extends React.Component<MapProps> {
 
   render(): JSX.Element {
     return (
-      <Box height={['450px', null, '80vh', null]}>
+      <Box height={['450px', null, '85vh', null]}>
         {this.props.isMobile ? (
           <Box ref={this.mapRef} style={{height: '90%'}} />
         ) : (
