@@ -6,54 +6,11 @@ import {
   bufferStatus,
   Pm25BufferElement,
 } from './buffer';
-import {readingsSubcollection} from './util';
-
-/**
- * Full reading information for a PurpleAir sensor from the PurpleAir API
- * - `name` - name of the sensor
- * - `id` - PurpleAir ID of the sensor, also called the sensor_index. This is
- *   the main identifier for a sensor.
- * - `latitude` - latitude of a sensor
- * - `longitude` - longitude of a sensor
- * - `pm25` - PM 2.5 reading for a sensor. This value is the average of the
- *   PM 2.5 reading for channelA and channelB
- * - `humidity` - humidity reading for a sensor
- * - `meanPercentDifference` - mean percent difference between the pseudo averages
- *   of the readings for channelA and channelB, as calculated from the confidence
- *   value returned by the PurpleAir API
- * - `timestamp` - the timestamp of the current reading
- */
-interface PurpleAirReading {
-  name: string;
-  id: number;
-  latitude: number;
-  longitude: number;
-  pm25: number;
-  humidity: number;
-  meanPercentDifference: number;
-  timestamp: Date;
-}
-
-/**
- * Sensor reading data that is stored in the readings subcollection
- * - `latitude` - latitude of a sensor
- * - `longitude` - longitude of a sensor
- * - `pm25` - PM 2.5 reading for a sensor. This value is the average of the
- *   PM 2.5 reading for channelA and channelB
- * - `humidity` - humidity reading for a sensor
- * - `meanPercentDifference` - mean percent difference between the pseudo averages
- *   of the readings for channelA and channelB, as calculated from the confidence
- *   value returned by the PurpleAir API
- * - `timestamp` - the timestamp of the current reading
- */
-interface HistoricalSensorReading {
-  latitude: number;
-  longitude: number;
-  pm25: number;
-  humidity: number;
-  meanPercentDifference: number;
-  timestamp: FirebaseFirestore.Timestamp;
-}
+import {
+  readingsSubcollection,
+  PurpleAirReading,
+  HistoricalSensorReading,
+} from './util';
 
 /**
  * Make the PurpleAir API to using the group query
@@ -63,6 +20,9 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
   // The Group ID for the CEHAT's sensors is 490
   const purpleAirGroupApiUrl =
     'https://api.purpleair.com/v1/groups/490/members';
+
+  // Fetch these data fields for each sensor. Available fields are documented
+  // by the PurpleAir API
   const fieldList = [
     'sensor_index',
     'name',
@@ -74,6 +34,9 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
     'last_seen',
   ];
 
+  // Only get readings from sensors that have an updated reading in the last 4 minutes
+  const maxSensorAge = 240;
+
   // If an error is thrown, then it will be logged in Firestore
   const purpleAirResponse = await axios.get(purpleAirGroupApiUrl, {
     headers: {
@@ -81,6 +44,7 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
     },
     params: {
       fields: fieldList.join(),
+      max_age: maxSensorAge, // eslint-disable-line camelcase
     },
   });
 
@@ -138,9 +102,9 @@ function getMeanPercentDifference(confidence: number): number {
 function getReading(
   data: (string | number)[],
   fieldNames: string[]
-): PurpleAirReading | null {
+): [number, PurpleAirReading | null] {
   // Initialize all values
-  let id: number | undefined = undefined;
+  let id: number = Number.NaN;
   let name: string | undefined = undefined;
   let latitude: number | undefined = undefined;
   let longitude: number | undefined = undefined;
@@ -191,27 +155,30 @@ function getReading(
 
   // Only return a PurpleAirReading if all fields are defined
   if (
-    id &&
-    name &&
-    latitude &&
-    longitude &&
-    meanPercentDifference !== undefined && // Can be zero
-    pm25 !== undefined && // Can be zero
-    humidity &&
-    timestamp
+    id !== undefined &&
+    name !== undefined &&
+    latitude !== undefined &&
+    longitude !== undefined &&
+    meanPercentDifference !== undefined &&
+    pm25 !== undefined &&
+    humidity !== undefined &&
+    timestamp !== undefined
   ) {
-    return {
-      id: id,
-      name: name,
-      latitude: latitude,
-      longitude: longitude,
-      meanPercentDifference: meanPercentDifference,
-      pm25: pm25,
-      humidity: humidity,
-      timestamp: timestamp,
-    };
+    return [
+      id,
+      {
+        id: id,
+        name: name,
+        latitude: latitude,
+        longitude: longitude,
+        meanPercentDifference: meanPercentDifference,
+        pm25: pm25,
+        humidity: humidity,
+        timestamp: timestamp,
+      },
+    ];
   } else {
-    return null;
+    return [id, null];
   }
 }
 
@@ -219,15 +186,15 @@ function getReading(
  * Translates PurpleAir response into map of sensor ID to PurpleAirReading
  * @returns map of sensor ID to PurpleAirReading
  */
-async function getReadingsMap(): Promise<Map<number, PurpleAirReading>> {
+async function getReadingsMap(): Promise<Map<number, PurpleAirReading | null>> {
   const purpleAirResponse = await fetchPurpleAirResponse();
-  const readings: Map<number, PurpleAirReading> = new Map();
+  const readings: Map<number, PurpleAirReading | null> = new Map();
   const purpleAirData = purpleAirResponse.data;
   const fieldNames: string[] = purpleAirData.fields;
   const rawReadings: (string | number)[][] = purpleAirData.data;
   rawReadings.forEach(rawReading => {
-    const reading = getReading(rawReading, fieldNames);
-    if (reading) readings.set(reading.id, reading);
+    const [id, reading] = getReading(rawReading, fieldNames);
+    readings.set(id, reading);
   });
   return readings;
 }
@@ -256,82 +223,11 @@ async function getLastSensorReadingTime(
 }
 
 /**
- * Add a PurpleAir sensor to the 490 PurpleAir group. Also returns a reading for the sensor.
- * @param sensorId - the PurpleAir ID for the sensor
- * @returns PurpleAirReading for a sensor
- *
- * @remarks
- * This function is only called when a sensor is not in the 490 group
- */
-async function addSensorToPurpleAirGroup(
-  sensorId: number
-): Promise<PurpleAirReading> {
-  try {
-    const purpleAirGroupApiUrl =
-    'https://api.purpleair.com/v1/groups/490/members';
-
-    // Add the sensor to the sensor group 490
-    const purpleAirResponse = await axios.post(purpleAirGroupApiUrl, {
-      headers: {
-        'X-API-Key': config.purpleair.write_key,
-      },
-      params: {
-        sensor_index: sensorId, // eslint-disable-line camelcase
-      },
-    });
-
-    // The response returned after adding the sensor to group 490 includes the reading
-    const sensorData = purpleAirResponse.data.sensor;
-
-    // The PM 2.5 value in the group query we usually use is an average of the
-    // readings from channel A and channel B
-    /* eslint-disable-next-line no-magic-numbers */
-    const pm25 = (sensorData['pm2.5_a'] + sensorData['pm2.5_b']) / 2;
-
-    // The confidence value in the group query we usually use is an average of the
-    // auto and manual confidence values
-    const confidence =
-      (sensorData.confidence_manual + sensorData.confidence_auto) / 2; // eslint-disable-line no-magic-numbers
-
-    // PurpleAir returns seconds since EPOCH, but the Date constructor takes
-    // milliseconds, so we convert from seconds to milliseconds
-    /* eslint-disable-next-line no-magic-numbers */
-    const timestamp = new Date(sensorData.last_seen * 1000);
-
-    const reading: PurpleAirReading = {
-      id: sensorData.sensor_index,
-      name: sensorData.name,
-      latitude: sensorData.latitude,
-      longitude: sensorData.longitude,
-      timestamp: timestamp,
-      pm25: pm25,
-      meanPercentDifference: getMeanPercentDifference(confidence),
-      humidity: sensorData.humidity_a,
-    };
-    console.log('Successfully added sensor');
-    return reading;
-  } catch (error) {
-    console.log('Tried to add sensor', error.response.data);
-    return {
-        id: Number.NaN,
-        name: '',
-        latitude: Number.NaN,
-        longitude: Number.NaN,
-        timestamp: new Date(0),
-        pm25: Number.NaN,
-        meanPercentDifference: Number.NaN,
-        humidity: Number.NaN,
-    };
-  }
-  
-}
-
-/**
  * Converts the PurpleAir ID to a number, if necessary.
  * @param id - PurpleAir ID stored as a string or number
  * @returns the PurpleAir ID as a number
  */
-function getPurpleAirId(id: string | number) {
+function getPurpleAirId(id: string | number): number {
   if (typeof id === 'string') return +id;
   return id;
 }
@@ -341,7 +237,6 @@ function getPurpleAirId(id: string | number) {
  * storing the new data in each sensors' readings collection.
  */
 async function purpleAirToFirestore(): Promise<void> {
-  // Get and process PurpleAir data
   const readingsMap = await getReadingsMap();
 
   // Add each of the new readings to the readings subcollection and the pm25buffers
@@ -351,18 +246,16 @@ async function purpleAirToFirestore(): Promise<void> {
     .get();
 
   for (const sensorDoc of activeSensorDocsSnapshot.docs) {
+    const readingsCollectionRef = firestore.collection(
+      readingsSubcollection(sensorDoc.id)
+    );
+
     // Initialize the buffer element to the default value
     let pm25BufferElement: Pm25BufferElement = defaultPm25BufferElement;
 
     // Get the reading for this sensor
     const sensorDocData = sensorDoc.data() ?? {};
     const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
-    const reading =
-      readingsMap.get(purpleAirId) ??
-      (await addSensorToPurpleAirGroup(purpleAirId));
-    const readingsCollectionRef = firestore.collection(
-      readingsSubcollection(sensorDoc.id)
-    );
 
     // If the lastSensorReadingTime field isn't set, query the readings
     // collection to find the timestamp of the most recent reading.
@@ -370,86 +263,107 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocData.lastSensorReadingTime ??
       (await getLastSensorReadingTime(readingsCollectionRef));
 
-    // Timestamp of the current reading
-    const readingTimestamp: FirebaseFirestore.Timestamp | null = Timestamp.fromDate(
-      reading.timestamp
-    );
-    console.log(purpleAirId, lastSensorReadingTime, readingTimestamp);
+    // If the reading was not in the group query, then it did not receive a new
+    // reading recently enough
+    const reading = readingsMap.get(purpleAirId) ?? null;
 
-    // Before adding the reading to the historical database, check that it
-    // doesn't already exist in the database
-    if (
-      lastSensorReadingTime === null ||
-      lastSensorReadingTime.seconds !== readingTimestamp.seconds
-    ) {
-      // Update the buffer element from the default element
-      pm25BufferElement = {
-        timestamp: readingTimestamp,
-        pm25: reading.pm25,
-        meanPercentDifference: reading.meanPercentDifference,
-        humidity: reading.humidity,
-      };
+    const readingTimestamp: FirebaseFirestore.Timestamp | null = reading
+      ? Timestamp.fromDate(reading.timestamp)
+      : null;
 
-      // Add to historical readings
-      const historicalSensorReading: HistoricalSensorReading = {
-        timestamp: readingTimestamp,
-        pm25: reading.pm25,
-        meanPercentDifference: reading.meanPercentDifference,
-        humidity: reading.humidity,
-        latitude: reading.latitude,
-        longitude: reading.longitude,
-      };
-      console.log(purpleAirId, historicalSensorReading);
-      // await readingsCollectionRef.add(historicalSensorReading);
+    if (reading && readingTimestamp) {
+      // Before adding the reading to the historical database, check that it
+      // doesn't already exist in the database
+      if (
+        lastSensorReadingTime === null ||
+        lastSensorReadingTime.seconds !== readingTimestamp.seconds
+      ) {
+        // Update the buffer element from the default element
+        pm25BufferElement = {
+          timestamp: readingTimestamp,
+          pm25: reading.pm25,
+          meanPercentDifference: reading.meanPercentDifference,
+          humidity: reading.humidity,
+        };
+
+        // Add to historical readings
+        const historicalSensorReading: HistoricalSensorReading = {
+          timestamp: readingTimestamp,
+          pm25: reading.pm25,
+          meanPercentDifference: reading.meanPercentDifference,
+          humidity: reading.humidity,
+          latitude: reading.latitude,
+          longitude: reading.longitude,
+        };
+        await readingsCollectionRef.add(historicalSensorReading);
+      }
     }
 
     // Add readings to the PM 2.5 buffer
-    // const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+    const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
 
-    // switch (status) {
-    //   case bufferStatus.Exists: {
-    //     // If the buffer exists, update normally
-    //     const pm25Buffer = sensorDocData.pm25Buffer;
-    //     pm25Buffer[sensorDocData.pm25BufferIndex] = pm25BufferElement;
-    //     // Update the sensor doc buffer and metadata
-    //     await firestore
-    //       .collection('sensors')
-    //       .doc(sensorDoc.id)
-    //       .update({
-    //         pm25BufferIndex:
-    //           (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
-    //         pm25Buffer: pm25Buffer,
-    //         lastSensorReadingTime: readingTimestamp,
-    //         latitude: reading.latitude,
-    //         longitude: reading.longitude,
-    //         name: reading.name,
-    //         purpleAirId: reading.id,
-    //       });
-    //     break;
-    //   }
-    //   case bufferStatus.DoesNotExist: {
-    //     // If the buffer does not exist, populate it with default values so
-    //     // it can be updated in the future. This is done separately since
-    //     // initializing the buffer is time consuming
-    //     await firestore.collection('sensors').doc(sensorDoc.id).update({
-    //       pm25BufferStatus: bufferStatus.InProgress,
-    //       lastSensorReadingTime: readingTimestamp,
-    //       latitude: reading.latitude,
-    //       longitude: reading.longitude,
-    //       name: reading.name,
-    //       purpleAirId: reading.id,
-    //     });
+    switch (status) {
+      case bufferStatus.Exists: {
+        // If the buffer exists, update normally
+        const pm25Buffer = sensorDocData.pm25Buffer;
+        pm25Buffer[sensorDocData.pm25BufferIndex] = pm25BufferElement;
+        // Update the sensor doc buffer and metadata
+        if (reading) {
+          await firestore
+            .collection('sensors')
+            .doc(sensorDoc.id)
+            .update({
+              pm25BufferIndex:
+                (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
+              pm25Buffer: pm25Buffer,
+              lastSensorReadingTime: readingTimestamp,
+              latitude: reading.latitude,
+              longitude: reading.longitude,
+              name: reading.name,
+              purpleAirId: reading.id,
+            });
+        } else {
+          await firestore
+            .collection('sensors')
+            .doc(sensorDoc.id)
+            .update({
+              pm25BufferIndex:
+                (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
+              pm25Buffer: pm25Buffer,
+              lastSensorReadingTime: lastSensorReadingTime,
+            });
+        }
+        break;
+      }
+      case bufferStatus.DoesNotExist: {
+        // If the buffer does not exist, populate it with default values so
+        // it can be updated in the future. This is done separately since
+        // initializing the buffer is time consuming
+        if (reading) {
+          await firestore.collection('sensors').doc(sensorDoc.id).update({
+            pm25BufferStatus: bufferStatus.InProgress,
+            lastSensorReadingTime: readingTimestamp,
+            latitude: reading.latitude,
+            longitude: reading.longitude,
+            name: reading.name,
+            purpleAirId: reading.id,
+          });
+        } else {
+          await firestore.collection('sensors').doc(sensorDoc.id).update({
+            pm25BufferStatus: bufferStatus.InProgress,
+          });
+        }
 
-    //     // This function updates the bufferStatus once the buffer has been
-    //     // fully initialized, which uses an additional write to the database
-    //     populateDefaultBuffer(false, sensorDoc.id);
-    //     break;
-    //   }
-    //   default:
-    //     // If the buffer status is In Progress we don't update the buffer
-    //     // because the buffer is still being initialized
-    //     break;
-    // }
+        // This function updates the bufferStatus once the buffer has been
+        // fully initialized, which uses an additional write to the database
+        populateDefaultBuffer(false, sensorDoc.id);
+        break;
+      }
+      default:
+        // If the buffer status is In Progress we don't update the buffer
+        // because the buffer is still being initialized
+        break;
+    }
   }
 }
 

@@ -111,7 +111,11 @@ function getHourlyAverages(
       // time period, or if the meanPercentDifference is less than 70%.
       readings
         .filter(element => element.timestamp !== null)
-        .filter(element => element.meanPercentDifference < PERCENT_THRESHOLD);
+        .filter(
+          element =>
+            !isNaN(element.meanPercentDifference) &&
+            element.meanPercentDifference < PERCENT_THRESHOLD
+        );
 
       // If we have 1 reading every two minutes, there are 30 readings in an hour.
       // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use
