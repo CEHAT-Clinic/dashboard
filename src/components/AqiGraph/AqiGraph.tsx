@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Text, Flex} from '@chakra-ui/react';
+import {Heading, Flex} from '@chakra-ui/react';
 import {
   ScatterChart,
   XAxis,
@@ -21,6 +21,11 @@ interface AqiBufferElement {
   aqi: number;
 }
 
+/**
+ * Interface for a single point in the graph
+ * x - value for x-axis
+ * y - value for y-axis
+ */
 interface GraphElement {
   x: number;
   y: number;
@@ -35,6 +40,16 @@ interface GraphProps {
   sensorDocId: string;
 }
 
+/**
+ * Our data is split based on which AQI category it falls into. This is
+ * the interface for the data container
+ * good - array of points that fall in the "good" category
+ * moderate - array of points that fall in the "moderate" category
+ * sensitive - array of points that fall in the "unhealthy for sensitive groups" category
+ * unhealthy - array of points that fall in the "unhealthy for all" category
+ * veryUnhealthy - array of points that fall in the "very unhealthy" category
+ * hazardous - array of points that fall in the "hazardous" category
+ */
 interface GraphData {
   good: Array<GraphElement>;
   moderate: Array<GraphElement>;
@@ -64,7 +79,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     veryUnhealthy: [],
     hazardous: [],
   });
-  const [yAxisLimit, setYAxisLimit] = useState(0);
+  const [yAxisLimit, setYAxisLimit] = useState(defaultYLimit);
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
 
@@ -287,7 +302,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         align="center"
         fontSize={20}
       >
-        <Text> {t('noSensor')} </Text>
+        <Heading fontSize="lg"> {t('noSensor')} </Heading>
       </Flex>
     );
   }
