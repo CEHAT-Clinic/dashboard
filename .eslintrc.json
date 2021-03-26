@@ -61,6 +61,7 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "80vh",
           "Figma",
           "Aqi",
           "Svg",
