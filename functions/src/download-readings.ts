@@ -5,10 +5,11 @@ import * as os from 'os';
 import * as admin from 'firebase-admin';
 import {firestore} from './admin';
 
-const oldCsvHeader: string =
+// Used for downloading the old data format
+const oldDataCsvHeader: string =
   'timestamp, ' +
-  'pm25, ' +
-  'meanPercentDifference, ' +
+  'channelAPm25, ' +
+  'channelBPm25, ' +
   'humidity, ' +
   'latitude, ' +
   'longitude\n';
@@ -92,7 +93,7 @@ async function generateReadingsCsv(
 
   // Initialize csv with headers
   // TODO: set headers based on the type of data
-  const headings = oldCsvHeader;
+  const headings = oldDataCsvHeader;
 
   const sensorList = (await firestore.collection('/sensors').get()).docs;
   const readingsArrays = new Array<Array<string>>(sensorList.length);
