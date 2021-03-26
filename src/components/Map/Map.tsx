@@ -11,6 +11,7 @@ import {Box} from '@chakra-ui/react';
 interface MapProps {
   updateCurrentReading: (sensorID: string) => void;
   updateCurrentSensorDoc: (sensorDocId: string) => void;
+  isMobile: boolean;
 }
 
 /**
@@ -236,8 +237,12 @@ class Map extends React.Component<MapProps> {
 
   render(): JSX.Element {
     return (
-      <Box height={['450px', null, '85vh', null]}>
-        <div ref={this.mapRef} style={{height: '100%'}} />
+      <Box height={['450px', null, '80vh', null]}>
+        {this.props.isMobile ? (
+          <Box ref={this.mapRef} style={{height: '90%'}} />
+        ) : (
+          <Box ref={this.mapRef} style={{height: '100%'}} />
+        )}
       </Box>
     );
   }
