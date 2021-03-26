@@ -1,7 +1,15 @@
 import {AxiosResponse} from 'axios';
-import {Pm25BufferElement} from './buffer';
 import PurpleAirResponse from './purple-air-response';
 
+/**
+ * Complete sensor reading from PurpleAir used for data processing
+ * - `timestamp` - timestamp of the sensor reading
+ * - `channelAPm25` - channelA PM2.5 reading
+ * - `channelBPm25` - channelB Pm 2.5 reading
+ * - `humidity` - humidity reading
+ * - `latitude` - latitude of the sensor
+ * - `longitude` - longitude of the sensor
+ */
 export default class SensorReading {
   timestamp: Date;
   channelAPm25: number;
@@ -24,46 +32,6 @@ export default class SensorReading {
     this.humidity = humidity;
     this.latitude = latitude;
     this.longitude = longitude;
-  }
-  /**
-   * Computes an average reading for the time block provided by the first element
-   *
-   * @param readings - Array of non-null Pm25BufferElements
-   */
-  static averageReadings(readings: Array<Pm25BufferElement>): SensorReading {
-    let channelAPmReadingSum = 0;
-    let channelBPmReadingSum = 0;
-    let humiditySum = 0;
-
-    // Guaranteed to be okay because this function should only be called with >= 27 items
-    const firstReadingData = readings[0];
-    const latitude = firstReadingData.latitude;
-    const longitude = firstReadingData.longitude;
-
-    // Force that the timestamp is not null. This function is called on an array
-    // where we filter by timestamp !== null, so we know that the timestamps are
-    // non-null.
-    /* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
-    const timestamp: FirebaseFirestore.Timestamp = firstReadingData.timestamp!;
-
-    for (const reading of readings) {
-      channelAPmReadingSum += reading.channelAPm25;
-      channelBPmReadingSum += reading.channelBPm25;
-      humiditySum += reading.humidity;
-    }
-
-    const channelAPmReadingAverage = channelAPmReadingSum / readings.length;
-    const channelBPmReadingAverage = channelBPmReadingSum / readings.length;
-    const humidityAverage = humiditySum / readings.length;
-
-    return new this(
-      timestamp.toDate(),
-      channelAPmReadingAverage,
-      channelBPmReadingAverage,
-      humidityAverage,
-      latitude,
-      longitude
-    );
   }
 
   /**

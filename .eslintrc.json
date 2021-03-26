@@ -61,6 +61,7 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "80vh",
           "Figma",
           "Aqi",
           "Svg",
@@ -113,6 +114,7 @@
           "Idioma",
           "Unordered",
           "unstyled",
+          "instagram",
           "axios",
           "camelcase"
         ],
