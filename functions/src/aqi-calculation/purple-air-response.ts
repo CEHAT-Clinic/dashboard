@@ -266,48 +266,64 @@ async function getLastSensorReadingTime(
 async function addSensorToPurpleAirGroup(
   sensorId: number
 ): Promise<PurpleAirReading> {
-  const purpleAirGroupApiUrl =
+  try {
+    const purpleAirGroupApiUrl =
     'https://api.purpleair.com/v1/groups/490/members';
 
-  // Add the sensor to the sensor group 490
-  const purpleAirResponse = await axios.post(purpleAirGroupApiUrl, {
-    headers: {
-      'X-API-Key': config.purpleair.write_key,
-    },
-    params: {
-      sensor_index: sensorId, // eslint-disable-line camelcase
-    },
-  });
+    // Add the sensor to the sensor group 490
+    const purpleAirResponse = await axios.post(purpleAirGroupApiUrl, {
+      headers: {
+        'X-API-Key': config.purpleair.write_key,
+      },
+      params: {
+        sensor_index: sensorId, // eslint-disable-line camelcase
+      },
+    });
 
-  // The response returned after adding the sensor to group 490 includes the reading
-  const sensorData = purpleAirResponse.data.sensor;
+    // The response returned after adding the sensor to group 490 includes the reading
+    const sensorData = purpleAirResponse.data.sensor;
 
-  // The PM 2.5 value in the group query we usually use is an average of the
-  // readings from channel A and channel B
-  /* eslint-disable-next-line no-magic-numbers */
-  const pm25 = (sensorData['pm2.5_a'] + sensorData['pm2.5_b']) / 2;
+    // The PM 2.5 value in the group query we usually use is an average of the
+    // readings from channel A and channel B
+    /* eslint-disable-next-line no-magic-numbers */
+    const pm25 = (sensorData['pm2.5_a'] + sensorData['pm2.5_b']) / 2;
 
-  // The confidence value in the group query we usually use is an average of the
-  // auto and manual confidence values
-  const confidence =
-    (sensorData.confidence_manual + sensorData.confidence_auto) / 2; // eslint-disable-line no-magic-numbers
+    // The confidence value in the group query we usually use is an average of the
+    // auto and manual confidence values
+    const confidence =
+      (sensorData.confidence_manual + sensorData.confidence_auto) / 2; // eslint-disable-line no-magic-numbers
 
-  // PurpleAir returns seconds since EPOCH, but the Date constructor takes
-  // milliseconds, so we convert from seconds to milliseconds
-  /* eslint-disable-next-line no-magic-numbers */
-  const timestamp = new Date(sensorData.last_seen * 1000);
+    // PurpleAir returns seconds since EPOCH, but the Date constructor takes
+    // milliseconds, so we convert from seconds to milliseconds
+    /* eslint-disable-next-line no-magic-numbers */
+    const timestamp = new Date(sensorData.last_seen * 1000);
 
-  const reading: PurpleAirReading = {
-    id: sensorData.sensor_index,
-    name: sensorData.name,
-    latitude: sensorData.latitude,
-    longitude: sensorData.longitude,
-    timestamp: timestamp,
-    pm25: pm25,
-    meanPercentDifference: getMeanPercentDifference(confidence),
-    humidity: sensorData.humidity_a,
-  };
-  return reading;
+    const reading: PurpleAirReading = {
+      id: sensorData.sensor_index,
+      name: sensorData.name,
+      latitude: sensorData.latitude,
+      longitude: sensorData.longitude,
+      timestamp: timestamp,
+      pm25: pm25,
+      meanPercentDifference: getMeanPercentDifference(confidence),
+      humidity: sensorData.humidity_a,
+    };
+    console.log('Successfully added sensor');
+    return reading;
+  } catch (error) {
+    console.log('Tried to add sensor', error.response.data);
+    return {
+        id: Number.NaN,
+        name: '',
+        latitude: Number.NaN,
+        longitude: Number.NaN,
+        timestamp: new Date(0),
+        pm25: Number.NaN,
+        meanPercentDifference: Number.NaN,
+        humidity: Number.NaN,
+    };
+  }
+  
 }
 
 /**
@@ -329,12 +345,12 @@ async function purpleAirToFirestore(): Promise<void> {
   const readingsMap = await getReadingsMap();
 
   // Add each of the new readings to the readings subcollection and the pm25buffers
-  const sensorDocQuerySnapshot = await firestore
+  const activeSensorDocsSnapshot = await firestore
     .collection('sensors')
     .where('isActive', '==', true)
     .get();
 
-  for (const sensorDoc of sensorDocQuerySnapshot.docs) {
+  for (const sensorDoc of activeSensorDocsSnapshot.docs) {
     // Initialize the buffer element to the default value
     let pm25BufferElement: Pm25BufferElement = defaultPm25BufferElement;
 
@@ -358,6 +374,7 @@ async function purpleAirToFirestore(): Promise<void> {
     const readingTimestamp: FirebaseFirestore.Timestamp | null = Timestamp.fromDate(
       reading.timestamp
     );
+    console.log(purpleAirId, lastSensorReadingTime, readingTimestamp);
 
     // Before adding the reading to the historical database, check that it
     // doesn't already exist in the database
@@ -382,56 +399,57 @@ async function purpleAirToFirestore(): Promise<void> {
         latitude: reading.latitude,
         longitude: reading.longitude,
       };
-      await readingsCollectionRef.add(historicalSensorReading);
+      console.log(purpleAirId, historicalSensorReading);
+      // await readingsCollectionRef.add(historicalSensorReading);
     }
 
     // Add readings to the PM 2.5 buffer
-    const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+    // const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
 
-    switch (status) {
-      case bufferStatus.Exists: {
-        // If the buffer exists, update normally
-        const pm25Buffer = sensorDocData.pm25Buffer;
-        pm25Buffer[sensorDocData.pm25BufferIndex] = pm25BufferElement;
-        // Update the sensor doc buffer and metadata
-        await firestore
-          .collection('sensors')
-          .doc(sensorDoc.id)
-          .update({
-            pm25BufferIndex:
-              (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
-            pm25Buffer: pm25Buffer,
-            lastSensorReadingTime: readingTimestamp,
-            latitude: reading.latitude,
-            longitude: reading.longitude,
-            name: reading.name,
-            purpleAirId: reading.id,
-          });
-        break;
-      }
-      case bufferStatus.DoesNotExist: {
-        // If the buffer does not exist, populate it with default values so
-        // it can be updated in the future. This is done separately since
-        // initializing the buffer is time consuming
-        await firestore.collection('sensors').doc(sensorDoc.id).update({
-          pm25BufferStatus: bufferStatus.InProgress,
-          lastSensorReadingTime: readingTimestamp,
-          latitude: reading.latitude,
-          longitude: reading.longitude,
-          name: reading.name,
-          purpleAirId: reading.id,
-        });
+    // switch (status) {
+    //   case bufferStatus.Exists: {
+    //     // If the buffer exists, update normally
+    //     const pm25Buffer = sensorDocData.pm25Buffer;
+    //     pm25Buffer[sensorDocData.pm25BufferIndex] = pm25BufferElement;
+    //     // Update the sensor doc buffer and metadata
+    //     await firestore
+    //       .collection('sensors')
+    //       .doc(sensorDoc.id)
+    //       .update({
+    //         pm25BufferIndex:
+    //           (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length, // eslint-disable-line no-magic-numbers
+    //         pm25Buffer: pm25Buffer,
+    //         lastSensorReadingTime: readingTimestamp,
+    //         latitude: reading.latitude,
+    //         longitude: reading.longitude,
+    //         name: reading.name,
+    //         purpleAirId: reading.id,
+    //       });
+    //     break;
+    //   }
+    //   case bufferStatus.DoesNotExist: {
+    //     // If the buffer does not exist, populate it with default values so
+    //     // it can be updated in the future. This is done separately since
+    //     // initializing the buffer is time consuming
+    //     await firestore.collection('sensors').doc(sensorDoc.id).update({
+    //       pm25BufferStatus: bufferStatus.InProgress,
+    //       lastSensorReadingTime: readingTimestamp,
+    //       latitude: reading.latitude,
+    //       longitude: reading.longitude,
+    //       name: reading.name,
+    //       purpleAirId: reading.id,
+    //     });
 
-        // This function updates the bufferStatus once the buffer has been
-        // fully initialized, which uses an additional write to the database
-        populateDefaultBuffer(false, sensorDoc.id);
-        break;
-      }
-      default:
-        // If the buffer status is In Progress we don't update the buffer
-        // because the buffer is still being initialized
-        break;
-    }
+    //     // This function updates the bufferStatus once the buffer has been
+    //     // fully initialized, which uses an additional write to the database
+    //     populateDefaultBuffer(false, sensorDoc.id);
+    //     break;
+    //   }
+    //   default:
+    //     // If the buffer status is In Progress we don't update the buffer
+    //     // because the buffer is still being initialized
+    //     break;
+    // }
   }
 }
 
