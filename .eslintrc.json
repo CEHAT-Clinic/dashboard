@@ -48,7 +48,8 @@
     "no-magic-numbers": [
       "warn",
       {
-        "ignoreArrayIndexes": true
+        "ignoreArrayIndexes": true,
+        "ignore": [0]
       }
     ],
     "no-multi-spaces": "warn",
