@@ -118,7 +118,14 @@
           "Idioma",
           "Unordered",
           "unstyled",
-          "instagram"
+          "instagram",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
         ],
         "skipWords": [
           "Pv"

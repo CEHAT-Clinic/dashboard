@@ -1,10 +1,17 @@
 {
-    "Monday":"Lu",
-    "Tuesday": "Ma",
-    "Wednesday": "Mi",
-    "Thursday": "Ju",
-    "Friday": "Vi",
-    "Saturday":"Sá",
-    "Sunday": "Do",
-    "noSensor": "¡Haz clic en un sensor para ver sus datos!"
+    "monday":"L",
+    "tuesday": "M",
+    "wednesday": "X",
+    "thursday": "J",
+    "friday": "V",
+    "saturday":"S",
+    "sunday": "D",
+    "noSensor": "¡Haz clic en un sensor para ver sus datos!",
+    "time": "Tiempo",
+    "good": "Bueno",
+    "moderate": "Moderado",
+    "sensitive": "Insalubre para grupos sensibles",
+    "unhealthy": "Insalubres",
+    "very": "Muy insalubre",
+    "hazardous": "Peligroso"
 }

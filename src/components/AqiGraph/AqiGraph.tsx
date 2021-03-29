@@ -8,56 +8,9 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
-import firebase, {firestore} from '../../firebase';
+import {firestore} from '../../firebase';
 import {useTranslation} from 'react-i18next';
-
-/**
- * Interface for a single element in the AQI buffer
- * timestamp - when this AQI was calculated and added to the buffer
- * aqi - the current aqi value
- */
-interface AqiBufferElement {
-  timestamp: firebase.firestore.Timestamp | null;
-  aqi: number;
-}
-
-/**
- * Interface for a single point in the graph
- * x - value for x-axis
- * y - value for y-axis
- */
-interface GraphElement {
-  x: number;
-  y: number;
-}
-
-/**
- * Interface for the props of the graph
- * - `sensorDocId` is the document ID for the currents sensor in the
- *  sensors collection
- */
-interface GraphProps {
-  sensorDocId: string;
-}
-
-/**
- * Our data is split based on which AQI category it falls into. This is
- * the interface for the data container
- * good - array of points that fall in the "good" category
- * moderate - array of points that fall in the "moderate" category
- * sensitive - array of points that fall in the "unhealthy for sensitive groups" category
- * unhealthy - array of points that fall in the "unhealthy for all" category
- * veryUnhealthy - array of points that fall in the "very unhealthy" category
- * hazardous - array of points that fall in the "hazardous" category
- */
-interface GraphData {
-  good: Array<GraphElement>;
-  moderate: Array<GraphElement>;
-  sensitive: Array<GraphElement>;
-  unhealthy: Array<GraphElement>;
-  veryUnhealthy: Array<GraphElement>;
-  hazardous: Array<GraphElement>;
-}
+import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
 
 /**
  * AQI Graph Display Component
@@ -67,10 +20,20 @@ interface GraphData {
 const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   sensorDocId,
 }: GraphProps) => {
+  // By default, the maximum y-axis value is 300. This is the case unless
+  // a sensor value exceeds 300, in which case the y-axis goes as high as the
+  // largest value
   const defaultYLimit = 300;
   const hoursPerDay = 24;
   const minutesPerHour = 60;
-  /* --------------- state maintenance variables ---------------  */
+  /* eslint-disable-next-line no-magic-numbers */
+  const hourTicks = [0, 6, 12, 18, 24];
+  const good = 50; // Air quality is good (0-50)
+  const moderate = 100; // Air quality is acceptable (51-100)
+  const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
+  const unhealthy = 200; // Health risk for all individuals (151-200)
+  const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
+  /* --------------- State maintenance variables ---------------  */
   const [data, setData] = useState<GraphData>({
     good: [],
     moderate: [],
@@ -89,18 +52,12 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
     // Get last 24 hours AQI buffer from sensor doc
     if (sensorDocId) {
       const docRef = firestore.collection('sensors').doc(sensorDocId);
-      const good = 50; // Air quality is good (0-50)
-      const moderate = 100; // Air quality is acceptable (51-100)
-      const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
-      const unhealthy = 200; // Health risk for all individuals (151-200)
-      const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
 
       docRef.get().then(doc => {
         if (doc.exists) {
           const data = doc.data();
           if (data) {
             const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? [];
-            const aqiBufferIndex: number = data.aqiBufferIndex ?? 0;
             const allData: GraphData = {
               good: [],
               moderate: [],
@@ -120,8 +77,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
             for (let i = 0; i < aqiBuffer.length; i++) {
               // Get the index starting at the oldest reading and wrapping
               // once we reach the end of the buffer
-              const index = (aqiBufferIndex + i) % aqiBuffer.length;
-              const element = aqiBuffer[index];
+              const element = aqiBuffer[i];
               if (element.timestamp) {
                 const date = element.timestamp.toDate();
                 const hour =
@@ -167,8 +123,14 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   useEffect(() => {
     if (yAxisLimit === defaultYLimit) {
       // Don't include hazardous color and extra grid line
-      /* eslint-disable-next-line no-magic-numbers */
-      setYAxisTicks([0, 50, 100, 150, 200, 300]);
+      setYAxisTicks([
+        0,
+        good,
+        moderate,
+        sensitiveGroups,
+        unhealthy,
+        veryUnhealthy,
+      ]);
       setHorizontalFill([
         '#8F3F97',
         '#8F3F97',
@@ -179,8 +141,15 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
       ]);
     } else {
       // Include hazardous color and extra grid line
-      /* eslint-disable-next-line no-magic-numbers */
-      setYAxisTicks([0, 50, 100, 150, 200, 300, yAxisLimit]);
+      setYAxisTicks([
+        0,
+        good,
+        moderate,
+        sensitiveGroups,
+        unhealthy,
+        veryUnhealthy,
+        yAxisLimit,
+      ]);
       setHorizontalFill([
         '#7E0224',
         '#7E0224',
@@ -195,13 +164,13 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
 
   const formatLabels = (hoursAgo: number): string => {
     const weekdays = [
-      t('Monday'),
-      t('Tuesday'),
-      t('Wednesday'),
-      t('Thursday'),
-      t('Friday'),
-      t('Saturday'),
-      t('Sunday'),
+      t('monday'),
+      t('tuesday'),
+      t('wednesday'),
+      t('thursday'),
+      t('friday'),
+      t('saturday'),
+      t('sunday'),
     ];
     const hoursPerPeriod = 12;
     const sunday = 6;
@@ -258,10 +227,9 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               type="number"
               dataKey="x"
               height={70}
-              name="Hours Ago"
+              name={t('time')}
               tick={{dy: 25, dx: -30}}
-              /* eslint-disable-next-line no-magic-numbers */
-              ticks={[0, 6, 12, 18, 24]}
+              ticks={hourTicks}
               tickFormatter={tick => formatLabels(tick)}
               angle={-40}
               reversed={true}
@@ -279,16 +247,28 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               padding={{top: 1}}
               domain={[0, yAxisLimit]}
             />
-            <Scatter name="Good" data={data.good} fill="#08E400" />
-            <Scatter name="Moderate" data={data.moderate} fill="#FEFF00" />
-            <Scatter name="Sensitive" data={data.sensitive} fill="#FF7E02" />
-            <Scatter name="Unhealthy" data={data.unhealthy} fill="#FF0202" />
+            <Scatter name={t('good')} data={data.good} fill="#08E400" />
+            <Scatter name={t('moderate')} data={data.moderate} fill="#FEFF00" />
             <Scatter
-              name="Very Unhealthy"
+              name={t('sensitive')}
+              data={data.sensitive}
+              fill="#FF7E02"
+            />
+            <Scatter
+              name={t('unhealthy')}
+              data={data.unhealthy}
+              fill="#FF0202"
+            />
+            <Scatter
+              name={t('very')}
               data={data.veryUnhealthy}
               fill="#8F3F97"
             />
-            <Scatter name="Hazardous" data={data.hazardous} fill="#7E0224" />
+            <Scatter
+              name={t('hazardous')}
+              data={data.hazardous}
+              fill="#7E0224"
+            />
           </ScatterChart>
         </ResponsiveContainer>
       </Flex>
