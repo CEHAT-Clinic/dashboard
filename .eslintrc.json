@@ -48,7 +48,8 @@
     "no-magic-numbers": [
       "warn",
       {
-        "ignoreArrayIndexes": true
+        "ignoreArrayIndexes": true,
+        "ignore": [0,1]
       }
     ],
     "no-multi-spaces": "warn",
@@ -113,7 +114,9 @@
           "Idioma",
           "Unordered",
           "unstyled",
-          "instagram"
+          "instagram",
+          "subcollection",
+          "csv"
         ],
         "skipWords": [
           "Pv"

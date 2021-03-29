@@ -1,5 +1,24 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Button} from '@chakra-ui/react';
+import {
+  Box,
+  Button,
+  Text,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  ModalCloseButton,
+  useDisclosure,
+  FormControl,
+  FormLabel,
+  NumberInput,
+  NumberInputField,
+  FormHelperText,
+  Select,
+  HStack,
+} from '@chakra-ui/react';
 import {firestore} from '../../../firebase';
 import {CSVLink} from 'react-csv';
 
@@ -16,21 +35,46 @@ interface HeaderElement {
   key: string;
 }
 
+interface CSVButtonProps {
+  startYear: number;
+  startMonth: number;
+  startDay: number;
+  endYear: number;
+  endMonth: number;
+  endDay: number;
+}
+
 /**
  * Component for administrative page to manage the sensors.
  * If a user is not signed in or an admin user, access is denied.
  */
-const DownloadCSV: () => JSX.Element = () => {
-  const [fetchingData, setFetchingData] = useState(true);
+const DownloadCSVButton: ({
+  startYear,
+  startMonth,
+  startDay,
+  endYear,
+  endMonth,
+  endDay,
+}: CSVButtonProps) => JSX.Element = ({
+  startYear,
+  startMonth,
+  startDay,
+  endYear,
+  endMonth,
+  endDay,
+}: CSVButtonProps) => {
+  const [fetchingData, setFetchingData] = useState(false);
   const [body, setBody] = useState<BodyElement[]>([]);
   const [header, setHeader] = useState<HeaderElement[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
     setFetchingData(true);
+    // TODO: create start date
+
+    // TODO: create end date
 
     const startDate = new Date();
+    /* eslint-disable-next-line no-magic-numbers */
     startDate.setHours(startDate.getHours() - 1);
     const newBody: BodyElement[] = [];
     const newHeaders: HeaderElement[] = [
@@ -55,7 +99,7 @@ const DownloadCSV: () => JSX.Element = () => {
       // Get values from readings subcollection
       const querySnapshot = await readingsRef
         .where('timestamp', '>', startDate)
-        .limit(10)
+        .limit(10) /* eslint-disable-line no-magic-numbers */
         .get();
 
       const querySize = querySnapshot.size;
@@ -90,15 +134,14 @@ const DownloadCSV: () => JSX.Element = () => {
 
     setBody(newBody);
     setHeader(newHeaders);
-    setIsLoading(false);
     setFetchingData(false);
   }, [fetchingData]);
 
   return (
     <Box>
-      <Button>
-        Fetch:{'' + fetchingData} Data:{'' + body.length}
-      </Button>
+      <Text>
+        Fetch: {'' + fetchingData} Data:{'' + body.length}
+      </Text>
       <Button onClick={() => setFetchingData(true)}>Fetch Data</Button>
       {fetchingData ? (
         <Button>Still fetchiing data</Button>
@@ -111,4 +154,162 @@ const DownloadCSV: () => JSX.Element = () => {
   );
 };
 
-export default DownloadCSV;
+interface InputProps {
+  value: number;
+  setValue: React.Dispatch<React.SetStateAction<number>>;
+}
+
+const DownloadCSVModal: () => JSX.Element = () => {
+  const {isOpen, onOpen, onClose} = useDisclosure();
+  const [startYear, setStartYear] = useState(0);
+  const [startMonth, setStartMonth] = useState(0);
+  const [startDay, setStartDay] = useState(0);
+  const [endYear, setEndYear] = useState(0); // Change to timestamp
+  const [endMonth, setEndMonth] = useState(0); // Change to timestamp
+  const [endDay, setEndDay] = useState(0);
+
+  function handleClose() {
+    setStartYear(0);
+    setStartMonth(0);
+    setStartDay(0);
+    setEndYear(0);
+    setEndMonth(0);
+    setEndDay(0);
+    onClose();
+  }
+
+  const YearInput: ({value, setValue}: InputProps) => JSX.Element = ({
+    value,
+    setValue,
+  }: InputProps) => {
+    return (
+      <NumberInput size="md" width="30%">
+        <NumberInputField
+          onChange={event => {
+            setValue(+event.target.value);
+          }}
+          value={value}
+        />
+      </NumberInput>
+    );
+  };
+  const MonthInput: ({value, setValue}: InputProps) => JSX.Element = ({
+    value,
+    setValue,
+  }: InputProps) => {
+    const labels = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    const options = [];
+    for (let i = 0; i < labels.length; i++) {
+      options.push(<option value={i + 1}>{labels[i]}</option>);
+    }
+    return (
+      <Box width="30%">
+        <Select
+          type="number"
+          placeholder="month"
+          value={value}
+          onChange={event => {
+            setValue(+event.target.value);
+          }}
+        >
+          {options}
+        </Select>
+      </Box>
+    );
+  };
+
+  const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
+    value,
+    setValue,
+  }: InputProps) => {
+    const options = [];
+    const maxDaysPerMonth = 31;
+    for (let i = 0; i < maxDaysPerMonth; i++) {
+      options.push(<option value={i + 1}>{i + 1}</option>);
+    }
+    return (
+      <Box width="30%">
+        <Select
+          placeholder="day"
+          size="md"
+          value={value}
+          onChange={event => {
+            setValue(+event.target.value);
+          }}
+        >
+          {options}
+        </Select>
+      </Box>
+    );
+  };
+
+  return (
+    <Box>
+      <Button onClick={onOpen}>Open Download Modal</Button>
+      <Modal isOpen={isOpen} onClose={handleClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>Download Data From All Sensors</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <Box>
+              <FormControl isRequired>
+                <FormLabel>Start Date</FormLabel>
+                <HStack>
+                  <YearInput value={startYear} setValue={setStartYear} />
+                  <MonthInput value={startMonth} setValue={setStartMonth} />
+                  <DayInput value={startDay} setValue={setStartDay} />
+                </HStack>
+                <FormHelperText>
+                  If the start date is earlier than the earliest entry, gets
+                  data starting from the first entry.
+                </FormHelperText>
+                <FormLabel>End Date</FormLabel>
+                <HStack>
+                  <YearInput value={endYear} setValue={setEndYear} />
+                  <MonthInput value={endMonth} setValue={setEndMonth} />
+                  <DayInput value={endDay} setValue={setEndDay} />
+                </HStack>
+                <FormHelperText>
+                  If the end date is later than the last entry, gets data until
+                  the last entry.
+                </FormHelperText>
+              </FormControl>
+            </Box>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={onClose}>Close</Button>
+            <Button colorScheme="teal" type="submit">
+              {' '}
+              Submit{' '}
+            </Button>
+            <DownloadCSVButton
+              startYear={startYear}
+              startMonth={startMonth}
+              startDay={startDay}
+              endYear={endYear}
+              endMonth={endMonth}
+              endDay={endDay}
+            />
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
+    </Box>
+  );
+};
+
+export {DownloadCSVButton, DownloadCSVModal};
+// Export default DownloadCSV;
