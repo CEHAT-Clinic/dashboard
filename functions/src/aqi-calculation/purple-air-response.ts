@@ -60,7 +60,7 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
  *
  * @remarks
  * PurpleAir's confidence values is calculated as follow. PurpleAir does not
- * document what `pc` means.
+ * document what "pseudo average" means.
  * ```ts
  * // a is the pseudo average for channel A
  * // b is the pseudo average for channel B
@@ -68,8 +68,10 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
  *   const diff = Math.abs(a - b)
  *   const avg = (a + b) / 2;
  *   const meanPercentDifference = (diff / avg) * 100;
- *   const pc = Math.max(Math.round(meanPercentDifference / 1.6) - 25, 0);
- *   return Math.max(100 - pc, 0);
+ *   const percentConfidence = Math.max(
+       Math.round(meanPercentDifference / 1.6) - 25, 0
+ *   );
+ *   return Math.max(100 - percentConfidence, 0);
  * }
  * ```
  */
@@ -155,14 +157,14 @@ function getReading(
 
   // Only return a PurpleAirReading if all fields are defined
   if (
-    id !== undefined &&
-    name !== undefined &&
-    latitude !== undefined &&
-    longitude !== undefined &&
-    meanPercentDifference !== undefined &&
-    pm25 !== undefined &&
-    humidity !== undefined &&
-    timestamp !== undefined
+    id &&
+    name &&
+    latitude !== undefined && // Can be zero
+    longitude !== undefined && // Can be zero
+    meanPercentDifference !== undefined && // Can be zero
+    pm25 !== undefined && // Can be zero
+    humidity !== undefined && // Can be zero
+    timestamp
   ) {
     return [
       id,
@@ -253,7 +255,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // Initialize the buffer element to the default value
     let pm25BufferElement: Pm25BufferElement = defaultPm25BufferElement;
 
-    // Get the reading for this sensor
+    // Get the data from Firestore for this sensor
     const sensorDocData = sensorDoc.data() ?? {};
     const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
 
@@ -263,8 +265,8 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocData.lastSensorReadingTime ??
       (await getLastSensorReadingTime(readingsCollectionRef));
 
-    // If the reading was not in the group query, then it did not receive a new
-    // reading recently enough
+    // If a reading for this sensor was not in the group query, then it did not
+    // receive a new reading recently enough
     const reading = readingsMap.get(purpleAirId) ?? null;
 
     const readingTimestamp: FirebaseFirestore.Timestamp | null = reading
