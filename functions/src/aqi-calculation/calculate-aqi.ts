@@ -6,7 +6,7 @@ import {
   AqiBufferElement,
   Pm25BufferElement,
 } from './buffer';
-import {CurrentReadingSensorData} from './util';
+import {CurrentReadingSensorData} from './types';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
