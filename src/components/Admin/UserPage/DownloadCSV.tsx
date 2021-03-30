@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
   Box,
   Button,
@@ -19,7 +19,7 @@ import {
   Select,
   HStack,
 } from '@chakra-ui/react';
-import {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase';
 import {CSVLink} from 'react-csv';
 
 interface BodyElement {
@@ -66,16 +66,22 @@ const DownloadCSVButton: ({
   const [fetchingData, setFetchingData] = useState(false);
   const [body, setBody] = useState<BodyElement[]>([]);
   const [header, setHeader] = useState<HeaderElement[]>([]);
+  const [total, setTotal] = useState(0);
+  const [progress, setProgress] = useState(0);
 
-  useEffect(() => {
+  function fetchData() {
     setFetchingData(true);
-    // TODO: create start date
 
-    // TODO: create end date
+    // Generate Start Timestamp
+    const startDate = new Date(startYear, startMonth, startDay);
+    // TODO: don't need this? Check after convert results to timestamps
+    const startTimestamp = firebase.firestore.Timestamp.fromDate(startDate);
 
-    const startDate = new Date();
-    /* eslint-disable-next-line no-magic-numbers */
-    startDate.setHours(startDate.getHours() - 1);
+    // Generate End Timestamp
+    const endDate = new Date(endYear, endMonth, endDay);
+    // TODO: don't need this? Check after convert results to timestamps
+    const endTimestamp = firebase.firestore.Timestamp.fromDate(endDate);
+
     const newBody: BodyElement[] = [];
     const newHeaders: HeaderElement[] = [
       {label: 'Timestamp', key: 'timestamp'},
@@ -98,15 +104,21 @@ const DownloadCSVButton: ({
       console.log('before snapshot');
       // Get values from readings subcollection
       const querySnapshot = await readingsRef
-        .where('timestamp', '>', startDate)
-        .limit(10) /* eslint-disable-line no-magic-numbers */
+        .where('timestamp', '>=', startDate)
+        .where('timestamp', '<=', endDate)
+        .limit(1000) /* eslint-disable-line no-magic-numbers */
         .get();
 
+      // TODO: testing code, delete later
       const querySize = querySnapshot.size;
       console.log('after snapshot:', {querySize});
+      setTotal(querySize);
 
       const documentList = querySnapshot.docs;
       for (let index = 0; index < documentList.length; index++) {
+        if (index % 100 === 0 || index === documentList.length - 1) {
+          setProgress(index + 1);
+        }
         const data = documentList[index].data();
         // Get field values
         const timestamp = data['timestamp'];
@@ -131,18 +143,21 @@ const DownloadCSVButton: ({
 
     // Get data from firestore
     getData(newBody);
-
     setBody(newBody);
     setHeader(newHeaders);
     setFetchingData(false);
-  }, [fetchingData]);
+  }
 
   return (
     <Box>
       <Text>
         Fetch: {'' + fetchingData} Data:{'' + body.length}
       </Text>
-      <Button onClick={() => setFetchingData(true)}>Fetch Data</Button>
+      <Text>
+        {' '}
+        Progress {'' + progress} out of {'' + total}
+      </Text>
+      <Button onClick={() => fetchData()}>Fetch Data</Button>
       {fetchingData ? (
         <Button>Still fetchiing data</Button>
       ) : (
@@ -213,7 +228,11 @@ const DownloadCSVModal: () => JSX.Element = () => {
     ];
     const options = [];
     for (let i = 0; i < labels.length; i++) {
-      options.push(<option value={i + 1}>{labels[i]}</option>);
+      options.push(
+        <option value={i} key={i}>
+          {labels[i]}
+        </option>
+      );
     }
     return (
       <Box width="30%">
@@ -238,7 +257,11 @@ const DownloadCSVModal: () => JSX.Element = () => {
     const options = [];
     const maxDaysPerMonth = 31;
     for (let i = 0; i < maxDaysPerMonth; i++) {
-      options.push(<option value={i + 1}>{i + 1}</option>);
+      options.push(
+        <option value={i + 1} key={i}>
+          {i + 1}
+        </option>
+      );
     }
     return (
       <Box width="30%">
@@ -269,7 +292,15 @@ const DownloadCSVModal: () => JSX.Element = () => {
               <FormControl isRequired>
                 <FormLabel>Start Date</FormLabel>
                 <HStack>
-                  <YearInput value={startYear} setValue={setStartYear} />
+                  {/* <YearInput value={startYear} setValue={setStartYear} /> */}
+                  <NumberInput size="md" width="30%">
+                    <NumberInputField
+                      onChange={event => {
+                        setStartYear(+event.target.value);
+                      }}
+                      value={startYear}
+                    />
+                  </NumberInput>
                   <MonthInput value={startMonth} setValue={setStartMonth} />
                   <DayInput value={startDay} setValue={setStartDay} />
                 </HStack>
@@ -279,7 +310,15 @@ const DownloadCSVModal: () => JSX.Element = () => {
                 </FormHelperText>
                 <FormLabel>End Date</FormLabel>
                 <HStack>
-                  <YearInput value={endYear} setValue={setEndYear} />
+                  {/* <YearInput value={endYear} setValue={setEndYear} /> */}
+                  <NumberInput size="md" width="30%">
+                    <NumberInputField
+                      onChange={event => {
+                        setEndYear(+event.target.value);
+                      }}
+                      value={endYear}
+                    />
+                  </NumberInput>
                   <MonthInput value={endMonth} setValue={setEndMonth} />
                   <DayInput value={endDay} setValue={setEndDay} />
                 </HStack>
@@ -312,4 +351,3 @@ const DownloadCSVModal: () => JSX.Element = () => {
 };
 
 export {DownloadCSVButton, DownloadCSVModal};
-// Export default DownloadCSV;
