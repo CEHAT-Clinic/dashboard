@@ -6,7 +6,7 @@ import {
   AqiBufferElement,
   Pm25BufferElement,
 } from './buffer';
-import {CurrentReadingSensorData} from './util';
+import {CurrentReadingSensorData} from './types';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
@@ -134,10 +134,18 @@ function aqiFromPm25(pm25Concentration: number): number {
  * updates the `current-readings` AQI data and AQI-validity status. Also updates
  * the aqiBuffer in each sensor doc.
  */
+
 async function calculateAqi(): Promise<void> {
-  const sensorList = (await firestore.collection('sensors').get()).docs;
+  // Initialize the currentData map
   const currentData = Object.create(null);
-  for (const sensorDoc of sensorList) {
+
+  // Get all currently active sensors
+  const activeSensorDocsSnapshot = await firestore
+    .collection('sensors')
+    .where('isActive', '==', true)
+    .get();
+
+  for (const sensorDoc of activeSensorDocsSnapshot.docs) {
     const sensorDocData = sensorDoc.data();
 
     // Data sent to the current-readings collection
