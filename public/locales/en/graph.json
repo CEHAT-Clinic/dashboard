@@ -7,11 +7,5 @@
     "saturday":"Sat",
     "sunday": "Sun",
     "noSensor": "Click a sensor to see its data!",
-    "time": "Time",
-    "good": "Good",
-    "moderate": "Moderate",
-    "sensitive": "Unhealthy For Sensitive Groups",
-    "unhealthy": "Unhealthy",
-    "very": "Very Unhealthy",
-    "hazardous": "Hazardous"
+    "time": "Time"
 }

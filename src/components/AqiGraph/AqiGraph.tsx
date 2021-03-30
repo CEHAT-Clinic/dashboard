@@ -46,7 +46,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
 
-  const {t} = useTranslation('graph');
+  const {t} = useTranslation(['graph', 'aqiTable']);
 
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
@@ -247,25 +247,33 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               padding={{top: 1}}
               domain={[0, yAxisLimit]}
             />
-            <Scatter name={t('good')} data={data.good} fill="#08E400" />
-            <Scatter name={t('moderate')} data={data.moderate} fill="#FEFF00" />
             <Scatter
-              name={t('sensitive')}
+              name={t('aqiTable:good.level')}
+              data={data.good}
+              fill="#08E400"
+            />
+            <Scatter
+              name={t('aqiTable:moderate.level')}
+              data={data.moderate}
+              fill="#FEFF00"
+            />
+            <Scatter
+              name={t('aqiTable:sensitive.level')}
               data={data.sensitive}
               fill="#FF7E02"
             />
             <Scatter
-              name={t('unhealthy')}
+              name={t('aqiTable:unhealthy.level')}
               data={data.unhealthy}
               fill="#FF0202"
             />
             <Scatter
-              name={t('very')}
+              name={t('aqiTable:very.level')}
               data={data.veryUnhealthy}
               fill="#8F3F97"
             />
             <Scatter
-              name={t('hazardous')}
+              name={t('aqiTable:hazardous.level')}
               data={data.hazardous}
               fill="#7E0224"
             />

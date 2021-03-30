@@ -7,11 +7,5 @@
     "saturday":"S",
     "sunday": "D",
     "noSensor": "¡Haz clic en un sensor para ver sus datos!",
-    "time": "Tiempo",
-    "good": "Bueno",
-    "moderate": "Moderado",
-    "sensitive": "Insalubre para grupos sensibles",
-    "unhealthy": "Insalubres",
-    "very": "Muy insalubre",
-    "hazardous": "Peligroso"
+    "time": "Tiempo"
 }
