@@ -1,4 +1,5 @@
 import {firestore} from '../admin';
+
 /**
  * Interface for a single element in the pm25Buffer. All fields come from the
  * Thingspeak API
@@ -8,8 +9,6 @@ interface Pm25BufferElement {
   channelAPm25: number;
   channelBPm25: number;
   humidity: number;
-  latitude: number;
-  longitude: number;
 }
 
 /**
@@ -23,8 +22,6 @@ const defaultPm25BufferElement: Pm25BufferElement = {
   channelAPm25: NaN,
   channelBPm25: NaN,
   humidity: NaN,
-  latitude: NaN,
-  longitude: NaN,
 };
 
 /**
@@ -39,7 +36,7 @@ interface AqiBufferElement {
 
 /**
  * This is the default element for the AQI buffer. The buffer is initialized
- * with default elements at every index. When we don't have enough valid PM 2.5
+ * with default elements at every index. When we don't have enough valid PM2.5
  * data to calculate AQI, we put a default element in the buffer.
  */
 const defaultAqiBufferElement: AqiBufferElement = {
@@ -63,8 +60,8 @@ export enum bufferStatus {
 
 /**
  * This function populates the given sensor doc with a default circular buffer
- * for either AQI or PM 2.5
- * @param aqiBuffer - true if AQI buffer, false if PM 2.5 buffer
+ * for either AQI or PM2.5
+ * @param aqiBuffer - true if AQI buffer, false if PM2.5 buffer
  * @param docId - document ID for the sensor to update
  */
 function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
@@ -88,9 +85,9 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
       }
     });
   } else {
-    // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
+    // 360 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI NowCast calculation
-    const bufferSize = 3600;
+    const bufferSize = 360;
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );

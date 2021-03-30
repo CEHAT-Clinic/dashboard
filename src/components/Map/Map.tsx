@@ -10,6 +10,7 @@ import {Box} from '@chakra-ui/react';
  */
 interface MapProps {
   updateCurrentSensor: (sensorID: string) => void;
+  isMobile: boolean;
 }
 
 /**
@@ -192,13 +193,7 @@ class Map extends React.Component<MapProps> {
               map.addObject(marker);
             }
           }
-        } else {
-          // If doc.data() does not exist
-          throw new Error('No data in the pm25 document');
         }
-      } else {
-        // If doc does not exist
-        throw new Error('No pm25 document in current-reading collection');
       }
     });
 
@@ -235,8 +230,12 @@ class Map extends React.Component<MapProps> {
 
   render(): JSX.Element {
     return (
-      <Box height="500px">
-        <div ref={this.mapRef} style={{height: '100%'}} />
+      <Box height={['450px', null, '80vh', null]}>
+        {this.props.isMobile ? (
+          <Box ref={this.mapRef} style={{height: '90%'}} />
+        ) : (
+          <Box ref={this.mapRef} style={{height: '100%'}} />
+        )}
       </Box>
     );
   }

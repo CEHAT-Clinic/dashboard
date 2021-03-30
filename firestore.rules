@@ -15,16 +15,13 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       
       match /readings/{reading} {
-        allow read, write: if false;
-      }
-    }
+        // Admins are allowed to read data for downloading it
+        allow read: if isAdmin();
 
-    match /admin/users {
-      // All signed in users allowed to read the admin users doc because
-      // this is used to check if the user is an admin
-      allow read: if isSignedIn();
-      // Only admin users are allowed to change modify the admin array
-      allow write: if isAdmin();
+        // Only cloud functions can modify data
+        // Deletes triggered by an admin user are still handled by cloud functions
+        allow write: if false;
+      }
     }
 
     // Only allow a user to be changed to an admin if the current user is an admin
