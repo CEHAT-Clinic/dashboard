@@ -14,7 +14,7 @@ service cloud.firestore {
     match /sensors/{sensorDoc} {
       // All users can read from the sensor docs (the graph component of the
       // home page uses these docs)
-      allow read: if true
+      allow read: if true;
 
       // Admins are allowed to write to the sensor docs from the manage sensors
       // page
