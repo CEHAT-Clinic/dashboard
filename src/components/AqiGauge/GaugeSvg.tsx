@@ -110,6 +110,7 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
         stroke="black"
         strokeWidth={0.002}
         fillOpacity={opacity}
+        key={i}
       />
     );
   }
