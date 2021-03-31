@@ -9,7 +9,8 @@ import {Box} from '@chakra-ui/react';
  * information about a sensor when it is selected.
  */
 interface MapProps {
-  updateCurrentSensor: (sensorID: string) => void;
+  updateCurrentReading: (sensorID: string) => void;
+  updateCurrentSensorDoc: (sensorDocId: string) => void;
   isMobile: boolean;
 }
 
@@ -108,7 +109,8 @@ class Map extends React.Component<MapProps> {
       // Update sensor icons only if we are selecting a different sensor
       if (prevSensor !== newSensor) {
         // Update state of home to display selected sensor
-        this.props.updateCurrentSensor(newSensor.getData().aqi);
+        this.props.updateCurrentReading(newSensor.getData().aqi);
+        this.props.updateCurrentSensorDoc(newSensor.getData().sensorDocId);
 
         // Update icon of currently selected sensor
         const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
@@ -175,6 +177,7 @@ class Map extends React.Component<MapProps> {
               // We strip to round to the ones place
               const aqi = sensorVal.aqi.toString().split('.')[0];
               const icon = createSensorIcon(aqi, false, false);
+              const sensorDocId: string = sensorVal.readingDocId;
 
               // Create marker
               const marker = new H.map.Marker(
@@ -184,7 +187,11 @@ class Map extends React.Component<MapProps> {
                 },
                 {icon: icon}
               );
-              marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
+              marker.setData({
+                sensorID: sensorID,
+                aqi: aqi,
+                sensorDocId: sensorDocId,
+              }); // Data for marker events
               marker.addEventListener('tap', registerClick); // Tap event
               marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
               marker.addEventListener('pointerleave', registerHoverEnd); // End hover
@@ -230,7 +237,7 @@ class Map extends React.Component<MapProps> {
 
   render(): JSX.Element {
     return (
-      <Box height={['450px', null, '80vh', null]}>
+      <Box height={['450px', null, '85vh', null]}>
         {this.props.isMobile ? (
           <Box ref={this.mapRef} style={{height: '90%'}} />
         ) : (

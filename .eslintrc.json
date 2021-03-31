@@ -48,7 +48,8 @@
     "no-magic-numbers": [
       "warn",
       {
-        "ignoreArrayIndexes": true
+        "ignoreArrayIndexes": true,
+        "ignore": [0,1]
       }
     ],
     "no-multi-spaces": "warn",
@@ -60,8 +61,11 @@
       "warn",
       {
         "skipWordIfMatch": [
+          "sunday",
+          "85vh",
+          "dx",
+          "dy",
           "aqi",
-          "80vh",
           "Figma",
           "Aqi",
           "Svg",
@@ -114,7 +118,14 @@
           "Idioma",
           "Unordered",
           "unstyled",
-          "instagram"
+          "instagram",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday"
         ],
         "skipWords": [
           "Pv"

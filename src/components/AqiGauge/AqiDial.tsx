@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Box, Tag, Link, Center} from '@chakra-ui/react';
+import {Text, Box, Tag, Link, Center, Flex} from '@chakra-ui/react';
 import GaugeSvg from './GaugeSvg';
 import {useTranslation} from 'react-i18next';
 
@@ -80,20 +80,22 @@ const AqiDial: ({currentAqi}: DialProps) => JSX.Element = ({
   const {t} = useTranslation(['dial', 'menu']);
 
   return (
-    <Box>
-      <Center>
-        <GaugeSvg currentAqi={currentAqi} />
-      </Center>
-      <Text fontSize={30}>{t('aqi') + currentAqi}</Text>
-      <Text fontSize={14} mb={2}>
-        {t('moreInfo')}
-        <Link fontSize={14} color="#32bfd1" href="/health">
-          {' '}
-          {t('menu:healthInfo')}
-        </Link>
-      </Text>
-      <AqiLabel currentAqi={currentAqi} />
-    </Box>
+    <Flex height="100%" width="100%" justifyContent="center" align="center">
+      <Box>
+        <Center>
+          <GaugeSvg currentAqi={currentAqi} />
+        </Center>
+        <Text fontSize={30}>{t('aqi') + currentAqi}</Text>
+        <Text fontSize={14} mb={2}>
+          {t('moreInfo')}
+          <Link fontSize={14} color="#32bfd1" href="/health">
+            {' '}
+            {t('menu:healthInfo')}
+          </Link>
+        </Text>
+        <AqiLabel currentAqi={currentAqi} />
+      </Box>
+    </Flex>
   );
 };
 
