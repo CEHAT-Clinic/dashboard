@@ -1,6 +1,6 @@
 {
     "constructionNotice": "¡Importante! Todavía estamos construyendo este sitio web. Regresa en abril del 2021.",
-    "noActiveSensor": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire (Air Quality Index, AQI) aquí!",
+    "noSensorGauge": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire (Air Quality Index, AQI) aquí!",
     "dataVizBox": "Cuadro de visualización de datos",
     "expandMap": "Expandir para ver el mapa de sensores",
     "expandAqiGauge": "Expandir para ver más información sobre el sensor elegido",
@@ -10,5 +10,6 @@
     "hideAqiGraph": "Colapsar para ocultar el gráfico de las últimas 24 horas",
     "toggleMap": "Cambiar el Mapa de Sensores",
     "toggleGauge": "Cambiar el Indicador AQI",
-    "toggleGraph": "Cambiar el Gráfico del AQI"
+    "toggleGraph": "Cambiar el Gráfico del AQI",
+    "noSensorGraph": "¡Haz clic en un sensor para ver sus datos!"
 }
