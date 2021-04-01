@@ -36,7 +36,7 @@ function AddSensorModal(): JSX.Element {
   const {isAdmin} = useAuth();
 
   // Sensor state
-  const [purpleAirId, setPurpleAirId] = useState(0);
+  const [purpleAirId, setPurpleAirId] = useState('');
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [sensorName, setSensorName] = useState('');
@@ -55,68 +55,88 @@ function AddSensorModal(): JSX.Element {
    * Resets modal state values before closing the modal.
    */
   function handleClose() {
-    setError('');
-    setPurpleAirId(0);
+    // Sensor state
+    setPurpleAirId('');
     setLatitude(0);
     setLongitude(0);
     setSensorName('');
+
+    // Modal state
+    setShowHelp(false);
+    setError('');
     setIsLoading(false);
+    setShowConfirmPage(false);
     setSensorAdded(false);
     onClose();
-  }
-
-  /**
-   * Fetches the data associated with the PurpleAir ID from the PurpleAir API
-   */
-  function getSensorData(): void {
-    setIsLoading(true);
   }
 
   /**
    * Verifies a new sensor after the sensor ID is submitted
    * @param event - submit form event
    */
-  async function handleSubmitSensorId(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmitSensorId(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     // Prevents submission before function is complete
     event.preventDefault();
 
-    try {
-      const querySnapshot = await firestore
-      .collection('sensors')
-      .where('purpleAirId', '==', purpleAirId)
-      .get();
+    if (isAdmin) {
+      // TODO: parse the PurpleAir website's link for select=purpleAirId#
+      const purpleAirIdNumber = +purpleAirId;
+      try {
+        // Make sure that no sensor with this ID already exists in Firestore
+        const querySnapshot = await firestore
+          .collection('sensors')
+          .where('purpleAirId', '==', purpleAirIdNumber)
+          .get();
 
-      if (querySnapshot.empty) {
-        const purpleAirApiUrl = `https://api.purpleair.com/v1/sensors/${purpleAirId}`;
-        const purpleAirResponse = await axios({
-          method: 'GET',
-          url: purpleAirApiUrl,
-          headers: {
-            'X-API-Key': process.env.REACT_APP_PURPLEAIR_READ_API_KEY,
-          },
-          params: {
-            sensor_index: purpleAirId, // eslint-disable-line camelcase
-          },
-        });
+        if (querySnapshot.empty) {
+          const purpleAirApiUrl = `https://api.purpleair.com/v1/sensors/${purpleAirIdNumber}`;
+          const purpleAirResponse = await axios({
+            method: 'GET',
+            url: purpleAirApiUrl,
+            headers: {
+              'X-API-Key': process.env.REACT_APP_PURPLEAIR_READ_API_KEY,
+            },
+            params: {
+              sensor_index: purpleAirIdNumber, // eslint-disable-line camelcase
+            },
+          });
 
-        const sensorData = purpleAirResponse.data.sensor;
-        setLatitude(sensorData.latitude);
-        setLongitude(sensorData.longitude);
-        setSensorName(sensorData.name);
-        setShowConfirmPage(true);
-      } else {
-        setError(t('sensors.sensorAlreadyExists'));
-      }
-    } catch (error) {
-      // TODO: this isn't working, not catching error and not catching the error code
-      console.log(error.data);
-      if (error.error === 'NotFoundError') {
-        console.log('No sensor exists');
-        setError('No sensor with that ID exists');
-      } else {
-        setError(error.description);
+          const sensorData = purpleAirResponse.data.sensor;
+          setLatitude(sensorData.latitude);
+          setLongitude(sensorData.longitude);
+          setSensorName(sensorData.name);
+          setShowConfirmPage(true);
+        } else {
+          setError(t('sensors.sensorAlreadyExists'));
+        }
+      } catch (error) {
+        // TODO: this isn't working, not catching error and not catching the error code
+        console.log(error);
+        if (error.error === 'NotFoundError') {
+          console.log('No sensor exists');
+          setError('No sensor with that ID exists');
+        } else {
+          setError(error.description);
+        }
       }
     }
+  }
+
+  function goBackToStart() {
+    // Modal state
+    setShowHelp(false);
+    setError('');
+    setIsLoading(false);
+    setShowConfirmPage(false);
+    setSensorAdded(false);
+
+    // Sensor state
+    setPurpleAirId('');
+    setLatitude(0);
+    setLongitude(0);
+    setSensorName('');
   }
 
   /**
@@ -127,6 +147,7 @@ function AddSensorModal(): JSX.Element {
   function finishAddSensor() {
     if (isAdmin) {
       setIsLoading(true);
+      const purpleAirIdNumber = +purpleAirId;
       // Add to PurpleAir Group
       const purpleAirGroupApiUrl =
         'https://api.purpleair.com/v1/groups/490/members';
@@ -139,7 +160,7 @@ function AddSensorModal(): JSX.Element {
           'X-API-Key': process.env.REACT_APP_PURPLEAIR_WRITE_API_KEY,
         },
         params: {
-          sensor_index: purpleAirId, // eslint-disable-line camelcase
+          sensor_index: purpleAirIdNumber, // eslint-disable-line camelcase
         },
       })
         .then(() => {
@@ -148,7 +169,7 @@ function AddSensorModal(): JSX.Element {
             .collection('sensors')
             .add({
               name: sensorName,
-              purpleAirId: purpleAirId,
+              purpleAirId: purpleAirIdNumber,
               latitude: latitude,
               longitude: longitude,
               isActive: true,
@@ -164,43 +185,6 @@ function AddSensorModal(): JSX.Element {
     }
   }
 
-  const InitialForm = () => (
-    <Box>
-      <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
-        <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
-        <Input
-          placeholder="30971"
-          type="number"
-          size="md"
-          onChange={event => {
-            setPurpleAirId(+event.target.value);
-            setError('');
-          }}
-          value={purpleAirId}
-        />
-        <FormErrorMessage>{error}</FormErrorMessage>
-      </FormControl>
-      <Divider marginY={3} />
-      <Button onClick={() => setShowHelp(!showHelp)}>
-        {showHelp ? t('sensors.hideAddHelp') : t('sensors.showAddHelp')}
-      </Button>
-      {showHelp && (
-        <Box marginTop={2}>
-          <Heading fontSize="md">{t('sensors.purpleAirId')}</Heading>
-          <Text>{t('sensors.addHelpPurpleAirId')}</Text>
-        </Box>
-      )}
-    </Box>
-  );
-
-  const ConfirmPage = () => (
-    <Box>
-      <Text>{latitude}</Text>
-      <Text>{longitude}</Text>
-      <Text>{sensorName}</Text>
-    </Box>
-  );
-
   return (
     <Box marginY={2}>
       <Button colorScheme="teal" onClick={onOpen}>
@@ -211,29 +195,72 @@ function AddSensorModal(): JSX.Element {
         <ModalContent>
           <ModalHeader>{t('sensors.add')}</ModalHeader>
           <ModalCloseButton />
-          <form onSubmit={handleSubmitSensorId}>
-            {sensorAdded ? (
-              <Flex alignItems="center" justifyContent="center" marginTop="1em">
-                <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">{t('sensors.addComplete')}</Text>
-              </Flex>
-            ) : (
-              <ModalBody>
-                {showConfirmPage ? <ConfirmPage /> : <InitialForm />}
-              </ModalBody>
-            )}
-            <ModalFooter>
-              {!sensorAdded && (
-                <SubmitButton
-                  label={t('common:submit')}
-                  isLoading={isLoading}
-                />
+          {sensorAdded ? (
+            <Flex alignItems="center" justifyContent="center" marginTop="1em">
+              <CheckCircleIcon color="green.500" />
+              <Text fontSize="lg">{t('sensors.addComplete')}</Text>
+            </Flex>
+          ) : (
+            <ModalBody>
+              {showConfirmPage ? (
+                <Box>
+                  <Text>{latitude}</Text>
+                  <Text>{longitude}</Text>
+                  <Text>{sensorName}</Text>
+                  <Button onClick={goBackToStart}>Go Back</Button>
+                  <Button onClick={finishAddSensor}>Confirm</Button>
+                </Box>
+              ) : (
+                <Box>
+                  {/* TODO: component re-renders and loses focus with each edit */}
+                  <form onSubmit={handleSubmitSensorId}>
+                    <FormControl
+                      isRequired
+                      isInvalid={error !== ''}
+                      marginTop={4}
+                    >
+                      <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
+                      <Input
+                        placeholder="30971"
+                        size="md"
+                        onChange={event => {
+                          setPurpleAirId(event.target.value);
+                          setError('');
+                        }}
+                        value={purpleAirId}
+                      />
+                      <FormErrorMessage>{error}</FormErrorMessage>
+                    </FormControl>
+                    {!sensorAdded && (
+                      <SubmitButton
+                        label={t('common:submit')}
+                        isLoading={isLoading}
+                      />
+                    )}
+                    <Divider marginY={3} />
+                    <Button onClick={() => setShowHelp(!showHelp)}>
+                      {showHelp
+                        ? t('sensors.hideAddHelp')
+                        : t('sensors.showAddHelp')}
+                    </Button>
+                    {showHelp && (
+                      <Box marginTop={2}>
+                        <Heading fontSize="md">
+                          {t('sensors.purpleAirId')}
+                        </Heading>
+                        <Text>{t('sensors.addHelpPurpleAirId')}</Text>
+                      </Box>
+                    )}
+                  </form>
+                </Box>
               )}
-              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
-                {t('common:close')}
-              </Button>
-            </ModalFooter>
-          </form>
+            </ModalBody>
+          )}
+          <ModalFooter>
+            <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
+              {t('common:close')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>
