@@ -1,5 +1,5 @@
 {
-    "constructionNotice": "¡Importante! Todavía estamos construyendo este sitio web. Regresa en abril del 2021.",
+    "heading": "Tablero de la calidad del aire en South Gate",
     "noActiveSensor": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire (Air Quality Index, AQI) aquí!",
     "dataVizBox": "Cuadro de visualización de datos",
     "expandMap": "Expandir para ver el mapa de sensores",
@@ -10,5 +10,7 @@
     "hideAqiGraph": "Colapsar para ocultar el gráfico de las últimas 24 horas",
     "toggleMap": "Cambiar el Mapa de Sensores",
     "toggleGauge": "Cambiar el Indicador AQI",
-    "toggleGraph": "Cambiar el Gráfico del AQI"
+    "toggleGraph": "Cambiar el Gráfico del AQI",
+    "useEpa": "Usar colores de la EPA",
+    "useAccessible": "Usar colores accesibles"
 }
