@@ -114,12 +114,13 @@ function AddSensorModal(): JSX.Element {
       } catch (error) {
         // TODO: this isn't working, not catching error and not catching the error code
         console.log(error);
-        if (error.error === 'NotFoundError') {
-          console.log('No sensor exists');
-          setError('No sensor with that ID exists');
-        } else {
-          setError(error.description);
-        }
+        setError('Unable to add sensor. Please check that the PurpleAir ID is correct');
+        // if (error.error === 'NotFoundError') {
+        //   console.log('No sensor exists');
+        //   setError('No sensor with that ID exists');
+        // } else {
+        //   setError(error.description);
+        // }
       }
     }
   }
