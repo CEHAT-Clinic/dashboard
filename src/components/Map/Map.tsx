@@ -2,6 +2,7 @@ import React from 'react';
 import {firestore} from '../../firebase';
 import {createSensorIcon} from './markerStyle';
 import {Box} from '@chakra-ui/react';
+import {ColorScheme} from '../Util/Colors';
 
 /**
  * Interface for the props of the Map component
@@ -12,6 +13,7 @@ interface MapProps {
   updateCurrentReading: (sensorID: string) => void;
   updateCurrentSensorDoc: (sensorDocId: string) => void;
   isMobile: boolean;
+  currentColorScheme: ColorScheme;
 }
 
 /**
@@ -113,7 +115,12 @@ class Map extends React.Component<MapProps> {
         this.props.updateCurrentSensorDoc(newSensor.getData().sensorDocId);
 
         // Update icon of currently selected sensor
-        const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
+        const newIcon = createSensorIcon(
+          newSensor.getData().aqi,
+          false,
+          true,
+          this.props.currentColorScheme
+        );
         newSensor.setIcon(newIcon);
 
         // Update icon of previously selected sensor
@@ -121,7 +128,8 @@ class Map extends React.Component<MapProps> {
           const prevIcon = createSensorIcon(
             prevSensor.getData().aqi,
             false,
-            false
+            false,
+            this.props.currentColorScheme
           );
           prevSensor.setIcon(prevIcon);
         }
@@ -140,7 +148,12 @@ class Map extends React.Component<MapProps> {
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
       if (marker !== this.state.selectedSensor) {
-        const icon = createSensorIcon(evt.target.getData().aqi, true, false);
+        const icon = createSensorIcon(
+          evt.target.getData().aqi,
+          true,
+          false,
+          this.props.currentColorScheme
+        );
         marker.setIcon(icon);
       }
     };
@@ -153,7 +166,12 @@ class Map extends React.Component<MapProps> {
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
       if (marker !== this.state.selectedSensor) {
-        const icon = createSensorIcon(marker.getData().aqi, false, false);
+        const icon = createSensorIcon(
+          marker.getData().aqi,
+          false,
+          false,
+          this.props.currentColorScheme
+        );
         marker.setIcon(icon);
       }
     };
@@ -176,7 +194,12 @@ class Map extends React.Component<MapProps> {
               // The label for this sensor is the most recent hour average
               // We strip to round to the ones place
               const aqi = sensorVal.aqi.toString().split('.')[0];
-              const icon = createSensorIcon(aqi, false, false);
+              const icon = createSensorIcon(
+                aqi,
+                false,
+                false,
+                this.props.currentColorScheme
+              );
               const sensorDocId: string = sensorVal.readingDocId;
 
               // Create marker
@@ -235,14 +258,31 @@ class Map extends React.Component<MapProps> {
     }
   }
 
+  // Update map markers on color scheme change
+  componentDidUpdate(prevProps: MapProps): void {
+    if (prevProps.currentColorScheme !== this.props.currentColorScheme) {
+      const markers = this.state.map?.getObjects();
+      if (markers) {
+        for (const marker of markers) {
+          // Our only objects are markers, but we need to check for type
+          if (marker instanceof H.map.Marker) {
+            const icon = createSensorIcon(
+              marker.getData().aqi,
+              true,
+              false,
+              this.props.currentColorScheme
+            );
+            marker.setIcon(icon);
+          }
+        }
+      }
+    }
+  }
+
   render(): JSX.Element {
     return (
-      <Box height={['450px', null, '85vh', null]}>
-        {this.props.isMobile ? (
-          <Box ref={this.mapRef} style={{height: '90%'}} />
-        ) : (
-          <Box ref={this.mapRef} style={{height: '100%'}} />
-        )}
+      <Box height={['450px', null, '83vh', null]}>
+        <Box ref={this.mapRef} style={{height: '100%'}} />
       </Box>
     );
   }

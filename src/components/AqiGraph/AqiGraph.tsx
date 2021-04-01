@@ -11,6 +11,8 @@ import {
 import {firestore} from '../../firebase';
 import {useTranslation} from 'react-i18next';
 import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
+import {aqiCutoffs} from '../../util';
+import {useColor} from '../../contexts/ColorContext';
 
 /**
  * AQI Graph Display Component
@@ -28,11 +30,6 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const minutesPerHour = 60;
   /* eslint-disable-next-line no-magic-numbers */
   const hourTicks = [0, 6, 12, 18, 24];
-  const good = 50; // Air quality is good (0-50)
-  const moderate = 100; // Air quality is acceptable (51-100)
-  const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
-  const unhealthy = 200; // Health risk for all individuals (151-200)
-  const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
   /* --------------- State maintenance variables ---------------  */
   const [data, setData] = useState<GraphData>({
     good: [],
@@ -45,7 +42,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const [yAxisLimit, setYAxisLimit] = useState(defaultYLimit);
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
-
+  const {currentColorScheme} = useColor();
   const {t} = useTranslation(['graph', 'aqiTable']);
 
   useEffect(() => {
@@ -94,15 +91,15 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
                 }
                 const newElement: GraphElement = {x: hoursAgo, y: element.aqi};
                 // Add element to data
-                if (element.aqi <= good) {
+                if (element.aqi <= aqiCutoffs.good) {
                   allData.good.push(newElement);
-                } else if (element.aqi < moderate) {
+                } else if (element.aqi < aqiCutoffs.moderate) {
                   allData.moderate.push(newElement);
-                } else if (element.aqi < sensitiveGroups) {
+                } else if (element.aqi < aqiCutoffs.sensitive) {
                   allData.sensitive.push(newElement);
-                } else if (element.aqi < unhealthy) {
+                } else if (element.aqi < aqiCutoffs.unhealthy) {
                   allData.unhealthy.push(newElement);
-                } else if (element.aqi < veryUnhealthy) {
+                } else if (element.aqi < aqiCutoffs.veryUnhealthy) {
                   allData.veryUnhealthy.push(newElement);
                 } else {
                   allData.hazardous.push(newElement);
@@ -125,42 +122,42 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
       // Don't include hazardous color and extra grid line
       setYAxisTicks([
         0,
-        good,
-        moderate,
-        sensitiveGroups,
-        unhealthy,
-        veryUnhealthy,
+        aqiCutoffs.good,
+        aqiCutoffs.moderate,
+        aqiCutoffs.sensitive,
+        aqiCutoffs.unhealthy,
+        aqiCutoffs.veryUnhealthy,
       ]);
       setHorizontalFill([
-        '#8F3F97',
-        '#8F3F97',
-        '#FF0202',
-        '#FF7E02',
-        '#FEFF00',
-        '#08E400',
+        currentColorScheme.veryUnhealthy.backgroundColor,
+        currentColorScheme.veryUnhealthy.backgroundColor,
+        currentColorScheme.unhealthy.backgroundColor,
+        currentColorScheme.sensitive.backgroundColor,
+        currentColorScheme.moderate.backgroundColor,
+        currentColorScheme.good.backgroundColor,
       ]);
     } else {
       // Include hazardous color and extra grid line
       setYAxisTicks([
         0,
-        good,
-        moderate,
-        sensitiveGroups,
-        unhealthy,
-        veryUnhealthy,
+        aqiCutoffs.good,
+        aqiCutoffs.moderate,
+        aqiCutoffs.sensitive,
+        aqiCutoffs.unhealthy,
+        aqiCutoffs.veryUnhealthy,
         yAxisLimit,
       ]);
       setHorizontalFill([
-        '#7E0224',
-        '#7E0224',
-        '#8F3F97',
-        '#FF0202',
-        '#FF7E02',
-        '#FEFF00',
-        '#08E400',
+        currentColorScheme.hazardous.backgroundColor,
+        currentColorScheme.hazardous.backgroundColor,
+        currentColorScheme.veryUnhealthy.backgroundColor,
+        currentColorScheme.unhealthy.backgroundColor,
+        currentColorScheme.sensitive.backgroundColor,
+        currentColorScheme.moderate.backgroundColor,
+        currentColorScheme.good.backgroundColor,
       ]);
     }
-  }, [yAxisLimit]);
+  }, [yAxisLimit, currentColorScheme]);
 
   const formatLabels = (hoursAgo: number): string => {
     const weekdays = [
@@ -250,32 +247,32 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
             <Scatter
               name={t('aqiTable:good.level')}
               data={data.good}
-              fill="#08E400"
+              fill={currentColorScheme.good.backgroundColor}
             />
             <Scatter
               name={t('aqiTable:moderate.level')}
               data={data.moderate}
-              fill="#FEFF00"
+              fill={currentColorScheme.moderate.backgroundColor}
             />
             <Scatter
               name={t('aqiTable:sensitive.level')}
               data={data.sensitive}
-              fill="#FF7E02"
+              fill={currentColorScheme.sensitive.backgroundColor}
             />
             <Scatter
               name={t('aqiTable:unhealthy.level')}
               data={data.unhealthy}
-              fill="#FF0202"
+              fill={currentColorScheme.unhealthy.backgroundColor}
             />
             <Scatter
               name={t('aqiTable:very.level')}
               data={data.veryUnhealthy}
-              fill="#8F3F97"
+              fill={currentColorScheme.veryUnhealthy.backgroundColor}
             />
             <Scatter
               name={t('aqiTable:hazardous.level')}
               data={data.hazardous}
-              fill="#7E0224"
+              fill={currentColorScheme.hazardous.backgroundColor}
             />
           </ScatterChart>
         </ResponsiveContainer>
