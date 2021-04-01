@@ -81,15 +81,16 @@ function AddSensorModal(): JSX.Element {
     event.preventDefault();
 
     if (isAdmin) {
-      // TODO: parse the PurpleAir website's link for select=purpleAirId#
       const purpleAirIdNumber = +purpleAirId;
       try {
         // Make sure that no sensor with this ID already exists in Firestore
         const querySnapshot = await firestore
           .collection('sensors')
-          .where('purpleAirId', '==', purpleAirIdNumber)
+          .where('purpleAirId', 'in', [purpleAirId, purpleAirIdNumber])
           .get();
 
+        // If the query snapshot is not empty, a sensor doc with this PurpleAir ID
+        // already exists in Firestore
         if (querySnapshot.empty) {
           const purpleAirApiUrl = `https://api.purpleair.com/v1/sensors/${purpleAirIdNumber}`;
           const purpleAirResponse = await axios({
@@ -112,15 +113,7 @@ function AddSensorModal(): JSX.Element {
           setError(t('sensors.sensorAlreadyExists'));
         }
       } catch (error) {
-        // TODO: this isn't working, not catching error and not catching the error code
-        console.log(error);
-        setError('Unable to add sensor. Please check that the PurpleAir ID is correct');
-        // if (error.error === 'NotFoundError') {
-        //   console.log('No sensor exists');
-        //   setError('No sensor with that ID exists');
-        // } else {
-        //   setError(error.description);
-        // }
+        setError(t('sensors.unableToAddSensor'));
       }
     }
   }
@@ -204,16 +197,19 @@ function AddSensorModal(): JSX.Element {
           ) : (
             <ModalBody>
               {showConfirmPage ? (
-                <Box>
-                  <Text>{latitude}</Text>
-                  <Text>{longitude}</Text>
-                  <Text>{sensorName}</Text>
-                  <Button onClick={goBackToStart}>Go Back</Button>
-                  <Button onClick={finishAddSensor}>Confirm</Button>
-                </Box>
+                <Flex>
+                  <Box>
+                    <Text>{t('sensors.latitude') + ': ' + latitude}</Text>
+                    <Text>{t('sensors.longitude') + ': ' + longitude}</Text>
+                    <Text>{t('sensors.name') + ': ' + sensorName}</Text>
+                    <Button onClick={goBackToStart}>Go Back</Button>
+                    <Button onClick={finishAddSensor}>
+                      {t('common:confirm')}
+                    </Button>
+                  </Box>
+                </Flex>
               ) : (
                 <Box>
-                  {/* TODO: component re-renders and loses focus with each edit */}
                   <form onSubmit={handleSubmitSensorId}>
                     <FormControl
                       isRequired
@@ -236,6 +232,7 @@ function AddSensorModal(): JSX.Element {
                       <SubmitButton
                         label={t('common:submit')}
                         isLoading={isLoading}
+                        isDisabled={purpleAirId !== '' && error !== ''}
                       />
                     )}
                     <Divider marginY={3} />
