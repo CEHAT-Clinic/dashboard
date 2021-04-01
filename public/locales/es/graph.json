@@ -1,0 +1,11 @@
+{
+    "monday":"L",
+    "tuesday": "M",
+    "wednesday": "X",
+    "thursday": "J",
+    "friday": "V",
+    "saturday":"S",
+    "sunday": "D",
+    "noSensor": "¡Haz clic en un sensor para ver sus datos!",
+    "time": "Tiempo"
+}

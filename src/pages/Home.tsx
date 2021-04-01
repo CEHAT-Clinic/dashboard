@@ -1,16 +1,20 @@
 import React, {useState, useEffect} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer, IconButton} from '@chakra-ui/react';
+import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
 import AqiDial from '../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
-import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
+import AqiGraph from '../components/AqiGraph/AqiGraph';
+import {ColorContext} from '../contexts/ColorContext';
+import {ColorToggle} from '../components/Util/Colors';
 
 /**
  * Home screen component
  */
 const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
-  const [currentSensor, setCurrentSensor] = useState('');
+  const [currentSensorReading, setCurrentSensorReading] = useState('');
+  const [currentSensorDocId, setCurrentSensorDocId] = useState('');
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -53,7 +57,9 @@ const Home: () => JSX.Element = () => {
 
   return (
     <Box>
-      <Text>{t('constructionNotice')}</Text>
+      <Heading as="h1" textAlign="center" marginBottom={1}>
+        {t('heading')}
+      </Heading>
       <Flex direction={['column', 'column', 'row', 'row']} textAlign="center">
         {/* Start map */}
         {isMobile ? (
@@ -83,31 +89,49 @@ const Home: () => JSX.Element = () => {
             </Box>
             {showMapUi && (
               <Box>
-                <Map
-                  updateCurrentSensor={setCurrentSensor}
-                  isMobile={isMobile}
-                />
+                <ColorContext.Consumer>
+                  {colorContext => (
+                    <Map
+                      updateCurrentReading={setCurrentSensorReading}
+                      updateCurrentSensorDoc={setCurrentSensorDocId}
+                      currentColorScheme={colorContext.currentColorScheme}
+                      isMobile={isMobile}
+                    />
+                  )}
+                </ColorContext.Consumer>
+                <ColorToggle />
               </Box>
             )}
           </Box>
         ) : (
           <Box flex="2" marginX={4} height={['100%']}>
-            <Map updateCurrentSensor={setCurrentSensor} isMobile={isMobile} />
+            <ColorContext.Consumer>
+              {colorContext => (
+                <Map
+                  updateCurrentReading={setCurrentSensorReading}
+                  updateCurrentSensorDoc={setCurrentSensorDocId}
+                  currentColorScheme={colorContext.currentColorScheme}
+                  isMobile={isMobile}
+                />
+              )}
+            </ColorContext.Consumer>
+            <ColorToggle />
           </Box>
         )}
         {/* End map */}
+        {/* Start right side UI components */}
         <Flex
           direction="column"
           textAlign="center"
           width={['100%', null, '40%', null]}
-          height={[null, null, '80vh', null]}
+          height={[null, null, '85vh', null]}
         >
           {/* Start AQI Gauge */}
           <Box
             background="#E2E8F0"
             marginX={4}
             marginBottom={2}
-            padding={2}
+            paddingX={2}
             marginTop={['4', null, '0', null]}
             height={['100%', null, '100%', null]}
             borderRadius={6}
@@ -132,11 +156,11 @@ const Home: () => JSX.Element = () => {
             )}
             {(!isMobile || showGaugeUi) && (
               <Box paddingY={[null, null, '1', '4']}>
-                {currentSensor ? (
-                  <AqiDial currentAqi={currentSensor} />
+                {currentSensorReading ? (
+                  <AqiDial currentAqi={currentSensorReading} />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
-                    {t('noActiveSensor')}
+                    {t('noSensorGauge')}
                   </Heading>
                 )}
               </Box>
@@ -172,10 +196,25 @@ const Home: () => JSX.Element = () => {
                 )}
               </Box>
             )}
-            {(!isMobile || showGraphUi) && <Heading>{t('dataVizBox')}</Heading>}
+            {(!isMobile || showGraphUi) && (
+              <Flex height="100%" width="100%" alignContent="center">
+                {currentSensorDocId ? (
+                  <AqiGraph sensorDocId={currentSensorDocId} />
+                ) : (
+                  <Heading
+                    width="100%"
+                    fontSize="lg"
+                    marginTop={[null, null, '20%', null]}
+                  >
+                    {t('noSensorGraph')}
+                  </Heading>
+                )}
+              </Flex>
+            )}
           </Box>
           {/* End last 24 hours graph */}
         </Flex>
+        {/* End right side UI components */}
       </Flex>
     </Box>
   );

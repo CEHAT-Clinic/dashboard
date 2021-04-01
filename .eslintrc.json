@@ -49,7 +49,7 @@
       "warn",
       {
         "ignoreArrayIndexes": true,
-        "ignore": [0]
+        "ignore": [0,1]
       }
     ],
     "no-multi-spaces": "warn",
@@ -61,8 +61,12 @@
       "warn",
       {
         "skipWordIfMatch": [
+          "sunday",
+          "85vh",
+          "dx",
+          "dy",
           "aqi",
-          "80vh",
+          "3vh",
           "Figma",
           "Aqi",
           "Svg",
@@ -117,7 +121,15 @@
           "unstyled",
           "instagram",
           "axios",
-          "camelcase"
+          "camelcase",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday",
+          "Epa"
         ],
         "skipWords": [
           "Pv"

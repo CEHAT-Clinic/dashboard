@@ -1,6 +1,6 @@
 {
-    "constructionNotice": "NOTE: This Website Is Under Construction. Check Back in April 2021.",
-    "noActiveSensor": "Click a sensor on the map to see its AQI value here!",
+    "heading": "South Gate Air Quality Dashboard",
+    "noSensorGauge": "Click a sensor on the map to see its AQI value here!",
     "dataVizBox": "Data Visualization Box",
     "expandMap": "Expand to see the sensor map",
     "expandAqiGauge": "Expand to see information about the selected sensor",
@@ -10,5 +10,8 @@
     "hideAqiGraph": "Collapse to hide the graph of the last 24 hours",
     "toggleMap": "Toggle Sensor Map",
     "toggleGauge": "Toggle AQI Gauge",
-    "toggleGraph": "Toggle AQI Graph"
+    "toggleGraph": "Toggle AQI Graph",
+    "useEpa": "Use EPA Color Scheme",
+    "useAccessible": "Use Accessible Color Scheme",
+    "noSensorGraph": "Click a sensor to see its data!"
 }
