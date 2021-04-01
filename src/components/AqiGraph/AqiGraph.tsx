@@ -95,7 +95,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
                   allData.good.push(newElement);
                 } else if (element.aqi < aqiCutoffs.moderate) {
                   allData.moderate.push(newElement);
-                } else if (element.aqi < aqiCutoffs.sensitiveGroups) {
+                } else if (element.aqi < aqiCutoffs.sensitive) {
                   allData.sensitive.push(newElement);
                 } else if (element.aqi < aqiCutoffs.unhealthy) {
                   allData.unhealthy.push(newElement);
@@ -124,7 +124,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         0,
         aqiCutoffs.good,
         aqiCutoffs.moderate,
-        aqiCutoffs.sensitiveGroups,
+        aqiCutoffs.sensitive,
         aqiCutoffs.unhealthy,
         aqiCutoffs.veryUnhealthy,
       ]);
@@ -142,7 +142,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         0,
         aqiCutoffs.good,
         aqiCutoffs.moderate,
-        aqiCutoffs.sensitiveGroups,
+        aqiCutoffs.sensitive,
         aqiCutoffs.unhealthy,
         aqiCutoffs.veryUnhealthy,
         yAxisLimit,

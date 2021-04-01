@@ -38,7 +38,7 @@ const AqiLabel: ({currentAqi}: DialProps) => JSX.Element = ({
   } else if (aqi <= aqiCutoffs.moderate) {
     correctColor = currentColorScheme.moderate;
     label = t('moderate');
-  } else if (aqi <= aqiCutoffs.sensitiveGroups) {
+  } else if (aqi <= aqiCutoffs.sensitive) {
     correctColor = currentColorScheme.sensitive;
     label = t('sensitive');
   } else if (aqi <= aqiCutoffs.unhealthy) {

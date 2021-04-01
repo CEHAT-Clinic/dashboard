@@ -20,7 +20,7 @@ export function createSensorIcon(
     color = colors.good;
   } else if (aqi < aqiCutoffs.moderate) {
     color = colors.moderate;
-  } else if (aqi < aqiCutoffs.sensitiveGroups) {
+  } else if (aqi < aqiCutoffs.sensitive) {
     color = colors.sensitive;
   } else if (aqi < aqiCutoffs.unhealthy) {
     color = colors.unhealthy;

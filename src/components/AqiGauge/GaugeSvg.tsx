@@ -53,7 +53,7 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
   const categories = [
     aqiCutoffs.good,
     aqiCutoffs.moderate,
-    aqiCutoffs.sensitiveGroups,
+    aqiCutoffs.sensitive,
     aqiCutoffs.unhealthy,
     aqiCutoffs.veryUnhealthy,
   ];
@@ -80,7 +80,7 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
       arcColor = currentColorScheme.good;
     } else if (aqi <= aqiCutoffs.moderate) {
       arcColor = currentColorScheme.moderate;
-    } else if (aqi <= aqiCutoffs.sensitiveGroups) {
+    } else if (aqi <= aqiCutoffs.sensitive) {
       arcColor = currentColorScheme.sensitive;
     } else if (aqi <= aqiCutoffs.unhealthy) {
       arcColor = currentColorScheme.unhealthy;
