@@ -10,6 +10,7 @@ import {
  * Interface for ColorContext used for type safety
  *
  * - `currentColorScheme` the current color scheme
+ * - `toggleColorScheme` switch between color schemes
  */
 interface ColorInterface {
   currentColorScheme: ColorScheme;
