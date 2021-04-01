@@ -199,13 +199,46 @@ function AddSensorModal(): JSX.Element {
               {showConfirmPage ? (
                 <Flex>
                   <Box>
-                    <Text>{t('sensors.latitude') + ': ' + latitude}</Text>
-                    <Text>{t('sensors.longitude') + ': ' + longitude}</Text>
-                    <Text>{t('sensors.name') + ': ' + sensorName}</Text>
-                    <Button onClick={goBackToStart}>Go Back</Button>
-                    <Button onClick={finishAddSensor}>
-                      {t('common:confirm')}
-                    </Button>
+                    <Box>
+                      <Text as="span" fontWeight="bold">
+                        {t('sensors.purpleAirId')}
+                      </Text>
+                      <Text display="inline">{': ' + purpleAirId}</Text>
+                    </Box>
+                    <Box>
+                      <Text as="span" fontWeight="bold">
+                        {t('sensors.name')}
+                      </Text>
+                      <Text display="inline">{': ' + sensorName}</Text>
+                    </Box>
+                    <Box>
+                      <Text as="span" fontWeight="bold">
+                        {t('sensors.latitude')}
+                      </Text>
+                      <Text display="inline">{': ' + latitude}</Text>
+                    </Box>
+                    <Box marginBottom={1}>
+                      <Text as="span" fontWeight="bold">
+                        {t('sensors.longitude')}
+                      </Text>
+                      <Text display="inline">{': ' + longitude}</Text>
+                    </Box>
+                    <Box>
+                      <Button
+                        margin={1}
+                        marginRight={3}
+                        onClick={goBackToStart}
+                      >
+                        {t('sensors.goBack')}
+                      </Button>
+                      <Button
+                        margin={1}
+                        colorScheme="green"
+                        onClick={finishAddSensor}
+                      >
+                        {t('common:confirm')}
+                      </Button>
+                    </Box>
                   </Box>
                 </Flex>
               ) : (
@@ -232,7 +265,7 @@ function AddSensorModal(): JSX.Element {
                       <SubmitButton
                         label={t('common:submit')}
                         isLoading={isLoading}
-                        isDisabled={purpleAirId !== '' && error !== ''}
+                        isDisabled={purpleAirId === '' || error !== ''}
                       />
                     )}
                     <Divider marginY={3} />
