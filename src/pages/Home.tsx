@@ -160,7 +160,7 @@ const Home: () => JSX.Element = () => {
                   <AqiDial currentAqi={currentSensorReading} />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
-                    {t('noActiveSensor')}
+                    {t('noSensorGauge')}
                   </Heading>
                 )}
               </Box>
@@ -198,7 +198,17 @@ const Home: () => JSX.Element = () => {
             )}
             {(!isMobile || showGraphUi) && (
               <Flex height="100%" width="100%" alignContent="center">
-                <AqiGraph sensorDocId={currentSensorDocId} />
+                {currentSensorDocId ? (
+                  <AqiGraph sensorDocId={currentSensorDocId} />
+                ) : (
+                  <Heading
+                    width="100%"
+                    fontSize="lg"
+                    marginTop={[null, null, '20%', null]}
+                  >
+                    {t('noSensorGraph')}
+                  </Heading>
+                )}
               </Flex>
             )}
           </Box>

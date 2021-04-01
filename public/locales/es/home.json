@@ -1,6 +1,6 @@
 {
     "heading": "Tablero de la calidad del aire en South Gate",
-    "noActiveSensor": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire (Air Quality Index, AQI) aquí!",
+    "noSensorGauge": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire (Air Quality Index, AQI) aquí!",
     "dataVizBox": "Cuadro de visualización de datos",
     "expandMap": "Expandir para ver el mapa de sensores",
     "expandAqiGauge": "Expandir para ver más información sobre el sensor elegido",
@@ -13,4 +13,5 @@
     "toggleGraph": "Cambiar el Gráfico del AQI",
     "useEpa": "Usar colores de la EPA",
     "useAccessible": "Usar colores accesibles"
+    "noSensorGraph": "¡Haz clic en un sensor para ver sus datos!"
 }

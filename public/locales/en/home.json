@@ -1,6 +1,6 @@
 {
     "heading": "South Gate Air Quality Dashboard",
-    "noActiveSensor": "Click a sensor on the map to see its AQI value here!",
+    "noSensorGauge": "Click a sensor on the map to see its AQI value here!",
     "dataVizBox": "Data Visualization Box",
     "expandMap": "Expand to see the sensor map",
     "expandAqiGauge": "Expand to see information about the selected sensor",
@@ -13,4 +13,5 @@
     "toggleGraph": "Toggle AQI Graph",
     "useEpa": "Use EPA Color Scheme",
     "useAccessible": "Use Accessible Color Scheme"
+    "noSensorGraph": "Click a sensor to see its data!"
 }
