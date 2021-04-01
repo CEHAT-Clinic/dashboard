@@ -50,7 +50,7 @@ const Home: () => JSX.Element = () => {
         screenSize.removeEventListener('change', handleScreenChange);
       }
     };
-  }, [isMobile]);
+  }, []);
   // -----------------  End detect screen size ----------------- //
 
   return (
