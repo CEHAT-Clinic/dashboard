@@ -1,6 +1,7 @@
 import {ChakraProvider} from '@chakra-ui/react';
 import React from 'react';
 import {AuthProvider} from './AuthContext';
+import {ColorProvider} from './ColorContext';
 
 /**
  * Interface to type the children components of the Providers.
@@ -13,6 +14,7 @@ interface Props {
 /**
  * Provider to combine all app providers
  * ChakraProvider: Provider for UI
+ * ColorProvider: Provider for current color scheme and to update color scheme
  * AuthProvider: Provider for current authentication status and to update
  *               authentication status
  *
@@ -21,7 +23,9 @@ interface Props {
 const AppProviders: React.FC<Props> = ({children}: Props) => {
   return (
     <ChakraProvider>
-      <AuthProvider>{children}</AuthProvider>
+      <ColorProvider>
+        <AuthProvider>{children}</AuthProvider>
+      </ColorProvider>
     </ChakraProvider>
   );
 };

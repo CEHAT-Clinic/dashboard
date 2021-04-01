@@ -2,6 +2,8 @@ import React from 'react';
 import {arc} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
 import {DialProps} from './AqiDial';
+import {useColor} from '../../contexts/ColorContext';
+import {aqiCutoffs} from '../../util';
 
 const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
   currentAqi,
@@ -13,18 +15,13 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
   const initialAngle = -Math.PI / 2;
   const finalAngle = Math.PI / 2;
 
-  // AQI category cutoff values
-  const good = 50; // Air quality is good (0-50)
-  const moderate = 100; // Air quality is acceptable (51-100)
-  const sensitive = 150; // Health risk for sensitive groups (101-150)
-  const unhealthy = 200; // Health risk for all individuals (151-200)
-  const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
-
   // Values to display
   const min = 0;
   const max = 300;
   const aqi: number = +currentAqi;
   /* eslint-enable no-magic-numbers */
+
+  const {currentColorScheme} = useColor();
 
   /**
    * Convert AQI reading on scale [min,max] to [0,1] scale
@@ -52,8 +49,14 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
 
   // Draw background arcs
   const arcs: string[] = [];
-  const categories = [good, moderate, sensitive, unhealthy, veryUnhealthy];
   let startAngle = initialAngle;
+  const categories = [
+    aqiCutoffs.good,
+    aqiCutoffs.moderate,
+    aqiCutoffs.sensitiveGroups,
+    aqiCutoffs.unhealthy,
+    aqiCutoffs.veryUnhealthy,
+  ];
   for (const category of categories) {
     const endAngle = convertToAngle(convertToPercent(category, min, max));
     const arc =
@@ -72,22 +75,22 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
 
   // Assign appropriate color
   const assignColor = (aqi: number) => {
-    let arcColor = 'white';
-    if (aqi <= good) {
-      arcColor = '#08E400';
-    } else if (aqi <= moderate) {
-      arcColor = '#FEFF00';
-    } else if (aqi <= sensitive) {
-      arcColor = '#FF7E02';
-    } else if (aqi <= unhealthy) {
-      arcColor = '#FF0202';
-    } else if (aqi <= veryUnhealthy) {
-      arcColor = '#8F3F97';
+    let arcColor = currentColorScheme.good;
+    if (aqi <= aqiCutoffs.good) {
+      arcColor = currentColorScheme.good;
+    } else if (aqi <= aqiCutoffs.moderate) {
+      arcColor = currentColorScheme.moderate;
+    } else if (aqi <= aqiCutoffs.sensitiveGroups) {
+      arcColor = currentColorScheme.sensitive;
+    } else if (aqi <= aqiCutoffs.unhealthy) {
+      arcColor = currentColorScheme.unhealthy;
+    } else if (aqi <= aqiCutoffs.veryUnhealthy) {
+      arcColor = currentColorScheme.veryUnhealthy;
     } else {
       // Hazardous
-      arcColor = '#7E0224';
+      arcColor = currentColorScheme.hazardous;
     }
-    return arcColor;
+    return arcColor.backgroundColor;
   };
 
   const needleColor = '#636360';
@@ -95,14 +98,10 @@ const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
   const pathObjects = [];
   for (let i = 0; i < arcs.length; i++) {
     const arcColor = assignColor(categories[i]);
-    /* eslint-disable no-magic-numbers */
-    let opacity = 0.3;
-    if (arcColor === aqiColor) {
-      opacity = 1;
-    } else {
-      opacity = 0.3;
-    }
-    /* eslint-enable no-magic-numbers */
+    const opacity =
+      arcColor === aqiColor
+        ? currentColorScheme.activeOpacity
+        : currentColorScheme.inactiveOpacity;
     pathObjects.push(
       <path
         d={arcs[i]}

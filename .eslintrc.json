@@ -125,7 +125,8 @@
           "thursday",
           "friday",
           "saturday",
-          "sunday"
+          "sunday",
+          "Epa"
         ],
         "skipWords": [
           "Pv"

@@ -2,6 +2,8 @@ import React from 'react';
 import {Text, Box, Tag, Link, Center, Flex} from '@chakra-ui/react';
 import GaugeSvg from './GaugeSvg';
 import {useTranslation} from 'react-i18next';
+import {useColor} from '../../contexts/ColorContext';
+import {aqiCutoffs} from '../../util';
 
 /**
  * Interface for the props of the dial
@@ -21,40 +23,38 @@ const AqiLabel: ({currentAqi}: DialProps) => JSX.Element = ({
 }: DialProps) => {
   // Convert the AQI from a string to a number
   const aqi: number = +currentAqi;
-  // AQI boundary values from https://www.airnow.gov/aqi/aqi-basics/
-  const good = 50; // Air quality is good (0-50)
-  const moderate = 100; // Air quality is acceptable (51-100)
-  const sensitiveGroups = 150; // Health risk for sensitive groups (101-150)
-  const unhealthy = 200; // Health risk for all individuals (151-200)
-  const veryUnhealthy = 300; // Very unhealthy for all individuals (201-300)
 
-  let textColor = 'white';
-  let backgroundColor = '#08E400';
+  const {currentColorScheme} = useColor();
+
   let label = '';
+  let correctColor = currentColorScheme.good;
   const px = 2;
 
   const {t} = useTranslation('dial');
 
-  if (aqi <= good) {
-    [textColor, backgroundColor] = ['black', '#08E400'];
+  if (aqi <= aqiCutoffs.good) {
+    correctColor = currentColorScheme.good;
     label = t('good');
-  } else if (aqi <= moderate) {
-    [textColor, backgroundColor] = ['black', '#FEFF00'];
+  } else if (aqi <= aqiCutoffs.moderate) {
+    correctColor = currentColorScheme.moderate;
     label = t('moderate');
-  } else if (aqi <= sensitiveGroups) {
-    [textColor, backgroundColor] = ['black', '#FF7E02'];
+  } else if (aqi <= aqiCutoffs.sensitiveGroups) {
+    correctColor = currentColorScheme.sensitive;
     label = t('sensitive');
-  } else if (aqi <= unhealthy) {
-    backgroundColor = '#FF0202';
+  } else if (aqi <= aqiCutoffs.unhealthy) {
+    correctColor = currentColorScheme.unhealthy;
     label = t('unhealthy');
-  } else if (aqi <= veryUnhealthy) {
-    backgroundColor = '#8F3F97';
+  } else if (aqi <= aqiCutoffs.veryUnhealthy) {
+    correctColor = currentColorScheme.veryUnhealthy;
     label = t('very');
   } else {
     // Anything greater than 300 is "Hazardous"
-    backgroundColor = '#7E0224';
+    correctColor = currentColorScheme.hazardous;
     label = t('hazardous');
   }
+
+  const {textColor, backgroundColor} = correctColor;
+
   return (
     <Tag
       fontSize={16}

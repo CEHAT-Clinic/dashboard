@@ -1,10 +1,12 @@
 import React, {useState, useEffect} from 'react';
 import Map from '../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer, IconButton} from '@chakra-ui/react';
+import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
 import AqiDial from '../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
-import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
 import AqiGraph from '../components/AqiGraph/AqiGraph';
+import {ColorContext} from '../contexts/ColorContext';
+import {ColorToggle} from '../components/Util/Colors';
 
 /**
  * Home screen component
@@ -85,21 +87,33 @@ const Home: () => JSX.Element = () => {
             </Box>
             {showMapUi && (
               <Box>
-                <Map
-                  updateCurrentReading={setCurrentSensorReading}
-                  updateCurrentSensorDoc={setCurrentSensorDocId}
-                  isMobile={isMobile}
-                />
+                <ColorContext.Consumer>
+                  {colorContext => (
+                    <Map
+                      updateCurrentReading={setCurrentSensorReading}
+                      updateCurrentSensorDoc={setCurrentSensorDocId}
+                      currentColorScheme={colorContext.currentColorScheme}
+                      isMobile={isMobile}
+                    />
+                  )}
+                </ColorContext.Consumer>
+                <ColorToggle />
               </Box>
             )}
           </Box>
         ) : (
           <Box flex="2" marginX={4} height={['100%']}>
-            <Map
-              updateCurrentReading={setCurrentSensorReading}
-              updateCurrentSensorDoc={setCurrentSensorDocId}
-              isMobile={isMobile}
-            />
+            <ColorContext.Consumer>
+              {colorContext => (
+                <Map
+                  updateCurrentReading={setCurrentSensorReading}
+                  updateCurrentSensorDoc={setCurrentSensorDocId}
+                  currentColorScheme={colorContext.currentColorScheme}
+                  isMobile={isMobile}
+                />
+              )}
+            </ColorContext.Consumer>
+            <ColorToggle />
           </Box>
         )}
         {/* End map */}
