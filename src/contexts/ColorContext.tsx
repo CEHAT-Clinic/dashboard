@@ -55,7 +55,7 @@ const ColorProvider: React.FC<Props> = ({children}: Props) => {
 };
 
 /**
- * Custom hook to allow other components to use authentication status
+ * Custom hook to allow other components to use color scheme
  * @returns `{currentColorScheme, toggleColorScheme}`
  */
 const useColor: () => ColorInterface = () => useContext(ColorContext);

@@ -19,6 +19,7 @@ type Color = {
   textColor: string;
 };
 
+// These are the official colors from the EPA
 const EpaColorScheme: ColorScheme = {
   good: {backgroundColor: '#08E400', textColor: 'black'},
   moderate: {backgroundColor: '#FEFF00', textColor: 'black'},
@@ -30,6 +31,8 @@ const EpaColorScheme: ColorScheme = {
   inactiveOpacity: 0.3,
 };
 
+// Chosen as color vision differences friendly
+// based on ColorBrewer
 const AccessibleColorScheme: ColorScheme = {
   good: {backgroundColor: '#4575B4', textColor: 'white'},
   moderate: {backgroundColor: '#91BFDB', textColor: 'black'},
@@ -41,6 +44,9 @@ const AccessibleColorScheme: ColorScheme = {
   inactiveOpacity: 0.6,
 };
 
+/**
+ * Component to toggle color schemes
+ */
 const ColorToggle: React.FC = () => {
   const {currentColorScheme, toggleColorScheme} = useColor();
   const {t} = useTranslation('home');
