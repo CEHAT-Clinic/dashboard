@@ -12,6 +12,6 @@
     "toggleGauge": "Toggle AQI Gauge",
     "toggleGraph": "Toggle AQI Graph",
     "useEpa": "Use EPA Color Scheme",
-    "useAccessible": "Use Accessible Color Scheme"
+    "useAccessible": "Use Accessible Color Scheme",
     "noSensorGraph": "Click a sensor to see its data!"
 }

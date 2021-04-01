@@ -12,6 +12,6 @@
     "toggleGauge": "Cambiar el Indicador AQI",
     "toggleGraph": "Cambiar el Gráfico del AQI",
     "useEpa": "Usar colores de la EPA",
-    "useAccessible": "Usar colores accesibles"
+    "useAccessible": "Usar colores accesibles",
     "noSensorGraph": "¡Haz clic en un sensor para ver sus datos!"
 }
