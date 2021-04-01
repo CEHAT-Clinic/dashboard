@@ -4,13 +4,15 @@ import {Text, Heading, Box, Flex, Spacer, IconButton} from '@chakra-ui/react';
 import AqiDial from '../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
 import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
+import AqiGraph from '../components/AqiGraph/AqiGraph';
 
 /**
  * Home screen component
  */
 const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
-  const [currentSensor, setCurrentSensor] = useState('');
+  const [currentSensorReading, setCurrentSensorReading] = useState('');
+  const [currentSensorDocId, setCurrentSensorDocId] = useState('');
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -84,7 +86,8 @@ const Home: () => JSX.Element = () => {
             {showMapUi && (
               <Box>
                 <Map
-                  updateCurrentSensor={setCurrentSensor}
+                  updateCurrentReading={setCurrentSensorReading}
+                  updateCurrentSensorDoc={setCurrentSensorDocId}
                   isMobile={isMobile}
                 />
               </Box>
@@ -92,22 +95,27 @@ const Home: () => JSX.Element = () => {
           </Box>
         ) : (
           <Box flex="2" marginX={4} height={['100%']}>
-            <Map updateCurrentSensor={setCurrentSensor} isMobile={isMobile} />
+            <Map
+              updateCurrentReading={setCurrentSensorReading}
+              updateCurrentSensorDoc={setCurrentSensorDocId}
+              isMobile={isMobile}
+            />
           </Box>
         )}
         {/* End map */}
+        {/* Start right side UI components */}
         <Flex
           direction="column"
           textAlign="center"
           width={['100%', null, '40%', null]}
-          height={[null, null, '80vh', null]}
+          height={[null, null, '85vh', null]}
         >
           {/* Start AQI Gauge */}
           <Box
             background="#E2E8F0"
             marginX={4}
             marginBottom={2}
-            padding={2}
+            paddingX={2}
             marginTop={['4', null, '0', null]}
             height={['100%', null, '100%', null]}
             borderRadius={6}
@@ -132,8 +140,8 @@ const Home: () => JSX.Element = () => {
             )}
             {(!isMobile || showGaugeUi) && (
               <Box paddingY={[null, null, '1', '4']}>
-                {currentSensor ? (
-                  <AqiDial currentAqi={currentSensor} />
+                {currentSensorReading ? (
+                  <AqiDial currentAqi={currentSensorReading} />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
                     {t('noActiveSensor')}
@@ -172,10 +180,15 @@ const Home: () => JSX.Element = () => {
                 )}
               </Box>
             )}
-            {(!isMobile || showGraphUi) && <Heading>{t('dataVizBox')}</Heading>}
+            {(!isMobile || showGraphUi) && (
+              <Flex height="100%" width="100%" alignContent="center">
+                <AqiGraph sensorDocId={currentSensorDocId} />
+              </Flex>
+            )}
           </Box>
           {/* End last 24 hours graph */}
         </Flex>
+        {/* End right side UI components */}
       </Flex>
     </Box>
   );
