@@ -99,7 +99,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
             firestore
               .collection('users')
               .doc(user.uid)
-              .update(newUserData)
+              .set(newUserData)
               .catch(error => {
                 // Error thrown upon failure to create the users doc in Firestore
                 throw new Error('Unable to create user doc: ' + error);
