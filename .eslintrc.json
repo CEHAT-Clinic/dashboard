@@ -66,6 +66,7 @@
           "dx",
           "dy",
           "aqi",
+          "3vh",
           "Figma",
           "Aqi",
           "Svg",
@@ -125,7 +126,8 @@
           "thursday",
           "friday",
           "saturday",
-          "sunday"
+          "sunday",
+          "Epa"
         ],
         "skipWords": [
           "Pv"
