@@ -164,94 +164,90 @@ async function calculateAqi(): Promise<void> {
       isValid: false,
     };
 
-    if (currentSensorData.isActive) {
-      // Data used to calculate hourly averages
-      const pm25BufferStatus: bufferStatus =
-        sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
-      const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
-      const pm25Buffer: Array<Pm25BufferElement> =
-        sensorDocData.pm25Buffer ?? [];
+    // Data used to calculate hourly averages
+    const pm25BufferStatus: bufferStatus =
+      sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+    const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
+    const pm25Buffer: Array<Pm25BufferElement> =
+      sensorDocData.pm25Buffer ?? [];
 
-      // Get cleaned hourly averages from the PM2.5 Buffer
-      const cleanedAverages = getCleanedAverages(
-        pm25BufferStatus,
-        pm25BufferIndex,
-        pm25Buffer
-      );
+    // Get cleaned hourly averages from the PM2.5 Buffer
+    // If an hour lacks enough data, the entry for the hour is `NaN`
+    const cleanedAverages = getCleanedAverages(
+      pm25BufferStatus,
+      pm25BufferIndex,
+      pm25Buffer
+    );
 
-      // NowCast formula from the EPA requires 2 out of the last 3 hours
-      // to be available
-      let validEntriesLastThreeHours = 0;
-      const THREE_HOURS = 3;
-      for (let i = 0; i < Math.min(THREE_HOURS, cleanedAverages.length); i++) {
-        if (!Number.isNaN(cleanedAverages[i])) {
-          validEntriesLastThreeHours++;
-        }
+    // NowCast formula from the EPA requires 2 out of the last 3 hours
+    // to be available
+    let validEntriesLastThreeHours = 0;
+    const THREE_HOURS = 3;
+    for (let hoursAgo = 0; hoursAgo < THREE_HOURS; hoursAgo++) {
+      if (!Number.isNaN(cleanedAverages[hoursAgo])) {
+        validEntriesLastThreeHours++;
       }
+    }
 
-      // If there's enough info, the sensor's data is updated
-      // If there isn't, we send the default AQI buffer element
-      const aqiBufferData: AqiBufferElement = defaultAqiBufferElement; // New data to add
+    // If there's enough info, the sensor's data is updated
+    // If there isn't, we send the default AQI buffer element
+    const aqiBufferData: AqiBufferElement = defaultAqiBufferElement; // New data to add
 
-      // If there is not enough info, the sensor's status is not valid
-      const NOWCAST_RECENT_DATA_THRESHOLD = 2;
-      if (validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD) {
-        // If the calculated AQI is infinity, then the sensor value is not valid
-        // Only calculate the NowCast PM2.5 value and the AQI if there is enough data
-        const nowCastPm25 = cleanedReadingsToNowCastPm25(cleanedAverages);
-        const aqi = aqiFromPm25(nowCastPm25);
-        if (
-          aqi !== Number.POSITIVE_INFINITY &&
-          aqi !== Number.NEGATIVE_INFINITY
-        ) {
-          currentSensorData.aqi = aqi;
-          currentSensorData.nowCastPm25 = nowCastPm25;
-          currentSensorData.isValid = true;
-          currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
+    // If there is not enough info, the sensor's status is not valid
+    const NOWCAST_RECENT_DATA_THRESHOLD = 2;
+    if (validEntriesLastThreeHours >= NOWCAST_RECENT_DATA_THRESHOLD) {
+      // If the calculated AQI is infinity, then the sensor value is not valid
+      // Only calculate the NowCast PM2.5 value and the AQI if there is enough data
+      const nowCastPm25 = cleanedReadingsToNowCastPm25(cleanedAverages);
+      const aqi = aqiFromPm25(nowCastPm25);
+      if (Number.isFinite(aqi)) {
+        currentSensorData.aqi = aqi;
+        currentSensorData.nowCastPm25 = nowCastPm25;
+        currentSensorData.isValid = true;
+        currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
 
-          aqiBufferData.aqi = currentSensorData.aqi;
-          aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
-        }
+        aqiBufferData.aqi = currentSensorData.aqi;
+        aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
       }
+    }
 
-      // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
-      currentData[currentSensorData.purpleAirId] = currentSensorData;
+    // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
+    currentData[currentSensorData.purpleAirId] = currentSensorData;
 
-      // Update the AQI circular buffer for this element
-      const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
-      const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
+    // Update the AQI circular buffer for this element
+    const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
+    const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
 
-      switch (status) {
-        case bufferStatus.Exists: {
-          // The buffer exists, proceed with normal update
-          const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
-          aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
+    switch (status) {
+      case bufferStatus.Exists: {
+        // The buffer exists, proceed with normal update
+        const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+        aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
 
-          await sensorDocRef.update({
-            aqiBufferIndex:
-              (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
-            aqiBuffer: aqiBuffer,
-            lastValidAqiTime: currentSensorData.lastValidAqiTime,
-          });
-          break;
-        }
-        case bufferStatus.DoesNotExist: {
-          // Initialize populating the buffer with default values, don't update
-          // any values until the buffer status is Exists
-          await sensorDocRef.update({
-            aqiBufferStatus: bufferStatus.InProgress,
-            lastValidAqiTime: currentSensorData.lastValidAqiTime,
-          });
-          // This function updates the bufferStatus once the buffer has been
-          // fully initialized, which uses an additional write to the database
-          populateDefaultBuffer(true, sensorDoc.id);
-          break;
-        }
-        default:
-          // If the buffer status is In Progress we don't update the buffer
-          // because the buffer is still being initialized
-          break;
+        await sensorDocRef.update({
+          aqiBufferIndex:
+            (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
+          aqiBuffer: aqiBuffer,
+          lastValidAqiTime: currentSensorData.lastValidAqiTime,
+        });
+        break;
       }
+      case bufferStatus.DoesNotExist: {
+        // Initialize populating the buffer with default values, don't update
+        // any values until the buffer status is Exists
+        await sensorDocRef.update({
+          aqiBufferStatus: bufferStatus.InProgress,
+          lastValidAqiTime: currentSensorData.lastValidAqiTime,
+        });
+        // This function updates the bufferStatus once the buffer has been
+        // fully initialized, which uses an additional write to the database
+        populateDefaultBuffer(true, sensorDoc.id);
+        break;
+      }
+      default:
+        // If the buffer status is In Progress we don't update the buffer
+        // because the buffer is still being initialized
+        break;
     }
   }
 

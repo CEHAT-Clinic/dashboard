@@ -38,7 +38,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours
+ * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is `undefined`.
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
@@ -142,7 +142,7 @@ function getHourlyAverages(
  *
  */
 function cleanAverages(averages: BasicReading[]): number[] {
-  const cleanedAverages = new Array<number>(averages.length);
+  const cleanedAverages = new Array<number>(averages.length).fill(Number.NaN);
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
     if (reading) {
@@ -186,8 +186,7 @@ function getCleanedAverages(
 
 /**
  * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
- * @param cleanedAverages - A list of numbers with 12 hours of data where at
- *                         least two of the last three hours are valid data points
+ * @param cleanedAverages - A list of numbers with 12 hours of data where at least two of the last three hours are valid data points
  */
 function cleanedReadingsToNowCastPm25(cleanedAverages: number[]): number {
   let minimum = Number.MAX_VALUE;
@@ -220,10 +219,9 @@ function cleanedReadingsToNowCastPm25(cleanedAverages: number[]): number {
     if (!Number.isNaN(cleanedAverages[i])) {
       weightedAverageSum += currentHourWeight * cleanedAverages[i];
       weightSum += currentHourWeight;
-
-      // Implement power function without recalculating each iteration
-      currentHourWeight *= weightFactor;
     }
+    // Implement power function without recalculating each iteration
+    currentHourWeight *= weightFactor;
   }
   return weightedAverageSum / weightSum;
 }
