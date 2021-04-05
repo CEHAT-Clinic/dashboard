@@ -23,16 +23,9 @@
     "axios": "^0.21.1",
     "d3-scale": "^3.2.4",
     "d3-shape": "^2.1.0",
-<<<<<<< HEAD
-    "file-saver": "^2.0.5",
-    "firebase": "^8.3.0",
-    "framer-motion": "^4.0.2",
-    "i18next": "^20.0.0",
-=======
     "firebase": "^8.3.2",
     "framer-motion": "^4.1.2",
     "i18next": "^20.1.0",
->>>>>>> main
     "i18next-browser-languagedetector": "^6.1.0",
     "i18next-http-backend": "^1.2.1",
     "navi": "^0.14.0",
