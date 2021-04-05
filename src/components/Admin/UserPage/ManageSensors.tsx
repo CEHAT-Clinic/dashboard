@@ -21,6 +21,7 @@ import {
   Text,
   Divider,
   IconButton,
+  HStack,
 } from '@chakra-ui/react';
 import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -278,9 +279,12 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Box>
-            <AddSensorModal />
-          </Box>
+          <Center>
+            <HStack>
+              <AddSensorModal />
+              <DownloadCSVModal />
+            </HStack>
+          </Center>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
               {t('sensors.heading')}
@@ -341,7 +345,6 @@ const ManageSensors: () => JSX.Element = () => {
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>
-          <DownloadCSVModal />
         </Box>
       </Flex>
     );

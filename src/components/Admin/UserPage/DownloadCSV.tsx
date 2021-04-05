@@ -367,7 +367,9 @@ const DownloadCSVModal: () => JSX.Element = () => {
 
   return (
     <Box>
-      <Button onClick={onOpen}>{t('downloadData.download')}</Button>
+      <Button colorScheme="teal" onClick={onOpen}>
+        {t('downloadData.download')}
+      </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
@@ -427,7 +429,9 @@ const DownloadCSVModal: () => JSX.Element = () => {
             </Center>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>{t('downloadData.close')}</Button>
+            <Button colorScheme="red" onClick={onClose}>
+              {t('downloadData.close')}
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
