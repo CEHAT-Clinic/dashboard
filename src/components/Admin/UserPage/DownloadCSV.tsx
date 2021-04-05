@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Box,
   Button,
@@ -18,23 +18,40 @@ import {
   FormHelperText,
   Select,
   HStack,
+  Center,
+  Progress,
+  Flex,
 } from '@chakra-ui/react';
-import firebase, {firestore} from '../../../firebase';
+import {firestore} from '../../../firebase';
 import {CSVLink} from 'react-csv';
 
+/**
+ * Interface for the fields of the CSV
+ */
 interface BodyElement {
-  timestamp: Date;
-  channelAPm25: number;
-  channelBPm25: number;
+  timestamp: string;
+  name: string;
+  pm25: number;
+  percentDiff: number;
   humidity: number;
   latitude: number;
   longitude: number;
 }
+
+/**
+ * Interface for the labels of the headers in the CSV
+ * label - text to be displayed in the CSV file
+ * key - string of which json data to use for the given label
+ */
 interface HeaderElement {
   label: string;
   key: string;
 }
 
+/**
+ * Props for the CSV Button. This passes the information from the CSV modal to
+ * the component that actually downloads the CSV file.
+ */
 interface CSVButtonProps {
   startYear: number;
   startMonth: number;
@@ -42,11 +59,20 @@ interface CSVButtonProps {
   endYear: number;
   endMonth: number;
   endDay: number;
+  error: string;
 }
 
 /**
- * Component for administrative page to manage the sensors.
- * If a user is not signed in or an admin user, access is denied.
+ * Props for the month and day input fields used in the `DownloadCSVModal`
+ */
+interface InputProps {
+  value: number;
+  setValue: React.Dispatch<React.SetStateAction<number>>;
+}
+
+/**
+ * Component for the button that can be clicked to download sensor data. Used
+ * in `DownloadCSVModal` component which appear son the manage sensor page for admins.
  */
 const DownloadCSVButton: ({
   startYear,
@@ -55,6 +81,7 @@ const DownloadCSVButton: ({
   endYear,
   endMonth,
   endDay,
+  error,
 }: CSVButtonProps) => JSX.Element = ({
   startYear,
   startMonth,
@@ -62,118 +89,152 @@ const DownloadCSVButton: ({
   endYear,
   endMonth,
   endDay,
+  error,
 }: CSVButtonProps) => {
-  const [fetchingData, setFetchingData] = useState(false);
+  /* --------------- State maintenance variables ------------------------ */
   const [body, setBody] = useState<BodyElement[]>([]);
   const [header, setHeader] = useState<HeaderElement[]>([]);
-  const [total, setTotal] = useState(0);
   const [progress, setProgress] = useState(0);
+  const [totalSensors, setTotalSensors] = useState(1);
+  const [filename, setFilename] = useState('');
+  const [fetchingData, setFetchingData] = useState(false);
+  const [readyForDownload, setReadyForDownload] = useState(false);
+  /* --------------- End maintenance variables ------------------------ */
 
   function fetchData() {
-    setFetchingData(true);
-
     // Generate Start Timestamp
-    const startDate = new Date(startYear, startMonth, startDay);
-    // TODO: don't need this? Check after convert results to timestamps
-    const startTimestamp = firebase.firestore.Timestamp.fromDate(startDate);
+    const startDate = new Date(startYear, startMonth - 1, startDay);
+    const startDateString = startDate.toISOString();
 
     // Generate End Timestamp
-    const endDate = new Date(endYear, endMonth, endDay);
-    // TODO: don't need this? Check after convert results to timestamps
-    const endTimestamp = firebase.firestore.Timestamp.fromDate(endDate);
+    const endDate = new Date(endYear, endMonth - 1, endDay);
+    const endDateString = endDate.toISOString();
+
+    setFilename('pm25_' + startDateString + '_to_' + endDateString + '.csv');
 
     const newBody: BodyElement[] = [];
     const newHeaders: HeaderElement[] = [
       {label: 'Timestamp', key: 'timestamp'},
-      {label: 'Channel A PM 2.5', key: 'channelAPm25'},
-      {label: 'Channel B PM 2.5', key: 'channelBPm25'},
+      {label: 'Name', key: 'name'},
+      {label: 'PM 2.5', key: 'pm25'},
+      {label: 'Percent Difference', key: 'percentDiff'},
       {label: 'Humidity', key: 'humidity'},
       {label: 'Latitude', key: 'latitude'},
       {label: 'Longitude', key: 'longitude'},
     ];
 
+    /**
+     * This function actually fetches the data from firestore and populates the
+     * list that represents the body of the CSV file
+     * @param body - list of body elements to populate with the data
+     * @returns the updated body with the elements from Firestore
+     */
     async function getData(body: BodyElement[]) {
-      // Readings subcollection
-      /* eslint-disable-next-line spellcheck/spell-checker */
-      const testDocId = '0o4SOasIk6fPXPSV1Ahk';
-      const readingsRef = firestore
-        .collection('sensors')
-        .doc(testDocId)
-        .collection('readings');
+      setFetchingData(true);
+      const sensorsRef = firestore.collection('sensors');
+      const sensorDocs = (await sensorsRef.get()).docs;
+      const numDocs = sensorDocs.length;
+      setTotalSensors(numDocs);
 
-      console.log('before snapshot');
-      // Get values from readings subcollection
-      const querySnapshot = await readingsRef
-        .where('timestamp', '>=', startDate)
-        .where('timestamp', '<=', endDate)
-        .limit(1000) /* eslint-disable-line no-magic-numbers */
-        .get();
+      for (let i = 0; i < numDocs; i++) {
+        const sensorData = sensorDocs[i].data();
+        // Get sensor name and doc ID
+        const name: string = sensorData['name'];
+        const docId = sensorDocs[i].id;
 
-      // TODO: testing code, delete later
-      const querySize = querySnapshot.size;
-      console.log('after snapshot:', {querySize});
-      setTotal(querySize);
+        const readingsRef = firestore
+          .collection('sensors')
+          .doc(docId)
+          .collection('readings');
 
-      const documentList = querySnapshot.docs;
-      for (let index = 0; index < documentList.length; index++) {
-        if (index % 100 === 0 || index === documentList.length - 1) {
-          setProgress(index + 1);
+        // Get docs from readings subcollection that fall between the start
+        // and end times
+        const querySnapshot = await readingsRef
+          .where('timestamp', '>=', startDate)
+          .where('timestamp', '<=', endDate)
+          .get();
+
+        const documentList = querySnapshot.docs;
+        for (let index = 0; index < documentList.length; index++) {
+          const data = documentList[index].data();
+          // Get field values
+          const timestamp: Date = data['timestamp'].toDate();
+          const pm25: number = data['pm25'];
+          const percentDiff: number = data['meanPercentDifference'];
+          const humidity: number = data['humidity'];
+          const latitude: number = data['latitude'];
+          const longitude: number = data['longitude'];
+
+          // Create output instance
+          const outputValue: BodyElement = {
+            timestamp: timestamp.toISOString(),
+            name: name,
+            pm25: pm25,
+            percentDiff: percentDiff,
+            humidity: humidity,
+            latitude: latitude,
+            longitude: longitude,
+          };
+          newBody.push(outputValue);
         }
-        const data = documentList[index].data();
-        // Get field values
-        const timestamp = data['timestamp'];
-        const channelAPm25 = data['channelAPm25'];
-        const channelBPm25 = data['channelBPm25'];
-        const humidity = data['humidity'];
-        const latitude = data['latitude'];
-        const longitude = data['longitude'];
-        // Create output instance
-        const outputValue: BodyElement = {
-          timestamp: timestamp,
-          channelAPm25: channelAPm25,
-          channelBPm25: channelBPm25,
-          humidity: humidity,
-          latitude: latitude,
-          longitude: longitude,
-        };
-        newBody.push(outputValue);
+        // Update the screen to show how many sensors we have left to process
+        setProgress(i + 1);
       }
+      setReadyForDownload(true);
       return newBody;
     }
 
-    // Get data from firestore
-    getData(newBody);
-    setBody(newBody);
-    setHeader(newHeaders);
+    // If there's no error with the input, fetch data from Firestore
+    if (!error) {
+      setTotalSensors(0);
+      setProgress(0);
+      getData(newBody);
+      setBody(newBody);
+      setHeader(newHeaders);
+    }
     setFetchingData(false);
   }
 
+  // Multiplier to get a fractional percentage (0.12) to a number between 1
+  // and 100: (12)
+  const toPercent = 100;
   return (
-    <Box>
-      <Text>
-        Fetch: {'' + fetchingData} Data:{'' + body.length}
-      </Text>
-      <Text>
-        {' '}
-        Progress {'' + progress} out of {'' + total}
-      </Text>
-      <Button onClick={() => fetchData()}>Fetch Data</Button>
-      {fetchingData ? (
-        <Button>Still fetchiing data</Button>
+    <Flex flexDir="column" textAlign="center" width="100%" alignItems="center">
+      {error ? (
+        <Text color="red">{error}</Text>
       ) : (
-        <CSVLink data={body} headers={header} filename={'ASYNC.csv'}>
-          <Button>Download me</Button>
-        </CSVLink>
+        <Text color="green">Dates are valid</Text>
       )}
-    </Box>
+      <Progress
+        width="80%"
+        value={(progress / totalSensors) * toPercent}
+        size="md"
+      />
+      <Box paddingTop={2}>
+        {!fetchingData && !readyForDownload && (
+          <Button onClick={() => fetchData()}>Fetch Data</Button>
+        )}
+        {fetchingData && !readyForDownload && (
+          <Text>Fetching data, this may take a while</Text>
+        )}
+        {readyForDownload && (
+          <CSVLink data={body} headers={header} filename={filename}>
+            <Button>Download me</Button>
+          </CSVLink>
+        )}
+        <Text>
+          The data is ready for download when this button says &quot;Download
+          Data&quot; instead of &quot;Fetch Data&quot;
+        </Text>
+      </Box>
+    </Flex>
   );
 };
 
-interface InputProps {
-  value: number;
-  setValue: React.Dispatch<React.SetStateAction<number>>;
-}
-
+/**
+ * Component for the download data modal that appears on the manage sensor page
+ * in the administrative pane.
+ */
 const DownloadCSVModal: () => JSX.Element = () => {
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [startYear, setStartYear] = useState(0);
@@ -182,37 +243,36 @@ const DownloadCSVModal: () => JSX.Element = () => {
   const [endYear, setEndYear] = useState(0); // Change to timestamp
   const [endMonth, setEndMonth] = useState(0); // Change to timestamp
   const [endDay, setEndDay] = useState(0);
+  const [error, setError] = useState('');
 
-  function handleClose() {
+  // Reset to starting state
+  function clearFields() {
     setStartYear(0);
     setStartMonth(0);
     setStartDay(0);
     setEndYear(0);
     setEndMonth(0);
     setEndDay(0);
+    setError('');
+  }
+
+  // Reset starting state and close modal
+  function handleClose() {
+    clearFields();
     onClose();
   }
 
-  const YearInput: ({value, setValue}: InputProps) => JSX.Element = ({
-    value,
-    setValue,
-  }: InputProps) => {
-    return (
-      <NumberInput size="md" width="30%">
-        <NumberInputField
-          onChange={event => {
-            setValue(+event.target.value);
-          }}
-          value={value}
-        />
-      </NumberInput>
-    );
-  };
+  /**
+   * Drop-down menu for months of the year
+   * @param value - state variable this input displays and changes
+   * @param setValue - function that sets the value
+   */
   const MonthInput: ({value, setValue}: InputProps) => JSX.Element = ({
     value,
     setValue,
   }: InputProps) => {
     const labels = [
+      '',
       'Jan',
       'Feb',
       'Mar',
@@ -227,7 +287,7 @@ const DownloadCSVModal: () => JSX.Element = () => {
       'Dec',
     ];
     const options = [];
-    for (let i = 0; i < labels.length; i++) {
+    for (let i = 1; i < labels.length; i++) {
       options.push(
         <option value={i} key={i}>
           {labels[i]}
@@ -250,6 +310,11 @@ const DownloadCSVModal: () => JSX.Element = () => {
     );
   };
 
+  /**
+   * Drop-down menu for days of a month
+   * @param value - state variable this input displays and changes
+   * @param setValue - function that sets the value
+   */
   const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
     value,
     setValue,
@@ -279,9 +344,26 @@ const DownloadCSVModal: () => JSX.Element = () => {
     );
   };
 
+  /**
+   * Check that input dates are valid, sets error accordingly
+   */
+  useEffect(() => {
+    const startDate = new Date(startYear, startMonth - 1, startDay);
+    const endDate = new Date(endYear, endMonth - 1, endDay);
+    if (startDate.getMonth() !== startMonth - 1) {
+      setError('Start date is not valid');
+    } else if (endDate.getMonth() !== endMonth - 1) {
+      setError('End date is not valid');
+    } else if (startDate > endDate) {
+      setError('Start date must be before end date');
+    } else {
+      setError('');
+    }
+  }, [startYear, startMonth, startDay, endYear, endMonth, endDay]);
+
   return (
     <Box>
-      <Button onClick={onOpen}>Open Download Modal</Button>
+      <Button onClick={onOpen}>Download Data</Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
@@ -290,11 +372,12 @@ const DownloadCSVModal: () => JSX.Element = () => {
           <ModalBody>
             <Box>
               <FormControl isRequired>
+                {/* Start start date input fields */}
                 <FormLabel>Start Date</FormLabel>
                 <HStack>
-                  {/* <YearInput value={startYear} setValue={setStartYear} /> */}
-                  <NumberInput size="md" width="30%">
+                  <NumberInput size="md" width="30%" id="startYear">
                     <NumberInputField
+                      placeholder="year"
                       onChange={event => {
                         setStartYear(+event.target.value);
                       }}
@@ -304,19 +387,21 @@ const DownloadCSVModal: () => JSX.Element = () => {
                   <MonthInput value={startMonth} setValue={setStartMonth} />
                   <DayInput value={startDay} setValue={setStartDay} />
                 </HStack>
-                <FormHelperText>
+                <FormHelperText paddingBottom={1}>
                   If the start date is earlier than the earliest entry, gets
                   data starting from the first entry.
                 </FormHelperText>
+                {/* End start date input fields */}
+                {/* Start end date input fields */}
                 <FormLabel>End Date</FormLabel>
                 <HStack>
-                  {/* <YearInput value={endYear} setValue={setEndYear} /> */}
-                  <NumberInput size="md" width="30%">
+                  <NumberInput size="md" width="30%" id="endYear">
                     <NumberInputField
                       onChange={event => {
                         setEndYear(+event.target.value);
                       }}
                       value={endYear}
+                      placeholder="year"
                     />
                   </NumberInput>
                   <MonthInput value={endMonth} setValue={setEndMonth} />
@@ -326,23 +411,23 @@ const DownloadCSVModal: () => JSX.Element = () => {
                   If the end date is later than the last entry, gets data until
                   the last entry.
                 </FormHelperText>
+                {/* End end date input fields */}
               </FormControl>
             </Box>
+            <Center>
+              <DownloadCSVButton
+                startYear={startYear}
+                startMonth={startMonth}
+                startDay={startDay}
+                endYear={endYear}
+                endMonth={endMonth}
+                endDay={endDay}
+                error={error}
+              />
+            </Center>
           </ModalBody>
           <ModalFooter>
             <Button onClick={onClose}>Close</Button>
-            <Button colorScheme="teal" type="submit">
-              {' '}
-              Submit{' '}
-            </Button>
-            <DownloadCSVButton
-              startYear={startYear}
-              startMonth={startMonth}
-              startDay={startDay}
-              endYear={endYear}
-              endMonth={endMonth}
-              endDay={endDay}
-            />
           </ModalFooter>
         </ModalContent>
       </Modal>
