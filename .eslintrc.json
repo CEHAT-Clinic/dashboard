@@ -61,7 +61,12 @@
       "warn",
       {
         "skipWordIfMatch": [
+          "sunday",
+          "85vh",
+          "dx",
+          "dy",
           "aqi",
+          "3vh",
           "Figma",
           "Aqi",
           "Svg",
@@ -117,7 +122,17 @@
           "instagram",
           "subcollection",
           "csv",
-          "num"
+          "num",
+          "axios",
+          "camelcase",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday",
+          "sunday",
+          "Epa"
         ],
         "skipWords": [
           "Pv"

@@ -1,29 +1,145 @@
-import PurpleAirResponse from './purple-air-response';
-import axios from 'axios';
+import {PurpleAirReading} from './types';
 
-const thingspeakUrl: (channelId: string) => string = (channelId: string) =>
-  `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
-
+/**
+ * Get the readings subcollection path from a sensor's doc ID
+ * @param docId - document ID of the sensor in the sensors collection
+ * @returns the path to the readings subcollection for a sensor
+ *
+ */
 const readingsSubcollection: (docId: string) => string = (docId: string) =>
   `/sensors/${docId}/readings`;
 
 /**
- * Fetches the Thingspeak API key from PurpleAir using the PurpleAir sensor ID
- * @param purpleAirId - PurpleAir sensor ID
+ * Converts PurpleAir's confidence value into percent difference
+ * @param confidence - confidence value from PurpleAir, between 0 and 100
+ * @returns meanPercentDifference value, or NaN if value lost in calculation.
+ * Any input that results in NaN means that the meanPercentDifference is high
+ * enough that the reading should be discarded anyways.
+ *
+ * @remarks
+ * PurpleAir's confidence values is calculated as follow. PurpleAir does not
+ * document what "pseudo average" means.
+ * ```ts
+ * // a is the pseudo average for channel A
+ * // b is the pseudo average for channel B
+ * function getConfidence(a: number, b: number) {
+ *   const diff = Math.abs(a - b)
+ *   const avg = (a + b) / 2;
+ *   const meanPercentDifference = (diff / avg) * 100;
+ *   const percentConfidence = Math.max(
+       Math.round(meanPercentDifference / 1.6) - 25, 0
+ *   );
+ *   return Math.max(100 - percentConfidence, 0);
+ * }
+ * ```
  */
-async function getThingspeakKeysFromPurpleAir(
-  purpleAirId: string
-): Promise<PurpleAirResponse> {
-  const PURPLE_AIR_API_ADDRESS = 'https://www.purpleair.com/json';
+function getMeanPercentDifference(confidence: number): number {
+  const minConfidence = 0;
+  const maxConfidence = 100;
+  /* eslint-disable no-magic-numbers */
+  switch (confidence) {
+    case minConfidence:
+      // If the confidence is zero, then we want to discard this reading
+      return NaN;
+    case maxConfidence:
+      // The confidence value from PurpleAir can be 100 even if channel A and
+      // channel B do not completely match, but if the confidence value is 100,
+      // then the value is data is good enough to meet the EPA recommendation.
+      return 0;
+    default:
+      // Otherwise, undo the calculation from the PurpleAir confidence value
+      /* eslint-disable-next-line no-magic-numbers */
+      return ((maxConfidence - confidence + 25) * 1.6) / 100;
+  }
+}
 
-  const purpleAirApiResponse = await axios({
-    url: PURPLE_AIR_API_ADDRESS,
-    params: {
-      show: purpleAirId,
-    },
+/**
+ * Converts a PurpleAir reading returned from the group API query into a PurpleAirReading
+ * @param data - list of data from PurpleAir for a given sensor
+ * @param fieldNames - list of field names from PurpleAir that match the order of the data fields
+ * @returns
+ */
+function getReading(
+  data: (string | number)[],
+  fieldNames: string[]
+): [number, PurpleAirReading | null] {
+  // Initialize all values
+  let id: number = Number.NaN;
+  let name: string | undefined = undefined;
+  let latitude: number | undefined = undefined;
+  let longitude: number | undefined = undefined;
+  let meanPercentDifference: number | undefined = undefined;
+  let pm25: number | undefined = undefined;
+  let humidity: number | undefined = undefined;
+  let timestamp: Date | undefined = undefined;
+
+  data.forEach((value, index) => {
+    // Check the corresponding field name to determine how to handle the value
+    switch (fieldNames[index]) {
+      case 'sensor_index':
+        if (typeof value === 'number') id = value;
+        break;
+      case 'name':
+        if (typeof value === 'string') name = value;
+        break;
+      case 'latitude': {
+        if (typeof value === 'number') latitude = value;
+        break;
+      }
+      case 'longitude':
+        if (typeof value === 'number') longitude = value;
+        break;
+      case 'confidence':
+        if (typeof value === 'number') {
+          meanPercentDifference = getMeanPercentDifference(value);
+        }
+        break;
+      case 'pm2.5':
+        if (typeof value === 'number') pm25 = value;
+        break;
+      case 'humidity':
+        if (typeof value === 'number') humidity = value;
+        break;
+      case 'last_seen':
+        if (typeof value === 'number') {
+          // PurpleAir returns seconds since EPOCH, but the Date constructor
+          // takes milliseconds, so we convert from seconds to milliseconds
+          timestamp = new Date(value * 1000); // eslint-disable-line no-magic-numbers
+        }
+        break;
+      default:
+        // Unknown field, ignore
+        break;
+    }
   });
 
-  return new PurpleAirResponse(purpleAirApiResponse);
+  // Only return a PurpleAirReading if all fields are defined
+  if (
+    id &&
+    name &&
+    latitude !== undefined && // Can be zero
+    longitude !== undefined && // Can be zero
+    meanPercentDifference !== undefined && // Can be zero
+    pm25 !== undefined && // Can be zero
+    humidity !== undefined && // Can be zero
+    timestamp
+  ) {
+    return [
+      id,
+      {
+        id: id,
+        name: name,
+        latitude: latitude,
+        longitude: longitude,
+        meanPercentDifference: meanPercentDifference,
+        pm25: pm25,
+        humidity: humidity,
+        timestamp: timestamp,
+      },
+    ];
+  } else {
+    return [id, null];
+  }
 }
 
 /**
@@ -50,57 +166,18 @@ async function getLastSensorReadingTime(
 }
 
 /**
- * Sensor reading data that is stored in the readings subcollection
- * - `latitude` - latitude of a sensor
- * - `longitude` - longitude of a sensor
- * - `channelAPm25` - PM2.5 reading for channel A
- * - `channelBPm25` - PM2.5 reading for channel B
- * - `humidity` - humidity reading for a sensor
- * - `timestamp` - the timestamp of the current reading
+ * Converts the PurpleAir ID to a number, if necessary.
+ * @param id - PurpleAir ID stored as a string or number
+ * @returns the PurpleAir ID as a number
  */
-interface HistoricalSensorReading {
-  latitude: number;
-  longitude: number;
-  channelAPm25: number;
-  channelBPm25: number;
-  humidity: number;
-  timestamp: FirebaseFirestore.Timestamp;
-}
-
-/**
- * Interface for the structure of a sensor's data, used in the `current-reading`
- * collection in the `sensors` doc.
- * - `purpleAirId` - PurpleAir sensor ID
- * - `name` - PurpleAir sensor name
- * - `latitude` - latitude of sensor
- * - `longitude` - longitude of sensor
- * - `isValid` - if the current NowCast PM2.5 and AQI value are valid
- * - `isActive` - if we should be actively gathering data for the sensor
- * - `aqi` - the current AQI for the sensor, or `NaN` if not enough valid data
- * - `nowCastPm25` - the current NowCast corrected PM2.5, or `NaN` if not enough valid data
- * - `readingDocId` - document ID of the for the sensor in the sensors collection in Firestore
- * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
- * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown
- */
-interface CurrentReadingSensorData {
-  purpleAirId: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  isValid: boolean;
-  isActive: boolean;
-  aqi: number;
-  nowCastPm25: number;
-  readingDocId: string;
-  lastValidAqiTime: FirebaseFirestore.Timestamp | null;
-  lastSensorReadingTime: FirebaseFirestore.Timestamp | null;
+function getPurpleAirId(id: string | number): number {
+  if (typeof id === 'string') return +id;
+  return id;
 }
 
 export {
-  thingspeakUrl,
   readingsSubcollection,
-  getThingspeakKeysFromPurpleAir,
+  getReading,
   getLastSensorReadingTime,
+  getPurpleAirId,
 };
-
-export type {CurrentReadingSensorData, HistoricalSensorReading};
