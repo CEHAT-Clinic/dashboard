@@ -32,17 +32,29 @@ exports.generateAverageReadingsCsv = functions.pubsub
 
 // Returns true if the current user is authenticated and is an admin user
 async function isAdmin(context: EventContext): Promise<boolean> {
+  console.log("entered isAdmin")
+  console.log("context object")
+  console.log(context)
   if (context && context.auth) {
+    console.log("entered if branch of isAdmin")
+    console.log("fetching user document")
     const userDocument = await firestore
       .doc(`/users/${context.auth.uid}`)
       .get();
+    console.log("user document object")
+    console.log(userDocument)
+    console.log("user document data")
+    console.log(userDocument.data())
+    console.log("return value")
+    console.log(userDocument.data()?.isAdmin ?? false)
     return userDocument.data()?.isAdmin ?? false;
   }
-
+  console.log("Never entered if branch of isAdmin")
   return false;
 }
 
 exports.testCallable = functions.https.onCall(async (context: EventContext) => {
+  console.log("In the testCallable")
   if (!(await isAdmin(context))) {
     console.log('Not an admin'); // eslint-disable-line
     throw new functions.https.HttpsError(
