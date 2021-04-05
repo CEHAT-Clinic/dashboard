@@ -224,10 +224,10 @@ const DownloadCSVButton: ({
         )}
         {readyForDownload && (
           <Box>
-          <Text>{t('downloadData.whenReady')}</Text>
-          <CSVLink data={body} headers={header} filename={filename}>
-            <Button>{t('downloadData.download')}</Button>
-          </CSVLink>
+            <Text>{t('downloadData.whenReady')}</Text>
+            <CSVLink data={body} headers={header} filename={filename}>
+              <Button>{t('downloadData.download')}</Button>
+            </CSVLink>
           </Box>
         )}
       </Box>
