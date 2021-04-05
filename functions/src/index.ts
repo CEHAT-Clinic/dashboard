@@ -5,7 +5,6 @@ import {
 import {firestore, functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
 import {purpleAirToFirestore} from './aqi-calculation/purple-air-response';
-//import deleteOldReadings from './delete-old-readings';
 import {EventContext} from 'firebase-functions';
 
 exports.purpleAirToFirestore = functions.pubsub
@@ -31,13 +30,6 @@ exports.generateAverageReadingsCsv = functions.pubsub
   .topic('generate-average-readings-csv')
   .onPublish(generateAverageReadingsCsv);
 
-/* exports.deleteOldReadings = functions
-  .runWith({
-    timeoutSeconds: 540,
-    memory: '2GB',
-  })
-  .https.onCall(deleteOldReadings); */
-
 // Returns true if the current user is authenticated and is an admin user
 async function isAdmin(context: EventContext): Promise<boolean> {
   if (context && context.auth) {
@@ -52,12 +44,12 @@ async function isAdmin(context: EventContext): Promise<boolean> {
 
 exports.testCallable = functions.https.onCall(async (context: EventContext) => {
   if (!(await isAdmin(context))) {
-    console.log('Not an admin');
+    console.log('Not an admin'); // eslint-disable-line
     throw new functions.https.HttpsError(
       'permission-denied',
       'Must be an administrative user to initiate delete.'
     );
   } else {
-    console.log('An admin');
+    console.log('An admin'); // eslint-disable-line
   }
 });
