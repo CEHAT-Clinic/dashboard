@@ -141,6 +141,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // Add readings to the PM 2.5 buffer
     const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
 
+    // TODO: make only one update call to the database
     switch (status) {
       case bufferStatus.Exists: {
         // If the buffer exists, update normally

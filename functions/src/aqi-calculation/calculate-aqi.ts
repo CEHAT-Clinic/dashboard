@@ -153,14 +153,14 @@ async function calculateAqi(): Promise<void> {
     const currentSensorData: CurrentReadingSensorData = {
       purpleAirId: sensorDocData.purpleAirId ?? '',
       name: sensorDocData.name ?? '',
-      latitude: sensorDocData.latitude ?? NaN,
-      longitude: sensorDocData.longitude ?? NaN,
+      latitude: sensorDocData.latitude ?? Number.NaN,
+      longitude: sensorDocData.longitude ?? Number.NaN,
       readingDocId: sensorDoc.id,
       lastValidAqiTime: sensorDocData.lastValidAqiTime ?? null,
       lastSensorReadingTime: sensorDocData.lastSensorReadingTime ?? null,
       isActive: sensorDocData.isActive ?? true,
-      nowCastPm25: NaN,
-      aqi: NaN,
+      nowCastPm25: Number.NaN,
+      aqi: Number.NaN,
       isValid: false,
     };
 
@@ -229,6 +229,7 @@ async function calculateAqi(): Promise<void> {
             (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
           aqiBuffer: aqiBuffer,
           lastValidAqiTime: currentSensorData.lastValidAqiTime,
+          isValid: currentSensorData.isValid,
         });
         break;
       }
@@ -238,6 +239,7 @@ async function calculateAqi(): Promise<void> {
         await sensorDocRef.update({
           aqiBufferStatus: bufferStatus.InProgress,
           lastValidAqiTime: currentSensorData.lastValidAqiTime,
+          isValid: currentSensorData.isValid,
         });
         // This function updates the bufferStatus once the buffer has been
         // fully initialized, which uses an additional write to the database
