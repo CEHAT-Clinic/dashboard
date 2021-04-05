@@ -156,7 +156,7 @@
         "fetchData": "Fetch Data",
         "fetching": "Fetching data, this may take a while",
         "download": "Download Data",
-        "whenReady": "The data is ready for download when this button says \"Download Data\" instead of \"Fetch Data\"",
+        "whenReady": "The data is ready for download!",
         "header": "Download Data From All Sensors",
         "startDate": "Start Date",
         "startHelper": "If the start date is earlier than the first entry, the data will start at the first entry.",

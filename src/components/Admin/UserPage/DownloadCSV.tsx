@@ -104,6 +104,7 @@ const DownloadCSVButton: ({
   /* ------------------------------------------------------------------- */
 
   function fetchData() {
+    setFetchingData(true);
     // Generate Start Timestamp
     const startDate = new Date(startYear, startMonth - 1, startDay);
     const startDateString = startDate.toISOString();
@@ -183,6 +184,7 @@ const DownloadCSVButton: ({
         setProgress(i + 1);
       }
       setReadyForDownload(true);
+      setFetchingData(false);
       return newBody;
     }
 
@@ -194,7 +196,6 @@ const DownloadCSVButton: ({
       setBody(newBody);
       setHeader(newHeaders);
     }
-    setFetchingData(false);
   }
 
   // Multiplier to get a fractional percentage (0.12) to a number between 1
@@ -219,14 +220,16 @@ const DownloadCSVButton: ({
           </Button>
         )}
         {fetchingData && !readyForDownload && (
-          <Text>{t('downloadData.fetchingData')}</Text>
+          <Text>{t('downloadData.fetching')}</Text>
         )}
         {readyForDownload && (
+          <Box>
+          <Text>{t('downloadData.whenReady')}</Text>
           <CSVLink data={body} headers={header} filename={filename}>
             <Button>{t('downloadData.download')}</Button>
           </CSVLink>
+          </Box>
         )}
-        <Text> {t('downloadData.whenReady')} </Text>
       </Box>
     </Flex>
   );
@@ -429,7 +432,7 @@ const DownloadCSVModal: () => JSX.Element = () => {
             </Center>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" onClick={onClose}>
+            <Button colorScheme="red" onClick={handleClose}>
               {t('downloadData.close')}
             </Button>
           </ModalFooter>

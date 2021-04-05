@@ -156,7 +156,7 @@
         "fetchData": "Obtener datos",
         "fetching": "Obteniendo datos, esto puede llevar un tiempo",
         "download": "Descargar datos",
-        "whenReady": "Los datos están listos para descargar cuando este botón dice \"Descargar datos\" en lugar de \"Obtener datos\"",
+        "whenReady": "¡Los datos están listos para descargar!",
         "header": "Descargar Datos de Todos los Sensores",
         "startDate": "Fecha de inicio",
         "startHelper": "Si la fecha de inicio es anterior a la primera entrada, los datos comenzarán en la primera entrada.",
