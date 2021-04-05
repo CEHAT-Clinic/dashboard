@@ -24,6 +24,7 @@ import {
 } from '@chakra-ui/react';
 import {firestore} from '../../../firebase';
 import {CSVLink} from 'react-csv';
+import {useTranslation} from 'react-i18next';
 
 /**
  * Interface for the fields of the CSV
@@ -91,6 +92,7 @@ const DownloadCSVButton: ({
   endDay,
   error,
 }: CSVButtonProps) => {
+  const {t} = useTranslation('administration');
   /* --------------- State maintenance variables ------------------------ */
   const [body, setBody] = useState<BodyElement[]>([]);
   const [header, setHeader] = useState<HeaderElement[]>([]);
@@ -99,7 +101,7 @@ const DownloadCSVButton: ({
   const [filename, setFilename] = useState('');
   const [fetchingData, setFetchingData] = useState(false);
   const [readyForDownload, setReadyForDownload] = useState(false);
-  /* --------------- End maintenance variables ------------------------ */
+  /* ------------------------------------------------------------------- */
 
   function fetchData() {
     // Generate Start Timestamp
@@ -203,7 +205,7 @@ const DownloadCSVButton: ({
       {error ? (
         <Text color="red">{error}</Text>
       ) : (
-        <Text color="green">Dates are valid</Text>
+        <Text color="green">{t('downloadData.error.validDates')}</Text>
       )}
       <Progress
         width="80%"
@@ -212,20 +214,19 @@ const DownloadCSVButton: ({
       />
       <Box paddingTop={2}>
         {!fetchingData && !readyForDownload && (
-          <Button onClick={() => fetchData()}>Fetch Data</Button>
+          <Button onClick={() => fetchData()}>
+            {t('downloadData.fetchData')}
+          </Button>
         )}
         {fetchingData && !readyForDownload && (
-          <Text>Fetching data, this may take a while</Text>
+          <Text>{t('downloadData.fetchingData')}</Text>
         )}
         {readyForDownload && (
           <CSVLink data={body} headers={header} filename={filename}>
-            <Button>Download me</Button>
+            <Button>{t('downloadData.download')}</Button>
           </CSVLink>
         )}
-        <Text>
-          The data is ready for download when this button says &quot;Download
-          Data&quot; instead of &quot;Fetch Data&quot;
-        </Text>
+        <Text> {t('downloadData.whenReady')} </Text>
       </Box>
     </Flex>
   );
@@ -236,6 +237,8 @@ const DownloadCSVButton: ({
  * in the administrative pane.
  */
 const DownloadCSVModal: () => JSX.Element = () => {
+  const {t} = useTranslation('administration');
+  /* --------------- State maintenance variables ------------------------ */
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [startYear, setStartYear] = useState(0);
   const [startMonth, setStartMonth] = useState(0);
@@ -244,6 +247,7 @@ const DownloadCSVModal: () => JSX.Element = () => {
   const [endMonth, setEndMonth] = useState(0); // Change to timestamp
   const [endDay, setEndDay] = useState(0);
   const [error, setError] = useState('');
+  /* ------------------------------------------------------------------- */
 
   // Reset to starting state
   function clearFields() {
@@ -298,7 +302,7 @@ const DownloadCSVModal: () => JSX.Element = () => {
       <Box width="30%">
         <Select
           type="number"
-          placeholder="month"
+          placeholder={t('downloadData.month')}
           value={value}
           onChange={event => {
             setValue(+event.target.value);
@@ -331,7 +335,7 @@ const DownloadCSVModal: () => JSX.Element = () => {
     return (
       <Box width="30%">
         <Select
-          placeholder="day"
+          placeholder={t('downloadData.day')}
           size="md"
           value={value}
           onChange={event => {
@@ -351,33 +355,33 @@ const DownloadCSVModal: () => JSX.Element = () => {
     const startDate = new Date(startYear, startMonth - 1, startDay);
     const endDate = new Date(endYear, endMonth - 1, endDay);
     if (startDate.getMonth() !== startMonth - 1) {
-      setError('Start date is not valid');
+      setError(t('downloadData.error.invalidStart'));
     } else if (endDate.getMonth() !== endMonth - 1) {
-      setError('End date is not valid');
+      setError(t('downloadData.error.invalidEnd'));
     } else if (startDate > endDate) {
-      setError('Start date must be before end date');
+      setError(t('downloadData.error.startBeforeEnd'));
     } else {
       setError('');
     }
-  }, [startYear, startMonth, startDay, endYear, endMonth, endDay]);
+  }, [startYear, startMonth, startDay, endYear, endMonth, endDay, t]);
 
   return (
     <Box>
-      <Button onClick={onOpen}>Download Data</Button>
+      <Button onClick={onOpen}>{t('downloadData.download')}</Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>Download Data From All Sensors</ModalHeader>
+          <ModalHeader>{t('downloadData.header')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box>
               <FormControl isRequired>
                 {/* Start start date input fields */}
-                <FormLabel>Start Date</FormLabel>
+                <FormLabel>{t('downloadData.startDate')}</FormLabel>
                 <HStack>
                   <NumberInput size="md" width="30%" id="startYear">
                     <NumberInputField
-                      placeholder="year"
+                      placeholder={t('downloadData.year')}
                       onChange={event => {
                         setStartYear(+event.target.value);
                       }}
@@ -388,12 +392,11 @@ const DownloadCSVModal: () => JSX.Element = () => {
                   <DayInput value={startDay} setValue={setStartDay} />
                 </HStack>
                 <FormHelperText paddingBottom={1}>
-                  If the start date is earlier than the earliest entry, gets
-                  data starting from the first entry.
+                  {t('downloadData.startHelper')}
                 </FormHelperText>
                 {/* End start date input fields */}
                 {/* Start end date input fields */}
-                <FormLabel>End Date</FormLabel>
+                <FormLabel>{t('downloadData.endDate')}</FormLabel>
                 <HStack>
                   <NumberInput size="md" width="30%" id="endYear">
                     <NumberInputField
@@ -401,16 +404,13 @@ const DownloadCSVModal: () => JSX.Element = () => {
                         setEndYear(+event.target.value);
                       }}
                       value={endYear}
-                      placeholder="year"
+                      placeholder={t('downloadData.year')}
                     />
                   </NumberInput>
                   <MonthInput value={endMonth} setValue={setEndMonth} />
                   <DayInput value={endDay} setValue={setEndDay} />
                 </HStack>
-                <FormHelperText>
-                  If the end date is later than the last entry, gets data until
-                  the last entry.
-                </FormHelperText>
+                <FormHelperText>{t('downloadData.endHelper')}</FormHelperText>
                 {/* End end date input fields */}
               </FormControl>
             </Box>
@@ -427,7 +427,7 @@ const DownloadCSVModal: () => JSX.Element = () => {
             </Center>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>Close</Button>
+            <Button onClick={onClose}>{t('downloadData.close')}</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
