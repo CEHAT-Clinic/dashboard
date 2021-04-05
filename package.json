@@ -17,6 +17,7 @@
     "@types/jest": "^26.0.22",
     "@types/node": "^14.14.37",
     "@types/react": "^17.0.3",
+    "@types/react-csv": "^1.1.1",
     "@types/react-dom": "^17.0.3",
     "@types/react-gauge-chart": "^0.3.0",
     "@types/react-router-dom": "^5.1.7",
@@ -80,8 +81,6 @@
     ]
   },
   "devDependencies": {
-    "@types/file-saver": "^2.0.1",
-    "@types/react-csv": "^1.1.1",
     "@types/styled-components": "^5.1.9",
     "eslint-plugin-react": "^7.23.1",
     "eslint-plugin-spellcheck": "0.0.17",
