@@ -25,7 +25,7 @@ import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
 import {firebaseAuth, firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
-import {User, ToggleUserPopoverProps} from './Util';
+import {User, ToggleUserPopoverProps} from './Types';
 
 /**
  * Component for administrative page to manage site users.
