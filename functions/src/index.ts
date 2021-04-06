@@ -5,7 +5,7 @@ import {
 import {firestore, functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
 import {purpleAirToFirestore} from './aqi-calculation/purple-air-response';
-import {EventContext} from 'firebase-functions';
+import {CallableContext} from 'firebase-functions/lib/providers/https';
 
 exports.purpleAirToFirestore = functions.pubsub
   .schedule('every 2 minutes')
@@ -31,7 +31,8 @@ exports.generateAverageReadingsCsv = functions.pubsub
   .onPublish(generateAverageReadingsCsv);
 
 // Returns true if the current user is authenticated and is an admin user
-async function isAdmin(context: EventContext): Promise<boolean> {
+async function isAdmin(context: CallableContext): Promise<boolean> {
+  /* eslint-disable */
   console.log("entered isAdmin")
   console.log("context object")
   console.log(context)
@@ -50,18 +51,23 @@ async function isAdmin(context: EventContext): Promise<boolean> {
     return userDocument.data()?.isAdmin ?? false;
   }
   console.log("Never entered if branch of isAdmin")
+  /* eslint-enable */
   return false;
 }
 
-exports.testCallable = functions.https.onCall(async (context: EventContext) => {
-  console.log("In the testCallable")
-  if (!(await isAdmin(context))) {
+exports.testCallable = functions.https.onCall(
+  async (data: undefined, context: CallableContext) => {
+  console.log("In the testCallable") // eslint-disable-line
+    if (!(await isAdmin(context))) {
     console.log('Not an admin'); // eslint-disable-line
-    throw new functions.https.HttpsError(
-      'permission-denied',
-      'Must be an administrative user to initiate delete.'
-    );
-  } else {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Must be an administrative user to initiate delete.'
+      );
+    } else {
     console.log('An admin'); // eslint-disable-line
+    }
+
+    return Promise.resolve();
   }
-});
+);
