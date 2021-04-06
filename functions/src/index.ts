@@ -47,8 +47,8 @@ async function isAdmin(context: CallableContext): Promise<boolean> {
     console.log("user document data")
     console.log(userDocument.data())
     console.log("return value")
-    console.log(userDocument.data()?.isAdmin ?? false)
-    return userDocument.data()?.isAdmin ?? false;
+    console.log(userDocument.data()?.admin ?? false)
+    return userDocument.data()?.admin ?? false;
   }
   console.log("Never entered if branch of isAdmin")
   /* eslint-enable */
