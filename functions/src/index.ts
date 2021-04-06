@@ -56,9 +56,7 @@ async function isAdmin(context: CallableContext): Promise<boolean> {
 }
 
 exports.testCallable = functions.https.onCall(
-  async (data: object | null | undefined, // eslint-disable-line 
-    context: CallableContext
-  ) => {
+  async (data: undefined, context: CallableContext) => {
   console.log("In the testCallable") // eslint-disable-line
     if (!(await isAdmin(context))) {
     console.log('Not an admin'); // eslint-disable-line
