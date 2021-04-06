@@ -164,7 +164,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  */
 function getCleanedAverages(
   status: bufferStatus,
@@ -184,7 +184,10 @@ function getCleanedAverages(
 
 /**
  * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
+ * Formula from AirNow by the EPA
+ * https://usepa.servicenowservices.com/airnow?id=kb_article&sys_id=fed0037b1b62545040a1a7dbe54bcbd4
  * @param cleanedAverages - A list of numbers with 12 hours of data where at least two of the last three hours are valid data points
+ * @returns the NowCast PM2.5 corrected value
  */
 function cleanedReadingsToNowCastPm25(cleanedAverages: number[]): number {
   let minimum = Number.MAX_VALUE;

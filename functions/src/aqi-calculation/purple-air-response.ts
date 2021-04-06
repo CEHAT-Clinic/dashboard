@@ -89,10 +89,9 @@ async function purpleAirToFirestore(): Promise<void> {
       readingsSubcollection(sensorDoc.id)
     );
 
-    // Initialize the buffer element to the default value
-    let pm25BufferElement: Pm25BufferElement = defaultPm25BufferElement;
 
-    // Get the data from Firestore for this sensor
+
+    // Get the existing data from Firestore for this sensor
     const sensorDocData = sensorDoc.data() ?? {};
     const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
 
@@ -110,6 +109,12 @@ async function purpleAirToFirestore(): Promise<void> {
       ? Timestamp.fromDate(reading.timestamp)
       : null;
 
+    // Initialize the buffer element to the default value
+    let pm25BufferElement: Pm25BufferElement = defaultPm25BufferElement;
+
+    // Initalize the sensor doc update data
+    const sensorDocUpdate = Object.create(null);
+
     if (reading && readingTimestamp) {
       // Before adding the reading to the historical database, check that it
       // doesn't already exist in the database
@@ -125,6 +130,13 @@ async function purpleAirToFirestore(): Promise<void> {
           humidity: reading.humidity,
         };
 
+        // Update the sensor doc's data
+        sensorDocUpdate.lastSensorReadingTime = readingTimestamp;
+        sensorDocUpdate.latitude = reading.latitude;
+        sensorDocUpdate.longitude = reading.longitude;
+        sensorDocUpdate.name = reading.name;
+        sensorDocUpdate.purpleAirId = reading.id;
+
         // Add to historical readings
         const historicalSensorReading: HistoricalSensorReading = {
           timestamp: readingTimestamp,
@@ -138,18 +150,7 @@ async function purpleAirToFirestore(): Promise<void> {
       }
     }
 
-    // Add readings to the PM 2.5 buffer
-    const sensorDocUpdate = Object.create(null);
-
-    // Only add the most recent reading data if a new reading exists
-    if (reading) {
-      sensorDocUpdate.lastSensorReadingTime = readingTimestamp;
-      sensorDocUpdate.latitude = reading.latitude;
-      sensorDocUpdate.longitude = reading.longitude;
-      sensorDocUpdate.name = reading.name;
-      sensorDocUpdate.purpleAirId = reading.id;
-    }
-
+    // Update the PM2.5 buffer
     const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // If the buffer exists, update normally
