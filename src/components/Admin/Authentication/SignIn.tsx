@@ -2,14 +2,14 @@ import React, {useState} from 'react';
 import {Text, Heading, Link, Divider} from '@chakra-ui/react';
 import {
   SubmitButton,
-  signInWithGoogle,
   EmailFormInput,
   PasswordFormInput,
-} from '../Util';
+} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import ForgotPasswordModal from './ForgotPassword';
 import {useTranslation} from 'react-i18next';
+import {signInWithGoogle} from './Util';
 
 /**
  * Component to sign in.

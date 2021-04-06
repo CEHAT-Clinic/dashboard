@@ -20,13 +20,12 @@ import {
   PopoverBody,
   Center,
 } from '@chakra-ui/react';
-import {useAuth} from '../../contexts/AuthContext';
-import AccessDenied from './AccessDenied';
-import Loading from '../Util/Loading';
-import {firebaseAuth, firestore} from '../../firebase';
-import {User} from './Util';
+import {useAuth} from '../../../contexts/AuthContext';
+import AccessDenied from '../AccessDenied';
+import Loading from '../../Util/Loading';
+import {firebaseAuth, firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
-import {validData} from '../../util';
+import {User, ToggleUserPopoverProps} from './Util';
 
 /**
  * Component for administrative page to manage site users.
@@ -60,9 +59,9 @@ const ManageUsers: () => JSX.Element = () => {
               // Make sure that the doc data and relevant fields exist
               if (
                 userData &&
-                validData(userData.name, 'string') &&
-                validData(userData.email, 'string') &&
-                validData(userData.admin, 'boolean')
+                typeof userData.name === 'string' &&
+                typeof userData.email === 'string' &&
+                typeof userData.admin === 'boolean'
               ) {
                 userList.push({
                   email: userData.email,
@@ -103,14 +102,6 @@ const ManageUsers: () => JSX.Element = () => {
           setError(t('users.changeAdminError') + user.name);
         });
     }
-  }
-
-  /**
-   * Interface for ToggleUserPopover used for type safety
-   */
-  interface ToggleUserPopoverProps {
-    user: User;
-    isLastAdmin: boolean;
   }
 
   /**

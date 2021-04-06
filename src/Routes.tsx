@@ -10,7 +10,9 @@ const Admin = lazy(() => import('./pages/Admin'));
 const ManageAccount = lazy(
   () => import('./components/Admin/AccountManagement/ManageAccount')
 );
-const ManageUsers = lazy(() => import('./components/Admin/ManageUsers'));
+const ManageUsers = lazy(
+  () => import('./components/Admin/ManageUsers/ManageUsers')
+);
 const ManageSensors = lazy(
   () => import('./components/Admin/SensorManagement/ManageSensors')
 );

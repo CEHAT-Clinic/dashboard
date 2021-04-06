@@ -14,13 +14,10 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import {
-  handleReauthenticationWithPassword,
-  PasswordFormInput,
-  SubmitButton,
-} from '../Util';
+import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
+import {handleReauthenticationWithPassword} from './Util';
 
 /**
  * Component for changing an authenticated user's password. Includes button that

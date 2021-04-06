@@ -15,7 +15,7 @@ import {
   Flex,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import {EmailFormInput, SubmitButton} from '../Util';
+import {EmailFormInput, SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 
