@@ -22,7 +22,7 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
-import {handleReauthenticationWithPassword} from '../Authentication/Util';
+import {handleReauthenticationWithPassword} from './Util';
 
 /**
  * Props for ChangeNameModal component. Used for type safety.
