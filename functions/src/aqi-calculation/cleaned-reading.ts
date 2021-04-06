@@ -137,7 +137,7 @@ function getHourlyAverages(
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
  * excluding thoses data points that indicate sensor malfunction. Those
  * data points are represented by NaN.
- * @param averages - array containing sensor readings representing hourly averages
+ * @param averages - array containing sensor readings representing hourly averages. An entry in the array can be undefined if there were not enough valid readings for the corresponding hour.
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  *
  */
@@ -145,6 +145,8 @@ function cleanAverages(averages: BasicReading[]): number[] {
   const cleanedAverages = new Array<number>(averages.length).fill(Number.NaN);
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
+    // If less than 23 data points were available for that hour, the reading
+    // would have been undefined, and this hour is discarded (represented by NaN)
     if (reading) {
       // Formula from EPA to correct PurpleAir PM 2.5 readings
       // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
@@ -152,10 +154,6 @@ function cleanAverages(averages: BasicReading[]): number[] {
       cleanedAverages[i] =
         0.534 * reading.pm25 - 0.0844 * reading.humidity + 5.604;
       /* eslint-enable no-magic-numbers */
-    } else {
-      // If less than 23 data points were available for that hour, the reading
-      // would have been undefined, and this hour is discarded.
-      cleanedAverages[i] = Number.NaN;
     }
   }
   return cleanedAverages;
