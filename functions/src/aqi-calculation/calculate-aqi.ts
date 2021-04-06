@@ -215,41 +215,35 @@ async function calculateAqi(): Promise<void> {
     currentData[currentSensorData.purpleAirId] = currentSensorData;
 
     // Update the AQI circular buffer for this element
-    const sensorDocRef = firestore.collection('sensors').doc(sensorDoc.id);
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
 
-    switch (status) {
-      case bufferStatus.Exists: {
-        // The buffer exists, proceed with normal update
-        const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
-        aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
+    const sensorDocUpdate = Object.create(null);
+    sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
+    sensorDocUpdate.isValid = currentSensorData.isValid;
+    
+    if (status === bufferStatus.Exists) {
+      // The buffer exists, proceed with normal update
+      const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+      aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
 
-        await sensorDocRef.update({
-          aqiBufferIndex:
-            (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length, // eslint-disable-line no-magic-numbers,
-          aqiBuffer: aqiBuffer,
-          lastValidAqiTime: currentSensorData.lastValidAqiTime,
-          isValid: currentSensorData.isValid,
-        });
-        break;
-      }
-      case bufferStatus.DoesNotExist: {
-        // Initialize populating the buffer with default values, don't update
-        // any values until the buffer status is Exists
-        await sensorDocRef.update({
-          aqiBufferStatus: bufferStatus.InProgress,
-          lastValidAqiTime: currentSensorData.lastValidAqiTime,
-          isValid: currentSensorData.isValid,
-        });
+      sensorDocUpdate.aqiBufferIndex = (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
+      sensorDocUpdate.aqiBuffer = aqiBuffer;
+    } else if (status === bufferStatus.DoesNotExist) {
+      // Initialize populating the buffer with default values, don't update
+      // any values until the buffer status is Exists
+      sensorDocData.aqiBufferStatus = bufferStatus.InProgress;
+    }
+
+    // Send the updated data to the database
+    await firestore.collection('sensors').doc(sensorDoc.id).set(sensorDocUpdate);
+
+    // If the buffer didn't exist, use another write to initialize the buffer.
+    // Since the buffer is large, this can be timely and this function ensures
+    // that the buffer is not re-created while the buffer is being created.
+    if (status === bufferStatus.DoesNotExist) {
         // This function updates the bufferStatus once the buffer has been
         // fully initialized, which uses an additional write to the database
         populateDefaultBuffer(true, sensorDoc.id);
-        break;
-      }
-      default:
-        // If the buffer status is In Progress we don't update the buffer
-        // because the buffer is still being initialized
-        break;
     }
   }
 
