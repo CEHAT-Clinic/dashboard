@@ -89,8 +89,6 @@ async function purpleAirToFirestore(): Promise<void> {
       readingsSubcollection(sensorDoc.id)
     );
 
-
-
     // Get the existing data from Firestore for this sensor
     const sensorDocData = sensorDoc.data() ?? {};
     const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
@@ -112,7 +110,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // Initialize the buffer element to the default value
     let pm25BufferElement: Pm25BufferElement = defaultPm25BufferElement;
 
-    // Initalize the sensor doc update data
+    // Initialize the sensor doc update data
     const sensorDocUpdate = Object.create(null);
 
     if (reading && readingTimestamp) {
