@@ -151,13 +151,15 @@
             "invalidStart": "La fecha de inicio no es válida",
             "invalidEnd": "La fecha final no es válida",
             "startBeforeEnd": "La fecha de inicio debe ser anterior a la fecha final",
-            "validDates": "Las fechas son válidas"
+            "validDates": "Las fechas son válidas",
+            "emptyField": "Al menos un campo está vacío",
+            "yearDigits": "Los años deben tener 4 dígitos"
         },
         "fetchData": "Obtener datos",
         "fetching": "Obteniendo datos, esto puede llevar un tiempo",
         "download": "Descargar datos",
         "whenReady": "¡Los datos están listos para descargar!",
-        "header": "Descargar Datos de Todos los Sensores",
+        "header": "Descargar Datos de Sensores",
         "startDate": "Fecha de inicio",
         "startHelper": "Si la fecha de inicio es anterior a la primera entrada, los datos comenzarán en la primera entrada.",
         "endDate": "Fecha final",
@@ -179,6 +181,9 @@
             "oct": "oct",
             "nov": "nov",
             "dec": "dic"
-        }
+        },
+        "downloadAll": "Descargar datos para todos los sensores",
+        "whichSensor": "¿Para qué sensor le gustaría descargar datos?",
+        "confirmID": "Verifique su identificación de Purple Air"
     }
 }

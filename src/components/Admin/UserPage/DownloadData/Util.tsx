@@ -37,6 +37,8 @@ interface CSVButtonProps {
   endMonth: number;
   endDay: number;
   error: string;
+  downloadAll: boolean;
+  paId: string;
 }
 
 /**

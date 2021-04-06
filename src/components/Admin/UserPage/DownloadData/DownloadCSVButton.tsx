@@ -17,6 +17,8 @@ const DownloadCSVButton: ({
   endMonth,
   endDay,
   error,
+  downloadAll,
+  paId,
 }: CSVButtonProps) => JSX.Element = ({
   startYear,
   startMonth,
@@ -25,6 +27,8 @@ const DownloadCSVButton: ({
   endMonth,
   endDay,
   error,
+  downloadAll,
+  paId,
 }: CSVButtonProps) => {
   const {t} = useTranslation('administration');
   /* --------------- State maintenance variables ------------------------ */
@@ -50,7 +54,13 @@ const DownloadCSVButton: ({
   ) {
     setFetchingData(true);
     const sensorsRef = firestore.collection('sensors');
-    const sensorDocs = (await sensorsRef.get()).docs;
+    let sensorDocs;
+    if (downloadAll) {
+      sensorDocs = (await sensorsRef.get()).docs;
+    } else {
+      sensorDocs = (await sensorsRef.where('purpleAirId', '==', +paId).get())
+        .docs;
+    }
     const numDocs = sensorDocs.length;
     setTotalSensors(numDocs);
 

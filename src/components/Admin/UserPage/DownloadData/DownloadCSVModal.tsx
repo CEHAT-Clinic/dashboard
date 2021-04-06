@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Modal,
+  Text,
+  Heading,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -17,6 +19,8 @@ import {
   FormHelperText,
   HStack,
   Center,
+  Checkbox,
+  Input,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
@@ -37,18 +41,22 @@ const DownloadCSVModal: () => JSX.Element = () => {
   const [endMonth, setEndMonth] = useState(0);
   const [endDay, setEndDay] = useState(0);
   const [error, setError] = useState('');
+  const [downloadAll, setDownloadAll] = useState(true);
+  const [paId, setPaId] = useState('');
   /* ------------------------------------------------------------------- */
 
   /**
    * Reset state to initial state
    */
-  function clearFields() {
+  function resetFields() {
     setStartYear(0);
     setStartMonth(0);
     setStartDay(0);
     setEndYear(0);
     setEndMonth(0);
     setEndDay(0);
+    setPaId('');
+    setDownloadAll(true);
     setError('');
   }
 
@@ -56,17 +64,34 @@ const DownloadCSVModal: () => JSX.Element = () => {
    * Reset starting state and close modal
    */
   function handleClose() {
-    clearFields();
+    resetFields();
     onClose();
   }
 
   /**
    * Check that input dates are valid, sets error accordingly
    */
+  const yearDigits = 4;
   useEffect(() => {
     const startDate = new Date(startYear, startMonth - 1, startDay);
     const endDate = new Date(endYear, endMonth - 1, endDay);
-    if (startDate.getMonth() !== startMonth - 1) {
+    if (
+      !startYear ||
+      !endYear ||
+      !startMonth ||
+      !endMonth ||
+      !startDay ||
+      !endDay
+    ) {
+      // If any of the fields are empty
+      setError(t('downloadData.error.emptyField'));
+    } else if (
+      ('' + startYear).length !== yearDigits ||
+      ('' + endYear).length !== yearDigits
+    ) {
+      // If the years don't have 4 digits
+      setError(t('downloadData.error.yearDigits'));
+    } else if (startDate.getMonth() !== startMonth - 1) {
       // This error is thrown if the `startDay` is greater than the last
       // day of the `startMonth` (ex: Feb 31 is invalid)
       setError(t('downloadData.error.invalidStart'));
@@ -130,6 +155,33 @@ const DownloadCSVModal: () => JSX.Element = () => {
                 </HStack>
                 <FormHelperText>{t('downloadData.endHelper')}</FormHelperText>
                 {/* End end date input fields */}
+                {/* Start Purple Air ID input fields */}
+                <Checkbox
+                  marginY={2}
+                  isChecked={downloadAll}
+                  onChange={event => {
+                    setDownloadAll(!downloadAll);
+                  }}
+                  size="md"
+                >
+                  <Heading size="sm">{t('downloadData.downloadAll')}</Heading>
+                </Checkbox>
+                {!downloadAll && (
+                  <Box>
+                    <Text>{t('downloadData.whichSensor')}</Text>
+                    <Input
+                      placeholder={t('sensors.purpleAirId')}
+                      value={paId}
+                      onChange={event => {
+                        setPaId(event.target.value);
+                      }}
+                    />
+                    <FormHelperText marginBottom={2}>
+                      {t('downloadData.confirmID')}
+                    </FormHelperText>
+                  </Box>
+                )}
+                {/* End Purple Air ID input fields */}
               </FormControl>
             </Box>
             <Center>
@@ -141,6 +193,8 @@ const DownloadCSVModal: () => JSX.Element = () => {
                 endMonth={endMonth}
                 endDay={endDay}
                 error={error}
+                downloadAll={downloadAll}
+                paId={paId}
               />
             </Center>
           </ModalBody>
