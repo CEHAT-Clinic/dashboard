@@ -29,7 +29,7 @@ import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
-import {DownloadCSVModal} from './DownloadCSV';
+import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 
 /**

@@ -165,6 +165,20 @@
         "close": "Cerrar",
         "year": "año",
         "month": "mes",
-        "day": "día"
+        "day": "día",
+        "months":{
+            "jan": "enero",
+            "feb": "feb",
+            "mar": "marzo",
+            "apr": "abr",
+            "may": "mayo",
+            "jun": "jun",
+            "jul": "jul",
+            "aug": "agosto",
+            "sep": "sept",
+            "oct": "oct",
+            "nov": "nov",
+            "dec": "dic"
+        }
     }
 }

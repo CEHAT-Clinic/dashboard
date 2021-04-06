@@ -132,7 +132,16 @@
           "friday",
           "saturday",
           "sunday",
-          "Epa"
+          "Epa",
+          "jan",
+          "feb",
+          "apr",
+          "jul",
+          "aug",
+          "sep",
+          "oct",
+          "nov",
+          "dec"
         ],
         "skipWords": [
           "Pv"
