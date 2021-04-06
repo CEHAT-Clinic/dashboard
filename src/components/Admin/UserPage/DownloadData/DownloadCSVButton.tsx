@@ -169,24 +169,26 @@ const DownloadCSVButton: ({
         value={(progress / totalSensors) * toPercent}
         size="md"
       />
-      <Box paddingTop={2}>
-        {!fetchingData && !readyForDownload && (
-          <Button onClick={() => fetchData()}>
-            {t('downloadData.fetchData')}
-          </Button>
-        )}
-        {fetchingData && !readyForDownload && (
-          <Text>{t('downloadData.fetching')}</Text>
-        )}
-        {readyForDownload && (
-          <Box>
-            <Text>{t('downloadData.whenReady')}</Text>
-            <CSVLink data={body} headers={header} filename={filename}>
-              <Button>{t('downloadData.download')}</Button>
-            </CSVLink>
-          </Box>
-        )}
-      </Box>
+      {!error &&
+        <Box paddingTop={2}>
+          {!fetchingData && !readyForDownload && (
+            <Button onClick={() => fetchData()}>
+              {t('downloadData.fetchData')}
+            </Button>
+          )}
+          {fetchingData && !readyForDownload && (
+            <Text>{t('downloadData.fetching')}</Text>
+          )}
+          {readyForDownload && (
+            <Box>
+              <Text>{t('downloadData.whenReady')}</Text>
+              <CSVLink data={body} headers={header} filename={filename}>
+                <Button>{t('downloadData.download')}</Button>
+              </CSVLink>
+            </Box>
+          )}
+        </Box>
+      }
     </Flex>
   );
 };
