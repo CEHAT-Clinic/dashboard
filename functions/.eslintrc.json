@@ -99,6 +99,7 @@
           "Subcollection",
           "breakpoint",
           "Breakpoint",
+          "uid",
           "purpleair"
         ]
       }
