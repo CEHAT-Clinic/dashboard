@@ -214,12 +214,11 @@ async function calculateAqi(): Promise<void> {
     currentData[currentSensorData.purpleAirId] = currentSensorData;
 
     // Update the AQI circular buffer for this element
-    const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
-
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
 
+    const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
       const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;

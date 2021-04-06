@@ -139,10 +139,9 @@ async function purpleAirToFirestore(): Promise<void> {
     }
 
     // Add readings to the PM 2.5 buffer
-    const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
-
-    // TODO: make only one update call to the database
     const sensorDocUpdate = Object.create(null);
+
+    // Only add the most recent reading data if a new reading exists
     if (reading) {
       sensorDocUpdate.lastSensorReadingTime = readingTimestamp;
       sensorDocUpdate.latitude = reading.latitude;
@@ -151,6 +150,7 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocUpdate.purpleAirId = reading.id;
     }
 
+    const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // If the buffer exists, update normally
       const pm25Buffer = sensorDocData.pm25Buffer;
