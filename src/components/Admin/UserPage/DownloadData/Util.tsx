@@ -84,6 +84,7 @@ const SensorInput: ({
   value,
   setValue,
 }: SensorInputProps) => {
+  const {t} = useTranslation('administration');
   const options = [];
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
@@ -103,7 +104,7 @@ const SensorInput: ({
     <Box>
       <Select
         type="number"
-        placeholder={'Choose sensor'}
+        placeholder={t('downloadData.chooseSensor')}
         value={value}
         onChange={event => {
           setValue(event.target.value);

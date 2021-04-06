@@ -131,7 +131,13 @@ const DownloadCSVButton: ({
     const endDate = new Date(endYear, endMonth - 1, endDay);
     const endDateString = endDate.toISOString();
 
-    setFilename('pm25_' + startDateString + '_to_' + endDateString + '.csv');
+    let newFilename = 'pm25_' + startDateString + '_to_' + endDateString + '.csv'
+    // If downloading data for one sensor, add paID to the output
+    if (!downloadAll) {
+      newFilename = paId + '_' + newFilename
+    }
+    setFilename(newFilename);
+
 
     const newBody: BodyElement[] = [];
     const newHeaders: HeaderElement[] = [
