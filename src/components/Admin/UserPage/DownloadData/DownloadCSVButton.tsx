@@ -169,7 +169,7 @@ const DownloadCSVButton: ({
         value={(progress / totalSensors) * toPercent}
         size="md"
       />
-      {!error &&
+      {!error && (
         <Box paddingTop={2}>
           {!fetchingData && !readyForDownload && (
             <Button onClick={() => fetchData()}>
@@ -188,7 +188,7 @@ const DownloadCSVButton: ({
             </Box>
           )}
         </Box>
-      }
+      )}
     </Flex>
   );
 };
