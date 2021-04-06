@@ -168,8 +168,7 @@ async function calculateAqi(): Promise<void> {
     const pm25BufferStatus: bufferStatus =
       sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
-    const pm25Buffer: Array<Pm25BufferElement> =
-      sensorDocData.pm25Buffer ?? [];
+    const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? [];
 
     // Get cleaned hourly averages from the PM2.5 Buffer
     // If an hour lacks enough data, the entry for the hour is `NaN`
@@ -220,13 +219,14 @@ async function calculateAqi(): Promise<void> {
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
-    
+
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
       const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
 
-      sensorDocUpdate.aqiBufferIndex = (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
+      sensorDocUpdate.aqiBufferIndex =
+        (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
     } else if (status === bufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
@@ -235,15 +235,18 @@ async function calculateAqi(): Promise<void> {
     }
 
     // Send the updated data to the database
-    await firestore.collection('sensors').doc(sensorDoc.id).set(sensorDocUpdate);
+    await firestore
+      .collection('sensors')
+      .doc(sensorDoc.id)
+      .update(sensorDocUpdate);
 
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
     // that the buffer is not re-created while the buffer is being created.
     if (status === bufferStatus.DoesNotExist) {
-        // This function updates the bufferStatus once the buffer has been
-        // fully initialized, which uses an additional write to the database
-        populateDefaultBuffer(true, sensorDoc.id);
+      // This function updates the bufferStatus once the buffer has been
+      // fully initialized, which uses an additional write to the database
+      populateDefaultBuffer(true, sensorDoc.id);
     }
   }
 
