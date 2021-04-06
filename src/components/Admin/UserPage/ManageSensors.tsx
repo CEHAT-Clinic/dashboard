@@ -282,7 +282,7 @@ const ManageSensors: () => JSX.Element = () => {
           <Center>
             <HStack>
               <AddSensorModal />
-              <DownloadCSVModal />
+              <DownloadCSVModal sensors={sensors} />
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">
@@ -351,4 +351,5 @@ const ManageSensors: () => JSX.Element = () => {
   }
 };
 
+export type {Sensor};
 export default ManageSensors;

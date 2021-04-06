@@ -1,6 +1,7 @@
 import React from 'react';
 import {Select, Box} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
+import {Sensor} from '../ManageSensors';
 
 /**
  * Interface for the fields of the CSV
@@ -42,12 +43,77 @@ interface CSVButtonProps {
 }
 
 /**
+ * Props for the CSV Modal.
+ * sensors - the list of PA sensors to include in the drop down menu
+ */
+interface CSVModalProps {
+  sensors: Sensor[];
+}
+
+/**
  * Props for the month and day input fields used in the `DownloadCSVModal`
  */
 interface InputProps {
   value: number;
   setValue: React.Dispatch<React.SetStateAction<number>>;
 }
+
+/**
+ * Props for sensor input fields used in the `DownloadCSVModal`
+ */
+interface SensorInputProps {
+  sensors: Sensor[];
+  value: string;
+  setValue: React.Dispatch<React.SetStateAction<string>>;
+}
+
+/**
+ * Drop-down menu for the sensors in our database. This is used in the `DownloadCSVModal`
+ * when downloading data for a single sensor instead of multiple sensors
+ * @param sensors - the list of sensors to choose from
+ * @param value - the value (state variable) that should be updated by this drop-down
+ * @param setValue - a function that sets the state of the value
+ * @returns a drop down menu with all the sensors
+ */
+const SensorInput: ({
+  sensors,
+  value,
+  setValue,
+}: SensorInputProps) => JSX.Element = ({
+  sensors,
+  value,
+  setValue,
+}: SensorInputProps) => {
+  const options = [];
+  for (let i = 0; i < sensors.length; i++) {
+    const sensor = sensors[i];
+    let label;
+    if (sensor.name) {
+      label = sensor.name;
+    } else {
+      label = sensor.purpleAirId;
+    }
+    options.push(
+      <option value={sensor.purpleAirId} key={i}>
+        {label}
+      </option>
+    );
+  }
+  return (
+    <Box>
+      <Select
+        type="number"
+        placeholder={'Choose sensor'}
+        value={value}
+        onChange={event => {
+          setValue(event.target.value);
+        }}
+      >
+        {options}
+      </Select>
+    </Box>
+  );
+};
 
 /**
  * Drop-down menu for months of the year
@@ -133,5 +199,11 @@ const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
   );
 };
 
-export type {BodyElement, HeaderElement, CSVButtonProps, InputProps};
-export {MonthInput, DayInput};
+export type {
+  BodyElement,
+  HeaderElement,
+  CSVButtonProps,
+  InputProps,
+  CSVModalProps,
+};
+export {MonthInput, DayInput, SensorInput};

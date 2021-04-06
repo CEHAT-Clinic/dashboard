@@ -20,17 +20,18 @@ import {
   HStack,
   Center,
   Checkbox,
-  Input,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
-import {MonthInput, DayInput} from './Util';
+import {MonthInput, DayInput, SensorInput, CSVModalProps} from './Util';
 
 /**
  * Component for the download data modal that appears on the manage sensor page
  * in the administrative pane.
  */
-const DownloadCSVModal: () => JSX.Element = () => {
+const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
+  sensors,
+}: CSVModalProps) => {
   const {t} = useTranslation('administration');
   /* --------------- State maintenance variables ------------------------ */
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -169,12 +170,10 @@ const DownloadCSVModal: () => JSX.Element = () => {
                 {!downloadAll && (
                   <Box>
                     <Text>{t('downloadData.whichSensor')}</Text>
-                    <Input
-                      placeholder={t('sensors.purpleAirId')}
+                    <SensorInput
+                      sensors={sensors}
                       value={paId}
-                      onChange={event => {
-                        setPaId(event.target.value);
-                      }}
+                      setValue={setPaId}
                     />
                     <FormHelperText marginBottom={2}>
                       {t('downloadData.confirmID')}
