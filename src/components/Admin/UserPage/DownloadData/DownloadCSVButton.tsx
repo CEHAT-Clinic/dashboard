@@ -19,6 +19,7 @@ const DownloadCSVButton: ({
   error,
   downloadAll,
   paId,
+  resetSelectedSensor,
 }: CSVButtonProps) => JSX.Element = ({
   startYear,
   startMonth,
@@ -29,6 +30,7 @@ const DownloadCSVButton: ({
   error,
   downloadAll,
   paId,
+  resetSelectedSensor,
 }: CSVButtonProps) => {
   const {t} = useTranslation('administration');
   /* --------------- State maintenance variables ------------------------ */
@@ -40,6 +42,20 @@ const DownloadCSVButton: ({
   const [fetchingData, setFetchingData] = useState(false);
   const [readyForDownload, setReadyForDownload] = useState(false);
   /* ------------------------------------------------------------------- */
+
+  function resetAllFields() {
+    // Reset download data fields
+    setBody([]);
+    setHeader([]);
+    setProgress(0);
+    setTotalSensors(1);
+    setFilename('');
+    setFetchingData(false);
+    setReadyForDownload(false);
+
+    // Reset selected sensor
+    resetSelectedSensor();
+  }
 
   /**
    * This function actually gets the data from firestore and populates the
@@ -131,13 +147,13 @@ const DownloadCSVButton: ({
     const endDate = new Date(endYear, endMonth - 1, endDay);
     const endDateString = endDate.toISOString();
 
-    let newFilename = 'pm25_' + startDateString + '_to_' + endDateString + '.csv'
+    let newFilename =
+      'pm25_' + startDateString + '_to_' + endDateString + '.csv';
     // If downloading data for one sensor, add paID to the output
     if (!downloadAll) {
-      newFilename = paId + '_' + newFilename
+      newFilename = paId + '_' + newFilename;
     }
     setFilename(newFilename);
-
 
     const newBody: BodyElement[] = [];
     const newHeaders: HeaderElement[] = [
@@ -164,7 +180,13 @@ const DownloadCSVButton: ({
   // and 100: (12)
   const toPercent = 100;
   return (
-    <Flex flexDir="column" textAlign="center" width="100%" alignItems="center">
+    <Flex
+      marginTop={2}
+      flexDir="column"
+      textAlign="center"
+      width="100%"
+      alignItems="center"
+    >
       {error ? (
         <Text color="red">{error}</Text>
       ) : (
@@ -189,8 +211,15 @@ const DownloadCSVButton: ({
             <Box>
               <Text>{t('downloadData.whenReady')}</Text>
               <CSVLink data={body} headers={header} filename={filename}>
-                <Button>{t('downloadData.download')}</Button>
+                <Button colorScheme="teal">{t('downloadData.download')}</Button>
               </CSVLink>
+              <Button
+                marginTop={2}
+                colorScheme="red"
+                onClick={() => resetAllFields()}
+              >
+                {t('downloadData.anotherSensor')}
+              </Button>
             </Box>
           )}
         </Box>

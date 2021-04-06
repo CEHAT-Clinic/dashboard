@@ -40,6 +40,7 @@ interface CSVButtonProps {
   error: string;
   downloadAll: boolean;
   paId: string;
+  resetSelectedSensor: () => void;
 }
 
 /**

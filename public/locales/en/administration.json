@@ -184,7 +184,7 @@
         },
         "downloadAll": "Download data for all sensors",
         "whichSensor": "Which sensor would you like to download data for?",
-        "confirmID": "Double check your Purple Air ID",
-        "chooseSensor": "Choose sensor"
+        "chooseSensor": "Choose sensor",
+        "anotherSensor": "Download data for another sensor"
     }
 }

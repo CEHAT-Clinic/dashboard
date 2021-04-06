@@ -175,9 +175,6 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                       value={paId}
                       setValue={setPaId}
                     />
-                    <FormHelperText marginBottom={2}>
-                      {t('downloadData.confirmID')}
-                    </FormHelperText>
                   </Box>
                 )}
                 {/* End Purple Air ID input fields */}
@@ -194,6 +191,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                 error={error}
                 downloadAll={downloadAll}
                 paId={paId}
+                resetSelectedSensor={() => setPaId('')}
               />
             </Center>
           </ModalBody>
