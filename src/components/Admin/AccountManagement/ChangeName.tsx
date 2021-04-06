@@ -23,7 +23,7 @@ import {
   handleReauthenticationWithPassword,
   PasswordFormInput,
   SubmitButton,
-} from './Util';
+} from '../Util';
 import {firestore, firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 

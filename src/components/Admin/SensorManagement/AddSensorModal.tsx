@@ -22,7 +22,7 @@ import {
 } from '@chakra-ui/react';
 import {CheckCircleIcon, WarningIcon} from '@chakra-ui/icons';
 import {useTranslation} from 'react-i18next';
-import {SubmitButton} from '../Authentication/Util';
+import {SubmitButton} from '../Util';
 import {firestore} from '../../../firebase';
 import {useAuth} from '../../../contexts/AuthContext';
 import axios from 'axios';

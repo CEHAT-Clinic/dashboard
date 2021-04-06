@@ -11,7 +11,7 @@ import {
   Box,
   FormHelperText,
 } from '@chakra-ui/react';
-import firebase, {firebaseAuth} from '../../../firebase';
+import firebase, {firebaseAuth} from '../../firebase';
 import {useTranslation} from 'react-i18next';
 import {TFunction} from 'i18next';
 

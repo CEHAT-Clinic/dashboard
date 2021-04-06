@@ -5,7 +5,7 @@ import {
   signInWithGoogle,
   EmailFormInput,
   PasswordFormInput,
-} from './Util';
+} from '../Util';
 import {firebaseAuth} from '../../../firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import {useTranslation} from 'react-i18next';

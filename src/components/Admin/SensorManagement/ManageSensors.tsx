@@ -24,7 +24,7 @@ import {
 } from '@chakra-ui/react';
 import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
-import AccessDenied from './AccessDenied';
+import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';

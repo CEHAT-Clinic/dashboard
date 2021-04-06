@@ -20,13 +20,13 @@ import {
   PopoverBody,
   Center,
 } from '@chakra-ui/react';
-import {useAuth} from '../../../contexts/AuthContext';
+import {useAuth} from '../../contexts/AuthContext';
 import AccessDenied from './AccessDenied';
-import Loading from '../../Util/Loading';
-import {firebaseAuth, firestore} from '../../../firebase';
-import {User} from '../Authentication/Util';
+import Loading from '../Util/Loading';
+import {firebaseAuth, firestore} from '../../firebase';
+import {User} from './Util';
 import {useTranslation} from 'react-i18next';
-import {validData} from '../../../util';
+import {validData} from '../../util';
 
 /**
  * Component for administrative page to manage site users.

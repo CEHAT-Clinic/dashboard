@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {SubmitButton} from './Util';
+import {SubmitButton} from '../Util';
 import {firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 
