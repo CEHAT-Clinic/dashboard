@@ -38,7 +38,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours
+ * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is `undefined`.
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
@@ -137,14 +137,16 @@ function getHourlyAverages(
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
  * excluding thoses data points that indicate sensor malfunction. Those
  * data points are represented by NaN.
- * @param averages - array containing sensor readings representing hourly averages
+ * @param averages - array containing sensor readings representing hourly averages. An entry in the array can be undefined if there were not enough valid readings for the corresponding hour.
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  *
  */
 function cleanAverages(averages: BasicReading[]): number[] {
-  const cleanedAverages = new Array<number>(averages.length);
+  const cleanedAverages = new Array<number>(averages.length).fill(Number.NaN);
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
+    // If less than 23 data points were available for that hour, the reading
+    // would have been undefined, and this hour is discarded (represented by NaN)
     if (reading) {
       // Formula from EPA to correct PurpleAir PM 2.5 readings
       // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
@@ -152,10 +154,6 @@ function cleanAverages(averages: BasicReading[]): number[] {
       cleanedAverages[i] =
         0.534 * reading.pm25 - 0.0844 * reading.humidity + 5.604;
       /* eslint-enable no-magic-numbers */
-    } else {
-      // If less than 23 data points were available for that hour, the reading
-      // would have been undefined, and this hour is discarded.
-      cleanedAverages[i] = Number.NaN;
     }
   }
   return cleanedAverages;
@@ -166,7 +164,7 @@ function cleanAverages(averages: BasicReading[]): number[] {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula
+ * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  */
 function getCleanedAverages(
   status: bufferStatus,
@@ -186,8 +184,10 @@ function getCleanedAverages(
 
 /**
  * Applies the NowCast PM2.5 conversion algorithm from the EPA to hourly PM2.5 readings
- * @param cleanedAverages - A list of numbers with 12 hours of data where at
- *                         least two of the last three hours are valid data points
+ * Formula from AirNow by the EPA
+ * https://usepa.servicenowservices.com/airnow?id=kb_article&sys_id=fed0037b1b62545040a1a7dbe54bcbd4
+ * @param cleanedAverages - A list of numbers with 12 hours of data where at least two of the last three hours are valid data points
+ * @returns the NowCast PM2.5 corrected value
  */
 function cleanedReadingsToNowCastPm25(cleanedAverages: number[]): number {
   let minimum = Number.MAX_VALUE;
@@ -220,10 +220,9 @@ function cleanedReadingsToNowCastPm25(cleanedAverages: number[]): number {
     if (!Number.isNaN(cleanedAverages[i])) {
       weightedAverageSum += currentHourWeight * cleanedAverages[i];
       weightSum += currentHourWeight;
-
-      // Implement power function without recalculating each iteration
-      currentHourWeight *= weightFactor;
     }
+    // Implement power function without recalculating each iteration
+    currentHourWeight *= weightFactor;
   }
   return weightedAverageSum / weightSum;
 }
