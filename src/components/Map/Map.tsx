@@ -12,6 +12,7 @@ import {ColorScheme} from '../Util/Colors';
 interface MapProps {
   updateCurrentReading: (sensorID: string) => void;
   updateCurrentSensorDoc: (sensorDocId: string) => void;
+  updateCurrentIsValid: (isValid: boolean) => void;
   isMobile: boolean;
   currentColorScheme: ColorScheme;
 }
@@ -113,6 +114,7 @@ class Map extends React.Component<MapProps> {
         // Update state of home to display selected sensor
         this.props.updateCurrentReading(newSensor.getData().aqi);
         this.props.updateCurrentSensorDoc(newSensor.getData().sensorDocId);
+        this.props.updateCurrentIsValid(newSensor.getData().isValid);
 
         // Update icon of currently selected sensor
         const newIcon = createSensorIcon(

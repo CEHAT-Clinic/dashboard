@@ -27,6 +27,7 @@ interface GraphElement {
  */
 interface GraphProps {
   sensorDocId: string;
+  isValid: boolean;
 }
 
 /**

@@ -7,5 +7,11 @@
     "saturday":"S",
     "sunday": "D",
     "noSensor": "¡Haz clic en un sensor para ver sus datos!",
-    "time": "Tiempo"
+    "time": "Tiempo",
+    "inValid": {
+        "lastTime": "Este sensor no está actualizado. La última vez que informó un AQI preciso fue ",
+        "at": " a las ",
+        "learnMore": ". Para obtener más información sobre por qué un sensor podría no estar informando, consulte nuestra ",
+        "aboutPage": "Sobre Nosotros página."
+    }
 }

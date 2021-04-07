@@ -15,6 +15,8 @@ const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
   const [currentSensorReading, setCurrentSensorReading] = useState('');
   const [currentSensorDocId, setCurrentSensorDocId] = useState('');
+  const [currentIsValid, setCurrentIsValid] = useState(true);
+
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -94,6 +96,7 @@ const Home: () => JSX.Element = () => {
                     <Map
                       updateCurrentReading={setCurrentSensorReading}
                       updateCurrentSensorDoc={setCurrentSensorDocId}
+                      updateCurrentIsValid={setCurrentIsValid}
                       currentColorScheme={colorContext.currentColorScheme}
                       isMobile={isMobile}
                     />
@@ -110,6 +113,7 @@ const Home: () => JSX.Element = () => {
                 <Map
                   updateCurrentReading={setCurrentSensorReading}
                   updateCurrentSensorDoc={setCurrentSensorDocId}
+                  updateCurrentIsValid={setCurrentIsValid}
                   currentColorScheme={colorContext.currentColorScheme}
                   isMobile={isMobile}
                 />
@@ -199,7 +203,10 @@ const Home: () => JSX.Element = () => {
             {(!isMobile || showGraphUi) && (
               <Flex height="100%" width="100%" alignContent="center">
                 {currentSensorDocId ? (
-                  <AqiGraph sensorDocId={currentSensorDocId} />
+                  <AqiGraph
+                    sensorDocId={currentSensorDocId}
+                    isValid={currentIsValid}
+                  />
                 ) : (
                   <Heading
                     width="100%"
