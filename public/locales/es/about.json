@@ -23,6 +23,12 @@
         },
         "part3": ". ¡Tu patio podría servir para acoger un sensor de calidad de aire!"
     },
+    "sensorsDown": {
+        "heading": "Sensor Not Reporting AQI",
+        "part1": "Hay muchos pasos involucrados en el cálculo del AQI usando la información reportada por los sensores Purple Air que hospedamos en South Gate. La EPA ha descrito los pasos de este algoritmo y seguimos las pautas de la EPA para garantizar que nuestros sensores sean precisos.",
+        "part2": "Los sensores Purple Air son excelentes para nosotros porque son asequibles y relativamente precisos dado su costo. Dicho esto, no son tan confiables como algunos sensores más costosos, lo que significa que a veces los valores que registran no son suficientes para calcular el AQI . Esto podría ser muy temporal (en cuestión de minutos u horas), o podría durar más. Si un sensor ha estado inactivo durante mucho tiempo, probablemente significa que el sensor ya no está conectado a Internet o que se ha encontrado un problema de hardware más grave. ",
+        "part3": "Si un sensor en su área ha estado inactivo durante mucho tiempo, no dude en contactarnos y nos comunicaremos con el anfitrión del sensor para ver si podemos resolver el problema."
+    },
     "acknowledge": {
         "heading": "Agradecimientos",
         "clinic": "Este sitio web fue creado en colaboración con El Programa Clínico de Harvey Mudd College, una experiencia de toque final para los estudiantes de The Claremont Colleges en la que equipos de 4 a 5 estudiantes colaboran para solucionar problemas tecnológicos de empresas y organizaciones.",

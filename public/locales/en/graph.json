@@ -9,7 +9,7 @@
     "noSensor": "Click a sensor to see its data!",
     "time": "Time",
     "inValid": {
-        "lastTime": "This sensor is not up to date. The last time it reported an accurate AQI was",
+        "lastTime": "This sensor is not up to date. The last time it reported an accurate AQI was ",
         "at": " at ",
         "learnMore": ". To learn more about why a sensor might not be reporting, checkout our ",
         "aboutPage": "About Page."
