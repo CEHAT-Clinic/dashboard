@@ -159,7 +159,7 @@
         "fetching": "Obteniendo datos, esto puede llevar un tiempo",
         "download": "Descargar datos",
         "whenReady": "¡Los datos están listos para descargar!",
-        "header": "Descargar Datos de Sensores",
+        "header": "Descargar datos de sensores",
         "startDate": "Fecha de inicio",
         "startHelper": "Si la fecha de inicio es anterior a la primera entrada, los datos comenzarán en la primera entrada.",
         "endDate": "Fecha final",
@@ -182,7 +182,7 @@
             "nov": "nov",
             "dec": "dic"
         },
-        "downloadAll": "Descargar datos de sensores",
+        "downloadAll": "Descargar datos de todos los sensores",
         "whichSensor": "¿Para qué sensor le gustaría descargar datos?",
         "chooseSensor": "Escoge sensor",
         "anotherSensor": "Descargar datos para otro sensor"
