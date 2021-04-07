@@ -21,6 +21,7 @@ import {
   Text,
   Divider,
   IconButton,
+  HStack,
 } from '@chakra-ui/react';
 import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -29,6 +30,7 @@ import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
 import {AddSensorModal} from './AddSensorModal';
+import DeleteOldDataModal from './DeleteOldDataModal';
 
 /**
  * Interface for a PurpleAir sensor
@@ -277,9 +279,12 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Box>
-            <AddSensorModal />
-          </Box>
+          <Flex justifyContent="center">
+            <HStack>
+              <AddSensorModal />
+              <DeleteOldDataModal />
+            </HStack>
+          </Flex>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
               {t('sensors.heading')}

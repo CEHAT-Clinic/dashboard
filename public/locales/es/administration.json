@@ -145,5 +145,19 @@
         "unableToAddSensor": "No se pudo agregar el sensor. Comprueba que el ID de PurpleAir sea correcto.",
         "goBack": "Regresa",
         "addSensorFailure": "No se pudo agregar el sensor. Por favor, inténtelo de nuevo más tarde."
+    },
+    "deleteOldData": {
+        "launchButton": "Borra datos viejos",
+        "modalHeader": "Borra datos viejos",
+        "body": {
+            "paragraph1": "Este sistema acumula datos históricos para que el CEHAT pueda analizarlos. Desgraciadamente, puede costar mucho almacenar todos los datos así. Por eso, es posible que prefieras migrar los datos a un sistema más barato.",
+            "paragraph2": "Primero, debes descargar los datos y almacenarlos en un lugar seguro, como Google Drive. Entonces, puedes borrar los datos históricos aquí. Para borrar los datos, tienes que reconocer estas condiciones:"
+        },
+        "conditions": {
+            "downloaded": "He descargado los datos y verificado que te paraecen correctos.",
+            "uploaded": "He almacenado los datos descargados en un lugar seguro.",
+            "irreversible": "Entiendo que este proceso es irreversible y no se puede recuperar los datos borrado."
+        },
+        "submit": "Borra"
     }
 }
