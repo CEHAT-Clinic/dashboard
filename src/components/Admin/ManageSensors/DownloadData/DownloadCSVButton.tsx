@@ -18,7 +18,7 @@ const DownloadCSVButton: ({
   endDay,
   error,
   downloadAll,
-  paId,
+  purpleAirId,
   resetSelectedSensor,
 }: CSVButtonProps) => JSX.Element = ({
   startYear,
@@ -29,7 +29,7 @@ const DownloadCSVButton: ({
   endDay,
   error,
   downloadAll,
-  paId,
+  purpleAirId,
   resetSelectedSensor,
 }: CSVButtonProps) => {
   const {t} = useTranslation('administration');
@@ -74,8 +74,9 @@ const DownloadCSVButton: ({
     if (downloadAll) {
       sensorDocs = (await sensorsRef.get()).docs;
     } else {
-      sensorDocs = (await sensorsRef.where('purpleAirId', '==', +paId).get())
-        .docs;
+      sensorDocs = (
+        await sensorsRef.where('purpleAirId', '==', +purpleAirId).get()
+      ).docs;
     }
     const numDocs = sensorDocs.length;
     setTotalSensors(numDocs);
@@ -153,9 +154,9 @@ const DownloadCSVButton: ({
 
     let newFilename =
       'pm25_' + startDateString + '_to_' + endDateString + '.csv';
-    // If downloading data for one sensor, add paID to the output
+    // If downloading data for one sensor, add the Purple Air ID to the output
     if (!downloadAll) {
-      newFilename = paId + '_' + newFilename;
+      newFilename = purpleAirId + '_' + newFilename;
     }
     setFilename(newFilename);
 
@@ -204,9 +205,7 @@ const DownloadCSVButton: ({
       {!error && (
         <Box paddingTop={2}>
           {!fetchingData && !readyForDownload && (
-            <Button onClick={() => fetchData()}>
-              {t('downloadData.fetchData')}
-            </Button>
+            <Button onClick={fetchData}>{t('downloadData.fetchData')}</Button>
           )}
           {fetchingData && !readyForDownload && (
             <Text>{t('downloadData.fetching')}</Text>
@@ -217,11 +216,7 @@ const DownloadCSVButton: ({
               <CSVLink data={body} headers={header} filename={filename}>
                 <Button colorScheme="teal">{t('downloadData.download')}</Button>
               </CSVLink>
-              <Button
-                marginTop={2}
-                colorScheme="red"
-                onClick={() => resetAllFields()}
-              >
+              <Button marginTop={2} colorScheme="red" onClick={resetAllFields}>
                 {t('downloadData.anotherSensor')}
               </Button>
             </Box>

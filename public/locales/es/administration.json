@@ -182,7 +182,7 @@
             "nov": "nov",
             "dec": "dic"
         },
-        "downloadAll": "Descargar datos para todos los sensores",
+        "downloadAll": "Descargar datos de sensores",
         "whichSensor": "¿Para qué sensor le gustaría descargar datos?",
         "chooseSensor": "Escoge sensor",
         "anotherSensor": "Descargar datos para otro sensor"

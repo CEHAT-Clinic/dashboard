@@ -23,7 +23,8 @@ import {
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
-import {MonthInput, DayInput, SensorInput, CSVModalProps} from './Util';
+import {MonthInput, DayInput, CSVModalProps} from './Util';
+import {SensorInput} from '../Util';
 
 /**
  * Component for the download data modal that appears on the manage sensor page
@@ -43,7 +44,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
   const [endDay, setEndDay] = useState(0);
   const [error, setError] = useState('');
   const [downloadAll, setDownloadAll] = useState(true);
-  const [paId, setPaId] = useState('');
+  const [purpleAirId, setPurpleAirId] = useState('');
   /* ------------------------------------------------------------------- */
 
   /**
@@ -56,7 +57,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
     setEndYear(0);
     setEndMonth(0);
     setEndDay(0);
-    setPaId('');
+    setPurpleAirId('');
     setDownloadAll(true);
     setError('');
   }
@@ -160,7 +161,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                 <Checkbox
                   marginY={2}
                   isChecked={downloadAll}
-                  onChange={event => {
+                  onChange={() => {
                     setDownloadAll(!downloadAll);
                   }}
                   size="md"
@@ -172,8 +173,8 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                     <Text>{t('downloadData.whichSensor')}</Text>
                     <SensorInput
                       sensors={sensors}
-                      value={paId}
-                      setValue={setPaId}
+                      value={purpleAirId}
+                      setValue={setPurpleAirId}
                     />
                   </Box>
                 )}
@@ -190,8 +191,8 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                 endDay={endDay}
                 error={error}
                 downloadAll={downloadAll}
-                paId={paId}
-                resetSelectedSensor={() => setPaId('')}
+                purpleAirId={purpleAirId}
+                resetSelectedSensor={() => setPurpleAirId('')}
               />
             </Center>
           </ModalBody>
