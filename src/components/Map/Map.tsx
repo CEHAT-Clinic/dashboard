@@ -119,7 +119,8 @@ class Map extends React.Component<MapProps> {
           newSensor.getData().aqi,
           false,
           true,
-          this.props.currentColorScheme
+          this.props.currentColorScheme,
+          newSensor.getData().isValid
         );
         newSensor.setIcon(newIcon);
 
@@ -129,7 +130,8 @@ class Map extends React.Component<MapProps> {
             prevSensor.getData().aqi,
             false,
             false,
-            this.props.currentColorScheme
+            this.props.currentColorScheme,
+            prevSensor.getData().isValid
           );
           prevSensor.setIcon(prevIcon);
         }
@@ -152,7 +154,8 @@ class Map extends React.Component<MapProps> {
           evt.target.getData().aqi,
           true,
           false,
-          this.props.currentColorScheme
+          this.props.currentColorScheme,
+          evt.target.getData().isValid
         );
         marker.setIcon(icon);
       }
@@ -170,7 +173,8 @@ class Map extends React.Component<MapProps> {
           marker.getData().aqi,
           false,
           false,
-          this.props.currentColorScheme
+          this.props.currentColorScheme,
+          marker.getData().isValid
         );
         marker.setIcon(icon);
       }
@@ -187,41 +191,48 @@ class Map extends React.Component<MapProps> {
 
           for (const sensorID in sensorMap) {
             const sensorVal = sensorMap[sensorID];
-
-            // Only show a sensor on the map if it's current reading is valid
-            // TODO: Add indicator for invalid sensors
+            // Default values for invalid sensors
+            let aqi = '';
+            let icon = createSensorIcon(
+              aqi,
+              false,
+              false,
+              this.props.currentColorScheme,
+              false
+            );
+            const sensorDocId: string = sensorVal.readingDocId;
             if (sensorVal.isValid) {
               // The label for this sensor is the most recent hour average
               // We strip to round to the ones place
-              const aqi = sensorVal.aqi.toString().split('.')[0];
-              const icon = createSensorIcon(
+              aqi = sensorVal.aqi.toString().split('.')[0];
+              icon = createSensorIcon(
                 aqi,
                 false,
                 false,
-                this.props.currentColorScheme
+                this.props.currentColorScheme,
+                true
               );
-              const sensorDocId: string = sensorVal.readingDocId;
-
-              // Create marker
-              const marker = new H.map.Marker(
-                {
-                  lat: sensorVal.latitude,
-                  lng: sensorVal.longitude,
-                },
-                {icon: icon}
-              );
-              marker.setData({
-                sensorID: sensorID,
-                aqi: aqi,
-                sensorDocId: sensorDocId,
-              }); // Data for marker events
-              marker.addEventListener('tap', registerClick); // Tap event
-              marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
-              marker.addEventListener('pointerleave', registerHoverEnd); // End hover
-
-              // Add marker to the map
-              map.addObject(marker);
             }
+            // Create marker
+            const marker = new H.map.Marker(
+              {
+                lat: sensorVal.latitude,
+                lng: sensorVal.longitude,
+              },
+              {icon: icon}
+            );
+            marker.setData({
+              sensorID: sensorID,
+              aqi: aqi,
+              sensorDocId: sensorDocId,
+              isValid: sensorVal.isValid,
+            }); // Data for marker events
+            marker.addEventListener('tap', registerClick); // Tap event
+            marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
+            marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+
+            // Add marker to the map
+            map.addObject(marker);
           }
         }
       }
@@ -270,7 +281,8 @@ class Map extends React.Component<MapProps> {
               marker.getData().aqi,
               true,
               false,
-              this.props.currentColorScheme
+              this.props.currentColorScheme,
+              marker.getData().isValid
             );
             marker.setIcon(icon);
           }
