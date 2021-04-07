@@ -285,7 +285,6 @@ const ManageSensors: () => JSX.Element = () => {
               <AddSensorModal />
               <DownloadCSVModal />
               <DeleteOldDataModal />
-              
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">
