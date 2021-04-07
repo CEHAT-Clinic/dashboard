@@ -83,7 +83,11 @@ const DownloadCSVButton: ({
     for (let i = 0; i < numDocs; i++) {
       const sensorData = sensorDocs[i].data();
       // Get sensor name and doc ID
-      const name: string = sensorData['name'];
+      let name: string = sensorData['name'];
+      // Forward slashes cause problems in the R shiny data analysis app
+      if (name) {
+        name = name.replaceAll('/', '-');
+      }
       const docId = sensorDocs[i].id;
 
       const readingsRef = firestore
