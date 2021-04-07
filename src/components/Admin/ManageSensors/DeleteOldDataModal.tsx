@@ -65,7 +65,7 @@ function DeleteOldDataModal(): JSX.Element {
         mapping[sensorDoc.id] = relevantTime;
       }
 
-      deletionDocRef.update({data: mapping});
+      deletionDocRef.update({deletionMap: mapping});
     }
   }
 
