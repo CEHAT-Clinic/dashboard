@@ -150,5 +150,40 @@
         "acknowledgeDelete": "I acknowledge that this action will delete any historical data for this sensor.",
         "cannotBeUndone": "I acknowledge that this action cannot be undone",
         "deleteNote": "Deleting a sensor will remove it from the map and delete all of its data. You will need to re-add the sensor to show this sensor on the map again and to collect this sensor's data. If you only want to temporarily stop showing this sensor or collecting data for this sensor, deactivate the sensor instead."
+    },
+    "downloadData":{
+        "error":{
+            "invalidStart": "Start date is invalid",
+            "invalidEnd": "End date is invalid",
+            "startBeforeEnd": "Start date must be before end date",
+            "validDates": "Dates are valid"
+        },
+        "fetchData": "Fetch Data",
+        "fetching": "Fetching data, this may take a while",
+        "download": "Download Data",
+        "whenReady": "The data is ready for download!",
+        "header": "Download Data From All Sensors",
+        "startDate": "Start Date",
+        "startHelper": "If the start date is earlier than the first entry, the data will start at the first entry.",
+        "endDate": "End Date",
+        "endHelper": "If the end date is later than the last entry, gets data until the last entry.",
+        "close": "Close",
+        "year": "year",
+        "month": "month",
+        "day": "day",
+        "months":{
+            "jan": "Jan",
+            "feb": "Feb",
+            "mar": "Mar",
+            "apr": "Apr",
+            "may": "May",
+            "jun": "Jun",
+            "jul": "Jul",
+            "aug": "Aug",
+            "sep": "Sep",
+            "oct": "Oct",
+            "nov": "Nov",
+            "dec": "Dec"
+        }
     }
 }

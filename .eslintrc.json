@@ -120,6 +120,9 @@
           "Unordered",
           "unstyled",
           "instagram",
+          "subcollection",
+          "csv",
+          "num",
           "axios",
           "camelcase",
           "monday",
@@ -131,7 +134,16 @@
           "sunday",
           "Epa",
           "Checkbox",
-          "subcollection"
+          "subcollection",
+          "jan",
+          "feb",
+          "apr",
+          "jul",
+          "aug",
+          "sep",
+          "oct",
+          "nov",
+          "dec"
         ],
         "skipWords": [
           "Pv"
