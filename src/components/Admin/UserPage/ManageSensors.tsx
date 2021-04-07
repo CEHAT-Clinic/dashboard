@@ -29,6 +29,7 @@ import AccessDenied from './AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
+import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
 
@@ -279,12 +280,14 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Flex justifyContent="center">
+          <Center>
             <HStack>
               <AddSensorModal />
+              <DownloadCSVModal />
               <DeleteOldDataModal />
+              
             </HStack>
-          </Flex>
+          </Center>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
               {t('sensors.heading')}
