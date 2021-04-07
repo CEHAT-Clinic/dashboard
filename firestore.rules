@@ -54,8 +54,8 @@ service cloud.firestore {
 
     // Used for scheduled data deletion
     match /deletion/{docs} {
-      // Only the backend can read the todo document
-      allow read: if false;
+      // Admins can read the document for the purpose of merging data
+      allow read: if isAdmin();
 
       // Admins can write to the todo document, which tells the backend what to delete
       allow write: if isAdmin();
