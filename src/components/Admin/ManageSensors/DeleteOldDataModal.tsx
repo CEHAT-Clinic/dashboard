@@ -21,6 +21,9 @@ import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
 import {firestore} from '../../../firebase';
 
+/**
+ * Modal that allows users to mark old data for deletion
+ */
 function DeleteOldDataModal(): JSX.Element {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -58,17 +61,20 @@ function DeleteOldDataModal(): JSX.Element {
         Object.create(null);
 
       const offset = 7;
-      const relevantTime = new Date();
-      relevantTime.setDate(relevantTime.getDate() - offset);
+      const deleteBeforeDate = new Date();
+      deleteBeforeDate.setDate(deleteBeforeDate.getDate() - offset);
 
       for (const sensorDoc of sensorsList.docs) {
-        mapping[sensorDoc.id] = relevantTime;
+        mapping[sensorDoc.id] = deleteBeforeDate;
       }
 
       deletionDocRef.update({deletionMap: mapping});
     }
   }
 
+  /**
+   * Handle a submission of the deletion modal
+   */
   function handleSubmit(): void {
     markOldDataForDeletion().then(handleClose);
   }
