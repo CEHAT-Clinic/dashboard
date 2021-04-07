@@ -29,6 +29,7 @@ import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
 import {AddSensorModal} from './AddSensorModal';
+import {DeleteSensorModal} from './DeleteSensorModal';
 
 /**
  * Interface for a PurpleAir sensor
@@ -247,7 +248,7 @@ const ManageSensors: () => JSX.Element = () => {
   /**
    *
    * @param number - a number that can be NaN
-   * @returns human readable string for a number, 'unknown' if NaN
+   * @returns human readable string for a number, 'unknown' if `NaN`
    */
   function numberToString(number: number) {
     if (isNaN(number)) {
@@ -279,6 +280,7 @@ const ManageSensors: () => JSX.Element = () => {
           <Heading marginY={2}>{t('manageSensors')}</Heading>
           <Box>
             <AddSensorModal />
+            <DeleteSensorModal />
           </Box>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">

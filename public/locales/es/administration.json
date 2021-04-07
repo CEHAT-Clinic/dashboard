@@ -141,9 +141,14 @@
         "showAddHelp": "Mostrar ayuda",
         "hideAddHelp": "Ocultar ayuda",
         "addHelpPurpleAirId": "Para encontrar el PurpleAir ID, ir al mapa del PurpleAir, y haz click que quieres añadir. En el elemento emergente para el sensor, coloca el cursor sobre el 'Get This Widget', que se encuentra en la parte inferior. Esto mostrará un texto como este: '<div id='PurpleAirWidget_39165_module_...'. El PurpleAir ID es el numero después del PurpleAirWidget, entonces en este caso, el PurpleAir ID es 39165.",
-        "sensorAlreadyExists": "Ya existe un sensor con este PurpleAir ID",
+        "sensorAlreadyExists": "Ya existe un sensor con este PurpleAir ID.",
         "unableToAddSensor": "No se pudo agregar el sensor. Comprueba que el ID de PurpleAir sea correcto.",
         "goBack": "Regresa",
-        "addSensorFailure": "No se pudo agregar el sensor. Por favor, inténtelo de nuevo más tarde."
+        "addSensorFailure": "No se pudo agregar el sensor. Por favor, inténtelo de nuevo más tarde.",
+        "delete": "Eliminar sensor",
+        "confirmDownload": "He descargado los datos que necesito.",
+        "acknowledgeDelete": "Reconozco que esta acción eliminará los datos históricos de este sensor.",
+        "cannotBeUndone": "Reconozco que esta acción no se puede deshacer.",
+        "deleteNote": "Eliminar un sensor lo eliminará del mapa y eliminará todos sus datos. Deberás volver a agregar el sensor para mostrar este sensor en el mapa nuevamente y recopilar los datos de este sensor. Si solo deseas dejar de mostrar este sensor temporalmente o de recopilar datos para este sensor, desactiva el sensor en su lugar."
     }
 }
