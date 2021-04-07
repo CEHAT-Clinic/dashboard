@@ -21,6 +21,7 @@ import {
   Text,
   Divider,
   IconButton,
+  HStack,
 } from '@chakra-ui/react';
 import {QuestionOutlineIcon} from '@chakra-ui/icons';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -28,6 +29,7 @@ import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
+import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 
 /**
@@ -277,9 +279,12 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Box>
-            <AddSensorModal />
-          </Box>
+          <Center>
+            <HStack>
+              <AddSensorModal />
+              <DownloadCSVModal />
+            </HStack>
+          </Center>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
               {t('sensors.heading')}

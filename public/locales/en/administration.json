@@ -145,5 +145,40 @@
         "unableToAddSensor": "Unable to add sensor. Please check that the PurpleAir ID is correct.",
         "goBack": "Go Back",
         "addSensorFailure": "Unable to add sensor. Please try again later"
+        },
+    "downloadData":{
+        "error":{
+            "invalidStart": "Start date is invalid",
+            "invalidEnd": "End date is invalid",
+            "startBeforeEnd": "Start date must be before end date",
+            "validDates": "Dates are valid"
+        },
+        "fetchData": "Fetch Data",
+        "fetching": "Fetching data, this may take a while",
+        "download": "Download Data",
+        "whenReady": "The data is ready for download!",
+        "header": "Download Data From All Sensors",
+        "startDate": "Start Date",
+        "startHelper": "If the start date is earlier than the first entry, the data will start at the first entry.",
+        "endDate": "End Date",
+        "endHelper": "If the end date is later than the last entry, gets data until the last entry.",
+        "close": "Close",
+        "year": "year",
+        "month": "month",
+        "day": "day",
+        "months":{
+            "jan": "Jan",
+            "feb": "Feb",
+            "mar": "Mar",
+            "apr": "Apr",
+            "may": "May",
+            "jun": "Jun",
+            "jul": "Jul",
+            "aug": "Aug",
+            "sep": "Sep",
+            "oct": "Oct",
+            "nov": "Nov",
+            "dec": "Dec"
+        }
     }
 }
