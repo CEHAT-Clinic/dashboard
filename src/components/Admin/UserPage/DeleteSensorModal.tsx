@@ -21,6 +21,7 @@ import {
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
+import {Sensor} from './ManageSensors';
 
 // TODO: Convert to const component and pass sensors as parameter
 // make dropdown select for sensor
@@ -28,11 +29,17 @@ import {useAuth} from '../../../contexts/AuthContext';
 // Add loading
 // Add complete page
 
+interface DeleteSensorModalProps {
+  sensors: Sensor[];
+}
+
 /**
  * Component to delete a sensor. Includes a button to make the modal pop up
  * and a modal to delete a sensor.
  */
-function DeleteSensorModal(): JSX.Element {
+const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
+  sensors,
+}: DeleteSensorModalProps) => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isAdmin} = useAuth();
@@ -41,6 +48,9 @@ function DeleteSensorModal(): JSX.Element {
   const [sensorName, setSensorName] = useState('');
 
   const [confirmPurpleAirId, setConfirmPurpleAirId] = useState('');
+  const [confirmDownload, setConfirmDownload] = useState(false);
+  const [acknowledgeDeletion, setAcknowledgeDeletion] = useState(false);
+  const [acknowledgePermanent, setAcknowledgePermanent] = useState(false);
 
   // Modal state
   const [error, setError] = useState('');
@@ -48,7 +58,8 @@ function DeleteSensorModal(): JSX.Element {
   const [complete, setComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const disableSubmit = purpleAirId === '' || purpleAirId !== confirmPurpleAirId || error !== '';
+  const disableSubmit =
+    purpleAirId === '' || purpleAirId !== confirmPurpleAirId || error !== '';
 
   const {t} = useTranslation(['administration', 'common']);
 
@@ -76,8 +87,8 @@ function DeleteSensorModal(): JSX.Element {
     if (isAdmin) {
       // TODO: determine how to delete readings subcollection
       // firestore
-      //   .collection('sensors')
-      //   .doc(currentSensor.readingDocId)
+      //   .collection('deletion')
+      //   .doc('todo')
       //   .update({
       //     isActive: !currentSensor.isActive,
       //   })
@@ -138,9 +149,26 @@ function DeleteSensorModal(): JSX.Element {
                   />
                   <LabelValue label={t('sensors.name')} value={sensorName} />
                 </Box>
-                <Checkbox>{t('sensors.confirmDownload')}</Checkbox>
-                <Checkbox>{t('sensors.acknowledgeDelete')}</Checkbox>
-                <Checkbox>{t('sensors.cannotBeUndone')}</Checkbox>
+                <Checkbox
+                  isChecked={confirmDownload}
+                  onChange={() => setConfirmDownload(!confirmDownload)}
+                >
+                  {t('sensors.confirmDownload')}
+                </Checkbox>
+                <Checkbox
+                  isChecked={acknowledgeDeletion}
+                  onChange={() => setAcknowledgeDeletion(!acknowledgeDeletion)}
+                >
+                  {t('sensors.acknowledgeDelete')}
+                </Checkbox>
+                <Checkbox
+                  isChecked={acknowledgePermanent}
+                  onChange={() =>
+                    setAcknowledgePermanent(!acknowledgePermanent)
+                  }
+                >
+                  {t('sensors.cannotBeUndone')}
+                </Checkbox>
                 <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
                   <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
                   <Input
@@ -150,15 +178,12 @@ function DeleteSensorModal(): JSX.Element {
                       setConfirmPurpleAirId(event.target.value);
                       setError('');
                     }}
-                    value={purpleAirId}
+                    value={confirmPurpleAirId}
                     type="number"
                   />
                   <FormErrorMessage>{error}</FormErrorMessage>
                 </FormControl>
-                <Button
-                  onClick={handleDeleteSensor}
-                  isDisabled={disableSubmit}
-                >
+                <Button onClick={handleDeleteSensor} isDisabled={disableSubmit}>
                   {t('common:submit')}
                 </Button>
               </Box>
@@ -173,6 +198,6 @@ function DeleteSensorModal(): JSX.Element {
       </Modal>
     </Box>
   );
-}
+};
 
 export {DeleteSensorModal};

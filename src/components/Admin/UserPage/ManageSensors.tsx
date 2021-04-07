@@ -280,7 +280,7 @@ const ManageSensors: () => JSX.Element = () => {
           <Heading marginY={2}>{t('manageSensors')}</Heading>
           <Box>
             <AddSensorModal />
-            <DeleteSensorModal />
+            <DeleteSensorModal sensors={sensors} />
           </Box>
           <Box maxWidth="100%" overflowX="auto">
             <Heading textAlign="justify" fontSize="2xl">
@@ -349,3 +349,5 @@ const ManageSensors: () => JSX.Element = () => {
 };
 
 export default ManageSensors;
+
+export type {Sensor};
