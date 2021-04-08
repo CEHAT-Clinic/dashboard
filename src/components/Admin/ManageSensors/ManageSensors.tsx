@@ -270,8 +270,8 @@ const ManageSensors: () => JSX.Element = () => {
           <Center>
             <HStack>
               <AddSensorModal />
-              <DownloadCSVModal />
               <DeleteSensorModal sensors={sensors} />
+              <DownloadCSVModal sensors={sensors} />
               <DeleteOldDataModal />
             </HStack>
           </Center>

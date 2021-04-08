@@ -171,13 +171,15 @@
             "invalidStart": "La fecha de inicio no es válida",
             "invalidEnd": "La fecha final no es válida",
             "startBeforeEnd": "La fecha de inicio debe ser anterior a la fecha final",
-            "validDates": "Las fechas son válidas"
+            "validDates": "Las fechas son válidas",
+            "emptyField": "Al menos un campo está vacío",
+            "yearDigits": "Los años necesitan tener 4 dígitos"
         },
         "fetchData": "Obtener datos",
         "fetching": "Obteniendo datos, esto puede llevar un tiempo",
         "download": "Descargar datos",
         "whenReady": "¡Los datos están listos para descargar!",
-        "header": "Descargar Datos de Todos los Sensores",
+        "header": "Descargar datos de sensores",
         "startDate": "Fecha de inicio",
         "startHelper": "Si la fecha de inicio es anterior a la primera entrada, los datos comenzarán en la primera entrada.",
         "endDate": "Fecha final",
@@ -199,6 +201,10 @@
             "oct": "oct",
             "nov": "nov",
             "dec": "dic"
-        }
+        },
+        "downloadAll": "Descargar datos de todos los sensores",
+        "whichSensor": "¿Cuál sensor le gustaría descargar datos?",
+        "chooseSensor": "Escoge sensor",
+        "anotherSensor": "Descargar datos para otro sensor"
     }
 }
