@@ -79,7 +79,8 @@ const ManageSensors: () => JSX.Element = () => {
   }, [isAuthenticated, isAdmin]);
 
   /**
-   *
+   * Toggles `isActive` in a sensor's doc. This also resets the AQI buffer
+   * and PM2.5 buffer when activating or deactivating.
    * @param event - click button event
    * @param currentSensor - sensor for which to toggle isActive status
    */
@@ -89,12 +90,21 @@ const ManageSensors: () => JSX.Element = () => {
   ) {
     event.preventDefault();
 
+    // Value from backend, where 2 denotes that the buffer doesn't exist
+    const bufferDoesNotExist = 2;
+
     if (isAdmin) {
       firestore
         .collection('sensors')
         .doc(currentSensor.readingDocId)
         .update({
           isActive: !currentSensor.isActive,
+          aqiBufferStatus: bufferDoesNotExist,
+          aqiBuffer: firebase.firestore.FieldValue.delete(),
+          aqiBufferIndex: firebase.firestore.FieldValue.delete(),
+          pm25BufferStatus: bufferDoesNotExist,
+          pm25Buffer: firebase.firestore.FieldValue.delete(),
+          pm25BufferIndex: firebase.firestore.FieldValue.delete(),
         })
         .catch(() => {
           setError(
