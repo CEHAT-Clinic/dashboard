@@ -38,13 +38,15 @@ interface DeleteSensorModalProps {
 const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   sensors,
 }: DeleteSensorModalProps) => {
-  // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isAdmin} = useAuth();
 
+  // --------------- State maintenance variables ------------------------
+  // Sensor states
   const [purpleAirId, setPurpleAirId] = useState('');
   const [sensorDocId, setSensorDocId] = useState('');
 
+  // Confirmation states
   const [confirmPurpleAirId, setConfirmPurpleAirId] = useState('');
   const [confirmDownload, setConfirmDownload] = useState(false);
   const [acknowledgeDeletion, setAcknowledgeDeletion] = useState(false);
@@ -134,7 +136,10 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
           <ModalCloseButton />
           <ModalBody>
             <Box>
-              <Text>{t('deleteSensor.whichSensorToDelete')}</Text>
+              <Text marginBottom={2}>{t('deleteSensor.note')}</Text>
+              <Text fontWeight="bold">
+                {t('deleteSensor.whichSensorToDelete')}
+              </Text>
               <SensorInput
                 sensors={sensors}
                 docId={sensorDocId}
