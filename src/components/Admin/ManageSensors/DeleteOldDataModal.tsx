@@ -101,8 +101,10 @@ function DeleteOldDataModal(): JSX.Element {
           <ModalHeader>{t('deleteOldData.modalHeader')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>{t('deleteOldData.body.paragraph1')}</Text>
-            <Text>{t('deleteOldData.body.paragraph2')}</Text>
+            <Stack spacing={2}>
+              <Text>{t('deleteOldData.body.paragraph1')}</Text>
+              <Text>{t('deleteOldData.body.paragraph2')}</Text>
+            </Stack>
             <Divider marginTop={2} marginBottom={2} />
             <CheckboxGroup>
               <Stack mt={1} spacing={1}>
