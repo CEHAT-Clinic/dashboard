@@ -133,7 +133,7 @@
         "changeActiveSensorError": "No se puede cambiar el status de activo del sensor ",
         "deactivate": "Desactivar",
         "confirmDeactivate": "Confirma que quieres desactivar el sensor ",
-        "deactivateNote": "Ten en cuenta que se puede tardar hasta 10 minutos en eliminar este sensor del mapa del sitio web. La desactivación del sensor no eliminará ningún dato histórico del sensor, pero dejará de recopilar nuevos datos del sensor. Esto tampoco hará cambios en el sitio web de PurpleAir.",
+        "deactivateNote": "Ten en cuenta que se puede tardar hasta 10 minutos en borrar este sensor del mapa del sitio web. La desactivación del sensor no borrará ningún dato histórico del sensor, pero dejará de recopilar nuevos datos del sensor. Esto tampoco hará cambios en el sitio web de PurpleAir.",
         "inactive": "inactivo",
         "unknown": "desconocido",
         "add": "Añadir un sensor nuevo",
@@ -141,7 +141,7 @@
         "showAddHelp": "Mostrar ayuda",
         "hideAddHelp": "Ocultar ayuda",
         "addHelpPurpleAirId": "Para encontrar el PurpleAir ID, ir al mapa del PurpleAir, y haz click que quieres añadir. En el elemento emergente para el sensor, coloca el cursor sobre el 'Get This Widget', que se encuentra en la parte inferior. Esto mostrará un texto como este: '<div id='PurpleAirWidget_39165_module_...'. El PurpleAir ID es el numero después del PurpleAirWidget, entonces en este caso, el PurpleAir ID es 39165.",
-        "sensorAlreadyExists": "Ya existe un sensor con este PurpleAir ID",
+        "sensorAlreadyExists": "Ya existe un sensor con este PurpleAir ID.",
         "unableToAddSensor": "No se pudo agregar el sensor. Comprueba que el ID de PurpleAir sea correcto.",
         "goBack": "Regresa",
         "addSensorFailure": "No se pudo agregar el sensor. Por favor, inténtelo de nuevo más tarde."
@@ -200,5 +200,15 @@
         "whichSensor": "¿Cuál sensor le gustaría descargar datos?",
         "chooseSensor": "Escoge sensor",
         "anotherSensor": "Descargar datos para otro sensor"
+    },
+    "deleteSensor": {
+        "delete": "Borrar sensor",
+        "confirmDownload": "He descargado los datos que necesito.",
+        "acknowledgeDelete": "Reconozco que esta acción borrará los datos históricos de este sensor.",
+        "cannotBeUndone": "Reconozco que esta acción no se puede deshacer.",
+        "note": "Borrar un sensor lo borrará del mapa y borrará todos sus datos. Deberás volver a agregar el sensor para mostrar este sensor en el mapa nuevamente y recopilar los datos de este sensor. Si solo deseas dejar de mostrar este sensor temporalmente o de recopilar datos para este sensor, desactiva el sensor en su lugar.",
+        "confirmPurpleAirId": "Escriba el ID de PurpleAir del sensor para confirmar la supresión",
+        "whichSensorToDelete": "¿Cuál sensor te gustaría borrar?",
+        "error": "No se puede borrar el sensor. Por favor trata otra vez más tarde."
     }
 }
