@@ -73,12 +73,12 @@ const AqiLabel: ({currentAqi}: AqiLabelProps) => JSX.Element = ({
  * Interface for the props of the dial
  * - `currentAqi` is the AQI value that the dial should display
  * - `isValid` is true if the selected sensor has a valid AQI to display
- * - `sensorDocId` is the document ID of the selected sensor
+ * - `purpleAirId` is the PurpleAir ID of the selected sensor
  */
 interface DialProps {
   currentAqi: string;
   isValid: boolean;
-  sensorDocId: string;
+  purpleAirId: string;
 }
 
 /**
@@ -90,11 +90,11 @@ interface DialProps {
 const AqiDial: ({
   currentAqi,
   isValid,
-  sensorDocId,
+  purpleAirId,
 }: DialProps) => JSX.Element = ({
   currentAqi,
   isValid,
-  sensorDocId,
+  purpleAirId,
 }: DialProps) => {
   const {t} = useTranslation(['dial', 'menu']);
   if (isValid) {
@@ -119,7 +119,7 @@ const AqiDial: ({
   } else {
     return (
       <Flex height="100%" width="100%" justifyContent="center" align="center">
-        <InvalidSensor sensorDocId={sensorDocId} />
+        <InvalidSensor purpleAirId={purpleAirId} />
       </Flex>
     );
   }

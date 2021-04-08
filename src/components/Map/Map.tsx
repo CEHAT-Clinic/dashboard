@@ -13,6 +13,7 @@ interface MapProps {
   updateCurrentReading: (sensorID: string) => void;
   updateCurrentSensorDoc: (sensorDocId: string) => void;
   updateCurrentIsValid: (isValid: boolean) => void;
+  updateCurrentPurpleAirId: (purpleAirId: string) => void;
   isMobile: boolean;
   currentColorScheme: ColorScheme;
 }
@@ -92,7 +93,7 @@ class Map extends React.Component<MapProps> {
       defaultLayers.vector.normal.map,
       {
         zoom: minZoom,
-        center: {lat: 33.957, lng: -118.2106}, // South Gate coordinates
+        center: {lat: 33.957, lng: -118.2}, // South Gate coordinates
         pixelRatio: window.devicePixelRatio || defaultPixelRatio,
       }
     );
@@ -115,6 +116,7 @@ class Map extends React.Component<MapProps> {
         this.props.updateCurrentReading(newSensor.getData().aqi);
         this.props.updateCurrentSensorDoc(newSensor.getData().sensorDocId);
         this.props.updateCurrentIsValid(newSensor.getData().isValid);
+        this.props.updateCurrentPurpleAirId(newSensor.getData().purpleAirId);
 
         // Update icon of currently selected sensor
         const newIcon = createSensorIcon(
@@ -228,6 +230,7 @@ class Map extends React.Component<MapProps> {
               aqi: aqi,
               sensorDocId: sensorDocId,
               isValid: sensorVal.isValid,
+              purpleAirId: sensorVal.purpleAirId,
             }); // Data for marker events
             marker.addEventListener('tap', registerClick); // Tap event
             marker.addEventListener('pointerenter', registerHoverStart); // Begin hover

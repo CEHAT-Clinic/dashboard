@@ -16,6 +16,7 @@ const Home: () => JSX.Element = () => {
   const [currentSensorReading, setCurrentSensorReading] = useState('');
   const [currentSensorDocId, setCurrentSensorDocId] = useState('');
   const [currentIsValid, setCurrentIsValid] = useState(true);
+  const [currentPurpleAirId, setCurrentPurpleAirId] = useState('');
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -96,6 +97,7 @@ const Home: () => JSX.Element = () => {
                       updateCurrentReading={setCurrentSensorReading}
                       updateCurrentSensorDoc={setCurrentSensorDocId}
                       updateCurrentIsValid={setCurrentIsValid}
+                      updateCurrentPurpleAirId={setCurrentPurpleAirId}
                       currentColorScheme={colorContext.currentColorScheme}
                       isMobile={isMobile}
                     />
@@ -113,6 +115,7 @@ const Home: () => JSX.Element = () => {
                   updateCurrentReading={setCurrentSensorReading}
                   updateCurrentSensorDoc={setCurrentSensorDocId}
                   updateCurrentIsValid={setCurrentIsValid}
+                  updateCurrentPurpleAirId={setCurrentPurpleAirId}
                   currentColorScheme={colorContext.currentColorScheme}
                   isMobile={isMobile}
                 />
@@ -158,12 +161,17 @@ const Home: () => JSX.Element = () => {
               </Box>
             )}
             {(!isMobile || showGaugeUi) && (
-              <Flex height="100%" width="100%" alignContent="center">
+              <Flex
+                height="100%"
+                width="100%"
+                justifyContent="center"
+                alignContent="center"
+              >
                 {currentSensorDocId ? (
                   <AqiDial
                     currentAqi={currentSensorReading}
                     isValid={currentIsValid}
-                    sensorDocId={currentSensorDocId}
+                    purpleAirId={currentPurpleAirId}
                   />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>

@@ -1,5 +1,5 @@
 import {aqiCutoffs} from '../../util';
-import {ColorScheme} from '../Util/Colors';
+import {ColorScheme, InactiveSensorColor} from '../Util/Colors';
 
 /**
  * Creates the SVG icon for a particular sensor given the AQI reading
@@ -33,7 +33,7 @@ export function createSensorIcon(
       color = colors.hazardous;
     }
   } else {
-    color = {backgroundColor: '#888888', textColor: 'black'};
+    color = InactiveSensorColor;
   }
 
   const fillColor = `"${color.backgroundColor}"`;

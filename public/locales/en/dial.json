@@ -7,7 +7,7 @@
     "unhealthy": "Unhealthy (151-200)",
     "very": "Very Unhealthy (201-300)",
     "hazardous": "Hazardous (301+)",
-    "inValid": {
+    "invalid": {
         "lastTime": "This sensor is not up to date. The last time it reported an accurate AQI was ",
         "at": " at ",
         "learnMore": ". To learn more about why a sensor might not be reporting, check out our ",

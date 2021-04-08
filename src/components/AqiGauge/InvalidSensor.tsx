@@ -7,10 +7,10 @@ import {useTranslation} from 'react-i18next';
 /**
  * Props for the InvalidSensor component that displays in the AQI Gauge box
  * when a gray "invalid" sensor is selected
- * - `sensorDocId` is the document ID of the selected sensor
+ * - `purpleAirId` is the PurpleAir ID of the selected sensor
  */
 interface InvalidSensorProps {
-  sensorDocId: string;
+  purpleAirId: string;
 }
 
 /**
@@ -18,23 +18,26 @@ interface InvalidSensorProps {
  * sensor is clicked, instead of showing the AQI Gauge we display a message
  * that the sensor is down and give the last time of valid reading
  */
-const InvalidSensor: ({sensorDocId}: InvalidSensorProps) => JSX.Element = ({
-  sensorDocId,
+const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
+  purpleAirId,
 }: InvalidSensorProps) => {
   const [lastValidDate, setLastValidDate] = useState('');
   const [lastValidTime, setLastValidTime] = useState('');
 
   const {t} = useTranslation('dial');
 
-  if (sensorDocId) {
-    const docRef = firestore.collection('sensors').doc(sensorDocId);
+  if (purpleAirId) {
+    const docRef = firestore.collection('current-reading').doc('sensors');
 
     docRef.get().then(doc => {
       if (doc.exists) {
-        const data = doc.data();
-        if (data) {
+        const data = doc.data()?.data ?? {};
+        const sensorData = data[purpleAirId];
+        if (sensorData) {
           // Get time of last valid AQI reading
-          const lastValidAqiTime: Date = data['lastValidAqiTime'].toDate();
+          const lastValidAqiTime: Date = sensorData[
+            'lastValidAqiTime'
+          ].toDate();
           // Format date
           const year: number = lastValidAqiTime.getFullYear();
           const month: number = lastValidAqiTime.getMonth() + 1;
@@ -51,11 +54,11 @@ const InvalidSensor: ({sensorDocId}: InvalidSensorProps) => JSX.Element = ({
   return (
     <Box>
       <Text fontSize="lg">
-        {t('inValid.lastTime')}
-        {lastValidDate} {t('inValid.at')} {lastValidTime}{' '}
-        {t('inValid.learnMore')}
+        {t('invalid.lastTime')}
+        {lastValidDate} {t('invalid.at')} {lastValidTime}
+        {t('invalid.learnMore')}
         <Link color="#32bfd1" href="/about">
-          {t('inValid.aboutPage')}
+          {t('invalid.aboutPage')}
         </Link>
       </Text>
     </Box>

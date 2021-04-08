@@ -7,7 +7,7 @@
     "unhealthy": "Insalubres (151-200)",
     "very": "Muy insalubre (201-300)",
     "hazardous": "Peligroso (301+)",
-    "inValid": {
+    "invalid": {
         "lastTime": "Este sensor no está actualizado. La última vez que informó un AQI preciso fue ",
         "at": " a las ",
         "learnMore": ". Para obtener más información sobre por qué un sensor podría no estar informando, consulte nuestra ",
