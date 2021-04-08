@@ -27,15 +27,23 @@ import {firestore} from '../../../firebase';
 function DeleteOldDataModal(): JSX.Element {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
-  const [areDisclosuresChecked, setAreDisclosuresChecked] = useState([
-    false,
-    false,
-    false,
-  ]);
+  const [
+    isDownloadedDisclosureChecked,
+    setDownloadedDisclosureChecked,
+  ] = useState(false);
+  const [isUploadedDisclosureChecked, setUploadedDisclosureChecked] = useState(
+    false
+  );
+  const [
+    isIrreversibleDisclosureChecked,
+    setIrreversibleDisclosureChecked,
+  ] = useState(false);
 
-  const allDisclosuresChecked = areDisclosuresChecked.every(Boolean);
   const {isAdmin} = useAuth();
-
+  const allDisclosuresChecked =
+    isDownloadedDisclosureChecked &&
+    isUploadedDisclosureChecked &&
+    isIrreversibleDisclosureChecked;
   const {t} = useTranslation('administration');
 
   /**
@@ -43,7 +51,9 @@ function DeleteOldDataModal(): JSX.Element {
    */
   function handleClose(): void {
     // Modal state
-    setAreDisclosuresChecked([false, false, false]);
+    setDownloadedDisclosureChecked(false);
+    setUploadedDisclosureChecked(false);
+    setIrreversibleDisclosureChecked(false);
     onClose();
   }
 
@@ -57,7 +67,7 @@ function DeleteOldDataModal(): JSX.Element {
 
       // Get current mapping or set to empty
       const mapping =
-        (await (await deletionDocRef.get())?.data()?.data) ??
+        (await deletionDocRef.get())?.data()?.deletionMap ??
         Object.create(null);
 
       const offset = 7;
@@ -90,43 +100,29 @@ function DeleteOldDataModal(): JSX.Element {
           <ModalHeader>{t('deleteOldData.modalHeader')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>{t('deleteOldData.body.paragraph1')}</Text>{' '}
+            <Text>{t('deleteOldData.body.paragraph1')}</Text>
             <Text>{t('deleteOldData.body.paragraph2')}</Text>
             <Divider marginTop={2} marginBottom={2} />
             <CheckboxGroup>
               <Stack mt={1} spacing={1}>
                 <Checkbox
-                  isChecked={areDisclosuresChecked[0]}
+                  isChecked={isDownloadedDisclosureChecked}
                   onChange={e =>
-                    setAreDisclosuresChecked([
-                      e.target.checked,
-                      areDisclosuresChecked[1],
-                      areDisclosuresChecked[2],
-                    ])
+                    setDownloadedDisclosureChecked(e.target.checked)
                   }
                 >
                   {t('deleteOldData.conditions.downloaded')}
                 </Checkbox>
                 <Checkbox
-                  isChecked={areDisclosuresChecked[1]}
-                  onChange={e =>
-                    setAreDisclosuresChecked([
-                      areDisclosuresChecked[0],
-                      e.target.checked,
-                      areDisclosuresChecked[2],
-                    ])
-                  }
+                  isChecked={isUploadedDisclosureChecked}
+                  onChange={e => setUploadedDisclosureChecked(e.target.checked)}
                 >
                   {t('deleteOldData.conditions.uploaded')}
                 </Checkbox>
                 <Checkbox
-                  isChecked={areDisclosuresChecked[2]}
+                  isChecked={isIrreversibleDisclosureChecked}
                   onChange={e =>
-                    setAreDisclosuresChecked([
-                      areDisclosuresChecked[0],
-                      areDisclosuresChecked[1],
-                      e.target.checked,
-                    ])
+                    setIrreversibleDisclosureChecked(e.target.checked)
                   }
                 >
                   {t('deleteOldData.conditions.irreversible')}
