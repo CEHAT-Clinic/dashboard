@@ -25,13 +25,17 @@ async function deleteMarkedReadings(): Promise<void> {
 }
 
 /**
- * Wrapper function for `deleteQueryBatch` that uses a custom resolve function that removes the sensor from the deletion map
+ * Wrapper function for `deleteQueryBatch` that uses a custom resolve function that removes the sensor from the deletion map. This query should be called with a `query` only contained within one sensor.
+ * @param query - the query to match on
+ * @param maxBatchSize - the maximum documents to delete in a single tick
+ * @param sensorDocId - the sensor doc id for the sensor who the query is on
  */
 function deleteSensorSubcollectionBatch(
   query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
   maxBatchSize: number,
   sensorDocId: string
 ) {
+  // The resolve function will only be called when there are no documents matching the query
   const resolve = async () => {
     const deletionDocRef = firestore.collection('deletion').doc('todo');
 
