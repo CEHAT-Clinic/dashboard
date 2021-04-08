@@ -23,8 +23,10 @@ import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Sensor, LabelValue, SensorInput} from './Util';
 
-// TODO: test deleting test document
-
+/**
+ * Props for `DeleteSensorModal`, used for type safety
+ * sensors - all current sensors
+ */
 interface DeleteSensorModalProps {
   sensors: Sensor[];
 }
@@ -70,6 +72,8 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
     // Sensor state
     setPurpleAirId('');
     setSensorDocId('');
+
+    // Confirmations
     setConfirmPurpleAirId('');
     setConfirmDownload(false);
     setAcknowledgeDeletion(false);
@@ -82,9 +86,11 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   }
 
   /**
-   *
+   * This function adds the sensor to the deletion map with the current time,
+   * meaning that all readings in the readings subcollection will be deleted.
+   * If the deletion map is successfully updated, the sensor's doc is deleted in
+   * the sensors collection.
    * @param event - click button event
-   * @param currentSensor - sensor to delete
    */
   function handleDeleteSensor(event: React.MouseEvent) {
     event.preventDefault();
@@ -178,7 +184,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
                 onClick={handleDeleteSensor}
                 isDisabled={!readyToSubmit}
                 marginTop={4}
-                colorScheme="teal"
+                colorScheme="red"
               >
                 {isLoading ? (
                   <CircularProgress isIndeterminate size="24px" color="red" />

@@ -68,7 +68,7 @@ function DeleteOldDataModal(): JSX.Element {
 
       // Get current mapping or set to empty
       const mapping =
-        (await deletionDocRef.get()).data()?.deletionMap ??
+        (await deletionDocRef.get())?.data()?.deletionMap ??
         Object.create(null);
 
       const offset = 7;

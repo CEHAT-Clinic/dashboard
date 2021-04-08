@@ -44,7 +44,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
   const [endDay, setEndDay] = useState(0);
   const [error, setError] = useState('');
   const [downloadAll, setDownloadAll] = useState(true);
-  const [purpleAirId, setPurpleAirId] = useState(''); // TODO: get this value
+  const [purpleAirId, setPurpleAirId] = useState('');
   const [sensorDocId, setSensorDocId] = useState('');
   /* ------------------------------------------------------------------- */
 
