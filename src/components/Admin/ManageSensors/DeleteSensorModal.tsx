@@ -18,12 +18,11 @@ import {
   Checkbox,
   Text,
 } from '@chakra-ui/react';
-import firebase, {firestore} from '../../../firebase';
+import {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Sensor, LabelValue, SensorInput} from './Util';
 
-// TODO: get drop down select for sensor
 // TODO: test deleting test document
 
 interface DeleteSensorModalProps {
@@ -54,8 +53,13 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   const [isLoading, setIsLoading] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const allConditionsMet =
-    purpleAirId === '' || purpleAirId !== confirmPurpleAirId || error !== '';
+  const readyToSubmit =
+    purpleAirId !== '' &&
+    purpleAirId === confirmPurpleAirId &&
+    error === '' &&
+    confirmDownload &&
+    acknowledgeDeletion &&
+    acknowledgePermanent;
 
   const {t} = useTranslation(['administration', 'common']);
 
@@ -85,7 +89,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   function handleDeleteSensor(event: React.MouseEvent) {
     event.preventDefault();
 
-    if (isAdmin && allConditionsMet) {
+    if (isAdmin && readyToSubmit) {
       setIsLoading(true);
 
       const deletionDocRef = firestore.collection('deletion').doc('todo');
@@ -97,21 +101,17 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
           const newDeletionMap =
             deleteDoc.data()?.deletionMap ?? Object.create(null);
 
-          newDeletionMap[sensorDocId] = firebase.firestore.Timestamp.fromDate(
-            new Date()
-          );
+          newDeletionMap[sensorDocId] = new Date();
 
           deletionDocRef
             .update({deletionMap: newDeletionMap})
-            .then(() =>
-              firestore
-                .collection('sensors')
-                .doc(sensorDocId)
-                .delete()
-                .then(handleClose)
-            );
+            .then(() => {
+              firestore.collection('sensors').doc(sensorDocId).delete();
+              setIsLoading(false);
+            })
+            .then(handleClose);
         })
-        .catch(error => setError(error)) // TODO: Fix
+        .catch(() => setError('deleteSensor.deleteSensorError'))
         .finally(() => setIsLoading(false));
     }
   }
@@ -119,16 +119,16 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   return (
     <Box>
       <Button colorScheme="red" onClick={onOpen}>
-        {t('sensors.delete')}
+        {t('deleteSensor.delete')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t('sensors.delete')}</ModalHeader>
+          <ModalHeader>{t('deleteSensor.delete')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <Box>
-              <Text>{t('downloadData.whichSensor')}</Text>
+              <Text>{t('deleteSensor.whichSensorToDelete')}</Text>
               <SensorInput
                 sensors={sensors}
                 docId={sensorDocId}
@@ -136,7 +136,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
                 setPurpleAirId={setPurpleAirId}
               />
             </Box>
-            <Box>
+            <Box marginTop={2}>
               <Box>
                 <LabelValue
                   label={t('sensors.purpleAirId')}
@@ -147,22 +147,22 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
                 isChecked={confirmDownload}
                 onChange={() => setConfirmDownload(!confirmDownload)}
               >
-                {t('sensors.confirmDownload')}
+                {t('deleteSensor.confirmDownload')}
               </Checkbox>
               <Checkbox
                 isChecked={acknowledgeDeletion}
                 onChange={() => setAcknowledgeDeletion(!acknowledgeDeletion)}
               >
-                {t('sensors.acknowledgeDelete')}
+                {t('deleteSensor.acknowledgeDelete')}
               </Checkbox>
               <Checkbox
                 isChecked={acknowledgePermanent}
                 onChange={() => setAcknowledgePermanent(!acknowledgePermanent)}
               >
-                {t('sensors.cannotBeUndone')}
+                {t('deleteSensor.cannotBeUndone')}
               </Checkbox>
               <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
-                <FormLabel>{t('sensors.confirmPurpleAirId')}</FormLabel>
+                <FormLabel>{t('deleteSensor.confirmPurpleAirId')}</FormLabel>
                 <Input
                   placeholder="30971"
                   size="md"
@@ -176,7 +176,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
               </FormControl>
               <Button
                 onClick={handleDeleteSensor}
-                isDisabled={!allConditionsMet}
+                isDisabled={!readyToSubmit}
                 marginTop={4}
                 colorScheme="teal"
               >
