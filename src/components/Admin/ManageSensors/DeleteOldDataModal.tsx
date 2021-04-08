@@ -23,6 +23,7 @@ import {firestore} from '../../../firebase';
 
 /**
  * Modal that allows users to mark old data for deletion
+ * Includes button that makes the delete data modal pop up
  */
 function DeleteOldDataModal(): JSX.Element {
   // --------------- State maintenance variables ------------------------
