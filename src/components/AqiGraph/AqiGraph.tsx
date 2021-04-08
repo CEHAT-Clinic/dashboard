@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Heading, Flex, Text, Link} from '@chakra-ui/react';
+import {Heading, Flex} from '@chakra-ui/react';
 import {
   ScatterChart,
   XAxis,
@@ -13,15 +13,15 @@ import {useTranslation} from 'react-i18next';
 import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
 import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
+import {formatTime} from '../Util/Dates';
 
 /**
  * AQI Graph Display Component
  * This component displays a graph for the last 24 hours of AQI data for the
  * currently selected sensor.
  */
-const AqiGraph: ({sensorDocId, isValid}: GraphProps) => JSX.Element = ({
+const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   sensorDocId,
-  isValid,
 }: GraphProps) => {
   // By default, the maximum y-axis value is 300. This is the case unless
   // a sensor value exceeds 300, in which case the y-axis goes as high as the
@@ -43,53 +43,12 @@ const AqiGraph: ({sensorDocId, isValid}: GraphProps) => JSX.Element = ({
   const [yAxisLimit, setYAxisLimit] = useState(defaultYLimit);
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
-  const [lastValidDate, setLastValidDate] = useState('');
-  const [lastValidTime, setLastValidTime] = useState('');
   const {currentColorScheme} = useColor();
   const {t} = useTranslation(['graph', 'aqiTable']);
 
-  /**
-   * @param year - a number, the year of the date to be formatted
-   * @param month - a number between 1 and 12 (inclusive)
-   * @param day - a number between 1 and 31 (inclusive)
-   * @returns a string for the date written as 'month/day/year' (ex 4/7/2021)
-   */
-  function formatDate(year: number, month: number, day: number) {
-    const formattedDate: string = month + '/' + day + '/' + year;
-    return formattedDate;
-  }
-
-  /**
-   * @param hour - a number between 0 and 24 (inclusive)
-   * @param minutes - a number between 1 and 60 (inclusive)
-   * @returns a string for the time written as 'hour:minute AM/PM' (ex: '12:42 AM')
-   */
-  function formatTime(hour: number, minutes: number) {
-    const hoursPerPeriod = 12;
-
-    let period = ' AM';
-    let leadingZero = '';
-    if (hour === hoursPerDay) {
-      period = 'AM';
-      hour = hoursPerPeriod;
-    } else if (hour >= hoursPerPeriod) {
-      period = ' PM';
-      hour = hour % hoursPerPeriod;
-    }
-    /* eslint-disable-next-line no-magic-numbers */
-    if (minutes < 10) {
-      leadingZero = '0';
-    }
-    if (hour === 0) {
-      hour = hoursPerPeriod;
-    }
-    const formattedTime: string = hour + ':' + leadingZero + minutes + period;
-    return formattedTime;
-  }
-
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
-    if (sensorDocId && isValid) {
+    if (sensorDocId) {
       const docRef = firestore.collection('sensors').doc(sensorDocId);
 
       docRef.get().then(doc => {
@@ -153,28 +112,8 @@ const AqiGraph: ({sensorDocId, isValid}: GraphProps) => JSX.Element = ({
           }
         }
       });
-    } else if (sensorDocId && !isValid) {
-      const docRef = firestore.collection('sensors').doc(sensorDocId);
-
-      docRef.get().then(doc => {
-        if (doc.exists) {
-          const data = doc.data();
-          if (data) {
-            // Get time of last valid AQI reading
-            const lastValidAqiTime: Date = data['lastValidAqiTime'].toDate();
-            // Format date
-            const year: number = lastValidAqiTime.getFullYear();
-            const month: number = lastValidAqiTime.getMonth() + 1;
-            const day: number = lastValidAqiTime.getDate();
-            const hour: number = lastValidAqiTime.getHours();
-            const minutes: number = lastValidAqiTime.getMinutes();
-            setLastValidDate(formatDate(year, month, day));
-            setLastValidTime(formatTime(hour, minutes));
-          }
-        }
-      });
     }
-  }, [sensorDocId, isValid]);
+  }, [sensorDocId]);
 
   // The graph doesn't include the hazardous category unless thee are data points
   // that fall in that category. Any time the maximum y-axis value changes, this effect
@@ -251,7 +190,7 @@ const AqiGraph: ({sensorDocId, isValid}: GraphProps) => JSX.Element = ({
     return weekdays[day] + ' ' + time;
   };
 
-  if (sensorDocId && isValid) {
+  if (sensorDocId) {
     return (
       <Flex
         height="100%"
@@ -319,27 +258,6 @@ const AqiGraph: ({sensorDocId, isValid}: GraphProps) => JSX.Element = ({
             />
           </ScatterChart>
         </ResponsiveContainer>
-      </Flex>
-    );
-  } else if (sensorDocId && !isValid) {
-    return (
-      <Flex
-        height="100%"
-        width="100%"
-        justifyContent="center"
-        align="center"
-        flexDir="column"
-        fontSize={20}
-        paddingX={2}
-      >
-        <Text fontSize="lg">
-          {t('inValid.lastTime')}
-          {lastValidDate} {t('inValid.at')} {lastValidTime}{' '}
-          {t('inValid.learnMore')}
-          <Link color="#32bfd1" href="/about">
-            {t('inValid.aboutPage')}
-          </Link>
-        </Text>
       </Flex>
     );
   } else {

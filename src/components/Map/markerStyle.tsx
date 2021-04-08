@@ -7,6 +7,7 @@ import {ColorScheme} from '../Util/Colors';
  * @param hover - boolean: is the cursor hovering over this marker?
  * @param selected - boolean: is this cursor currently selected?
  * @param colors - the current color scheme being used
+ * @param isValid - boolean: does the sensor have a valid AQI
  */
 export function createSensorIcon(
   aqiReading: string,

@@ -4,12 +4,23 @@ import GaugeSvg from './GaugeSvg';
 import {useTranslation} from 'react-i18next';
 import {useColor} from '../../contexts/ColorContext';
 import {aqiCutoffs} from '../../util';
+import {InvalidSensor} from './InvalidSensor';
 
 /**
  * Interface for the props of the dial
  * - `currentAqi` is the AQI value that the dial should display
+ * - TODO: add values here
  */
 interface DialProps {
+  currentAqi: string;
+  isValid: boolean;
+  sensorDocId: string;
+}
+
+/**
+ * TODO: label this
+ */
+interface AqiLabelProps {
   currentAqi: string;
 }
 
@@ -18,9 +29,9 @@ interface DialProps {
  * This component displays the label for the AQI displayed by the dial.
  * @example if the AQI is less than 50, it will show the label "Good"
  */
-const AqiLabel: ({currentAqi}: DialProps) => JSX.Element = ({
+const AqiLabel: ({currentAqi}: AqiLabelProps) => JSX.Element = ({
   currentAqi,
-}: DialProps) => {
+}: AqiLabelProps) => {
   // Convert the AQI from a string to a number
   const aqi: number = +currentAqi;
 
@@ -74,29 +85,42 @@ const AqiLabel: ({currentAqi}: DialProps) => JSX.Element = ({
  * reading for the currently selected sensor. Additionally, there is a key below
  * the dial to label each color on the dial with how severe the health risk is.
  */
-const AqiDial: ({currentAqi}: DialProps) => JSX.Element = ({
+const AqiDial: ({
   currentAqi,
+  isValid,
+  sensorDocId,
+}: DialProps) => JSX.Element = ({
+  currentAqi,
+  isValid,
+  sensorDocId,
 }: DialProps) => {
   const {t} = useTranslation(['dial', 'menu']);
-
-  return (
-    <Flex height="100%" width="100%" justifyContent="center" align="center">
-      <Box>
-        <Center>
-          <GaugeSvg currentAqi={currentAqi} />
-        </Center>
-        <Text fontSize={30}>{t('aqi') + currentAqi}</Text>
-        <Text fontSize={14} mb={2}>
-          {t('moreInfo')}
-          <Link fontSize={14} color="#32bfd1" href="/health">
-            {' '}
-            {t('menu:healthInfo')}
-          </Link>
-        </Text>
-        <AqiLabel currentAqi={currentAqi} />
-      </Box>
-    </Flex>
-  );
+  if (isValid) {
+    return (
+      <Flex height="100%" width="100%" justifyContent="center" align="center">
+        <Box>
+          <Center>
+            <GaugeSvg currentAqi={currentAqi} />
+          </Center>
+          <Text fontSize={30}>{t('aqi') + currentAqi}</Text>
+          <Text fontSize={14} mb={2}>
+            {t('moreInfo')}
+            <Link fontSize={14} color="#32bfd1" href="/health">
+              {' '}
+              {t('menu:healthInfo')}
+            </Link>
+          </Text>
+          <AqiLabel currentAqi={currentAqi} />
+        </Box>
+      </Flex>
+    );
+  } else {
+    return (
+      <Flex height="100%" width="100%" justifyContent="center" align="center">
+        <InvalidSensor sensorDocId={sensorDocId} />
+      </Flex>
+    );
+  }
 };
 
 export default AqiDial;

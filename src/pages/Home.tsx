@@ -160,8 +160,12 @@ const Home: () => JSX.Element = () => {
             )}
             {(!isMobile || showGaugeUi) && (
               <Box paddingY={[null, null, '1', '4']}>
-                {currentSensorReading ? (
-                  <AqiDial currentAqi={currentSensorReading} />
+                {currentSensorDocId ? (
+                  <AqiDial
+                    currentAqi={currentSensorReading}
+                    isValid={currentIsValid}
+                    sensorDocId={currentSensorDocId}
+                  />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
                     {t('noSensorGauge')}
@@ -203,10 +207,7 @@ const Home: () => JSX.Element = () => {
             {(!isMobile || showGraphUi) && (
               <Flex height="100%" width="100%" alignContent="center">
                 {currentSensorDocId ? (
-                  <AqiGraph
-                    sensorDocId={currentSensorDocId}
-                    isValid={currentIsValid}
-                  />
+                  <AqiGraph sensorDocId={currentSensorDocId} />
                 ) : (
                   <Heading
                     width="100%"
