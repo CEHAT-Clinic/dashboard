@@ -17,11 +17,13 @@ import {
   FormErrorMessage,
   Checkbox,
   Text,
+  Flex,
 } from '@chakra-ui/react';
 import {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Sensor, LabelValue, SensorInput} from './Util';
+import {FaTrash} from 'react-icons/fa';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
@@ -185,18 +187,21 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
                 />
                 <FormErrorMessage>{error}</FormErrorMessage>
               </FormControl>
-              <Button
-                onClick={handleDeleteSensor}
-                isDisabled={!readyToSubmit}
-                marginTop={4}
-                colorScheme="red"
-              >
-                {isLoading ? (
-                  <CircularProgress isIndeterminate size="24px" color="red" />
-                ) : (
-                  t('common:submit')
-                )}
-              </Button>
+              <Flex justifyContent="center">
+                <Button
+                  onClick={handleDeleteSensor}
+                  isDisabled={!readyToSubmit}
+                  marginTop={4}
+                  colorScheme="red"
+                  leftIcon={<FaTrash />}
+                >
+                  {isLoading ? (
+                    <CircularProgress isIndeterminate size="24px" color="red" />
+                  ) : (
+                    t('common:submit')
+                  )}
+                </Button>
+              </Flex>
             </Box>
           </ModalBody>
           <ModalFooter>
