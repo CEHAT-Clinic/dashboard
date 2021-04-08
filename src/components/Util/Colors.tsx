@@ -23,7 +23,7 @@ type Color = {
 const EpaColorScheme: ColorScheme = {
   good: {backgroundColor: '#08E400', textColor: 'black'},
   moderate: {backgroundColor: '#FEFF00', textColor: 'black'},
-  sensitive: {backgroundColor: '#FF7E02', textColor: ' black'},
+  sensitive: {backgroundColor: '#FF7E02', textColor: 'white'},
   unhealthy: {backgroundColor: '#FF0202', textColor: 'white'},
   veryUnhealthy: {backgroundColor: '#8F3F97', textColor: 'white'},
   hazardous: {backgroundColor: '#7E0224', textColor: 'white'},
