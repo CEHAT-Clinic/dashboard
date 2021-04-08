@@ -32,6 +32,7 @@ import firebase, {firestore} from '../../../firebase';
 import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
+import DeleteOldDataModal from './DeleteOldDataModal';
 
 /**
  * Interface for a PurpleAir sensor
@@ -285,6 +286,7 @@ const ManageSensors: () => JSX.Element = () => {
               <AddSensorModal />
               <DownloadCSVModal />
               <DeleteSensorModal sensors={sensors} />
+              <DeleteOldDataModal />
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">

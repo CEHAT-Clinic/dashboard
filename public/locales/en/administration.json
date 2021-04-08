@@ -151,6 +151,20 @@
         "cannotBeUndone": "I acknowledge that this action cannot be undone",
         "deleteNote": "Deleting a sensor will remove it from the map and delete all of its data. You will need to re-add the sensor to show this sensor on the map again and to collect this sensor's data. If you only want to temporarily stop showing this sensor or collecting data for this sensor, deactivate the sensor instead."
     },
+    "deleteOldData": {
+        "launchButton": "Delete Old Data",
+        "modalHeader": "Delete Old Data",
+        "body": {
+            "paragraph1": "As time goes on, this system accumulates historical readings so that the team can use this data to analyze. However, the cost of storing this data in the database compounds and may exceed the budget of the organization. For this reason, from time to time, you may wish to migrate this data to a cheaper storage location.",
+            "paragraph2": "First, you should download the data using the download data feature and store it somewhere safe, like a Google Drive or other file storage service. Then, you can delete the old data (data older than 7 days) from this panel. In order to delete data, you must first acknowledge the following conditions:"
+        },
+        "conditions": {
+            "downloaded": "I have downloaded the old data using the download data feature and verified it looks correct.",
+            "uploaded": "I have uploaded the downloaded data to a safe file storage location.",
+            "irreversible": "I understand this process is irreversible and the deleted data cannot be recovered from this system."
+        },
+        "submit": "Delete"
+        },
     "downloadData":{
         "error":{
             "invalidStart": "Start date is invalid",
