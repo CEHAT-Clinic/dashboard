@@ -1,7 +1,22 @@
 import React from 'react';
 import {Select, Box} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
-import {Sensor} from './ManageSensors';
+import firebase from '../../../firebase';
+
+/**
+ * Interface for a PurpleAir sensor
+ */
+interface Sensor {
+  name: string;
+  purpleAirId: string;
+  latitude: number;
+  longitude: number;
+  isActive: boolean;
+  isValid: boolean;
+  lastValidAqiTime: firebase.firestore.Timestamp | null;
+  lastSensorReadingTime: firebase.firestore.Timestamp | null;
+  readingDocId: string;
+}
 
 /**
  * Props for sensor input fields used in `SensorInput`
@@ -61,4 +76,5 @@ const SensorInput: ({
   );
 };
 
+export type {Sensor};
 export {SensorInput};
