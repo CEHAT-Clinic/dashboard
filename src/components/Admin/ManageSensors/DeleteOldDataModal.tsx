@@ -73,6 +73,7 @@ function DeleteOldDataModal(): JSX.Element {
 
       const offset = 7;
       const deleteBeforeDate = new Date();
+      // This marks all data older than a week for deletion
       deleteBeforeDate.setDate(deleteBeforeDate.getDate() - offset);
 
       for (const sensorDoc of sensorsList.docs) {
@@ -91,7 +92,7 @@ function DeleteOldDataModal(): JSX.Element {
   }
 
   return (
-    <Box marginY={2}>
+    <Box>
       <Button colorScheme="red" onClick={onOpen}>
         {t('deleteOldData.launchButton')}
       </Button>
