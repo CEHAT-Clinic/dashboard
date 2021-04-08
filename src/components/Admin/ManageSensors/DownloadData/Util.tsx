@@ -1,6 +1,7 @@
 import React from 'react';
 import {Select, Box} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
+import {Sensor} from '../Util';
 
 /**
  * Interface for the fields of the CSV
@@ -37,6 +38,17 @@ interface CSVButtonProps {
   endMonth: number;
   endDay: number;
   error: string;
+  downloadAll: boolean;
+  purpleAirId: string;
+  resetSelectedSensor: () => void;
+}
+
+/**
+ * Props for the CSV Modal.
+ * sensors - the list of PurpleAir sensors to include in the drop down menu
+ */
+interface CSVModalProps {
+  sensors: Sensor[];
 }
 
 /**
@@ -131,5 +143,11 @@ const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
   );
 };
 
-export type {BodyElement, HeaderElement, CSVButtonProps, InputProps};
+export type {
+  BodyElement,
+  HeaderElement,
+  CSVButtonProps,
+  InputProps,
+  CSVModalProps,
+};
 export {MonthInput, DayInput};
