@@ -16,11 +16,12 @@ import {
   Input,
   FormErrorMessage,
   Checkbox,
+  Text,
 } from '@chakra-ui/react';
 import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import {Sensor, LabelValue} from './Util';
+import {Sensor, LabelValue, SensorInput} from './Util';
 
 // TODO: get drop down select for sensor
 // TODO: test deleting test document
@@ -40,7 +41,8 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isAdmin} = useAuth();
 
-  const [sensor, setSensor] = useState<Sensor | undefined>();
+  const [purpleAirId, setPurpleAirId] = useState('');
+  const [sensorDocId, setSensorDocId] = useState('');
 
   const [confirmPurpleAirId, setConfirmPurpleAirId] = useState('');
   const [confirmDownload, setConfirmDownload] = useState(false);
@@ -52,11 +54,8 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   const [isLoading, setIsLoading] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const allConditionsMet = sensor
-    ? sensor.purpleAirId === '' ||
-      sensor.purpleAirId !== confirmPurpleAirId ||
-      error !== ''
-    : false;
+  const allConditionsMet =
+    purpleAirId === '' || purpleAirId !== confirmPurpleAirId || error !== '';
 
   const {t} = useTranslation(['administration', 'common']);
 
@@ -65,7 +64,8 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
    */
   function handleClose(): void {
     // Sensor state
-    setSensor(undefined);
+    setPurpleAirId('');
+    setSensorDocId('');
     setConfirmPurpleAirId('');
     setConfirmDownload(false);
     setAcknowledgeDeletion(false);
@@ -85,7 +85,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   function handleDeleteSensor(event: React.MouseEvent) {
     event.preventDefault();
 
-    if (sensor && isAdmin && allConditionsMet) {
+    if (isAdmin && allConditionsMet) {
       setIsLoading(true);
 
       const deletionDocRef = firestore.collection('deletion').doc('todo');
@@ -97,16 +97,16 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
           const newDeletionMap =
             deleteDoc.data()?.deletionMap ?? Object.create(null);
 
-          newDeletionMap[
-            sensor.readingDocId
-          ] = firebase.firestore.Timestamp.fromDate(new Date());
+          newDeletionMap[sensorDocId] = firebase.firestore.Timestamp.fromDate(
+            new Date()
+          );
 
           deletionDocRef
             .update({deletionMap: newDeletionMap})
             .then(() =>
               firestore
                 .collection('sensors')
-                .doc(sensor.readingDocId)
+                .doc(sensorDocId)
                 .delete()
                 .then(handleClose)
             );
@@ -128,14 +128,19 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
           <ModalCloseButton />
           <ModalBody>
             <Box>
+              <Text>{t('downloadData.whichSensor')}</Text>
+              <SensorInput
+                sensors={sensors}
+                docId={sensorDocId}
+                setDocId={setSensorDocId}
+                setPurpleAirId={setPurpleAirId}
+              />
+            </Box>
+            <Box>
               <Box>
                 <LabelValue
                   label={t('sensors.purpleAirId')}
-                  value={sensor ? sensor.purpleAirId : ''}
-                />
-                <LabelValue
-                  label={t('sensors.name')}
-                  value={sensor ? sensor.name : ''}
+                  value={purpleAirId}
                 />
               </Box>
               <Checkbox

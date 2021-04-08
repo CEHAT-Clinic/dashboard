@@ -15,7 +15,7 @@ interface Sensor {
   isValid: boolean;
   lastValidAqiTime: firebase.firestore.Timestamp | null;
   lastSensorReadingTime: firebase.firestore.Timestamp | null;
-  readingDocId: string;
+  docId: string;
 }
 
 /**
@@ -42,36 +42,42 @@ const LabelValue: ({label, value}: LabelValueProps) => JSX.Element = ({
       <Text display="inline">{': ' + value}</Text>
     </Box>
   );
-}
+};
 
 /**
  * Props for sensor input fields used in `SensorInput`
  */
 interface SensorInputProps {
   sensors: Sensor[];
-  value: string;
-  setValue: React.Dispatch<React.SetStateAction<string>>;
+  docId: string;
+  setDocId: React.Dispatch<React.SetStateAction<string>>;
+  setPurpleAirId: React.Dispatch<React.SetStateAction<string>>;
 }
 
 /**
  * Drop-down menu for the sensors in our database. This is used in the `DownloadCSVModal`
- * when downloading data for a single sensor instead of multiple sensors
+ * when downloading data for a single sensor instead of multiple sensors. This is
+ * also used in `DeleteSensorModal` to choose which sensor to delete.
  * @param sensors - the list of sensors to choose from
- * @param value - the value (state variable) that should be updated by this drop-down
- * @param setValue - a function that sets the state of the value
+ * @param docId - the state variable for the doc ID that should be updated by this drop-down
+ * @param setDocId - a function that sets the state of the doc ID value
+ * @param setPurpleAirId - a state function that sets the state of the selected PurpleAir ID
  * @returns a drop down menu with all the sensors
  */
 const SensorInput: ({
   sensors,
-  value,
-  setValue,
+  docId,
+  setDocId,
+  setPurpleAirId,
 }: SensorInputProps) => JSX.Element = ({
   sensors,
-  value,
-  setValue,
+  docId,
+  setDocId,
+  setPurpleAirId,
 }: SensorInputProps) => {
   const {t} = useTranslation('administration');
   const options = [];
+  const docIdToPurpleAirId = new Map<string, string>();
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
     let label;
@@ -81,19 +87,21 @@ const SensorInput: ({
       label = sensor.purpleAirId;
     }
     options.push(
-      <option value={sensor.purpleAirId} key={i}>
+      <option value={sensor.docId} key={i}>
         {label}
       </option>
     );
+    docIdToPurpleAirId.set(sensor.docId, sensor.purpleAirId);
   }
   return (
     <Box>
       <Select
         type="number"
         placeholder={t('downloadData.chooseSensor')}
-        value={value}
+        value={docId}
         onChange={event => {
-          setValue(event.target.value);
+          setDocId(event.target.value);
+          setPurpleAirId(docIdToPurpleAirId.get(event.target.value) ?? '');
         }}
       >
         {options}

@@ -67,7 +67,7 @@ const ManageSensors: () => JSX.Element = () => {
                 isValid: sensorData.isValid ?? false,
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
                 lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null,
-                readingDocId: doc.id,
+                docId: doc.id,
               });
             }
           });
@@ -93,7 +93,7 @@ const ManageSensors: () => JSX.Element = () => {
     if (isAdmin) {
       firestore
         .collection('sensors')
-        .doc(currentSensor.readingDocId)
+        .doc(currentSensor.docId)
         .update({
           isActive: !currentSensor.isActive,
         })
@@ -270,9 +270,9 @@ const ManageSensors: () => JSX.Element = () => {
           <Center>
             <HStack>
               <AddSensorModal />
-              <DeleteSensorModal sensors={sensors} />
               <DownloadCSVModal sensors={sensors} />
               <DeleteOldDataModal />
+              <DeleteSensorModal sensors={sensors} />
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">
