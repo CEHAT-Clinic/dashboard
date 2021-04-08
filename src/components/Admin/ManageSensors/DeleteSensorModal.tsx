@@ -98,7 +98,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
             deleteDoc.data()?.deletionMap ?? Object.create(null);
 
           newDeletionMap[
-            sensor.purpleAirId
+            sensor.readingDocId
           ] = firebase.firestore.Timestamp.fromDate(new Date());
 
           deletionDocRef
