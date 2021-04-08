@@ -151,7 +151,7 @@
         "modalHeader": "Borra datos viejos",
         "body": {
             "paragraph1": "Este sistema acumula datos históricos para que el CEHAT pueda analizarlos. Desgraciadamente, puede costar mucho almacenar todos los datos así. Por eso, es posible que prefieras migrar los datos a un sistema más barato.",
-            "paragraph2": "Primero, debes descargar los datos y almacenarlos en un lugar seguro, como Google Drive. Entonces, puedes borrar los datos históricos aquí. Para borrar los datos, tienes que reconocer estas condiciones:"
+            "paragraph2": "Primero, debes descargar los datos y almacenarlos en un lugar seguro, como Google Drive. Entonces, puedes borrar los datos históricos (los más viejos que siete días) aquí. Para borrar los datos, tienes que reconocer estas condiciones:"
         },
         "conditions": {
             "downloaded": "He descargado los datos y verificado que te paraecen correctos.",
