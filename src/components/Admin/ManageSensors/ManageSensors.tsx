@@ -33,6 +33,7 @@ import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {Sensor} from './Util';
 import DeleteOldDataModal from './DeleteOldDataModal';
+import axios from 'axios';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -78,6 +79,24 @@ const ManageSensors: () => JSX.Element = () => {
     return;
   }, [isAuthenticated, isAdmin]);
 
+  function resetSensorDoc(currentSensor: Sensor): Promise<void> {
+    // Value from backend, where 2 denotes that the buffer doesn't exist
+    const bufferDoesNotExist = 2;
+
+    return firestore
+      .collection('sensors')
+      .doc(currentSensor.readingDocId)
+      .update({
+        isActive: !currentSensor.isActive,
+        aqiBufferStatus: bufferDoesNotExist,
+        aqiBuffer: firebase.firestore.FieldValue.delete(),
+        aqiBufferIndex: firebase.firestore.FieldValue.delete(),
+        pm25BufferStatus: bufferDoesNotExist,
+        pm25Buffer: firebase.firestore.FieldValue.delete(),
+        pm25BufferIndex: firebase.firestore.FieldValue.delete(),
+      });
+  }
+
   /**
    * Toggles `isActive` in a sensor's doc. This also resets the AQI buffer
    * and PM2.5 buffer when activating or deactivating.
@@ -90,22 +109,24 @@ const ManageSensors: () => JSX.Element = () => {
   ) {
     event.preventDefault();
 
-    // Value from backend, where 2 denotes that the buffer doesn't exist
-    const bufferDoesNotExist = 2;
-
     if (isAdmin) {
-      firestore
-        .collection('sensors')
-        .doc(currentSensor.readingDocId)
-        .update({
-          isActive: !currentSensor.isActive,
-          aqiBufferStatus: bufferDoesNotExist,
-          aqiBuffer: firebase.firestore.FieldValue.delete(),
-          aqiBufferIndex: firebase.firestore.FieldValue.delete(),
-          pm25BufferStatus: bufferDoesNotExist,
-          pm25Buffer: firebase.firestore.FieldValue.delete(),
-          pm25BufferIndex: firebase.firestore.FieldValue.delete(),
-        })
+      // First, update with PurpleAir
+      const purpleAirIdNumber = +currentSensor.purpleAirId;
+      // Add to PurpleAir Group
+      const purpleAirGroupApiUrl =
+        'https://api.purpleair.com/v1/groups/490/members';
+      // Add the sensor to the sensor group 490
+      axios({
+        method: 'POST', // TODO: do post or delete, depending on adding or removing
+        url: purpleAirGroupApiUrl,
+        headers: {
+          'X-API-Key': process.env.REACT_APP_PURPLEAIR_WRITE_API_KEY,
+        },
+        params: {
+          sensor_index: purpleAirIdNumber, // eslint-disable-line camelcase
+        },
+      })
+        .then(() => resetSensorDoc(currentSensor))
         .catch(() => {
           setError(
             t('sensors.changeActiveSensorError') + currentSensor.name ??
