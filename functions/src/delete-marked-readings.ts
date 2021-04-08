@@ -49,10 +49,10 @@ function deleteSensorSubcollectionBatch(
 
 /**
  * Deletes all documents that match a query in batches.
- * 
- * @param query The query to match on 
- * @param resolve A function to execute when there are no more matching documents
- * @param maxBatchSize The maximum documents to delete in a single tick
+ *
+ * @param query - the query to match on
+ * @param resolve - a function to execute when there are no more matching documents
+ * @param maxBatchSize - the maximum documents to delete in a single tick
  */
 async function deleteQueryBatch(
   query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
