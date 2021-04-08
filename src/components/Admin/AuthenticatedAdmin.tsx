@@ -3,12 +3,6 @@ import SignOut from './Authentication/SignOut';
 import {Heading, Box, Flex, Button} from '@chakra-ui/react';
 import {useAuth} from '../../contexts/AuthContext';
 import {useTranslation} from 'react-i18next';
-import {functions} from '../../firebase';
-
-function test() {
-  const f = functions.httpsCallable('testCallable');
-  f();
-}
 
 /**
  * Admin component for authenticated users.
@@ -47,7 +41,6 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
             {t('manageUsers')}
           </Button>
         )}
-        <Button onClick={test}>Test Callable</Button>
         <SignOut></SignOut>
       </Box>
     </Flex>

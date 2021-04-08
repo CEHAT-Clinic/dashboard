@@ -145,19 +145,35 @@
         "unableToAddSensor": "Unable to add sensor. Please check that the PurpleAir ID is correct.",
         "goBack": "Go Back",
         "addSensorFailure": "Unable to add sensor. Please try again later"
+    },
+    "deleteOldData": {
+        "launchButton": "Delete Old Data",
+        "modalHeader": "Delete Old Data",
+        "body": {
+            "paragraph1": "As time goes on, this system accumulates historical readings so that the team can use this data to analyze. However, the cost of storing this data in the database compounds and may exceed the budget of the organization. For this reason, from time to time, you may wish to migrate this data to a cheaper storage location.",
+            "paragraph2": "First, you should download the data using the download data feature and store it somewhere safe, like a Google Drive or other file storage service. Then, you can delete the old data (data older than 7 days) from this panel. In order to delete data, you must first acknowledge the following conditions:"
+        },
+        "conditions": {
+            "downloaded": "I have downloaded the old data using the download data feature and verified it looks correct.",
+            "uploaded": "I have uploaded the downloaded data to a safe file storage location.",
+            "irreversible": "I understand this process is irreversible and the deleted data cannot be recovered from this system."
+        },
+        "submit": "Delete"
         },
     "downloadData":{
         "error":{
             "invalidStart": "Start date is invalid",
             "invalidEnd": "End date is invalid",
             "startBeforeEnd": "Start date must be before end date",
-            "validDates": "Dates are valid"
+            "validDates": "Dates are valid",
+            "emptyField": "At least one field is empty",
+            "yearDigits": "Years need to have 4 digits"
         },
         "fetchData": "Fetch Data",
         "fetching": "Fetching data, this may take a while",
         "download": "Download Data",
         "whenReady": "The data is ready for download!",
-        "header": "Download Data From All Sensors",
+        "header": "Download Sensor Data",
         "startDate": "Start Date",
         "startHelper": "If the start date is earlier than the first entry, the data will start at the first entry.",
         "endDate": "End Date",
@@ -179,6 +195,10 @@
             "oct": "Oct",
             "nov": "Nov",
             "dec": "Dec"
-        }
+        },
+        "downloadAll": "Download data for all sensors",
+        "whichSensor": "Which sensor would you like to download data for?",
+        "chooseSensor": "Choose sensor",
+        "anotherSensor": "Download data for another sensor"
     }
 }

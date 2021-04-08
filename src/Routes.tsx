@@ -8,13 +8,13 @@ const Home = lazy(() => import('./pages/Home'));
 const Health = lazy(() => import('./pages/Health'));
 const Admin = lazy(() => import('./pages/Admin'));
 const ManageAccount = lazy(
-  () => import('./components/Admin/UserPage/ManageAccount')
+  () => import('./components/Admin/ManageAccount/ManageAccount')
 );
 const ManageUsers = lazy(
-  () => import('./components/Admin/UserPage/ManageUsers')
+  () => import('./components/Admin/ManageUsers/ManageUsers')
 );
 const ManageSensors = lazy(
-  () => import('./components/Admin/UserPage/ManageSensors')
+  () => import('./components/Admin/ManageSensors/ManageSensors')
 );
 
 function Routes(): JSX.Element {

@@ -133,6 +133,7 @@
           "saturday",
           "sunday",
           "Epa",
+          "Checkbox",
           "jan",
           "feb",
           "apr",
@@ -141,7 +142,8 @@
           "sep",
           "oct",
           "nov",
-          "dec"
+          "dec",
+          "Checkbox"
         ],
         "skipWords": [
           "Pv"
