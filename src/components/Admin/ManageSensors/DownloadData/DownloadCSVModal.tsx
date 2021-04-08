@@ -3,6 +3,8 @@ import {
   Box,
   Button,
   Modal,
+  Text,
+  Heading,
   ModalOverlay,
   ModalContent,
   ModalHeader,
@@ -17,16 +19,20 @@ import {
   FormHelperText,
   HStack,
   Center,
+  Checkbox,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
-import {MonthInput, DayInput} from './Util';
+import {MonthInput, DayInput, CSVModalProps} from './Util';
+import {SensorInput} from '../Util';
 
 /**
  * Component for the download data modal that appears on the manage sensor page
  * in the administrative pane.
  */
-const DownloadCSVModal: () => JSX.Element = () => {
+const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
+  sensors,
+}: CSVModalProps) => {
   const {t} = useTranslation('administration');
   /* --------------- State maintenance variables ------------------------ */
   const {isOpen, onOpen, onClose} = useDisclosure();
@@ -37,18 +43,22 @@ const DownloadCSVModal: () => JSX.Element = () => {
   const [endMonth, setEndMonth] = useState(0);
   const [endDay, setEndDay] = useState(0);
   const [error, setError] = useState('');
+  const [downloadAll, setDownloadAll] = useState(true);
+  const [purpleAirId, setPurpleAirId] = useState('');
   /* ------------------------------------------------------------------- */
 
   /**
    * Reset state to initial state
    */
-  function clearFields() {
+  function resetFields() {
     setStartYear(0);
     setStartMonth(0);
     setStartDay(0);
     setEndYear(0);
     setEndMonth(0);
     setEndDay(0);
+    setPurpleAirId('');
+    setDownloadAll(true);
     setError('');
   }
 
@@ -56,17 +66,34 @@ const DownloadCSVModal: () => JSX.Element = () => {
    * Reset starting state and close modal
    */
   function handleClose() {
-    clearFields();
+    resetFields();
     onClose();
   }
 
   /**
    * Check that input dates are valid, sets error accordingly
    */
+  const yearDigits = 4;
   useEffect(() => {
     const startDate = new Date(startYear, startMonth - 1, startDay);
     const endDate = new Date(endYear, endMonth - 1, endDay);
-    if (startDate.getMonth() !== startMonth - 1) {
+    if (
+      !startYear ||
+      !endYear ||
+      !startMonth ||
+      !endMonth ||
+      !startDay ||
+      !endDay
+    ) {
+      // If any of the fields are empty
+      setError(t('downloadData.error.emptyField'));
+    } else if (
+      ('' + startYear).length !== yearDigits ||
+      ('' + endYear).length !== yearDigits
+    ) {
+      // If the years don't have 4 digits
+      setError(t('downloadData.error.yearDigits'));
+    } else if (startDate.getMonth() !== startMonth - 1) {
       // This error is thrown if the `startDay` is greater than the last
       // day of the `startMonth` (ex: Feb 31 is invalid)
       setError(t('downloadData.error.invalidStart'));
@@ -130,6 +157,28 @@ const DownloadCSVModal: () => JSX.Element = () => {
                 </HStack>
                 <FormHelperText>{t('downloadData.endHelper')}</FormHelperText>
                 {/* End end date input fields */}
+                {/* Start Purple Air ID input fields */}
+                <Checkbox
+                  marginY={2}
+                  isChecked={downloadAll}
+                  onChange={() => {
+                    setDownloadAll(!downloadAll);
+                  }}
+                  size="md"
+                >
+                  <Heading size="sm">{t('downloadData.downloadAll')}</Heading>
+                </Checkbox>
+                {!downloadAll && (
+                  <Box>
+                    <Text>{t('downloadData.whichSensor')}</Text>
+                    <SensorInput
+                      sensors={sensors}
+                      value={purpleAirId}
+                      setValue={setPurpleAirId}
+                    />
+                  </Box>
+                )}
+                {/* End Purple Air ID input fields */}
               </FormControl>
             </Box>
             <Center>
@@ -141,6 +190,9 @@ const DownloadCSVModal: () => JSX.Element = () => {
                 endMonth={endMonth}
                 endDay={endDay}
                 error={error}
+                downloadAll={downloadAll}
+                purpleAirId={purpleAirId}
+                resetSelectedSensor={() => setPurpleAirId('')}
               />
             </Center>
           </ModalBody>
