@@ -31,22 +31,8 @@ import {useTranslation} from 'react-i18next';
 import firebase, {firestore} from '../../../firebase';
 import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
+import {Sensor} from './Util';
 import DeleteOldDataModal from './DeleteOldDataModal';
-
-/**
- * Interface for a PurpleAir sensor
- */
-interface Sensor {
-  name: string;
-  purpleAirId: string;
-  latitude: number;
-  longitude: number;
-  isActive: boolean;
-  isValid: boolean;
-  lastValidAqiTime: firebase.firestore.Timestamp | null;
-  lastSensorReadingTime: firebase.firestore.Timestamp | null;
-  readingDocId: string;
-}
 
 /**
  * Component for administrative page to manage the sensors.
@@ -283,7 +269,7 @@ const ManageSensors: () => JSX.Element = () => {
           <Center>
             <HStack>
               <AddSensorModal />
-              <DownloadCSVModal />
+              <DownloadCSVModal sensors={sensors} />
               <DeleteOldDataModal />
             </HStack>
           </Center>

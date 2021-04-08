@@ -165,13 +165,15 @@
             "invalidStart": "Start date is invalid",
             "invalidEnd": "End date is invalid",
             "startBeforeEnd": "Start date must be before end date",
-            "validDates": "Dates are valid"
+            "validDates": "Dates are valid",
+            "emptyField": "At least one field is empty",
+            "yearDigits": "Years need to have 4 digits"
         },
         "fetchData": "Fetch Data",
         "fetching": "Fetching data, this may take a while",
         "download": "Download Data",
         "whenReady": "The data is ready for download!",
-        "header": "Download Data From All Sensors",
+        "header": "Download Sensor Data",
         "startDate": "Start Date",
         "startHelper": "If the start date is earlier than the first entry, the data will start at the first entry.",
         "endDate": "End Date",
@@ -193,6 +195,10 @@
             "oct": "Oct",
             "nov": "Nov",
             "dec": "Dec"
-        }
+        },
+        "downloadAll": "Download data for all sensors",
+        "whichSensor": "Which sensor would you like to download data for?",
+        "chooseSensor": "Choose sensor",
+        "anotherSensor": "Download data for another sensor"
     }
 }
