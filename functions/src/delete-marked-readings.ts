@@ -33,7 +33,6 @@ function deleteSensorSubcollectionBatch(
   sensorDocId: string
 ) {
   const resolve = async () => {
-    console.log('in resolve function');
     const deletionDocRef = firestore.collection('deletion').doc('todo');
 
     const deletionMap =
@@ -49,7 +48,11 @@ function deleteSensorSubcollectionBatch(
 }
 
 /**
- * Given a query, delete it in batches
+ * Deletes all documents that match a query in batches.
+ * 
+ * @param query The query to match on 
+ * @param resolve A function to execute when there are no more matching documents
+ * @param maxBatchSize The maximum documents to delete in a single tick
  */
 async function deleteQueryBatch(
   query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
