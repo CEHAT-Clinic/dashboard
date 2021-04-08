@@ -32,6 +32,7 @@ import firebase, {firestore} from '../../../firebase';
 import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {Sensor} from './Util';
+import DeleteOldDataModal from './DeleteOldDataModal';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -269,6 +270,7 @@ const ManageSensors: () => JSX.Element = () => {
             <HStack>
               <AddSensorModal />
               <DownloadCSVModal sensors={sensors} />
+              <DeleteOldDataModal />
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">
@@ -337,5 +339,4 @@ const ManageSensors: () => JSX.Element = () => {
   }
 };
 
-export type {Sensor};
 export default ManageSensors;
