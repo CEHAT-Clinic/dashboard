@@ -7,18 +7,8 @@ import {aqiCutoffs} from '../../util';
 import {InvalidSensor} from './InvalidSensor';
 
 /**
- * Interface for the props of the dial
+ * AqiLabelProps
  * - `currentAqi` is the AQI value that the dial should display
- * - TODO: add values here
- */
-interface DialProps {
-  currentAqi: string;
-  isValid: boolean;
-  sensorDocId: string;
-}
-
-/**
- * TODO: label this
  */
 interface AqiLabelProps {
   currentAqi: string;
@@ -80,6 +70,18 @@ const AqiLabel: ({currentAqi}: AqiLabelProps) => JSX.Element = ({
 };
 
 /**
+ * Interface for the props of the dial
+ * - `currentAqi` is the AQI value that the dial should display
+ * - `isValid` is true if the selected sensor has a valid AQI to display
+ * - `sensorDocId` is the document ID of the selected sensor
+ */
+interface DialProps {
+  currentAqi: string;
+  isValid: boolean;
+  sensorDocId: string;
+}
+
+/**
  * AQI Dial Display Component
  * This component displays the dial representation of the AQI as well as the AQI
  * reading for the currently selected sensor. Additionally, there is a key below
@@ -124,4 +126,5 @@ const AqiDial: ({
 };
 
 export default AqiDial;
+
 export type {DialProps};

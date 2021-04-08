@@ -16,7 +16,6 @@ const Home: () => JSX.Element = () => {
   const [currentSensorReading, setCurrentSensorReading] = useState('');
   const [currentSensorDocId, setCurrentSensorDocId] = useState('');
   const [currentIsValid, setCurrentIsValid] = useState(true);
-
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );

@@ -7,6 +7,7 @@ import {useTranslation} from 'react-i18next';
 /**
  * Props for the InvalidSensor component that displays in the AQI Gauge box
  * when a gray "invalid" sensor is selected
+ * - `sensorDocId` is the document ID of the selected sensor
  */
 interface InvalidSensorProps {
   sensorDocId: string;
