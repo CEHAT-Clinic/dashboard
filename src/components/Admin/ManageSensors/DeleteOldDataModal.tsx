@@ -19,7 +19,7 @@ import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
-import firebase, {firestore} from '../../../firebase';
+import {firestore} from '../../../firebase';
 
 /**
  * Modal that allows users to mark old data for deletion
@@ -68,7 +68,8 @@ function DeleteOldDataModal(): JSX.Element {
 
       // Get current mapping or set to empty
       const mapping =
-        (await deletionDocRef.get()).data()?.deletionMap ?? Object.create(null);
+        (await deletionDocRef.get()).data()?.deletionMap ??
+        Object.create(null);
 
       const offset = 7;
       const deleteBeforeDate = new Date();
@@ -76,9 +77,7 @@ function DeleteOldDataModal(): JSX.Element {
       deleteBeforeDate.setDate(deleteBeforeDate.getDate() - offset);
 
       for (const sensorDoc of sensorsList.docs) {
-        mapping[sensorDoc.id] = firebase.firestore.Timestamp.fromDate(
-          deleteBeforeDate
-        );
+        mapping[sensorDoc.id] = deleteBeforeDate;
       }
 
       deletionDocRef.update({deletionMap: mapping});
