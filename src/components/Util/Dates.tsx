@@ -1,3 +1,5 @@
+import i18next from 'i18next';
+
 /**
  * @param year - a number, the year of the date to be formatted
  * @param month - a number between 1 and 12 (inclusive)
@@ -5,7 +7,14 @@
  * @returns a string for the date written as 'month/day/year' (ex 4/7/2021)
  */
 function formatDate(year: number, month: number, day: number): string {
-  const formattedDate: string = month + '/' + day + '/' + year;
+  let formattedDate = '';
+  // In American English, the month goes first
+  if (i18next.language === 'en') {
+    formattedDate = month + '/' + day + '/' + year;
+  } else {
+    // In Spanish, the day goes first
+    formattedDate = day + '/' + month + '/' + year;
+  }
   return formattedDate;
 }
 

@@ -124,5 +124,4 @@ const AqiDial: ({
 };
 
 export default AqiDial;
-
 export type {DialProps};

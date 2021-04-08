@@ -159,7 +159,7 @@ const Home: () => JSX.Element = () => {
               </Box>
             )}
             {(!isMobile || showGaugeUi) && (
-              <Box paddingY={[null, null, '1', '4']}>
+              <Flex height="100%" width="100%" alignContent="center">
                 {currentSensorDocId ? (
                   <AqiDial
                     currentAqi={currentSensorReading}
@@ -171,7 +171,7 @@ const Home: () => JSX.Element = () => {
                     {t('noSensorGauge')}
                   </Heading>
                 )}
-              </Box>
+              </Flex>
             )}
           </Box>
           {/* End AQI gauge */}

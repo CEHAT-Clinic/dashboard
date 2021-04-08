@@ -1,18 +1,21 @@
 import React, {useState} from 'react';
-import {Box, Flex, Text, Link} from '@chakra-ui/react';
+import {Box, Text, Link} from '@chakra-ui/react';
 import {firestore} from '../../firebase';
 import {formatDate, formatTime} from '../Util/Dates';
 import {useTranslation} from 'react-i18next';
 
 /**
- * TODO: label this
+ * Props for the InvalidSensor component that displays in the AQI Gauge box
+ * when a gray "invalid" sensor is selected
  */
 interface InvalidSensorProps {
   sensorDocId: string;
 }
 
 /**
- * TODO: label this
+ * This component is used in the AQI Gauge UI component. When a gray "invalid"
+ * sensor is clicked, instead of showing the AQI Gauge we display a message
+ * that the sensor is down and give the last time of valid reading
  */
 const InvalidSensor: ({sensorDocId}: InvalidSensorProps) => JSX.Element = ({
   sensorDocId,
@@ -20,7 +23,7 @@ const InvalidSensor: ({sensorDocId}: InvalidSensorProps) => JSX.Element = ({
   const [lastValidDate, setLastValidDate] = useState('');
   const [lastValidTime, setLastValidTime] = useState('');
 
-  const {t} = useTranslation('graph');
+  const {t} = useTranslation('dial');
 
   if (sensorDocId) {
     const docRef = firestore.collection('sensors').doc(sensorDocId);
@@ -43,30 +46,19 @@ const InvalidSensor: ({sensorDocId}: InvalidSensorProps) => JSX.Element = ({
       }
     });
   }
-  if (sensorDocId) {
-    return (
-      <Flex
-        height="100%"
-        width="100%"
-        justifyContent="center"
-        align="center"
-        flexDir="column"
-        fontSize={20}
-        paddingX={2}
-      >
-        <Text fontSize="lg">
-          {t('inValid.lastTime')}
-          {lastValidDate} {t('inValid.at')} {lastValidTime}{' '}
-          {t('inValid.learnMore')}
-          <Link color="#32bfd1" href="/about">
-            {t('inValid.aboutPage')}
-          </Link>
-        </Text>
-      </Flex>
-    );
-  } else {
-    return <Box></Box>;
-  }
+
+  return (
+    <Box>
+      <Text fontSize="lg">
+        {t('inValid.lastTime')}
+        {lastValidDate} {t('inValid.at')} {lastValidTime}{' '}
+        {t('inValid.learnMore')}
+        <Link color="#32bfd1" href="/about">
+          {t('inValid.aboutPage')}
+        </Link>
+      </Text>
+    </Box>
+  );
 };
 
 export {InvalidSensor};
