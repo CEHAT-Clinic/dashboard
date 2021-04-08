@@ -8,26 +8,22 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Text,
   Button,
   Box,
-  Flex,
+  CircularProgress,
   FormControl,
   FormLabel,
   Input,
   FormErrorMessage,
   Checkbox,
 } from '@chakra-ui/react';
-import {CheckCircleIcon} from '@chakra-ui/icons';
+import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import {Sensor} from './ManageSensors';
+import {Sensor, LabelValue} from './Util';
 
-// TODO: Convert to const component and pass sensors as parameter
-// make dropdown select for sensor
-// handle state for checkboxes
-// Add loading
-// Add complete page
+// TODO: get drop down select for sensor
+// TODO: test deleting test document
 
 interface DeleteSensorModalProps {
   sensors: Sensor[];
@@ -44,8 +40,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   const {isOpen, onOpen, onClose} = useDisclosure();
   const {isAdmin} = useAuth();
 
-  const [purpleAirId, setPurpleAirId] = useState('');
-  const [sensorName, setSensorName] = useState('');
+  const [sensor, setSensor] = useState<Sensor | undefined>();
 
   const [confirmPurpleAirId, setConfirmPurpleAirId] = useState('');
   const [confirmDownload, setConfirmDownload] = useState(false);
@@ -55,11 +50,13 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   // Modal state
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [complete, setComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const disableSubmit =
-    purpleAirId === '' || purpleAirId !== confirmPurpleAirId || error !== '';
+  const allConditionsMet = sensor
+    ? sensor.purpleAirId === '' ||
+      sensor.purpleAirId !== confirmPurpleAirId ||
+      error !== ''
+    : false;
 
   const {t} = useTranslation(['administration', 'common']);
 
@@ -68,7 +65,11 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
    */
   function handleClose(): void {
     // Sensor state
-    setPurpleAirId('');
+    setSensor(undefined);
+    setConfirmPurpleAirId('');
+    setConfirmDownload(false);
+    setAcknowledgeDeletion(false);
+    setAcknowledgePermanent(false);
 
     // Modal state
     setError('');
@@ -84,52 +85,40 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   function handleDeleteSensor(event: React.MouseEvent) {
     event.preventDefault();
 
-    if (isAdmin) {
-      // TODO: determine how to delete readings subcollection
-      // firestore
-      //   .collection('deletion')
-      //   .doc('todo')
-      //   .update({
-      //     isActive: !currentSensor.isActive,
-      //   })
-      //   .catch(() => {
-      //     setError(
-      //       t('sensors.changeActiveSensorError') + currentSensor.name ??
-      //         currentSensor.purpleAirId
-      //     );
-      //   });
+    if (sensor && isAdmin && allConditionsMet) {
+      setIsLoading(true);
+
+      const deletionDocRef = firestore.collection('deletion').doc('todo');
+
+      // Get current mapping or set to empty
+      deletionDocRef
+        .get()
+        .then(deleteDoc => {
+          const newDeletionMap =
+            deleteDoc.data()?.deletionMap ?? Object.create(null);
+
+          newDeletionMap[
+            sensor.purpleAirId
+          ] = firebase.firestore.Timestamp.fromDate(new Date());
+
+          deletionDocRef
+            .update({deletionMap: newDeletionMap})
+            .then(() =>
+              firestore
+                .collection('sensors')
+                .doc(sensor.readingDocId)
+                .delete()
+                .then(handleClose)
+            );
+        })
+        .catch(error => setError(error)) // TODO: Fix
+        .finally(() => setIsLoading(false));
     }
   }
 
-  /**
-   * Interface for LabelValue props, used for type safety
-   */
-  interface LabelValueProps {
-    label: string;
-    value: string;
-  }
-
-  /**
-   * Component that shows a label and a value in the same line.
-   * The label is bold and a colon and space separate the label and value.
-   */
-  const LabelValue: ({label, value}: LabelValueProps) => JSX.Element = ({
-    label,
-    value,
-  }: LabelValueProps) => {
-    return (
-      <Box>
-        <Text as="span" fontWeight="bold">
-          {label}
-        </Text>
-        <Text display="inline">{': ' + value}</Text>
-      </Box>
-    );
-  };
-
   return (
-    <Box marginY={2}>
-      <Button colorScheme="teal" onClick={onOpen}>
+    <Box>
+      <Button colorScheme="red" onClick={onOpen}>
         {t('sensors.delete')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
@@ -138,56 +127,61 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
           <ModalHeader>{t('sensors.delete')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {complete ? (
-              <Flex></Flex>
-            ) : (
+            <Box>
               <Box>
-                <Box>
-                  <LabelValue
-                    label={t('sensors.purpleAirId')}
-                    value={purpleAirId}
-                  />
-                  <LabelValue label={t('sensors.name')} value={sensorName} />
-                </Box>
-                <Checkbox
-                  isChecked={confirmDownload}
-                  onChange={() => setConfirmDownload(!confirmDownload)}
-                >
-                  {t('sensors.confirmDownload')}
-                </Checkbox>
-                <Checkbox
-                  isChecked={acknowledgeDeletion}
-                  onChange={() => setAcknowledgeDeletion(!acknowledgeDeletion)}
-                >
-                  {t('sensors.acknowledgeDelete')}
-                </Checkbox>
-                <Checkbox
-                  isChecked={acknowledgePermanent}
-                  onChange={() =>
-                    setAcknowledgePermanent(!acknowledgePermanent)
-                  }
-                >
-                  {t('sensors.cannotBeUndone')}
-                </Checkbox>
-                <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
-                  <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
-                  <Input
-                    placeholder="30971"
-                    size="md"
-                    onChange={event => {
-                      setConfirmPurpleAirId(event.target.value);
-                      setError('');
-                    }}
-                    value={confirmPurpleAirId}
-                    type="number"
-                  />
-                  <FormErrorMessage>{error}</FormErrorMessage>
-                </FormControl>
-                <Button onClick={handleDeleteSensor} isDisabled={disableSubmit}>
-                  {t('common:submit')}
-                </Button>
+                <LabelValue
+                  label={t('sensors.purpleAirId')}
+                  value={sensor ? sensor.purpleAirId : ''}
+                />
+                <LabelValue
+                  label={t('sensors.name')}
+                  value={sensor ? sensor.name : ''}
+                />
               </Box>
-            )}
+              <Checkbox
+                isChecked={confirmDownload}
+                onChange={() => setConfirmDownload(!confirmDownload)}
+              >
+                {t('sensors.confirmDownload')}
+              </Checkbox>
+              <Checkbox
+                isChecked={acknowledgeDeletion}
+                onChange={() => setAcknowledgeDeletion(!acknowledgeDeletion)}
+              >
+                {t('sensors.acknowledgeDelete')}
+              </Checkbox>
+              <Checkbox
+                isChecked={acknowledgePermanent}
+                onChange={() => setAcknowledgePermanent(!acknowledgePermanent)}
+              >
+                {t('sensors.cannotBeUndone')}
+              </Checkbox>
+              <FormControl isRequired isInvalid={error !== ''} marginTop={4}>
+                <FormLabel>{t('sensors.confirmPurpleAirId')}</FormLabel>
+                <Input
+                  placeholder="30971"
+                  size="md"
+                  onChange={event => {
+                    setConfirmPurpleAirId(event.target.value);
+                    setError('');
+                  }}
+                  value={confirmPurpleAirId}
+                />
+                <FormErrorMessage>{error}</FormErrorMessage>
+              </FormControl>
+              <Button
+                onClick={handleDeleteSensor}
+                isDisabled={!allConditionsMet}
+                marginTop={4}
+                colorScheme="teal"
+              >
+                {isLoading ? (
+                  <CircularProgress isIndeterminate size="24px" color="red" />
+                ) : (
+                  t('common:submit')
+                )}
+              </Button>
+            </Box>
           </ModalBody>
           <ModalFooter>
             <Button colorScheme="red" marginLeft={4} onClick={handleClose}>

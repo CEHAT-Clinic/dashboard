@@ -26,6 +26,7 @@ import {SubmitButton} from '../ComponentUtil';
 import {firestore} from '../../../firebase';
 import {useAuth} from '../../../contexts/AuthContext';
 import axios from 'axios';
+import {LabelValue} from './Util';
 
 /**
  * Component to add a new sensor. Includes a button to make the modal pop up
@@ -196,32 +197,6 @@ function AddSensorModal(): JSX.Element {
       }
     }
   }
-
-  /**
-   * Interface for LabelValue props, used for type safety
-   */
-  interface LabelValueProps {
-    label: string;
-    value: string;
-  }
-
-  /**
-   * Component that shows a label and a value in the same line.
-   * The label is bold and a colon and space separate the label and value.
-   */
-  const LabelValue: ({label, value}: LabelValueProps) => JSX.Element = ({
-    label,
-    value,
-  }: LabelValueProps) => {
-    return (
-      <Box>
-        <Text as="span" fontWeight="bold">
-          {label}
-        </Text>
-        <Text display="inline">{': ' + value}</Text>
-      </Box>
-    );
-  };
 
   return (
     <Box marginY={2}>

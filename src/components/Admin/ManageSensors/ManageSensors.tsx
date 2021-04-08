@@ -33,21 +33,7 @@ import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
-
-/**
- * Interface for a PurpleAir sensor
- */
-interface Sensor {
-  name: string;
-  purpleAirId: number;
-  latitude: number;
-  longitude: number;
-  isActive: boolean;
-  isValid: boolean;
-  lastValidAqiTime: firebase.firestore.Timestamp | null;
-  lastSensorReadingTime: firebase.firestore.Timestamp | null;
-  readingDocId: string;
-}
+import {Sensor} from './Util';
 
 /**
  * Component for administrative page to manage the sensors.
