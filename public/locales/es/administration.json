@@ -153,7 +153,7 @@
             "startBeforeEnd": "La fecha de inicio debe ser anterior a la fecha final",
             "validDates": "Las fechas son válidas",
             "emptyField": "Al menos un campo está vacío",
-            "yearDigits": "Los años deben tener 4 dígitos"
+            "yearDigits": "Los años necesitan tener 4 dígitos"
         },
         "fetchData": "Obtener datos",
         "fetching": "Obteniendo datos, esto puede llevar un tiempo",
@@ -183,7 +183,7 @@
             "dec": "dic"
         },
         "downloadAll": "Descargar datos de todos los sensores",
-        "whichSensor": "¿Para qué sensor le gustaría descargar datos?",
+        "whichSensor": "¿Cuál sensor le gustaría descargar datos?",
         "chooseSensor": "Escoge sensor",
         "anotherSensor": "Descargar datos para otro sensor"
     }
