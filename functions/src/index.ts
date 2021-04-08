@@ -32,5 +32,5 @@ exports.generateAverageReadingsCsv = functions.pubsub
 
 exports.deleteMarkedReadings = functions
   .runWith(runLongOptions)
-  .pubsub.schedule('every 1 day')
+  .pubsub.schedule('every 24 hours')
   .onRun(deleteMarkedReadings);
