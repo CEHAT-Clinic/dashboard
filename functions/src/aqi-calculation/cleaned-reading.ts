@@ -140,6 +140,9 @@ function getHourlyAverages(
         // TODO: write invalid reason to sensor doc, or propagate
       }
     }
+  } else {
+    // If no buffer exists, there are no valid readings for any hour
+    averages.fill(null);
   }
   return averages;
 }
