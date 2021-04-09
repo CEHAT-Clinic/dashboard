@@ -39,7 +39,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is `null`.
+ * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is null
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
@@ -110,9 +110,8 @@ function getHourlyAverages(
       // Only keep valid readings. A reading is valid if its timestamp is not
       // null, meaning that a new reading was available for that two-minute
       // time period, or if the meanPercentDifference is less than 70%.
-      readings
-        .filter(element => element.timestamp !== null)
-        .filter(
+      const nonNullReadings = readings.filter(element => element.timestamp !== null);
+      const validReadings = nonNullReadings.filter(
           element =>
             !isNaN(element.meanPercentDifference) &&
             element.meanPercentDifference < PERCENT_THRESHOLD
@@ -126,8 +125,15 @@ function getHourlyAverages(
       // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
       // Expressed this way to avoid imprecision of floating point arithmetic.
       const MEASUREMENT_COUNT_THRESHOLD = 23;
-      if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-        averages[hoursAgo] = averageReadings(readings);
+      if (validReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
+        averages[hoursAgo] = averageReadings(validReadings);
+      } else if (nonNullReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
+        // This case means that meanPercentThreshold was the final straw to make
+        // this hour lack enough valid readings
+        // TODO: write invalid reason to sensor doc, or propagate
+      } else {
+        // In this case, not enough readings were received from PurpleAir
+        // TODO: write invalid reason to sensor doc, or propagate
       }
     }
   }

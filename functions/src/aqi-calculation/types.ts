@@ -73,7 +73,6 @@ interface CurrentReadingSensorData {
   readingDocId: string;
   lastValidAqiTime: FirebaseFirestore.Timestamp | null;
   lastSensorReadingTime: FirebaseFirestore.Timestamp | null;
-  downReason: string; // TODO: have booleans for each possible reason
 }
 
 export type {

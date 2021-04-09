@@ -15,7 +15,14 @@ interface Pm25BufferElement {
  * This is a default element for the pm25 buffer. When the buffer is initialized,
  * every element is a default element. When we get an invalid reading (i.e. a
  * reading that matches that of the last reading), we put this element in the
- * buffer
+ * buffer.
+ * 
+ * @readonly
+ *
+ * @remarks
+ * TypeScript cannot reset a variable to this value successfully, so do not use
+ * this element to add a default element when interacting with multiple pm25Buffers.
+ * Instead, use this as a reference for what the default element should look like.
  */
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
@@ -38,6 +45,13 @@ interface AqiBufferElement {
  * This is the default element for the AQI buffer. The buffer is initialized
  * with default elements at every index. When we don't have enough valid PM2.5
  * data to calculate AQI, we put a default element in the buffer.
+ *
+ * @readonly
+ *
+ * @remarks
+ * TypeScript cannot reset a variable to this value successfully, so do not use
+ * this element to add a default element when interacting with multiple aqiBuffers.
+ * Instead, use this as a reference for what the default element should look like.
  */
 const defaultAqiBufferElement: AqiBufferElement = {
   timestamp: null,
@@ -107,8 +121,4 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
 
 export type {Pm25BufferElement, AqiBufferElement};
 
-export {
-  defaultPm25BufferElement,
-  defaultAqiBufferElement,
-  populateDefaultBuffer,
-};
+export {populateDefaultBuffer};

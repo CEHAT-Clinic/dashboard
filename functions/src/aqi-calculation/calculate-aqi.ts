@@ -1,7 +1,6 @@
 import {firestore, FieldValue, Timestamp} from '../admin';
 import {
   bufferStatus,
-  defaultAqiBufferElement,
   populateDefaultBuffer,
   AqiBufferElement,
   Pm25BufferElement,
@@ -162,7 +161,6 @@ async function calculateAqi(): Promise<void> {
       nowCastPm25: Number.NaN,
       aqi: Number.NaN,
       isValid: false,
-      downReason: ''
     };
 
     // Data used to calculate hourly averages
@@ -191,7 +189,10 @@ async function calculateAqi(): Promise<void> {
 
     // If there's enough info, the sensor's data is updated
     // If there isn't, we send the default AQI buffer element
-    let aqiBufferData: AqiBufferElement = defaultAqiBufferElement; // New data to add
+    let aqiBufferElement: AqiBufferElement = {
+      aqi: Number.NaN,
+      timestamp: null
+    }; // New data to add
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -205,16 +206,18 @@ async function calculateAqi(): Promise<void> {
         currentSensorData.nowCastPm25 = nowCastPm25;
         currentSensorData.isValid = true;
         currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
-
-        aqiBufferData.aqi = currentSensorData.aqi;
-        aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
+        
+        aqiBufferElement = {
+          aqi: currentSensorData.aqi,
+          timestamp: currentSensorData.lastValidAqiTime
+        };
       } else {
         // Infinite AQI
-        currentSensorData.downReason = 'Infinite AQI';
+        // TODO: write invalid reason to sensor doc, or propagate
       }
     } else {
-      // Not enough valid hours recently
-      currentSensorData.downReason = 'Not enough valid hours in last 3 hours';
+      // Not enough recent readings
+      // TODO: write invalid reason to sensor doc, or propagate
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
@@ -222,16 +225,15 @@ async function calculateAqi(): Promise<void> {
 
     // Update the AQI circular buffer for this element
     const sensorDocUpdate = Object.create(null);
-    sensorDocUpdate.downReason = currentSensorData.downReason; // TODO: have booleans for each reason
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
 
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
-      const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
-      aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
-
+      let aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+      aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
+      console.log('Sensor:', currentSensorData.purpleAirId, 'AQI buffer element:', aqiBufferElement);
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
@@ -240,14 +242,12 @@ async function calculateAqi(): Promise<void> {
       // any values until the buffer status is Exists
       sensorDocData.aqiBufferStatus = bufferStatus.InProgress;
     }
-    // TODO: run function locally
-    console.log('Sensor: ', sensorDocData.purpleAirId, 'AQI: ', sensorDocData.aqi);
 
     // Send the updated data to the database
     await firestore
       .collection('sensors')
       .doc(sensorDoc.id)
-      .update(sensorDocUpdate);
+      .set(sensorDocUpdate);
 
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
