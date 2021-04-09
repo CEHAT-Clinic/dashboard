@@ -175,7 +175,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
    * ID to the timestamp for which to delete readings before
    * @returns Promise that when resolved contains the todo deletion document
    */
-  function getDeletionMap(): Promise<
+  function getDeletionToDoDoc(): Promise<
     firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
   > {
     return firestore.collection('deletion').doc('todo').get();
@@ -201,7 +201,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
       // Finally, delete the sensor doc, and close the modal upon success.
       getPurpleAirMemberId()
         .then(memberId => deleteFromPurpleAirGroup(memberId))
-        .then(getDeletionMap)
+        .then(getDeletionToDoDoc)
         .then(deleteDoc => updateDeletionMap(deleteDoc))
         .then(deleteSensorDoc)
         .then(handleClose)

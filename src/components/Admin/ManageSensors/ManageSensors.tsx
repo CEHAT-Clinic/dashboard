@@ -233,7 +233,9 @@ const ManageSensors: () => JSX.Element = () => {
               <AddSensorModal />
               <DownloadCSVModal sensors={sensors} />
               <DeleteOldDataModal />
-              <DeleteSensorModal sensors={sensors} />
+              <DeleteSensorModal
+                sensors={sensors.filter(sensor => !sensor.isActive)}
+              />
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">
