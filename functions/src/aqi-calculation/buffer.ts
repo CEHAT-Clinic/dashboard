@@ -32,8 +32,8 @@ const defaultPm25BufferElement: Pm25BufferElement = {
 };
 
 /**
- * Gets the default element for the AQI buffer
- * @returns Safe default AQI Buffer element that can be used in calculations with multiple AQI buffers
+ * Gets the default element for the PM2.5 buffer
+ * @returns Safe default PM2.5 Buffer element that can be used in calculations with multiple PM2.5 buffers
  */
 function getDefaultPm25BufferElement(): Pm25BufferElement {
   return {...defaultPm25BufferElement};
