@@ -59,7 +59,6 @@ interface HistoricalSensorReading {
  * - `readingDocId` - document ID of the for the sensor in the sensors collection in Firestore
  * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
  * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown
- * - `downReason` - reason that a sensor is down
  */
 interface CurrentReadingSensorData {
   purpleAirId: string;

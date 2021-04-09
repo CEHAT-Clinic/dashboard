@@ -188,11 +188,11 @@ async function calculateAqi(): Promise<void> {
     }
 
     // If there's enough info, the sensor's data is updated
-    // If there isn't, we send the default AQI buffer element
+    // If there isn't, we send the AQI buffer element with default values
     let aqiBufferElement: AqiBufferElement = {
       aqi: Number.NaN,
       timestamp: null,
-    }; // New data to add
+    };
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -233,12 +233,6 @@ async function calculateAqi(): Promise<void> {
       // The buffer exists, proceed with normal update
       const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
-      console.log(
-        'Sensor:',
-        currentSensorData.purpleAirId,
-        'AQI buffer element:',
-        aqiBufferElement
-      );
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
@@ -252,7 +246,7 @@ async function calculateAqi(): Promise<void> {
     await firestore
       .collection('sensors')
       .doc(sensorDoc.id)
-      .set(sensorDocUpdate);
+      .update(sensorDocUpdate);
 
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
