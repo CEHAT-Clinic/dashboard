@@ -13,6 +13,7 @@ import {useTranslation} from 'react-i18next';
 import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
 import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
+import {formatTime} from '../Util/Dates';
 
 /**
  * AQI Graph Display Component
@@ -169,7 +170,6 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
       t('saturday'),
       t('sunday'),
     ];
-    const hoursPerPeriod = 12;
     const sunday = 6;
     // Get the local time from the user's browser
     const date = new Date();
@@ -185,27 +185,9 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
       }
       hour = hoursPerDay + hour;
     }
-    // Update AM or PM
-    let period = '';
-    if (hour > hoursPerPeriod) {
-      hour = hour % hoursPerPeriod;
-      period = ' PM';
-    } else {
-      period = ' AM';
-    }
+    const time = formatTime(hour, minutes);
 
-    // Formatting
-    let minutesString = '' + minutes;
-    // Convert hour 0 to 12
-    if (hour === 0) {
-      hour = hoursPerPeriod;
-    }
-    // Add leading 0 to single-digit minutes
-    /* eslint-disable-next-line no-magic-numbers */
-    if (minutes < 10) {
-      minutesString = '0' + minutes;
-    }
-    return weekdays[day] + ' ' + hour + ':' + minutesString + period;
+    return weekdays[day] + ' ' + time;
   };
 
   if (sensorDocId) {
