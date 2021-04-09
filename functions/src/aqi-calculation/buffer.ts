@@ -22,7 +22,7 @@ interface Pm25BufferElement {
  * @remarks
  * TypeScript cannot reset a variable to this value successfully, so do not use
  * this element to add a default element when interacting with multiple pm25Buffers.
- * Instead, use this as a reference for what the default element should look like.
+ * Instead, use `getDefaultPm25BufferElement`.
  */
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
