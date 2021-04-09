@@ -1,8 +1,7 @@
 import {firestore} from '../admin';
 
 /**
- * Interface for a single element in the pm25Buffer. All fields come from the
- * Thingspeak API
+ * Interface for a single element in the pm25Buffer.
  */
 interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
