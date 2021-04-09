@@ -68,7 +68,9 @@ function getHourlyAverages(
 ): (BasicReading | null)[] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
-  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS).fill(null);
+  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS).fill(
+    null
+  );
 
   // If we have the relevant fields:
   if (status === bufferStatus.Exists && buffer && bufferIndex) {
@@ -110,12 +112,14 @@ function getHourlyAverages(
       // Only keep valid readings. A reading is valid if its timestamp is not
       // null, meaning that a new reading was available for that two-minute
       // time period, or if the meanPercentDifference is less than 70%.
-      const nonNullReadings = readings.filter(element => element.timestamp !== null);
+      const nonNullReadings = readings.filter(
+        element => element.timestamp !== null
+      );
       const validReadings = nonNullReadings.filter(
-          element =>
-            !isNaN(element.meanPercentDifference) &&
-            element.meanPercentDifference < PERCENT_THRESHOLD
-        );
+        element =>
+          !isNaN(element.meanPercentDifference) &&
+          element.meanPercentDifference < PERCENT_THRESHOLD
+      );
 
       // If we have 1 reading every two minutes, there are 30 readings in an hour.
       // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use

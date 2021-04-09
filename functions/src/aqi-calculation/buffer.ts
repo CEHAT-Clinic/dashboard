@@ -16,7 +16,7 @@ interface Pm25BufferElement {
  * every element is a default element. When we get an invalid reading (i.e. a
  * reading that matches that of the last reading), we put this element in the
  * buffer.
- * 
+ *
  * @readonly
  *
  * @remarks

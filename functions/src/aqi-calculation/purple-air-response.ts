@@ -1,10 +1,6 @@
 import axios, {AxiosResponse} from 'axios';
 import {firestore, config, Timestamp} from '../admin';
-import {
-  populateDefaultBuffer,
-  bufferStatus,
-  Pm25BufferElement,
-} from './buffer';
+import {populateDefaultBuffer, bufferStatus, Pm25BufferElement} from './buffer';
 import {HistoricalSensorReading, PurpleAirReading} from './types';
 
 import {

@@ -191,7 +191,7 @@ async function calculateAqi(): Promise<void> {
     // If there isn't, we send the default AQI buffer element
     let aqiBufferElement: AqiBufferElement = {
       aqi: Number.NaN,
-      timestamp: null
+      timestamp: null,
     }; // New data to add
 
     // If there is not enough info, the sensor's status is not valid
@@ -206,10 +206,10 @@ async function calculateAqi(): Promise<void> {
         currentSensorData.nowCastPm25 = nowCastPm25;
         currentSensorData.isValid = true;
         currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
-        
+
         aqiBufferElement = {
           aqi: currentSensorData.aqi,
-          timestamp: currentSensorData.lastValidAqiTime
+          timestamp: currentSensorData.lastValidAqiTime,
         };
       } else {
         // Infinite AQI
@@ -231,9 +231,14 @@ async function calculateAqi(): Promise<void> {
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
-      let aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+      const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
-      console.log('Sensor:', currentSensorData.purpleAirId, 'AQI buffer element:', aqiBufferElement);
+      console.log(
+        'Sensor:',
+        currentSensorData.purpleAirId,
+        'AQI buffer element:',
+        aqiBufferElement
+      );
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
