@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Box, Button, Text, Progress, Flex} from '@chakra-ui/react';
-import {firestore} from '../../../../firebase';
+import firebase, {firestore} from '../../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {CSVButtonProps, HeaderElement, BodyElement} from './Util';
 import {CSVLink} from 'react-csv';
@@ -19,6 +19,7 @@ const DownloadCSVButton: ({
   error,
   downloadAll,
   purpleAirId,
+  sensorDocId,
   resetSelectedSensor,
 }: CSVButtonProps) => JSX.Element = ({
   startYear,
@@ -30,6 +31,7 @@ const DownloadCSVButton: ({
   error,
   downloadAll,
   purpleAirId,
+  sensorDocId,
   resetSelectedSensor,
 }: CSVButtonProps) => {
   const {t} = useTranslation('administration');
@@ -61,6 +63,8 @@ const DownloadCSVButton: ({
    * This function actually gets the data from firestore and populates the
    * list that represents the body of the CSV file
    * @param body - list of body elements to populate with the data
+   * @param startDate - start date to fetch data for
+   * @param endDate - end date to fetch data for
    * @returns the updated body with the elements from Firestore
    */
   async function getData(
@@ -70,21 +74,23 @@ const DownloadCSVButton: ({
   ) {
     setFetchingData(true);
     const sensorsRef = firestore.collection('sensors');
-    let sensorDocs;
+    let sensorDocs: (
+      | firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
+      | firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+    )[] = [];
     if (downloadAll) {
       sensorDocs = (await sensorsRef.get()).docs;
     } else {
-      sensorDocs = (
-        await sensorsRef.where('purpleAirId', '==', +purpleAirId).get()
-      ).docs;
+      const doc = await sensorsRef.doc(sensorDocId).get();
+      if (doc.exists) sensorDocs.push(doc);
     }
     const numDocs = sensorDocs.length;
     setTotalSensors(numDocs);
 
     for (let i = 0; i < numDocs; i++) {
-      const sensorData = sensorDocs[i].data();
+      const sensorData = sensorDocs[i].data() ?? {};
       // Get sensor name and doc ID
-      let name: string = sensorData['name'];
+      let name: string = sensorData['name'] ?? '';
       // Forward slashes cause problems in the R shiny data analysis app
       if (name) {
         name = name.replaceAll('/', '-');

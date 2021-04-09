@@ -45,6 +45,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
   const [error, setError] = useState('');
   const [downloadAll, setDownloadAll] = useState(true);
   const [purpleAirId, setPurpleAirId] = useState('');
+  const [sensorDocId, setSensorDocId] = useState('');
   /* ------------------------------------------------------------------- */
 
   /**
@@ -173,8 +174,9 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                     <Text>{t('downloadData.whichSensor')}</Text>
                     <SensorInput
                       sensors={sensors}
-                      value={purpleAirId}
-                      setValue={setPurpleAirId}
+                      docId={sensorDocId}
+                      setDocId={setSensorDocId}
+                      setPurpleAirId={setPurpleAirId}
                     />
                   </Box>
                 )}
@@ -192,7 +194,11 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                 error={error}
                 downloadAll={downloadAll}
                 purpleAirId={purpleAirId}
-                resetSelectedSensor={() => setPurpleAirId('')}
+                sensorDocId={sensorDocId}
+                resetSelectedSensor={() => {
+                  setPurpleAirId('');
+                  setSensorDocId('');
+                }}
               />
             </Center>
           </ModalBody>
