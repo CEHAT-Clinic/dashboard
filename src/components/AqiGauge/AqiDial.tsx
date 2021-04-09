@@ -17,7 +17,7 @@ interface AqiLabelProps {
 /**
  * AQI Dial Label Component
  * This component displays the label for the AQI displayed by the dial.
- * @example if the AQI is less than 50, it will show the label "Good"
+ * For example, if the AQI is less than 50, it will show the label "Good"
  */
 const AqiLabel: ({currentAqi}: AqiLabelProps) => JSX.Element = ({
   currentAqi,

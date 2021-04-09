@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Box, Text, Link} from '@chakra-ui/react';
-import {firestore} from '../../firebase';
+import firebase, {firestore} from '../../firebase';
 import {formatDate, formatTime} from '../Util/Dates';
 import {useTranslation} from 'react-i18next';
 
@@ -35,15 +35,15 @@ const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
         const sensorData = data[purpleAirId];
         if (sensorData) {
           // Get time of last valid AQI reading
-          const lastValidAqiTime: Date = sensorData[
-            'lastValidAqiTime'
-          ].toDate();
+          const lastValidAqiTimestamp: firebase.firestore.Timestamp =
+            sensorData['lastValidAqiTime'];
+          const lastValidAqiDate: Date = lastValidAqiTimestamp.toDate();
           // Format date
-          const year: number = lastValidAqiTime.getFullYear();
-          const month: number = lastValidAqiTime.getMonth() + 1;
-          const day: number = lastValidAqiTime.getDate();
-          const hour: number = lastValidAqiTime.getHours();
-          const minutes: number = lastValidAqiTime.getMinutes();
+          const year: number = lastValidAqiDate.getFullYear();
+          const month: number = lastValidAqiDate.getMonth() + 1;
+          const day: number = lastValidAqiDate.getDate();
+          const hour: number = lastValidAqiDate.getHours();
+          const minutes: number = lastValidAqiDate.getMinutes();
           setLastValidDate(formatDate(year, month, day));
           setLastValidTime(formatTime(hour, minutes));
         }

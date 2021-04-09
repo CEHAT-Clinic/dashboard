@@ -4,7 +4,7 @@ import i18next from 'i18next';
  * @param year - a number, the year of the date to be formatted
  * @param month - a number between 1 and 12 (inclusive)
  * @param day - a number between 1 and 31 (inclusive)
- * @returns a string for the date written as 'month/day/year' (ex 4/7/2021)
+ * @returns a string for the date written as 'month/day/year' if the current language is English and written as 'day/month/year' if the current language is Spanish
  */
 function formatDate(year: number, month: number, day: number): string {
   let formattedDate = '';
@@ -28,7 +28,6 @@ function formatTime(hour: number, minutes: number): string {
   const hoursPerDay = 24;
 
   let period = ' AM';
-  let leadingZero = '';
   if (hour === hoursPerDay) {
     period = 'AM';
     hour = hoursPerPeriod;
@@ -36,10 +35,12 @@ function formatTime(hour: number, minutes: number): string {
     period = ' PM';
     hour = hour % hoursPerPeriod;
   }
+  let leadingZero = '';
   /* eslint-disable-next-line no-magic-numbers */
   if (minutes < 10) {
     leadingZero = '0';
   }
+  // Between 12:00 AM and 12:59 AM, the hour value is 0, but we want to display 12
   if (hour === 0) {
     hour = hoursPerPeriod;
   }
