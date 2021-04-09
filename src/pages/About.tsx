@@ -56,6 +56,19 @@ const About: React.FC = () => {
         borderRadius={8}
         boxShadow="lg"
       >
+        <Heading>{t('sensorsDown.heading')}</Heading>
+        <Text paddingY={1}> {t('sensorsDown.part1')} </Text>
+        <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
+        <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
+      </Box>
+      <Box
+        padding={2}
+        margin={2}
+        width="full"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+      >
         <Heading>{t('acknowledge.heading')}</Heading>
         <Text>{t('acknowledge.clinic')}</Text>
         <Text>{t('acknowledge.grant')}</Text>

@@ -1,13 +1,20 @@
 import React from 'react';
 import {arc} from 'd3-shape';
 import {scaleLinear} from 'd3-scale';
-import {DialProps} from './AqiDial';
 import {useColor} from '../../contexts/ColorContext';
 import {aqiCutoffs} from '../../util';
 
-const GaugeSvg: ({currentAqi}: DialProps) => JSX.Element = ({
+/**
+ * Interface for the props of the dial
+ * - `currentAqi` is the AQI value that the dial should display
+ */
+interface GaugeSvgProps {
+  currentAqi: string;
+}
+
+const GaugeSvg: ({currentAqi}: GaugeSvgProps) => JSX.Element = ({
   currentAqi,
-}: DialProps) => {
+}: GaugeSvgProps) => {
   /* eslint-disable no-magic-numbers */
   // Arc properties
   const innerRadius = 0.5;

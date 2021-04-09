@@ -15,6 +15,8 @@ const Home: () => JSX.Element = () => {
   // State for which sensor to display in the current sensor box
   const [currentSensorReading, setCurrentSensorReading] = useState('');
   const [currentSensorDocId, setCurrentSensorDocId] = useState('');
+  const [currentIsValid, setCurrentIsValid] = useState(true);
+  const [currentPurpleAirId, setCurrentPurpleAirId] = useState('');
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -94,6 +96,8 @@ const Home: () => JSX.Element = () => {
                     <Map
                       updateCurrentReading={setCurrentSensorReading}
                       updateCurrentSensorDoc={setCurrentSensorDocId}
+                      updateCurrentIsValid={setCurrentIsValid}
+                      updateCurrentPurpleAirId={setCurrentPurpleAirId}
                       currentColorScheme={colorContext.currentColorScheme}
                       isMobile={isMobile}
                     />
@@ -110,6 +114,8 @@ const Home: () => JSX.Element = () => {
                 <Map
                   updateCurrentReading={setCurrentSensorReading}
                   updateCurrentSensorDoc={setCurrentSensorDocId}
+                  updateCurrentIsValid={setCurrentIsValid}
+                  updateCurrentPurpleAirId={setCurrentPurpleAirId}
                   currentColorScheme={colorContext.currentColorScheme}
                   isMobile={isMobile}
                 />
@@ -155,15 +161,24 @@ const Home: () => JSX.Element = () => {
               </Box>
             )}
             {(!isMobile || showGaugeUi) && (
-              <Box paddingY={[null, null, '1', '4']}>
-                {currentSensorReading ? (
-                  <AqiDial currentAqi={currentSensorReading} />
+              <Flex
+                height="100%"
+                width="100%"
+                justifyContent="center"
+                alignContent="center"
+              >
+                {currentSensorDocId ? (
+                  <AqiDial
+                    currentAqi={currentSensorReading}
+                    isValid={currentIsValid}
+                    purpleAirId={currentPurpleAirId}
+                  />
                 ) : (
                   <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
                     {t('noSensorGauge')}
                   </Heading>
                 )}
-              </Box>
+              </Flex>
             )}
           </Box>
           {/* End AQI gauge */}
