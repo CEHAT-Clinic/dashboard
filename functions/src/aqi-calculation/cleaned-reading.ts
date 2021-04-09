@@ -68,9 +68,7 @@ function getHourlyAverages(
 ): (BasicReading | null)[] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
-  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS).fill(
-    null
-  );
+  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS);
 
   // If we have the relevant fields:
   if (status === bufferStatus.Exists && buffer && bufferIndex) {
@@ -134,9 +132,11 @@ function getHourlyAverages(
       } else if (nonNullReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
         // This case means that meanPercentThreshold was the final straw to make
         // this hour lack enough valid readings
+        averages[hoursAgo] = null;
         // TODO: write invalid reason to sensor doc, or propagate
       } else {
         // In this case, not enough readings were received from PurpleAir
+        averages[hoursAgo] = null;
         // TODO: write invalid reason to sensor doc, or propagate
       }
     }
