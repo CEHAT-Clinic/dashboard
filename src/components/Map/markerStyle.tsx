@@ -1,5 +1,5 @@
 import {aqiCutoffs} from '../../util';
-import {ColorScheme} from '../Util/Colors';
+import {ColorScheme, InactiveSensorColor} from '../Util/Colors';
 
 /**
  * Creates the SVG icon for a particular sensor given the AQI reading
@@ -7,36 +7,44 @@ import {ColorScheme} from '../Util/Colors';
  * @param hover - boolean: is the cursor hovering over this marker?
  * @param selected - boolean: is this cursor currently selected?
  * @param colors - the current color scheme being used
+ * @param isValid - boolean: does the sensor have a valid AQI
  */
 export function createSensorIcon(
   aqiReading: string,
   hover: boolean,
   selected: boolean,
-  colors: ColorScheme
+  colors: ColorScheme,
+  isValid: boolean
 ): H.map.Icon {
   let color = colors.good; // Initialize color
-  const aqi = Number(aqiReading);
-  if (aqi < aqiCutoffs.good) {
-    color = colors.good;
-  } else if (aqi < aqiCutoffs.moderate) {
-    color = colors.moderate;
-  } else if (aqi < aqiCutoffs.sensitive) {
-    color = colors.sensitive;
-  } else if (aqi < aqiCutoffs.unhealthy) {
-    color = colors.unhealthy;
-  } else if (aqi < aqiCutoffs.veryUnhealthy) {
-    color = colors.veryUnhealthy;
+  if (isValid) {
+    const aqi = Number(aqiReading);
+    if (aqi < aqiCutoffs.good) {
+      color = colors.good;
+    } else if (aqi < aqiCutoffs.moderate) {
+      color = colors.moderate;
+    } else if (aqi < aqiCutoffs.sensitive) {
+      color = colors.sensitive;
+    } else if (aqi < aqiCutoffs.unhealthy) {
+      color = colors.unhealthy;
+    } else if (aqi < aqiCutoffs.veryUnhealthy) {
+      color = colors.veryUnhealthy;
+    } else {
+      color = colors.hazardous;
+    }
   } else {
-    color = colors.hazardous;
+    color = InactiveSensorColor;
   }
 
   const fillColor = `"${color.backgroundColor}"`;
   const textColor = `"${color.textColor}"`;
 
   // Set marker size
-  const standardMarkerSize = 20;
-  const largeMarkerSize = 22;
+  /* eslint-disable no-magic-numbers */
+  const standardMarkerSize = isValid ? 20 : 10;
+  const largeMarkerSize = isValid ? 22 : 12;
   const markerSize = hover || selected ? largeMarkerSize : standardMarkerSize;
+  /* eslint-enable no-magic-numbers */
 
   // Set marker border
   const standardMarkerBorder = 0.5;

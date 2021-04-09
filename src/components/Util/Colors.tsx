@@ -61,5 +61,16 @@ const ColorToggle: React.FC = () => {
   );
 };
 
+// Color for inactive sensors on the map in both the accessible and EPA color scheme
+const InactiveSensorColor: Color = {
+  backgroundColor: '#888888',
+  textColor: 'black',
+};
+
 export type {ColorScheme, Color};
-export {EpaColorScheme, AccessibleColorScheme, ColorToggle};
+export {
+  EpaColorScheme,
+  AccessibleColorScheme,
+  ColorToggle,
+  InactiveSensorColor,
+};
