@@ -4,6 +4,7 @@ import {
   populateDefaultBuffer,
   AqiBufferElement,
   Pm25BufferElement,
+  getDefaultAqiBufferElement,
 } from './buffer';
 import {CurrentReadingSensorData} from './types';
 import {
@@ -189,10 +190,7 @@ async function calculateAqi(): Promise<void> {
 
     // If there's enough info, the sensor's data is updated
     // If there isn't, we send the AQI buffer element with default values
-    let aqiBufferElement: AqiBufferElement = {
-      aqi: Number.NaN,
-      timestamp: null,
-    };
+    let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;

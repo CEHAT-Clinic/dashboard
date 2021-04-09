@@ -1,6 +1,11 @@
 import axios, {AxiosResponse} from 'axios';
 import {firestore, config, Timestamp} from '../admin';
-import {populateDefaultBuffer, bufferStatus, Pm25BufferElement} from './buffer';
+import {
+  populateDefaultBuffer,
+  bufferStatus,
+  Pm25BufferElement,
+  getDefaultPm25BufferElement,
+} from './buffer';
 import {HistoricalSensorReading, PurpleAirReading} from './types';
 
 import {
@@ -103,12 +108,7 @@ async function purpleAirToFirestore(): Promise<void> {
       : null;
 
     // Initialize the buffer element to the default value
-    let pm25BufferElement: Pm25BufferElement = {
-      timestamp: null,
-      pm25: Number.NaN,
-      meanPercentDifference: Number.NaN,
-      humidity: Number.NaN,
-    };
+    let pm25BufferElement: Pm25BufferElement = getDefaultPm25BufferElement();
 
     // Initialize the sensor doc update data
     const sensorDocUpdate = Object.create(null);

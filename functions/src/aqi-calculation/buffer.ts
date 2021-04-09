@@ -32,6 +32,14 @@ const defaultPm25BufferElement: Pm25BufferElement = {
 };
 
 /**
+ * Gets the default element for the AQI buffer
+ * @returns Safe default AQI Buffer element that can be used in calculations with multiple AQI buffers
+ */
+function getDefaultPm25BufferElement(): Pm25BufferElement {
+  return {...defaultPm25BufferElement};
+}
+
+/**
  * Interface for a single element in the AQI buffer
  * timestamp - when this AQI was calculated and added to the buffer
  * aqi - the current aqi value
@@ -51,12 +59,20 @@ interface AqiBufferElement {
  * @remarks
  * TypeScript cannot reset a variable to this value successfully, so do not use
  * this element to add a default element when interacting with multiple aqiBuffers.
- * Instead, use this as a reference for what the default element should look like.
+ * Instead, use `getDefaultAqiBufferElement`.
  */
 const defaultAqiBufferElement: AqiBufferElement = {
   timestamp: null,
   aqi: Number.NaN,
 };
+
+/**
+ * Gets the default element for the AQI buffer
+ * @returns Safe default AQI Buffer element that can be used in calculations with multiple AQI buffers
+ */
+function getDefaultAqiBufferElement(): AqiBufferElement {
+  return {...defaultAqiBufferElement};
+}
 
 /**
  * Enumeration for the status of a buffer. If a buffer is 'InProgress', it is
@@ -121,4 +137,8 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
 
 export type {Pm25BufferElement, AqiBufferElement};
 
-export {populateDefaultBuffer};
+export {
+  populateDefaultBuffer,
+  getDefaultAqiBufferElement,
+  getDefaultPm25BufferElement,
+};
