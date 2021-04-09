@@ -31,7 +31,6 @@ import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
-import axios from 'axios';
 import {Sensor, MoreInfoHeading} from './Util';
 
 /**
@@ -80,29 +79,16 @@ const ManageSensors: () => JSX.Element = () => {
     return;
   }, [isAuthenticated, isAdmin]);
 
-  function resetSensorDoc(currentSensor: Sensor): Promise<void> {
-    // Value from backend, where 2 denotes that the buffer doesn't exist
-    const bufferDoesNotExist = 2;
-
-    return firestore
-      .collection('sensors')
-      .doc(currentSensor.docId)
-      .update({
-        isActive: !currentSensor.isActive,
-        aqiBufferStatus: bufferDoesNotExist,
-        aqiBuffer: firebase.firestore.FieldValue.delete(),
-        aqiBufferIndex: firebase.firestore.FieldValue.delete(),
-        pm25BufferStatus: bufferDoesNotExist,
-        pm25Buffer: firebase.firestore.FieldValue.delete(),
-        pm25BufferIndex: firebase.firestore.FieldValue.delete(),
-      });
-  }
-
   /**
    * Toggles `isActive` in a sensor's doc. This also resets the AQI buffer
    * and PM2.5 buffer when activating or deactivating.
    * @param event - click button event
    * @param currentSensor - sensor for which to toggle isActive status
+   *
+   * @remarks
+   * Note that when a sensor is activated or deactivated, we do not change it in
+   * our PurpleAir group: 490. We will still get data from PurpleAir in our API
+   * call, but the resulting data will not be used anywhere.
    */
   function toggleActiveSensorStatus(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -111,23 +97,19 @@ const ManageSensors: () => JSX.Element = () => {
     event.preventDefault();
 
     if (isAdmin) {
-      // First, update with PurpleAir
-      const purpleAirIdNumber = +currentSensor.purpleAirId;
-      // Add to PurpleAir Group
-      const purpleAirGroupApiUrl =
-        'https://api.purpleair.com/v1/groups/490/members';
-      // Add the sensor to the sensor group 490
-      axios({
-        method: 'POST', // TODO: do post or delete, depending on adding or removing
-        url: purpleAirGroupApiUrl,
-        headers: {
-          'X-API-Key': process.env.REACT_APP_PURPLEAIR_WRITE_API_KEY,
-        },
-        params: {
-          sensor_index: purpleAirIdNumber, // eslint-disable-line camelcase
-        },
-      })
-        .then(() => resetSensorDoc(currentSensor))
+      // Toggle the isActive and remove the buffers
+      firestore
+        .collection('sensors')
+        .doc(currentSensor.docId)
+        .update({
+          isActive: !currentSensor.isActive,
+          aqiBufferStatus: firebase.firestore.FieldValue.delete(),
+          aqiBuffer: firebase.firestore.FieldValue.delete(),
+          aqiBufferIndex: firebase.firestore.FieldValue.delete(),
+          pm25BufferStatus: firebase.firestore.FieldValue.delete(),
+          pm25Buffer: firebase.firestore.FieldValue.delete(),
+          pm25BufferIndex: firebase.firestore.FieldValue.delete(),
+        })
         .catch(() => {
           setError(
             t('sensors.changeActiveSensorError') + currentSensor.name ??

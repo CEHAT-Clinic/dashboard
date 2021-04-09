@@ -19,11 +19,12 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react';
-import {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import {Sensor, LabelValue, SensorInput} from './Util';
+import {Sensor, LabelValue, SensorInput, PurpleAirGroupMember} from './Util';
 import {FaTrash} from 'react-icons/fa';
+import axios, {AxiosResponse} from 'axios';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
@@ -90,10 +91,102 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   }
 
   /**
+   * Gets the member ID for a sensor in PurpleAir group 490
+   * @returns the member ID of the sensor to be deleted in PurpleAir group 490, or `NaN` if the sensor was not in the group
+   */
+  function getPurpleAirMemberId(): Promise<number> {
+    const purpleAirGroupApiUrl = 'https://api.purpleair.com/v1/groups/490';
+
+    return axios({
+      method: 'GET',
+      url: purpleAirGroupApiUrl,
+      headers: {
+        'X-API-Key': process.env.REACT_APP_PURPLEAIR_READ_API_KEY,
+      },
+    }).then(purpleAirResponse => {
+      const purpleAirData = purpleAirResponse.data;
+      const groupMembers: Array<PurpleAirGroupMember> = purpleAirData.members;
+
+      // Find the member ID of group 490 for the sensor to be deleted
+      for (const member of groupMembers) {
+        if (member.sensor_index === +purpleAirId) {
+          return member.id;
+        }
+      }
+      // If the sensor was not in the members list, then we don't need to delete
+      // that sensor from the group, which is marked with NaN
+      return Number.NaN;
+    });
+  }
+
+  /**
+   * Deletes a given member from the PurpleAir group 490
+   * @param memberId - the member ID of the sensor to be deleted in PurpleAir group 490, or `NaN` if the sensor was not in the group
+   * @returns Either an empty Promise if the sensor does not need to be deleted or the axios response from PurpleAir, which returns no data from PurpleAir upon success to delete the member from the group.
+   */
+  function deleteFromPurpleAirGroup(
+    memberId: number
+  ): Promise<AxiosResponse | void> {
+    if (Number.isNaN(memberId)) {
+      // If memberId is NaN, then the sensor to be deleted is already not a member
+      // of the PurpleAir group 490
+      return Promise.resolve();
+    } else {
+      const purpleAirApiDeleteGroupMemberUrl = `https://api.purpleair.com/v1/groups/490/members/${memberId}`;
+
+      return axios({
+        method: 'DELETE',
+        url: purpleAirApiDeleteGroupMemberUrl,
+        headers: {
+          'X-API-Key': process.env.REACT_APP_PURPLEAIR_WRITE_API_KEY,
+        },
+      });
+    }
+  }
+
+  /**
+   * Deletes a sensor's doc in the sensors collection
+   * @returns Promise that resolves when a sensor doc is deleted
+   */
+  function deleteSensorDoc(): Promise<void> {
+    return firestore.collection('sensors').doc(sensorDocId).delete();
+  }
+
+  /**
+   * Updates the deletion map with the current time for the sensor being deleted
+   * @param deleteDoc - document snapshot of the deletion document that stores the deletion map
+   * @returns Promise that resolves when the deletion map is updated
+   */
+  function updateDeletionMap(
+    deleteDoc: firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+  ) {
+    const newDeletionMap = deleteDoc.data()?.deletionMap ?? Object.create(null);
+
+    newDeletionMap[sensorDocId] = new Date();
+
+    return firestore
+      .collection('deletion')
+      .doc('todo')
+      .update({deletionMap: newDeletionMap});
+  }
+
+  /**
+   * Fetches the todo deletion document that includes with the map of sensor doc
+   * ID to the timestamp for which to delete readings before
+   * @returns Promise that when resolved contains the todo deletion document
+   */
+  function getDeletionMap(): Promise<
+    firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
+  > {
+    return firestore.collection('deletion').doc('todo').get();
+  }
+
+  /**
    * This function adds the sensor to the deletion map with the current time,
    * meaning that all readings in the readings subcollection will be deleted.
-   * If the deletion map is successfully updated, the sensor's doc is deleted in
-   * the sensors collection.
+   * If the deletion map is successfully updated, the sensor is removed from
+   * PurpleAir group 490 so we stop getting data for the sensor, and the
+   * sensor's doc is deleted in the sensors collection.
    * @param event - click button event
    */
   function handleDeleteSensor(event: React.MouseEvent) {
@@ -102,27 +195,20 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
     if (isAdmin && readyToSubmit) {
       setIsLoading(true);
 
-      const deletionDocRef = firestore.collection('deletion').doc('todo');
-
-      // Get current mapping or set to empty
-      deletionDocRef
-        .get()
-        .then(deleteDoc => {
-          const newDeletionMap =
-            deleteDoc.data()?.deletionMap ?? Object.create(null);
-
-          newDeletionMap[sensorDocId] = new Date();
-
-          deletionDocRef
-            .update({deletionMap: newDeletionMap})
-            .then(() => {
-              firestore.collection('sensors').doc(sensorDocId).delete();
-              setIsLoading(false);
-            })
-            .then(handleClose);
-        })
-        .catch(() => setError('deleteSensor.deleteSensorError'))
-        .finally(() => setIsLoading(false));
+      // First, delete the sensor from the PurpleAir group, if needed.
+      // Then get the current deletion mapping or default to empty map.
+      // Then update the deletion map to include the deleted sensor.
+      // Finally, delete the sensor doc, and close the modal upon success.
+      getPurpleAirMemberId()
+        .then(memberId => deleteFromPurpleAirGroup(memberId))
+        .then(getDeletionMap)
+        .then(deleteDoc => updateDeletionMap(deleteDoc))
+        .then(deleteSensorDoc)
+        .then(handleClose)
+        .catch(() => {
+          setError('deleteSensor.deleteSensorError');
+          setIsLoading(false);
+        });
     }
   }
 
