@@ -19,9 +19,9 @@ interface Pm25BufferElement {
  */
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
-  pm25: NaN,
-  meanPercentDifference: NaN,
-  humidity: NaN,
+  pm25: Number.NaN,
+  meanPercentDifference: Number.NaN,
+  humidity: Number.NaN,
 };
 
 /**
@@ -41,7 +41,7 @@ interface AqiBufferElement {
  */
 const defaultAqiBufferElement: AqiBufferElement = {
   timestamp: null,
-  aqi: NaN,
+  aqi: Number.NaN,
 };
 
 /**
