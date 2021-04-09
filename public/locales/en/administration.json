@@ -141,10 +141,10 @@
         "showAddHelp": "Show help",
         "hideAddHelp": "Hide help",
         "addHelpPurpleAirId": "To find the PurpleAir ID, go to the PurpleAir map, and click on the sensor you want to add. On the popup for the sensor, hover over 'Get This Widget', which is at the bottom. This will show text like this: '<div id='PurpleAirWidget_39165_module_...'. The PurpleAir ID is the number after the PurpleAirWidget, so in this case, the PurpleAir ID is 39165.",
-        "sensorAlreadyExists": "A sensor with this PurpleAir ID already exists",
+        "sensorAlreadyExists": "A sensor with this PurpleAir ID already exists.",
         "unableToAddSensor": "Unable to add sensor. Please check that the PurpleAir ID is correct.",
         "goBack": "Go Back",
-        "addSensorFailure": "Unable to add sensor. Please try again later"
+        "addSensorFailure": "Unable to add sensor. Please try again later."
     },
     "deleteOldData": {
         "launchButton": "Delete Old Data",
@@ -200,5 +200,14 @@
         "whichSensor": "Which sensor would you like to download data for?",
         "chooseSensor": "Choose sensor",
         "anotherSensor": "Download data for another sensor"
+    },
+    "deleteSensor": {
+        "delete": "Delete Sensor",
+        "confirmDownload": "I have downloaded any data I need.",
+        "acknowledgeDelete": "I acknowledge that this action will delete any historical data for this sensor.",
+        "cannotBeUndone": "I acknowledge that this action cannot be undone",
+        "note": "Deleting a sensor will remove it from the map and delete all of its data. You will need to re-add the sensor to show this sensor on the map again and to collect this sensor's data. If you only want to temporarily stop showing this sensor or collecting data for this sensor, deactivate the sensor instead.",
+        "confirmPurpleAirId": "Type the PurpleAir ID of the sensor to confirm deletion",
+        "whichSensorToDelete": "Which sensor would you like to delete?"
     }
 }

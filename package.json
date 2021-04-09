@@ -7,7 +7,7 @@
     "@chakra-ui/icons": "^1.0.9",
     "@chakra-ui/react": "^1.5.0",
     "@emotion/react": "^11.1.5",
-    "@emotion/styled": "^11.1.5",
+    "@emotion/styled": "^11.3.0",
     "@testing-library/jest-dom": "^5.11.10",
     "@testing-library/react": "^11.2.6",
     "@testing-library/user-event": "^13.1.1",
@@ -82,7 +82,7 @@
   },
   "devDependencies": {
     "@types/styled-components": "^5.1.9",
-    "eslint-plugin-react": "^7.23.1",
+    "eslint-plugin-react": "^7.23.2",
     "eslint-plugin-spellcheck": "0.0.17",
     "eslint-plugin-tsdoc": "^0.2.11",
     "gts": "^3.1.0"
