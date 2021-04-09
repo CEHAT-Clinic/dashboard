@@ -1,8 +1,7 @@
 import {firestore} from '../admin';
 
 /**
- * Interface for a single element in the pm25Buffer. All fields come from the
- * Thingspeak API
+ * Interface for a single element in the pm25Buffer.
  */
 interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
@@ -15,14 +14,29 @@ interface Pm25BufferElement {
  * This is a default element for the pm25 buffer. When the buffer is initialized,
  * every element is a default element. When we get an invalid reading (i.e. a
  * reading that matches that of the last reading), we put this element in the
- * buffer
+ * buffer.
+ *
+ * @readonly
+ *
+ * @remarks
+ * TypeScript cannot reset a variable to this value successfully, so do not use
+ * this element to add a default element when interacting with multiple pm25Buffers.
+ * Instead, use `getDefaultPm25BufferElement`.
  */
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
-  pm25: NaN,
-  meanPercentDifference: NaN,
-  humidity: NaN,
+  pm25: Number.NaN,
+  meanPercentDifference: Number.NaN,
+  humidity: Number.NaN,
 };
+
+/**
+ * Gets the default element for the PM2.5 buffer
+ * @returns Safe default PM2.5 Buffer element that can be used in calculations with multiple PM2.5 buffers
+ */
+function getDefaultPm25BufferElement(): Pm25BufferElement {
+  return {...defaultPm25BufferElement};
+}
 
 /**
  * Interface for a single element in the AQI buffer
@@ -38,11 +52,26 @@ interface AqiBufferElement {
  * This is the default element for the AQI buffer. The buffer is initialized
  * with default elements at every index. When we don't have enough valid PM2.5
  * data to calculate AQI, we put a default element in the buffer.
+ *
+ * @readonly
+ *
+ * @remarks
+ * TypeScript cannot reset a variable to this value successfully, so do not use
+ * this element to add a default element when interacting with multiple aqiBuffers.
+ * Instead, use `getDefaultAqiBufferElement`.
  */
 const defaultAqiBufferElement: AqiBufferElement = {
   timestamp: null,
-  aqi: NaN,
+  aqi: Number.NaN,
 };
+
+/**
+ * Gets the default element for the AQI buffer
+ * @returns Safe default AQI Buffer element that can be used in calculations with multiple AQI buffers
+ */
+function getDefaultAqiBufferElement(): AqiBufferElement {
+  return {...defaultAqiBufferElement};
+}
 
 /**
  * Enumeration for the status of a buffer. If a buffer is 'InProgress', it is
@@ -108,7 +137,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
 export type {Pm25BufferElement, AqiBufferElement};
 
 export {
-  defaultPm25BufferElement,
-  defaultAqiBufferElement,
   populateDefaultBuffer,
+  getDefaultAqiBufferElement,
+  getDefaultPm25BufferElement,
 };

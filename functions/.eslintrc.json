@@ -101,7 +101,8 @@
           "Breakpoint",
           "uid",
           "purpleair",
-          "Recurse"
+          "Recurse",
+          "readonly"
         ]
       }
     ]

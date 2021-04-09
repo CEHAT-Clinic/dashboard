@@ -1,10 +1,10 @@
 import {firestore, FieldValue, Timestamp} from '../admin';
 import {
   bufferStatus,
-  defaultAqiBufferElement,
   populateDefaultBuffer,
   AqiBufferElement,
   Pm25BufferElement,
+  getDefaultAqiBufferElement,
 } from './buffer';
 import {CurrentReadingSensorData} from './types';
 import {
@@ -170,9 +170,9 @@ async function calculateAqi(): Promise<void> {
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
     const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? [];
 
-    // Get cleaned hourly averages from the PM2.5 Buffer
+    // Get cleaned hourly averages from the PM2.5 Buffer for the last 12 hours
     // If an hour lacks enough data, the entry for the hour is `NaN`
-    const cleanedAverages = getCleanedAverages(
+    const cleanedAverages: Array<number> = getCleanedAverages(
       pm25BufferStatus,
       pm25BufferIndex,
       pm25Buffer
@@ -189,8 +189,8 @@ async function calculateAqi(): Promise<void> {
     }
 
     // If there's enough info, the sensor's data is updated
-    // If there isn't, we send the default AQI buffer element
-    const aqiBufferData: AqiBufferElement = defaultAqiBufferElement; // New data to add
+    // If there isn't, we send the AQI buffer element with default values
+    let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -205,9 +205,17 @@ async function calculateAqi(): Promise<void> {
         currentSensorData.isValid = true;
         currentSensorData.lastValidAqiTime = Timestamp.fromDate(new Date());
 
-        aqiBufferData.aqi = currentSensorData.aqi;
-        aqiBufferData.timestamp = currentSensorData.lastValidAqiTime;
+        aqiBufferElement = {
+          aqi: currentSensorData.aqi,
+          timestamp: currentSensorData.lastValidAqiTime,
+        };
+      } else {
+        // Infinite AQI
+        // TODO: write invalid reason to sensor doc, or propagate
       }
+    } else {
+      // Not enough recent readings
+      // TODO: write invalid reason to sensor doc, or propagate
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
@@ -222,8 +230,7 @@ async function calculateAqi(): Promise<void> {
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
       const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
-      aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferData;
-
+      aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
