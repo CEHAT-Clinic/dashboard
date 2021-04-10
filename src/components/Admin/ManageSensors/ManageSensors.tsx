@@ -97,10 +97,10 @@ const ManageSensors: () => JSX.Element = () => {
     event.preventDefault();
 
     if (isAdmin) {
-      // Toggle the isActive and remove the buffers
-
       // Value from bufferStatus enum in backend
       const bufferDoesNotExist = 2;
+
+      // Toggle the isActive and remove the buffers
       firestore
         .collection('sensors')
         .doc(currentSensor.docId)
