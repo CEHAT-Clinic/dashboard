@@ -1,4 +1,4 @@
-import {firestore, Timestamp} from '../admin';
+import {FieldValue, firestore} from '../admin';
 
 /**
  * Interface for a single element in the `pm25Buffer`.
@@ -110,6 +110,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
           aqiBufferIndex: bufferIndex,
           aqiBuffer: aqiBuffer,
           aqiBufferStatus: bufferStatus.Exists,
+          lastUpdated: FieldValue.serverTimestamp(),
         });
       }
     });
@@ -128,6 +129,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
           pm25BufferIndex: bufferIndex,
           pm25Buffer: pm25Buffer,
           pm25BufferStatus: bufferStatus.Exists,
+          lastUpdated: FieldValue.serverTimestamp(),
         });
       }
     });

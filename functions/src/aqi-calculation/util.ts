@@ -165,8 +165,4 @@ async function getLastSensorReadingTime(
   return lastSensorReadingTime;
 }
 
-export {
-  readingsSubcollection,
-  getReading,
-  getLastSensorReadingTime,
-};
+export {readingsSubcollection, getReading, getLastSensorReadingTime};

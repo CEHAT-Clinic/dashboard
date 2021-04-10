@@ -223,6 +223,7 @@ async function calculateAqi(): Promise<void> {
 
     // Update the AQI circular buffer for this element
     const sensorDocUpdate = Object.create(null);
+    sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
 

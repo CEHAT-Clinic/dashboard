@@ -1,5 +1,5 @@
 import axios, {AxiosResponse} from 'axios';
-import {firestore, config, Timestamp} from '../admin';
+import {firestore, config, Timestamp, FieldValue} from '../admin';
 import {
   populateDefaultBuffer,
   bufferStatus,
@@ -83,8 +83,6 @@ async function purpleAirToFirestore(): Promise<void> {
     .where('isActive', '==', true)
     .get();
 
-  console.log(activeSensorDocsSnapshot.docs);
-
   for (const sensorDoc of activeSensorDocsSnapshot.docs) {
     const readingsCollectionRef = firestore.collection(
       readingsSubcollection(sensorDoc.id)
@@ -121,6 +119,7 @@ async function purpleAirToFirestore(): Promise<void> {
 
     // Initialize the sensor doc update data
     const sensorDocUpdate = Object.create(null);
+    sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
 
     if (reading && readingTimestamp) {
       // Before adding the reading to the historical database, check that it
@@ -152,7 +151,7 @@ async function purpleAirToFirestore(): Promise<void> {
           latitude: reading.latitude,
           longitude: reading.longitude,
         };
-        // await readingsCollectionRef.add(historicalSensorReading);
+        await readingsCollectionRef.add(historicalSensorReading);
       }
     }
 
@@ -173,11 +172,8 @@ async function purpleAirToFirestore(): Promise<void> {
     }
 
     // Send the updated data to the database
-    console.log('Updating sensor:', purpleAirId);
-    // TODO: source of bug: if a sensor doesn't have a pm25BufferStatus or a reading,
-    // then no fields are actually updated
     await firestore
-      .collection('test-sensors')
+      .collection('sensors')
       .doc(sensorDoc.id)
       .update(sensorDocUpdate);
 
@@ -187,7 +183,7 @@ async function purpleAirToFirestore(): Promise<void> {
     if (status === bufferStatus.DoesNotExist) {
       // This function updates the bufferStatus once the buffer has been
       // fully initialized, which uses an additional write to the database
-      // populateDefaultBuffer(false, sensorDoc.id);
+      populateDefaultBuffer(false, sensorDoc.id);
     }
   }
 }

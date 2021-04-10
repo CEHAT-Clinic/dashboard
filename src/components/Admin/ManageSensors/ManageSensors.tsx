@@ -96,6 +96,7 @@ const ManageSensors: () => JSX.Element = () => {
         .doc(currentSensor.docId)
         .update({
           isActive: !currentSensor.isActive,
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         })
         .catch(() => {
           setError(
