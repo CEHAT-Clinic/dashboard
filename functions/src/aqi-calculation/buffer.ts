@@ -1,7 +1,7 @@
-import {firestore} from '../admin';
+import {FieldValue, firestore} from '../admin';
 
 /**
- * Interface for a single element in the pm25Buffer.
+ * Interface for a single element in the `pm25Buffer`.
  */
 interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
@@ -40,11 +40,11 @@ function getDefaultPm25BufferElement(): Pm25BufferElement {
 
 /**
  * Interface for a single element in the AQI buffer
- * timestamp - when this AQI was calculated and added to the buffer
- * aqi - the current aqi value
+ * - `timestamp` - when this AQI was calculated and added to the buffer, or `null` if no valid AQI
+ * - `aqi` - the current aqi value, or `NaN` if no valid AQI
  */
 interface AqiBufferElement {
-  timestamp: FirebaseFirestore.FieldValue | null;
+  timestamp: FirebaseFirestore.Timestamp | null;
   aqi: number;
 }
 
@@ -110,6 +110,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
           aqiBufferIndex: bufferIndex,
           aqiBuffer: aqiBuffer,
           aqiBufferStatus: bufferStatus.Exists,
+          lastUpdated: FieldValue.serverTimestamp(),
         });
       }
     });
@@ -128,6 +129,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
           pm25BufferIndex: bufferIndex,
           pm25Buffer: pm25Buffer,
           pm25BufferStatus: bufferStatus.Exists,
+          lastUpdated: FieldValue.serverTimestamp(),
         });
       }
     });

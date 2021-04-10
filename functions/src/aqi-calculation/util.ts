@@ -165,19 +165,4 @@ async function getLastSensorReadingTime(
   return lastSensorReadingTime;
 }
 
-/**
- * Converts the PurpleAir ID to a number, if necessary.
- * @param id - PurpleAir ID stored as a string or number
- * @returns the PurpleAir ID as a number
- */
-function getPurpleAirId(id: string | number): number {
-  if (typeof id === 'string') return +id;
-  return id;
-}
-
-export {
-  readingsSubcollection,
-  getReading,
-  getLastSensorReadingTime,
-  getPurpleAirId,
-};
+export {readingsSubcollection, getReading, getLastSensorReadingTime};

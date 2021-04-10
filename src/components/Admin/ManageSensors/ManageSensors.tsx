@@ -106,6 +106,7 @@ const ManageSensors: () => JSX.Element = () => {
         .doc(currentSensor.docId)
         .update({
           isActive: !currentSensor.isActive,
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
           aqiBufferStatus: bufferDoesNotExist,
           aqiBuffer: firebase.firestore.FieldValue.delete(),
           aqiBufferIndex: firebase.firestore.FieldValue.delete(),

@@ -23,7 +23,7 @@ import {
 import {CheckCircleIcon, WarningIcon} from '@chakra-ui/icons';
 import {useTranslation} from 'react-i18next';
 import {SubmitButton} from '../ComponentUtil';
-import {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase';
 import {useAuth} from '../../../contexts/AuthContext';
 import axios from 'axios';
 import {LabelValue} from './Util';
@@ -189,6 +189,7 @@ function AddSensorModal(): JSX.Element {
           isValid: false,
           lastValidAqiTime: null,
           lastSensorReadingTime: null,
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
           aqiBufferStatus: bufferDoesNotExist,
           pm25BufferStatus: bufferDoesNotExist,
         });
