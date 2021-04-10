@@ -80,9 +80,15 @@ const ManageSensors: () => JSX.Element = () => {
   }, [isAuthenticated, isAdmin]);
 
   /**
-   *
+   * Toggles `isActive` in a sensor's doc. This also resets the AQI buffer
+   * and PM2.5 buffer when activating or deactivating.
    * @param event - click button event
    * @param currentSensor - sensor for which to toggle isActive status
+   *
+   * @remarks
+   * Note that when a sensor is activated or deactivated, we do not change it in
+   * our PurpleAir group: 490. We will still get data from PurpleAir in our API
+   * call, but the resulting data will not be used anywhere.
    */
   function toggleActiveSensorStatus(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
@@ -91,12 +97,22 @@ const ManageSensors: () => JSX.Element = () => {
     event.preventDefault();
 
     if (isAdmin) {
+      // Value from bufferStatus enum in backend
+      const bufferDoesNotExist = 2;
+
+      // Toggle the isActive and remove the buffers
       firestore
         .collection('sensors')
         .doc(currentSensor.docId)
         .update({
           isActive: !currentSensor.isActive,
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          aqiBufferStatus: bufferDoesNotExist,
+          aqiBuffer: firebase.firestore.FieldValue.delete(),
+          aqiBufferIndex: firebase.firestore.FieldValue.delete(),
+          pm25BufferStatus: bufferDoesNotExist,
+          pm25Buffer: firebase.firestore.FieldValue.delete(),
+          pm25BufferIndex: firebase.firestore.FieldValue.delete(),
         })
         .catch(() => {
           setError(
@@ -221,7 +237,9 @@ const ManageSensors: () => JSX.Element = () => {
               <AddSensorModal />
               <DownloadCSVModal sensors={sensors} />
               <DeleteOldDataModal />
-              <DeleteSensorModal sensors={sensors} />
+              <DeleteSensorModal
+                sensors={sensors.filter(sensor => !sensor.isActive)}
+              />
             </HStack>
           </Center>
           <Box maxWidth="100%" overflowX="auto">

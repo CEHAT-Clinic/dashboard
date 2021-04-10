@@ -176,6 +176,9 @@ function AddSensorModal(): JSX.Element {
           },
         });
 
+        // Value for AQI and PM2.5 buffer, from bufferStatus in backend
+        const bufferDoesNotExist = 2;
+
         // Create a sensor doc for the added sensor
         await firestore.collection('sensors').add({
           name: sensorName,
@@ -187,6 +190,8 @@ function AddSensorModal(): JSX.Element {
           lastValidAqiTime: null,
           lastSensorReadingTime: null,
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          aqiBufferStatus: bufferDoesNotExist,
+          pm25BufferStatus: bufferDoesNotExist,
         });
         setSensorAdded(true);
       } catch {
