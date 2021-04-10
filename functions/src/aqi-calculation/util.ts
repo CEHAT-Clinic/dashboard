@@ -1,172 +1,168 @@
-import PurpleAirResponse from './purple-air-response';
-import CleanedReadings from './cleaned-reading';
-import axios from 'axios';
-import SensorReading from './sensor-reading';
-import {firestore, Timestamp} from '../admin';
+import {PurpleAirReading} from './types';
 
-const thingspeakUrl: (channelId: string) => string = (channelId: string) =>
-  `https://api.thingspeak.com/channels/${channelId}/feeds.json`;
-
+/**
+ * Get the readings subcollection path from a sensor's doc ID
+ * @param docId - document ID of the sensor in the sensors collection
+ * @returns the path to the readings subcollection for a sensor
+ *
+ */
 const readingsSubcollection: (docId: string) => string = (docId: string) =>
   `/sensors/${docId}/readings`;
 
 /**
- * Fetches the Thingspeak API key from PurpleAir using the PurpleAir sensor ID
- * @param purpleAirId - PurpleAir sensor ID
+ * Converts PurpleAir's confidence value into percent difference
+ * @param confidence - confidence value from PurpleAir, between 0 and 100
+ * @returns meanPercentDifference value, or NaN if value lost in calculation.
+ * Any input that results in NaN means that the meanPercentDifference is high
+ * enough that the reading should be discarded anyways.
+ *
+ * @remarks
+ * PurpleAir's confidence values is calculated as follow. PurpleAir does not
+ * document what "pseudo average" means.
+ * ```ts
+ * // a is the pseudo average for channel A
+ * // b is the pseudo average for channel B
+ * function getConfidence(a: number, b: number) {
+ *   const diff = Math.abs(a - b)
+ *   const avg = (a + b) / 2;
+ *   const meanPercentDifference = (diff / avg) * 100;
+ *   const percentConfidence = Math.max(
+       Math.round(meanPercentDifference / 1.6) - 25, 0
+ *   );
+ *   return Math.max(100 - percentConfidence, 0);
+ * }
+ * ```
  */
-async function getThingspeakKeysFromPurpleAir(
-  purpleAirId: string
-): Promise<PurpleAirResponse> {
-  const PURPLE_AIR_API_ADDRESS = 'https://www.purpleair.com/json';
+function getMeanPercentDifference(confidence: number): number {
+  const minConfidence = 0;
+  const maxConfidence = 100;
+  /* eslint-disable no-magic-numbers */
+  switch (confidence) {
+    case minConfidence:
+      // If the confidence is zero, then we want to discard this reading
+      return NaN;
+    case maxConfidence:
+      // The confidence value from PurpleAir can be 100 even if channel A and
+      // channel B do not completely match, but if the confidence value is 100,
+      // then the value is data is good enough to meet the EPA recommendation.
+      return 0;
+    default:
+      // Otherwise, undo the calculation from the PurpleAir confidence value
+      /* eslint-disable-next-line no-magic-numbers */
+      return ((maxConfidence - confidence + 25) * 1.6) / 100;
+  }
+}
 
-  const purpleAirApiResponse = await axios({
-    url: PURPLE_AIR_API_ADDRESS,
-    params: {
-      show: purpleAirId,
-    },
+/**
+ * Converts a PurpleAir reading returned from the group API query into a PurpleAirReading
+ * @param data - list of data from PurpleAir for a given sensor
+ * @param fieldNames - list of field names from PurpleAir that match the order of the data fields
+ * @returns
+ */
+function getReading(
+  data: (string | number)[],
+  fieldNames: string[]
+): [number, PurpleAirReading | null] {
+  // Initialize all values
+  let id: number = Number.NaN;
+  let name: string | undefined = undefined;
+  let latitude: number | undefined = undefined;
+  let longitude: number | undefined = undefined;
+  let meanPercentDifference: number | undefined = undefined;
+  let pm25: number | undefined = undefined;
+  let humidity: number | undefined = undefined;
+  let timestamp: Date | undefined = undefined;
+
+  data.forEach((value, index) => {
+    // Check the corresponding field name to determine how to handle the value
+    switch (fieldNames[index]) {
+      case 'sensor_index':
+        if (typeof value === 'number') id = value;
+        break;
+      case 'name':
+        if (typeof value === 'string') name = value;
+        break;
+      case 'latitude': {
+        if (typeof value === 'number') latitude = value;
+        break;
+      }
+      case 'longitude':
+        if (typeof value === 'number') longitude = value;
+        break;
+      case 'confidence':
+        if (typeof value === 'number') {
+          meanPercentDifference = getMeanPercentDifference(value);
+        }
+        break;
+      case 'pm2.5':
+        if (typeof value === 'number') pm25 = value;
+        break;
+      case 'humidity':
+        if (typeof value === 'number') humidity = value;
+        break;
+      case 'last_seen':
+        if (typeof value === 'number') {
+          // PurpleAir returns seconds since EPOCH, but the Date constructor
+          // takes milliseconds, so we convert from seconds to milliseconds
+          timestamp = new Date(value * 1000); // eslint-disable-line no-magic-numbers
+        }
+        break;
+      default:
+        // Unknown field, ignore
+        break;
+    }
   });
 
-  return new PurpleAirResponse(purpleAirApiResponse);
-}
-
-/**
- * Gets the hourly averages for the past 12 hours for a single sensor. If less than
- * 90% of the readings are available for a time period, it leaves the data for that hour
- * as undefined per the EPA guidance to ignore hours without 90% of the data.
- *
- * Note: In the event that a sensor is moved, this function will report meaningless data for
- * the twelve hour period after the sensor is moved. This is because data from both locations
- * will be treated as if they came from the same location because the function assumes a sensor
- * is stationary.
- *
- * @param docId - Firestore document id for the sensor to be getting averages for
- * @param purpleAirId - PurpleAir ID for the sensor
- */
-async function getHourlyAverages(docId: string): Promise<SensorReading[]> {
-  const LOOKBACK_PERIOD_HOURS = 12;
-  const averages = new Array<SensorReading>(LOOKBACK_PERIOD_HOURS);
-  const currentHour: Date = new Date();
-  const previousHour = new Date(currentHour);
-  // Only modifies the hour field, keeps minutes field constant
-  previousHour.setUTCHours(previousHour.getUTCHours() - 1); // eslint-disable-line no-magic-numbers
-
-  const resolvedPath = readingsSubcollection(docId);
-
-  for (let i = 0; i < averages.length; i++) {
-    const readings = (
-      await firestore
-        .collection(resolvedPath)
-        .where('timestamp', '>', Timestamp.fromDate(previousHour))
-        .where('timestamp', '<=', Timestamp.fromDate(currentHour))
-        .get()
-    ).docs;
-
-    // If we have 1 reading every two minutes, there are 30 readings in an hour
-    // 90% of 30 readings is 27 readings. We must have 90% of the readings from
-    // a given hour in order to compute the AQI per the EPA.
-    // Expressed this way to avoid imprecision of floating point arithmetic.
-    const MEASUREMENT_COUNT_THRESHOLD = 27;
-    if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-      const reading = SensorReading.averageDocuments(readings);
-      averages[i] = reading;
-    }
-
-    /* eslint-disable no-magic-numbers */
-    currentHour.setUTCHours(currentHour.getUTCHours() - 1);
-    previousHour.setUTCHours(previousHour.getUTCHours() - 1);
-    /* eslint-enable no-magic-numbers */
+  // Only return a PurpleAirReading if all fields are defined
+  if (
+    id &&
+    name &&
+    latitude !== undefined && // Can be zero
+    longitude !== undefined && // Can be zero
+    meanPercentDifference !== undefined && // Can be zero
+    pm25 !== undefined && // Can be zero
+    humidity !== undefined && // Can be zero
+    timestamp
+  ) {
+    return [
+      id,
+      {
+        id: id,
+        name: name,
+        latitude: latitude,
+        longitude: longitude,
+        meanPercentDifference: meanPercentDifference,
+        pm25: pm25,
+        humidity: humidity,
+        timestamp: timestamp,
+      },
+    ];
+  } else {
+    return [id, null];
   }
-
-  return averages;
 }
 
 /**
- * Cleans hourly averages of PM2.5 readings using the published EPA formula,
- * excluding thoses data points that indicate sensor malfunction. Those
- * data points are represented by NaN.
- *
- * @param averages - array containing sensor readings representing hourly averages
- * @returns an array of numbers representing the corrected PM2.5 values pursuant
- *          to the EPA formula
+ * For a given readings subcollection, gets the most recent reading Timestamp
+ * @param readingsCollectionRef - reference to readings collection for sensor to get the most recent reading time
+ * @returns a Promise of the Timestamp of the most recent sensor reading time, or null if no readings
  */
-function cleanAverages(averages: SensorReading[]): CleanedReadings {
-  // These thresholds for the EPA indicate when diverging sensor readings
-  // indicate malfunction. The EPA requires that the raw difference between
-  // the readings be less than 5 and the percent difference be less than 70%
-  const RAW_THRESHOLD = 5;
-  const PERCENT_THRESHOLD = 0.7;
-
-  const cleanedAverages = new Array<number>(averages.length);
-  let latitude = NaN;
-  let longitude = NaN;
-  for (let i = 0; i < cleanedAverages.length; i++) {
-    const reading = averages[i];
-    if (reading !== undefined) {
-      // Use first hour's location
-      if (isNaN(latitude) || isNaN(longitude)) {
-        latitude = reading.latitude;
-        longitude = reading.longitude;
-      }
-
-      const averagePmReading =
-        (reading.channelAPm25 + reading.channelBPm25) / 2; // eslint-disable-line no-magic-numbers
-      const difference = Math.abs(reading.channelAPm25 - reading.channelBPm25);
-      if (
-        !(
-          difference > RAW_THRESHOLD &&
-          difference / averagePmReading > PERCENT_THRESHOLD
-        )
-      ) {
-        // Formula from EPA to correct PurpleAir PM 2.5 readings
-        // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
-        /* eslint-disable no-magic-numbers */
-        cleanedAverages[i] =
-          0.534 * averagePmReading - 0.0844 * reading.humidity + 5.604;
-        /* eslint-enable no-magic-numbers */
-      } else {
-        // If reading exceeds thresholds above
-        cleanedAverages[i] = Number.NaN;
-      }
-    } else {
-      // If less than 27 data points were available for that hour, the reading
-      // would have been undefined
-      cleanedAverages[i] = Number.NaN;
+async function getLastSensorReadingTime(
+  readingsCollectionRef: FirebaseFirestore.CollectionReference<FirebaseFirestore.DocumentData>
+): Promise<FirebaseFirestore.Timestamp | null> {
+  let lastSensorReadingTime: FirebaseFirestore.Timestamp | null = null;
+  const maxDocs = 1;
+  const querySnapshot = await readingsCollectionRef
+    .orderBy('timestamp', 'desc')
+    .limit(maxDocs)
+    .get();
+  // There should only be one document in docs, but loops over docs since it's an array
+  for (const sensorDoc of querySnapshot.docs) {
+    if (sensorDoc.data().timestamp) {
+      lastSensorReadingTime = sensorDoc.data().timestamp;
     }
   }
-  return new CleanedReadings(latitude, longitude, cleanedAverages);
+  return lastSensorReadingTime;
 }
 
-/**
- * Interface for the structure of a sensor's data, used in the current-reading
- * collection.
- * - `purpleAirId` - PurpleAir sensor ID
- * - `name` - PurpleAir sensor name
- * - `latitude` - latitude of sensor
- * - `longitude` - longitude of sensor
- * - `isValid` - if the current NowCast PM 2.5 and AQI value are valid
- * - `aqi` - the current AQI for the sensor, or `NaN` if not enough valid data
- * - `nowCastPm25` - the current NowCast corrected PM 2.5, or `NaN` if not enough valid data
- * - `readingDocId` - document ID of the for the sensor in the sensors collection in Firestore
- * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
- */
-interface SensorData {
-  purpleAirId: string;
-  name: string;
-  latitude: number;
-  longitude: number;
-  isValid: boolean;
-  aqi: number;
-  nowCastPm25: number;
-  readingDocId: string;
-  lastValidAqiTime: FirebaseFirestore.Timestamp | null;
-}
-
-export {
-  thingspeakUrl,
-  readingsSubcollection,
-  getThingspeakKeysFromPurpleAir,
-  getHourlyAverages,
-  cleanAverages,
-};
-
-export type {SensorData};
+export {readingsSubcollection, getReading, getLastSensorReadingTime};

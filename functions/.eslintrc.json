@@ -62,7 +62,8 @@
     "no-magic-numbers": [
       "warn",
       {
-        "ignoreArrayIndexes": true
+        "ignoreArrayIndexes": true,
+        "ignore": [0,1]
       }
     ],
     "no-multi-spaces": "warn",
@@ -75,6 +76,7 @@
       {
         "skipWordIfMatch": [
           "aqi",
+          "timestamps",
           "firebase",
           "Firebase",
           "firestore",
@@ -97,7 +99,10 @@
           "Subcollection",
           "breakpoint",
           "Breakpoint",
-          "micrograms"
+          "uid",
+          "purpleair",
+          "Recurse",
+          "readonly"
         ]
       }
     ]

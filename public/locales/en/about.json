@@ -1,3 +1,45 @@
 {
-    "heading": "About Us Page"
+    "pageHeading": "About Us",
+    "cehat": {
+        "heading": "South Gate CEHAT",
+        "part1": "The South Gate Community Environmental Health Action Team (CEHAT) is a group of local residents, business owners, community activists, and government employees whose mission is “to make a South Gate that is beautiful, safe, educated, represented, healthy, sustainable, prosperous, clean, and united.” The CEHAT was the first group in California to utilize the ",
+        "pace-eh": {
+            "link": "https://www.cdc.gov/nceh/ehs/ceha/pace_eh.htm",
+            "text": "Protocol for Assessing Community Excellence in Environmental Health assessment"
+        },
+        "part2": " to evaluate environmental health and justice. Other projects have included educational workshops, collaborating with schools on an air quality flag program, and working on Assembly Bill 617 measures to reduce emissions in and around South Gate."
+    },
+    "involved": {
+        "heading": "Get Involved",
+        "part1": "Looking to get involved and make a difference? The South Gate CEHAT is always looking for more interested community members. To learn more about events or to volunteer, email ",
+        "email": {
+            "link": "mailto:sgcehat@yahoo.com",
+            "text": "sgcehat@yahoo.com"
+        },
+        "part2": " or DM us on Instagram ",
+        "instagram": {
+            "link": "https://www.instagram.com/sgcehat/",
+            "text": "@sgcehat"
+        },
+        "part3": ". You could even host an air quality sensor in your backyard!"
+    },
+    "sensorsDown": {
+        "heading": "Sensor Not Reporting AQI?",
+        "part1": "There are many steps involved in calculating the AQI using the information reported by the PurpleAir sensors that we host in South Gate. The steps of this algorithm have been outlined by the EPA, and we follow the EPA’s guidelines to ensure our sensors are accurate.",
+        "part2": "PurpleAir sensors are great for our work because they are affordable and relatively accurate given their cost. That being said, they are not as reliable as some more expensive sensors, which means that sometimes the values they record aren’t sufficient for calculating AQI. This could be very temporary (a matter of minutes or hours), or might last longer. If a sensor has been down for a long time, it probably means that either the sensor is no longer connected to the internet or that it has encountered a more serious hardware issue.",
+        "part3": "If a sensor in your area has been down for a long time, feel free to contact us and we’ll communicate with the sensor host to see if we can resolve the issue."
+    },
+    "acknowledge": {
+        "heading": "Acknowledgements",
+        "clinic": "This website was created in partnership with the Harvey Mudd College Clinic Program, a capstone experience for students at The Claremont Colleges in which teams of 4-5 students work together to solve technical problems for companies and organizations.",
+        "grant": "The sensors for this project were made possible by a grant from the UCLA Kaiser Permanente Center for Health Equity and the UCLA Jonsson Comprehensive Cancer Center."
+    },
+    "admin": {
+        "heading": "Administrators",
+        "action": {
+            "link": "/admin",
+            "text": "Visit the administrative pane"
+        },
+        "purpose": " to perform administrator functions."
+    }
 }

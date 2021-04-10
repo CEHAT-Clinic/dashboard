@@ -12,19 +12,22 @@ service cloud.firestore {
     }
 
     match /sensors/{sensorDoc} {
-      allow read, write: if isAdmin();
+      // All users can read from the sensor docs (the graph component of the
+      // home page uses these docs)
+      allow read: if true;
+
+      // Admins are allowed to write to the sensor docs from the manage sensors
+      // page
+      allow write: if isAdmin();
       
       match /readings/{reading} {
-        allow read, write: if false;
-      }
-    }
+        // Admins are allowed to read data for downloading it
+        allow read: if isAdmin();
 
-    match /admin/users {
-      // All signed in users allowed to read the admin users doc because
-      // this is used to check if the user is an admin
-      allow read: if isSignedIn();
-      // Only admin users are allowed to change modify the admin array
-      allow write: if isAdmin();
+        // Only cloud functions can modify data
+        // Deletes triggered by an admin user are still handled by cloud functions
+        allow write: if false;
+      }
     }
 
     // Only allow a user to be changed to an admin if the current user is an admin
@@ -47,6 +50,15 @@ service cloud.firestore {
     match /current-reading/{readings} {
       allow read: if true;
       allow write: if false;
+    }
+
+    // Used for scheduled data deletion
+    match /deletion/{docs} {
+      // Admins can read the document for the purpose of merging data
+      allow read: if isAdmin();
+
+      // Admins can write to the todo document, which tells the backend what to delete
+      allow write: if isAdmin();
     }
   }
 }

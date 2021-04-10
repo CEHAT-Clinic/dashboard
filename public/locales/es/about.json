@@ -1,3 +1,45 @@
 {
-    "heading": "Página Sobre Nosotros"
+    "pageHeading": "Sobre Nosotros",
+    "cehat": {
+        "heading": "El CEHAT de South Gate",
+        "part1": "El Equipo de Acción Comunitario para la Salud Ambiental de South Gate (Community Environmental Health Action Team, CEHAT) es un grupo compuesto de residentes locales, preoperatorios de empresas, activistas comunitarias, y empleados gubernamentales cuyo misión es «hacer un South Gate que es bonito, seguro, educado, representado, saludable, sostenible, próspero, limpio, y unido». El CEHAT fue el primer grupo en California en usar ",
+        "pace-eh": {
+            "link": "https://www.cdc.gov/nceh/ehs/ceha/pace_eh.htm",
+            "text": "la evaluación Protocolo para Evaluar la Excelencia Comunitaria en la Salud Ambiental"
+        },
+        "part2": " (Protocol for Assessing Community Excellence in Environmental Health, el enlace solo está disponible en inglés). Otros proyectos han incluido talleres educativos, colaborando con escuelas en un programa para comunicar la calidad del aire, y trabajando en medidas especificadas en la Ley 617 de la Asamblea para reducir emisiones en South Gate y sus alrededores."
+    },
+    "involved": {
+        "heading": "Cómo Involucrarte",
+        "part1": "¿Te quieres involucrar y cambiar las cosas? El CEHAT de South Gate siempre está buscando  nuevos miembros de la comunidad interesados en ayudar. Para aprender más sobre los eventos o para trabajar como voluntario, envía un correo electrónico a ",
+        "email": {
+            "link": "mailto:sgcehat@yahoo.com",
+            "text": "sgcehat@yahoo.com"
+        },
+        "part2": " o manda un mensaje directo en Instagram ",
+        "instagram": {
+            "link": "https://www.instagram.com/sgcehat/",
+            "text": "@sgcehat"
+        },
+        "part3": ". ¡Tu patio podría servir para acoger un sensor de calidad de aire!"
+    },
+    "sensorsDown": {
+        "heading": "¿El sensor no muestra el AQI?",
+        "part1": "Hay muchos pasos involucrados en el cálculo del AQI usando la información reportada por los sensores PurpleAir que hospedamos en South Gate. La EPA ha descrito los pasos de este algoritmo y seguimos las pautas de la EPA para garantizar que nuestros sensores sean precisos.",
+        "part2": "Los sensores PurpleAir son excelentes para nosotros porque son asequibles y relativamente precisos dado su costo. Dicho esto, no son tan confiables como algunos sensores más costosos, lo que significa que a veces los valores que registran no son suficientes para calcular el AQI. Esto podría ser muy temporal (en cuestión de minutos u horas) o podría durar más. Si un sensor ha estado inactivo durante mucho tiempo, probablemente significa que el sensor ya no está conectado a Internet o que se ha encontrado un problema de hardware más grave.",
+        "part3": "Si un sensor en su área ha estado inactivo durante mucho tiempo, no dude en contactarnos y nos comunicaremos con el anfitrión del sensor para ver si podemos resolver el problema."
+    },
+    "acknowledge": {
+        "heading": "Agradecimientos",
+        "clinic": "Este sitio web fue creado en colaboración con El Programa Clínico de Harvey Mudd College, una experiencia de toque final para los estudiantes de The Claremont Colleges en la que equipos de 4 a 5 estudiantes colaboran para solucionar problemas tecnológicos de empresas y organizaciones.",
+        "grant": "Los sensores de este proyecto fueron posible por una beca del UCLA Kaiser Permanente Center for Health Equity y del UCLA Jonsson Comprehensive Cancer Center."
+    },
+    "admin": {
+        "heading": "Administratores",
+        "action": {
+            "link": "/admin",
+            "text": "Visita el panel administrativo"
+        },
+        "purpose": " para actuar como administrador."
+    }
 }

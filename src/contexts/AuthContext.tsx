@@ -1,7 +1,6 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
 import {firebaseAuth, firestore} from '../firebase';
 import {Props} from './AppProviders';
-import {validData} from '../util';
 
 /**
  * Interface for AuthContext used for type safety
@@ -87,10 +86,10 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
             const userData = snapshot.data();
 
             if (userData) {
-              if (validData(userData.admin, 'boolean'))
+              if (typeof userData.admin === 'boolean')
                 setIsAdmin(userData.admin);
-              if (validData(userData.name, 'string')) setName(userData.name);
-              if (validData(userData.email, 'string')) setEmail(userData.email);
+              if (typeof userData.name === 'string') setName(userData.name);
+              if (typeof userData.email === 'string') setEmail(userData.email);
             }
             setIsLoading(false);
           } else {

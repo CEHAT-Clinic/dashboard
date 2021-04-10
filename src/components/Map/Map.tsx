@@ -2,6 +2,7 @@ import React from 'react';
 import {firestore} from '../../firebase';
 import {createSensorIcon} from './markerStyle';
 import {Box} from '@chakra-ui/react';
+import {ColorScheme} from '../Util/Colors';
 
 /**
  * Interface for the props of the Map component
@@ -9,7 +10,12 @@ import {Box} from '@chakra-ui/react';
  * information about a sensor when it is selected.
  */
 interface MapProps {
-  updateCurrentSensor: (sensorID: string) => void;
+  updateCurrentReading: (sensorID: string) => void;
+  updateCurrentSensorDoc: (sensorDocId: string) => void;
+  updateCurrentIsValid: (isValid: boolean) => void;
+  updateCurrentPurpleAirId: (purpleAirId: string) => void;
+  isMobile: boolean;
+  currentColorScheme: ColorScheme;
 }
 
 /**
@@ -87,7 +93,7 @@ class Map extends React.Component<MapProps> {
       defaultLayers.vector.normal.map,
       {
         zoom: minZoom,
-        center: {lat: 33.957, lng: -118.2106}, // South Gate coordinates
+        center: {lat: 33.957, lng: -118.2}, // South Gate coordinates
         pixelRatio: window.devicePixelRatio || defaultPixelRatio,
       }
     );
@@ -107,10 +113,19 @@ class Map extends React.Component<MapProps> {
       // Update sensor icons only if we are selecting a different sensor
       if (prevSensor !== newSensor) {
         // Update state of home to display selected sensor
-        this.props.updateCurrentSensor(newSensor.getData().aqi);
+        this.props.updateCurrentReading(newSensor.getData().aqi);
+        this.props.updateCurrentSensorDoc(newSensor.getData().sensorDocId);
+        this.props.updateCurrentIsValid(newSensor.getData().isValid);
+        this.props.updateCurrentPurpleAirId(newSensor.getData().purpleAirId);
 
         // Update icon of currently selected sensor
-        const newIcon = createSensorIcon(newSensor.getData().aqi, false, true);
+        const newIcon = createSensorIcon(
+          newSensor.getData().aqi,
+          false,
+          true,
+          this.props.currentColorScheme,
+          newSensor.getData().isValid
+        );
         newSensor.setIcon(newIcon);
 
         // Update icon of previously selected sensor
@@ -118,7 +133,9 @@ class Map extends React.Component<MapProps> {
           const prevIcon = createSensorIcon(
             prevSensor.getData().aqi,
             false,
-            false
+            false,
+            this.props.currentColorScheme,
+            prevSensor.getData().isValid
           );
           prevSensor.setIcon(prevIcon);
         }
@@ -137,7 +154,13 @@ class Map extends React.Component<MapProps> {
     const registerHoverStart = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
       if (marker !== this.state.selectedSensor) {
-        const icon = createSensorIcon(evt.target.getData().aqi, true, false);
+        const icon = createSensorIcon(
+          evt.target.getData().aqi,
+          true,
+          false,
+          this.props.currentColorScheme,
+          evt.target.getData().isValid
+        );
         marker.setIcon(icon);
       }
     };
@@ -150,7 +173,13 @@ class Map extends React.Component<MapProps> {
     const registerHoverEnd = (evt: H.util.Event) => {
       const marker: H.map.Marker = evt.target;
       if (marker !== this.state.selectedSensor) {
-        const icon = createSensorIcon(marker.getData().aqi, false, false);
+        const icon = createSensorIcon(
+          marker.getData().aqi,
+          false,
+          false,
+          this.props.currentColorScheme,
+          marker.getData().isValid
+        );
         marker.setIcon(icon);
       }
     };
@@ -166,39 +195,51 @@ class Map extends React.Component<MapProps> {
 
           for (const sensorID in sensorMap) {
             const sensorVal = sensorMap[sensorID];
-
-            // Only show a sensor on the map if it's current reading is valid
-            // TODO: Add indicator for invalid sensors
+            // Default values for invalid sensors
+            let aqi = '';
+            let icon = createSensorIcon(
+              aqi,
+              false,
+              false,
+              this.props.currentColorScheme,
+              false
+            );
+            const sensorDocId: string = sensorVal.readingDocId;
             if (sensorVal.isValid) {
               // The label for this sensor is the most recent hour average
               // We strip to round to the ones place
-              const aqi = sensorVal.aqi.toString().split('.')[0];
-              const icon = createSensorIcon(aqi, false, false);
-
-              // Create marker
-              const marker = new H.map.Marker(
-                {
-                  lat: sensorVal.latitude,
-                  lng: sensorVal.longitude,
-                },
-                {icon: icon}
+              aqi = sensorVal.aqi.toString().split('.')[0];
+              icon = createSensorIcon(
+                aqi,
+                false,
+                false,
+                this.props.currentColorScheme,
+                true
               );
-              marker.setData({sensorID: sensorID, aqi: aqi}); // Data for marker events
-              marker.addEventListener('tap', registerClick); // Tap event
-              marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
-              marker.addEventListener('pointerleave', registerHoverEnd); // End hover
-
-              // Add marker to the map
-              map.addObject(marker);
             }
+            // Create marker
+            const marker = new H.map.Marker(
+              {
+                lat: sensorVal.latitude,
+                lng: sensorVal.longitude,
+              },
+              {icon: icon}
+            );
+            marker.setData({
+              sensorID: sensorID,
+              aqi: aqi,
+              sensorDocId: sensorDocId,
+              isValid: sensorVal.isValid,
+              purpleAirId: sensorVal.purpleAirId,
+            }); // Data for marker events
+            marker.addEventListener('tap', registerClick); // Tap event
+            marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
+            marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+
+            // Add marker to the map
+            map.addObject(marker);
           }
-        } else {
-          // If doc.data() does not exist
-          throw new Error('No data in the pm25 document');
         }
-      } else {
-        // If doc does not exist
-        throw new Error('No pm25 document in current-reading collection');
       }
     });
 
@@ -233,10 +274,32 @@ class Map extends React.Component<MapProps> {
     }
   }
 
+  // Update map markers on color scheme change
+  componentDidUpdate(prevProps: MapProps): void {
+    if (prevProps.currentColorScheme !== this.props.currentColorScheme) {
+      const markers = this.state.map?.getObjects();
+      if (markers) {
+        for (const marker of markers) {
+          // Our only objects are markers, but we need to check for type
+          if (marker instanceof H.map.Marker) {
+            const icon = createSensorIcon(
+              marker.getData().aqi,
+              true,
+              false,
+              this.props.currentColorScheme,
+              marker.getData().isValid
+            );
+            marker.setIcon(icon);
+          }
+        }
+      }
+    }
+  }
+
   render(): JSX.Element {
     return (
-      <Box height="500px">
-        <div ref={this.mapRef} style={{height: '100%'}} />
+      <Box height={['450px', null, '83vh', null]}>
+        <Box ref={this.mapRef} style={{height: '100%'}} />
       </Box>
     );
   }

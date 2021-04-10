@@ -19,7 +19,7 @@ All conditional formatting for small/big screens is in this file */
 nav {
     display: grid;
     grid-area: nav;
-    grid-template-columns: repeat(5, auto);
+    grid-template-columns: repeat(4, auto);
     align-items: center;
     justify-items: center;
   }
@@ -65,7 +65,7 @@ nav a:hover, #changeLanguage:hover {
     }
     /* Drop down Menu Options*/
     nav {
-      grid-template-rows: repeat(5, auto);
+      grid-template-rows: repeat(4, auto);
       grid-template-columns: none;
       grid-row-gap: 20px;
   

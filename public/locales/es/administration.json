@@ -78,7 +78,6 @@
         "heading": "Acceso Denegado",
         "reasonLeadUp": "No tienes acceso a esta página ya que ",
         "returnHome": "Regresa a Inicio",
-
         "shouldHaveAccess": "Si crees que debes de tener acceso a esta págino, por favor, contacta a un administrador o un miembro del CEHAT de South Gate."
     },
     "manageAccount":{
@@ -114,5 +113,103 @@
         },
         "changeAdminError": "No se puede cambiar el status de administrador(a) de ",
         "confirmChange": "Confirma el cambio de status de administrador"
+    },
+    "sensors": {
+        "heading": "Los sensors actuales",
+        "name": "Nombre del sensor",
+        "purpleAirId": "PurpleAir ID",
+        "latitude": "Latitud",
+        "longitude": "Longitud",
+        "status": "Estado actual",
+        "validAqiTime": "Hora más reciente de un AQI válido",
+        "lastValidAqiTimeNote": "La hora del último tiempo válido de AQI se refiere a la última vez que un sensor tuvo suficientes datos buenos para calcular un AQI. Los sensores PurpleAir tienen dos sensores que son el canal A y el canal B. Si las lecturas de los dos canales difieren demasiado durante un período de 24 horas, no usamos esa lectura de sensor.",
+        "readingTime": "Hora más reciente de una lectura de sensor",
+        "lastReadingTimeNote": "La hora más reciente de una lectura de sensor es la última vez que este sitio web recibió una nueva lectura de sensor de PurpleAir. Si el sensor está activo y el tiempo es antiguo, esto puede significar que el sensor ya no envía lecturas nuevas.",
+        "activeHeading": "¿Activo?",
+        "activate": "Activar",
+        "confirmActivate": "Confirma que quieres activar el sensor ",
+        "activateNote": "Ten en cuenta que el AQI de este sensor no aparecerá en el mapa durante al menos 2 horas hasta que se recopilen datos suficientes para calcular el AQI de este sensor.",
+        "active": "activo",
+        "activeNote": "Activo indica si este sitio web está recopilando datos y mostrando un sensor. Esto no refleja ningún cambio en el sitio de PurpleAir.",
+        "changeActiveSensorError": "No se puede cambiar el status de activo del sensor ",
+        "deactivate": "Desactivar",
+        "confirmDeactivate": "Confirma que quieres desactivar el sensor ",
+        "deactivateNote": "Ten en cuenta que se puede tardar hasta 10 minutos en borrar este sensor del mapa del sitio web. La desactivación del sensor no borrará ningún dato histórico del sensor, pero dejará de recopilar nuevos datos del sensor. Esto tampoco hará cambios en el sitio web de PurpleAir.",
+        "inactive": "inactivo",
+        "unknown": "desconocido",
+        "add": "Añadir un sensor nuevo",
+        "addComplete": "Sensor agregado",
+        "showAddHelp": "Mostrar ayuda",
+        "hideAddHelp": "Ocultar ayuda",
+        "addHelpPurpleAirId": "Para encontrar el PurpleAir ID, ir al mapa del PurpleAir, y haz click que quieres añadir. En el elemento emergente para el sensor, coloca el cursor sobre el 'Get This Widget', que se encuentra en la parte inferior. Esto mostrará un texto como este: '<div id='PurpleAirWidget_39165_module_...'. El PurpleAir ID es el numero después del PurpleAirWidget, entonces en este caso, el PurpleAir ID es 39165.",
+        "sensorAlreadyExists": "Ya existe un sensor con este PurpleAir ID.",
+        "unableToAddSensor": "No se pudo agregar el sensor. Comprueba que el ID de PurpleAir sea correcto.",
+        "goBack": "Regresa",
+        "addSensorFailure": "No se pudo agregar el sensor. Por favor, inténtelo de nuevo más tarde."
+    },
+    "deleteOldData": {
+        "launchButton": "Borra datos viejos",
+        "modalHeader": "Borra datos viejos",
+        "body": {
+            "paragraph1": "Este sistema acumula datos históricos para que el CEHAT pueda analizarlos. Desgraciadamente, puede costar mucho almacenar todos los datos así. Por eso, es posible que prefieras migrar los datos a un sistema más barato.",
+            "paragraph2": "Primero, debes descargar los datos y almacenarlos en un lugar seguro, como Google Drive. Entonces, puedes borrar los datos históricos (los más viejos que siete días) aquí. Para borrar los datos, tienes que reconocer estas condiciones:"
+        },
+        "conditions": {
+            "downloaded": "He descargado los datos y verificado que te paraecen correctos.",
+            "uploaded": "He almacenado los datos descargados en un lugar seguro.",
+            "irreversible": "Entiendo que este proceso es irreversible y no se puede recuperar los datos borrado."
+        },
+        "submit": "Borra"
+        },
+    "downloadData":{
+        "error":{
+            "invalidStart": "La fecha de inicio no es válida",
+            "invalidEnd": "La fecha final no es válida",
+            "startBeforeEnd": "La fecha de inicio debe ser anterior a la fecha final",
+            "validDates": "Las fechas son válidas",
+            "emptyField": "Al menos un campo está vacío",
+            "yearDigits": "Los años necesitan tener 4 dígitos"
+        },
+        "fetchData": "Obtener datos",
+        "fetching": "Obteniendo datos, esto puede llevar un tiempo",
+        "download": "Descargar datos",
+        "whenReady": "¡Los datos están listos para descargar!",
+        "header": "Descargar datos de sensores",
+        "startDate": "Fecha de inicio",
+        "startHelper": "Si la fecha de inicio es anterior a la primera entrada, los datos comenzarán en la primera entrada.",
+        "endDate": "Fecha final",
+        "endHelper": "Si la fecha final es posterior a la última entrada, obtiene datos hasta la última entrada.",
+        "close": "Cerrar",
+        "year": "año",
+        "month": "mes",
+        "day": "día",
+        "months":{
+            "jan": "enero",
+            "feb": "feb",
+            "mar": "marzo",
+            "apr": "abr",
+            "may": "mayo",
+            "jun": "jun",
+            "jul": "jul",
+            "aug": "agosto",
+            "sep": "sept",
+            "oct": "oct",
+            "nov": "nov",
+            "dec": "dic"
+        },
+        "downloadAll": "Descargar datos de todos los sensores",
+        "whichSensor": "¿Cuál sensor le gustaría descargar datos?",
+        "chooseSensor": "Escoge sensor",
+        "anotherSensor": "Descargar datos para otro sensor"
+    },
+    "deleteSensor": {
+        "delete": "Borrar sensor",
+        "confirmDownload": "He descargado los datos que necesito.",
+        "acknowledgeDelete": "Reconozco que esta acción borrará los datos históricos de este sensor.",
+        "cannotBeUndone": "Reconozco que esta acción no se puede deshacer.",
+        "note": "Borrar un sensor lo borrará del mapa y borrará todos sus datos. Deberás volver a agregar el sensor para mostrar este sensor en el mapa nuevamente y recopilar los datos de este sensor. Si solo deseas dejar de mostrar este sensor temporalmente o de recopilar datos para este sensor, desactiva el sensor en su lugar. Solo puedes borrar un sensor que se haya desactivado, así que asegúrase de desactivar primero un sensor que desees borrar.",
+        "confirmPurpleAirId": "Escriba el ID de PurpleAir del sensor para confirmar la supresión",
+        "whichSensorToDelete": "¿Cuál sensor te gustaría borrar?",
+        "error": "No se puede borrar el sensor. Por favor trata otra vez más tarde."
     }
 }

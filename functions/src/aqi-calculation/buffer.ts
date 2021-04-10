@@ -1,51 +1,77 @@
-import {firestore} from '../admin';
+import {FieldValue, firestore} from '../admin';
+
 /**
- * Interface for a single element in the pm25Buffer. All fields come from the
- * Thingspeak API
+ * Interface for a single element in the `pm25Buffer`.
  */
 interface Pm25BufferElement {
   timestamp: FirebaseFirestore.Timestamp | null;
-  channelAPm25: number;
-  channelBPm25: number;
+  pm25: number;
+  meanPercentDifference: number;
   humidity: number;
-  latitude: number;
-  longitude: number;
 }
 
 /**
  * This is a default element for the pm25 buffer. When the buffer is initialized,
  * every element is a default element. When we get an invalid reading (i.e. a
  * reading that matches that of the last reading), we put this element in the
- * buffer
+ * buffer.
+ *
+ * @readonly
+ *
+ * @remarks
+ * TypeScript cannot reset a variable to this value successfully, so do not use
+ * this element to add a default element when interacting with multiple pm25Buffers.
+ * Instead, use `getDefaultPm25BufferElement`.
  */
 const defaultPm25BufferElement: Pm25BufferElement = {
   timestamp: null,
-  channelAPm25: NaN,
-  channelBPm25: NaN,
-  humidity: NaN,
-  latitude: NaN,
-  longitude: NaN,
+  pm25: Number.NaN,
+  meanPercentDifference: Number.NaN,
+  humidity: Number.NaN,
 };
 
 /**
+ * Gets the default element for the PM2.5 buffer
+ * @returns Safe default PM2.5 Buffer element that can be used in calculations with multiple PM2.5 buffers
+ */
+function getDefaultPm25BufferElement(): Pm25BufferElement {
+  return {...defaultPm25BufferElement};
+}
+
+/**
  * Interface for a single element in the AQI buffer
- * timestamp - when this AQI was calculated and added to the buffer
- * aqi - the current aqi value
+ * - `timestamp` - when this AQI was calculated and added to the buffer, or `null` if no valid AQI
+ * - `aqi` - the current aqi value, or `NaN` if no valid AQI
  */
 interface AqiBufferElement {
-  timestamp: FirebaseFirestore.FieldValue | null;
+  timestamp: FirebaseFirestore.Timestamp | null;
   aqi: number;
 }
 
 /**
  * This is the default element for the AQI buffer. The buffer is initialized
- * with default elements at every index. When we don't have enough valid PM 2.5
+ * with default elements at every index. When we don't have enough valid PM2.5
  * data to calculate AQI, we put a default element in the buffer.
+ *
+ * @readonly
+ *
+ * @remarks
+ * TypeScript cannot reset a variable to this value successfully, so do not use
+ * this element to add a default element when interacting with multiple aqiBuffers.
+ * Instead, use `getDefaultAqiBufferElement`.
  */
 const defaultAqiBufferElement: AqiBufferElement = {
   timestamp: null,
-  aqi: NaN,
+  aqi: Number.NaN,
 };
+
+/**
+ * Gets the default element for the AQI buffer
+ * @returns Safe default AQI Buffer element that can be used in calculations with multiple AQI buffers
+ */
+function getDefaultAqiBufferElement(): AqiBufferElement {
+  return {...defaultAqiBufferElement};
+}
 
 /**
  * Enumeration for the status of a buffer. If a buffer is 'InProgress', it is
@@ -63,8 +89,8 @@ export enum bufferStatus {
 
 /**
  * This function populates the given sensor doc with a default circular buffer
- * for either AQI or PM 2.5
- * @param aqiBuffer - true if AQI buffer, false if PM 2.5 buffer
+ * for either AQI or PM2.5
+ * @param aqiBuffer - true if AQI buffer, false if PM2.5 buffer
  * @param docId - document ID for the sensor to update
  */
 function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
@@ -84,13 +110,14 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
           aqiBufferIndex: bufferIndex,
           aqiBuffer: aqiBuffer,
           aqiBufferStatus: bufferStatus.Exists,
+          lastUpdated: FieldValue.serverTimestamp(),
         });
       }
     });
   } else {
-    // 3600 = (30 calls/ hour * 12 hours) is the amount of data needed for
+    // 360 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI NowCast calculation
-    const bufferSize = 3600;
+    const bufferSize = 360;
     const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
       defaultPm25BufferElement
     );
@@ -102,6 +129,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
           pm25BufferIndex: bufferIndex,
           pm25Buffer: pm25Buffer,
           pm25BufferStatus: bufferStatus.Exists,
+          lastUpdated: FieldValue.serverTimestamp(),
         });
       }
     });
@@ -111,7 +139,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
 export type {Pm25BufferElement, AqiBufferElement};
 
 export {
-  defaultPm25BufferElement,
-  defaultAqiBufferElement,
   populateDefaultBuffer,
+  getDefaultAqiBufferElement,
+  getDefaultPm25BufferElement,
 };

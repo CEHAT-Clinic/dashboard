@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {Box, Heading, Text, Flex, Button, Divider} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
-import AccessDenied from './AccessDenied';
-import ChangePasswordModal from '../Authentication/ChangePassword';
+import AccessDenied from '../AccessDenied';
+import ChangePasswordModal from './ChangePassword';
 import {firebaseAuth} from '../../../firebase';
 import Loading from '../../Util/Loading';
-import ChangeNameModal from '../Authentication/ChangeName';
+import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 
 /**

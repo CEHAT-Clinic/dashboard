@@ -6,5 +6,11 @@
     "sensitive": "Insalubre para grupos sensibles (101-150)",
     "unhealthy": "Insalubres (151-200)",
     "very": "Muy insalubre (201-300)",
-    "hazardous": "Peligroso (301+)"
+    "hazardous": "Peligroso (301+)",
+    "invalid": {
+        "lastTime": "Este sensor no está actualizado. La última vez que informó un AQI preciso fue ",
+        "at": " a las ",
+        "learnMore": ". Para obtener más información sobre por qué un sensor podría no estar informando, consulte nuestra ",
+        "aboutPage": "Sobre Nosotros página."
+    }
 }
