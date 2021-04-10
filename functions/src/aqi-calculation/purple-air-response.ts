@@ -12,7 +12,6 @@ import {
   readingsSubcollection,
   getReading,
   getLastSensorReadingTime,
-  getPurpleAirId,
 } from './util';
 
 /**
@@ -84,6 +83,8 @@ async function purpleAirToFirestore(): Promise<void> {
     .where('isActive', '==', true)
     .get();
 
+  console.log(activeSensorDocsSnapshot.docs);
+
   for (const sensorDoc of activeSensorDocsSnapshot.docs) {
     const readingsCollectionRef = firestore.collection(
       readingsSubcollection(sensorDoc.id)
@@ -91,7 +92,7 @@ async function purpleAirToFirestore(): Promise<void> {
 
     // Get the existing data from Firestore for this sensor
     const sensorDocData = sensorDoc.data() ?? {};
-    const purpleAirId = getPurpleAirId(sensorDocData.purpleAirId);
+    const purpleAirId: number = sensorDocData.purpleAirId;
 
     // If the lastSensorReadingTime field isn't set, query the readings
     // collection to find the timestamp of the most recent reading.
@@ -101,7 +102,15 @@ async function purpleAirToFirestore(): Promise<void> {
 
     // If a reading for this sensor was not in the group query, then it did not
     // receive a new reading recently enough
-    const reading = readingsMap.get(purpleAirId) ?? null;
+    const reading = readingsMap.get(purpleAirId);
+
+    if (typeof reading === 'undefined') {
+      // No reading was received from PurpleAir
+      // TODO: write invalid reason to sensor doc, or propagate
+    } else if (!reading) {
+      // An incomplete reading was received from PurpleAir
+      // TODO: write invalid reason to sensor doc, or propagate
+    }
 
     const readingTimestamp: FirebaseFirestore.Timestamp | null = reading
       ? Timestamp.fromDate(reading.timestamp)
@@ -133,7 +142,6 @@ async function purpleAirToFirestore(): Promise<void> {
         sensorDocUpdate.latitude = reading.latitude;
         sensorDocUpdate.longitude = reading.longitude;
         sensorDocUpdate.name = reading.name;
-        sensorDocUpdate.purpleAirId = reading.id;
 
         // Add to historical readings
         const historicalSensorReading: HistoricalSensorReading = {
@@ -144,7 +152,7 @@ async function purpleAirToFirestore(): Promise<void> {
           latitude: reading.latitude,
           longitude: reading.longitude,
         };
-        await readingsCollectionRef.add(historicalSensorReading);
+        // await readingsCollectionRef.add(historicalSensorReading);
       }
     }
 
@@ -165,8 +173,11 @@ async function purpleAirToFirestore(): Promise<void> {
     }
 
     // Send the updated data to the database
+    console.log('Updating sensor:', purpleAirId);
+    // TODO: source of bug: if a sensor doesn't have a pm25BufferStatus or a reading,
+    // then no fields are actually updated
     await firestore
-      .collection('sensors')
+      .collection('test-sensors')
       .doc(sensorDoc.id)
       .update(sensorDocUpdate);
 
@@ -176,7 +187,7 @@ async function purpleAirToFirestore(): Promise<void> {
     if (status === bufferStatus.DoesNotExist) {
       // This function updates the bufferStatus once the buffer has been
       // fully initialized, which uses an additional write to the database
-      populateDefaultBuffer(false, sensorDoc.id);
+      // populateDefaultBuffer(false, sensorDoc.id);
     }
   }
 }
