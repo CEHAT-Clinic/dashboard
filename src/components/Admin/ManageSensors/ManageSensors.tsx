@@ -98,15 +98,18 @@ const ManageSensors: () => JSX.Element = () => {
 
     if (isAdmin) {
       // Toggle the isActive and remove the buffers
+
+      // Value from bufferStatus enum in backend
+      const bufferDoesNotExist = 2;
       firestore
         .collection('sensors')
         .doc(currentSensor.docId)
         .update({
           isActive: !currentSensor.isActive,
-          aqiBufferStatus: firebase.firestore.FieldValue.delete(),
+          aqiBufferStatus: bufferDoesNotExist,
           aqiBuffer: firebase.firestore.FieldValue.delete(),
           aqiBufferIndex: firebase.firestore.FieldValue.delete(),
-          pm25BufferStatus: firebase.firestore.FieldValue.delete(),
+          pm25BufferStatus: bufferDoesNotExist,
           pm25Buffer: firebase.firestore.FieldValue.delete(),
           pm25BufferIndex: firebase.firestore.FieldValue.delete(),
         })
