@@ -201,9 +201,8 @@ function DeleteOldDataModal(): JSX.Element {
                 <DayInput value={day} setValue={setDay} />
               </HStack>
             </FormControl>
-            <Text isVisible={!validDate} color="red">
-              {error}
-            </Text>
+            {!validDate && <Text color="red">{error}</Text>}
+
             <Divider marginTop={2} marginBottom={2} />
             <Flex justifyContent="center">
               <Button
