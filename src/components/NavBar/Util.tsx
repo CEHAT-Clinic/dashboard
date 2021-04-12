@@ -1,5 +1,14 @@
 import React from 'react';
-import {Box, Link, Text, Button, Image, Stack} from '@chakra-ui/react';
+import {
+  Box,
+  Link,
+  Text,
+  Button,
+  Image,
+  Stack,
+  Flex,
+  Heading,
+} from '@chakra-ui/react';
 import {CloseIcon} from '@chakra-ui/icons';
 import {FaBars, FaGlobeAmericas} from 'react-icons/fa';
 import logo512 from './logo512.png';
@@ -99,9 +108,17 @@ const MenuItem: ({label, href}: MenuItemProps) => JSX.Element = ({
  */
 const Logo: () => JSX.Element = () => {
   return (
-    <Box>
+    <Flex flexDir="row" alignItems="center">
       <Image width="60px" src={logo512}></Image>
-    </Box>
+      <Heading
+        display={['none', 'none', 'none', 'inline']}
+        marginLeft={5}
+        fontSize="3xl"
+        color="white"
+      >
+        South Gate CEHAT
+      </Heading>
+    </Flex>
   );
 };
 
