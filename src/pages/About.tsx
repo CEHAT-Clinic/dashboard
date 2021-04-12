@@ -2,7 +2,7 @@ import React from 'react';
 import {Box, Flex, Heading, Text, Link, Image} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
-import cehatLogo from './CEHATLogo.png';
+import cehatLogo from '../media/CEHATLogo.png';
 
 const About: React.FC = () => {
   const {t} = useTranslation('about');
@@ -90,7 +90,7 @@ const About: React.FC = () => {
           {t('admin.purpose')}
         </Text>
       </Box>
-      <Image src={cehatLogo}></Image>
+      <Image src={cehatLogo} alt="Logo"></Image>
     </Flex>
   );
 };

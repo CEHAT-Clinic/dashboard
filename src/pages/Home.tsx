@@ -59,9 +59,6 @@ const Home: () => JSX.Element = () => {
 
   return (
     <Box>
-      <Heading as="h1" textAlign="center" marginBottom={1}>
-        {t('heading')}
-      </Heading>
       <Flex direction={['column', 'column', 'row', 'row']} textAlign="center">
         {/* Start map */}
         {isMobile ? (

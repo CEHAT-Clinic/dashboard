@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import {Flex} from '@chakra-ui/react';
-import {MenuToggle, Logo, MenuLinks} from './Util';
+import Logo from './Logo';
+import MenuToggle from './MenuToggle';
+import MenuLinks from './MenuLinks';
 import {useTranslation} from 'react-i18next';
 
 /**
@@ -34,6 +36,7 @@ function NavigationBar(): JSX.Element {
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
     if (this.matches) {
+      // True when the screen-width is at most 47.9em
       setIsOpen(false);
       setIsMobile(true);
     } else {
@@ -63,7 +66,7 @@ function NavigationBar(): JSX.Element {
    * Sets isScrolled depending on how far the user has scrolled
    */
   function handleScroll(): void {
-    const scrollThreshold = 20;
+    const scrollThreshold = 120;
     const offset = window.scrollY;
     if (offset > scrollThreshold) {
       setIsScrolled(true);
@@ -80,7 +83,7 @@ function NavigationBar(): JSX.Element {
     return function (): void {
       window.removeEventListener('scroll', handleScroll);
     };
-  });
+  }, []);
 
   return (
     <Flex
