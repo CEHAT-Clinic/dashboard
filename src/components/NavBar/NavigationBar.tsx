@@ -1,30 +1,31 @@
 import React, {useState, useEffect} from 'react';
-import './NavigationBar.css';
-import cehatLogo from './CEHATLogo.png';
+import {Box, Text, Image, Stack, Button, Flex} from '@chakra-ui/react';
+import {MenuToggle, MenuItem, LanguageToggle, Logo, MenuLinks} from './Util';
 import {useTranslation} from 'react-i18next';
-import {FaBars, FaGlobeAmericas} from 'react-icons/fa';
-import {Icon} from '@chakra-ui/react';
 
-/** Element for the navigation bar for use on all pages */
 function NavigationBar(): JSX.Element {
-  // State for whether to use globe or text, must be kept
-  // separate because mobile should always be text, even
-  // when nav bar is hidden
+  const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
 
-  // State of nav bar (always visible in large screen)
-  const [isNavVisible, setIsNavVisible] = useState(!isMobile);
+  const toggle = () => setIsOpen(!isOpen);
+  const {t, i18n} = useTranslation('menu');
+
+  /** Toggle the language of the website between English and Spanish. Close menu bar after toggling if on mobile. */
+  function toggleLanguage(): void {
+    i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
+    setIsOpen(false);
+  }
 
   /** Adjust UI for switching between narrow/mobile and wide/desktop modes */
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
     if (this.matches) {
-      setIsNavVisible(false);
+      setIsOpen(false);
       setIsMobile(true);
     } else {
-      setIsNavVisible(true);
+      setIsOpen(true);
       setIsMobile(false);
     }
   }
@@ -43,45 +44,26 @@ function NavigationBar(): JSX.Element {
     };
   }, []);
 
-  // Toggles the navigation
-  function toggleNav(): void {
-    setIsNavVisible(!isNavVisible);
-  }
-
-  /** Toggle the language of the website between English and Spanish. Close menu bar after toggling if on mobile. */
-  function toggleLanguage(): void {
-    i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
-    if (isMobile) {
-      toggleNav();
-    }
-  }
-
-  const {t, i18n} = useTranslation('menu');
   return (
-    <div>
-      <header className="Navigation_Header">
-        {/* Logo in Spanish and English are the same */}
-        <img src={cehatLogo} className="Logo" alt="Logo" />
-        {isNavVisible && (
-          <nav>
-            <a href="/">{t('home')}</a>
-            <a href="/health">{t('healthInfo')}</a>
-            <a href="/about">{t('about')}</a>
-            <button id="changeLanguage" onClick={toggleLanguage}>
-              <Icon as={FaGlobeAmericas} id="globe" title={t('globeIcon')} />
-              {t('changeLanguage')}
-            </button>
-          </nav>
-        )}
-        <button onClick={toggleNav} className="Burger">
-          <Icon
-            as={FaBars}
-            className="menu-icon"
-            aria-label={t('menuButton')}
-          />
-        </button>
-      </header>
-    </div>
+    <Flex
+      as="nav"
+      align="center"
+      justify="space-between"
+      wrap="wrap"
+      w="100%"
+      mb={2}
+      p={3}
+      background="teal"
+      color="white"
+    >
+      <Logo />
+      {isMobile && <MenuToggle toggle={toggle} isOpen={isOpen} />}
+      <MenuLinks
+        isOpen={isOpen}
+        isMobile={isMobile}
+        toggleLanguage={toggleLanguage}
+      />
+    </Flex>
   );
 }
 
