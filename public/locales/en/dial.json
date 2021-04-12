@@ -9,8 +9,10 @@
     "hazardous": "Hazardous (301+)",
     "invalid": {
         "lastTime": "This sensor is not up to date. The last time it reported an accurate AQI was ",
-        "at": " at ",
+        "atPlural": " at ",
+        "atSingular": " at ",
         "learnMore": ". To learn more about why a sensor might not be reporting, check out our ",
-        "aboutPage": "About Page."
+        "aboutPage": "About Page.",
+        "neverReported": "This sensor has never reported an accurate AQI"
     }
 }
