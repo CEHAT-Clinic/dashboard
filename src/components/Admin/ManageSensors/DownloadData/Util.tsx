@@ -1,7 +1,7 @@
 import React from 'react';
 import {Select, Box} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
-import {Sensor} from '../Util';
+import {Sensor} from '../Types';
 
 /**
  * Interface for the fields of the CSV
@@ -39,7 +39,7 @@ interface CSVButtonProps {
   endDay: number;
   error: string;
   downloadAll: boolean;
-  purpleAirId: string;
+  purpleAirId: number;
   sensorDocId: string;
   resetSelectedSensor: () => void;
 }

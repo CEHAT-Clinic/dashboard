@@ -23,7 +23,8 @@ import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
-import {Sensor, numberToString, timestampToDateString} from './Util';
+import {numberToString, timestampToDateString} from './Util';
+import {Sensor} from './Types';
 import {MoreInfoHeading} from './MoreInfoHeading';
 import {ToggleActiveSensorPopover} from './ToggleActivePopover';
 
@@ -152,7 +153,10 @@ const ManageSensors: () => JSX.Element = () => {
                       {timestampToDateString(sensor.lastSensorReadingTime, t)}
                     </Td>
                     <Td>
-                      <ToggleActiveSensorPopover sensor={sensor} setError={setError}/>
+                      <ToggleActiveSensorPopover
+                        sensor={sensor}
+                        setError={setError}
+                      />
                     </Td>
                   </Tr>
                 ))}

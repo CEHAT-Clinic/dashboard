@@ -24,7 +24,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
 import {MonthInput, DayInput, CSVModalProps} from './Util';
-import {SensorInput} from '../Util';
+import {SensorInput} from '../SensorInput';
 
 /**
  * Component for the download data modal that appears on the manage sensor page
@@ -44,7 +44,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
   const [endDay, setEndDay] = useState(0);
   const [error, setError] = useState('');
   const [downloadAll, setDownloadAll] = useState(true);
-  const [purpleAirId, setPurpleAirId] = useState('');
+  const [purpleAirId, setPurpleAirId] = useState(Number.NaN);
   const [sensorDocId, setSensorDocId] = useState('');
   /* ------------------------------------------------------------------- */
 
@@ -58,7 +58,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
     setEndYear(0);
     setEndMonth(0);
     setEndDay(0);
-    setPurpleAirId('');
+    setPurpleAirId(Number.NaN);
     setDownloadAll(true);
     setError('');
   }
@@ -196,7 +196,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
                 purpleAirId={purpleAirId}
                 sensorDocId={sensorDocId}
                 resetSelectedSensor={() => {
-                  setPurpleAirId('');
+                  setPurpleAirId(Number.NaN);
                   setSensorDocId('');
                 }}
               />

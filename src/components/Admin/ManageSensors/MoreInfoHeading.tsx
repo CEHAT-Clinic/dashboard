@@ -18,7 +18,7 @@ import {useTranslation} from 'react-i18next';
 /**
  * Interface for MoreInfoPopover used for type safety
  */
- interface MoreInfoHeadingProps {
+interface MoreInfoHeadingProps {
   message: string;
   heading: string;
 }

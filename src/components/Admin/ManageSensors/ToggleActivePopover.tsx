@@ -13,11 +13,10 @@ import {
   Text,
   Divider,
 } from '@chakra-ui/react';
-import {Sensor} from './Util';
+import {Sensor} from './Types';
 import {useAuth} from '../../../contexts/AuthContext';
 import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
-
 
 /**
  * Interface for ToggleActiveSensorPopover used for type safety
@@ -26,7 +25,7 @@ import {useTranslation} from 'react-i18next';
  */
 interface ToggleActiveSensorPopoverProps {
   sensor: Sensor;
-  setError: React.Dispatch<React.SetStateAction<string>>
+  setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
 /**
@@ -36,10 +35,11 @@ interface ToggleActiveSensorPopoverProps {
  * @param sensor - sensor for a row
  */
 const ToggleActiveSensorPopover: ({
-  sensor, setError
+  sensor,
+  setError,
 }: ToggleActiveSensorPopoverProps) => JSX.Element = ({
   sensor,
-  setError
+  setError,
 }: ToggleActiveSensorPopoverProps) => {
   const {isAdmin} = useAuth();
   const {t} = useTranslation(['administration', 'common']);
@@ -55,37 +55,37 @@ const ToggleActiveSensorPopover: ({
    * our PurpleAir group: 490. We will still get data from PurpleAir in our API
    * call, but the resulting data will not be used anywhere.
    */
-    function toggleActiveSensorStatus(
-      event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-      currentSensor: Sensor,
-    ) {
-      event.preventDefault();
-    
-      if (isAdmin) {
-        // Value from bufferStatus enum in backend
-        const bufferDoesNotExist = 2;
-    
-        // Toggle the isActive and remove the buffers
-        firestore
-          .collection('sensors')
-          .doc(currentSensor.docId)
-          .update({
-            isActive: !currentSensor.isActive,
-            lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-            aqiBufferStatus: bufferDoesNotExist,
-            aqiBuffer: firebase.firestore.FieldValue.delete(),
-            aqiBufferIndex: firebase.firestore.FieldValue.delete(),
-            pm25BufferStatus: bufferDoesNotExist,
-            pm25Buffer: firebase.firestore.FieldValue.delete(),
-            pm25BufferIndex: firebase.firestore.FieldValue.delete(),
-          })
-          .catch(() => {
-            setError(
-              t('sensors.changeActiveSensorError') + currentSensor.name ??
-                currentSensor.purpleAirId
-            );
-          });
-      }
+  function toggleActiveSensorStatus(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    currentSensor: Sensor
+  ) {
+    event.preventDefault();
+
+    if (isAdmin) {
+      // Value from bufferStatus enum in backend
+      const bufferDoesNotExist = 2;
+
+      // Toggle the isActive and remove the buffers
+      firestore
+        .collection('sensors')
+        .doc(currentSensor.docId)
+        .update({
+          isActive: !currentSensor.isActive,
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+          aqiBufferStatus: bufferDoesNotExist,
+          aqiBuffer: firebase.firestore.FieldValue.delete(),
+          aqiBufferIndex: firebase.firestore.FieldValue.delete(),
+          pm25BufferStatus: bufferDoesNotExist,
+          pm25Buffer: firebase.firestore.FieldValue.delete(),
+          pm25BufferIndex: firebase.firestore.FieldValue.delete(),
+        })
+        .catch(() => {
+          setError(
+            t('sensors.changeActiveSensorError') + currentSensor.name ??
+              currentSensor.purpleAirId
+          );
+        });
+    }
   }
 
   const popoverMessage =

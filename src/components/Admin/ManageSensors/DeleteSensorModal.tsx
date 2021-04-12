@@ -22,9 +22,11 @@ import {
 import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import {Sensor, LabelValue, SensorInput, PurpleAirGroupMember} from './Util';
+import {Sensor, PurpleAirGroupMember} from './Types';
+import {SensorInput} from './SensorInput';
 import {FaTrash} from 'react-icons/fa';
 import axios, {AxiosResponse} from 'axios';
+import {LabelValue} from './LabelValue';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
@@ -46,7 +48,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
   // --------------- State maintenance variables ------------------------
   // Sensor states
-  const [purpleAirId, setPurpleAirId] = useState('');
+  const [purpleAirId, setPurpleAirId] = useState(Number.NaN);
   const [sensorDocId, setSensorDocId] = useState('');
 
   // Confirmation states
@@ -61,8 +63,8 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   // --------------- End state maintenance variables ------------------------
 
   const readyToSubmit =
-    purpleAirId !== '' &&
-    purpleAirId === confirmPurpleAirId &&
+    confirmPurpleAirId !== '' &&
+    purpleAirId === +confirmPurpleAirId &&
     error === '' &&
     confirmDownload &&
     acknowledgeDeletion &&
@@ -75,7 +77,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
    */
   function handleClose(): void {
     // Sensor state
-    setPurpleAirId('');
+    setPurpleAirId(Number.NaN);
     setSensorDocId('');
 
     // Confirmations
@@ -239,7 +241,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
               <Box>
                 <LabelValue
                   label={t('sensors.purpleAirId')}
-                  value={purpleAirId}
+                  value={purpleAirId.toString()}
                 />
               </Box>
               <Checkbox
