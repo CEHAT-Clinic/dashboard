@@ -2,7 +2,7 @@
     "pageHeading": "Información de salud",
     "pollution": {
         "heading": "La contaminación atmosférica y nosotros",
-        "paragraph1": "Seguimos vivo gracias al  aire que respiramos y por eso, es importante que esté limpio y seguro. Viviendo en California del Sur, probablemente sabes que los incendios forestales dificultan la respiración Esto se debe a contaminantes del aire: el material particulado, especialmente partículas inhalables finas (fine particulate matter, PM2.5, mira abajo para tener una mejor idea del tamaño de las partículas). Aparte de los incendios, South Gate frecuentemente está expuesto a niveles elevados de PM2.5 debido al tráfico de camiones en las autopistas 710 y 105, los trenes del Corredor Alameda, y otras fuentes.",
+        "paragraph1": "Seguimos vivo gracias al  aire que respiramos y por eso, es importante que esté limpio y seguro. Viviendo en El Sur de California, probablemente sabes que los incendios forestales dificultan la respiración. Esto se debe a contaminantes del aire: el material particulado, especialmente partículas inhalables finas (fine particulate matter, PM2.5, mire abajo para tener una mejor idea del tamaño de las partículas). Aparte de los incendios, South Gate frecuentemente está expuesto a niveles elevados de PM2.5 debido al tráfico de camiones en las autopistas 710 y 105, los trenes del Corredor Alameda, y otras industriales.",
         "image": {
             "fileName": "pm25-size-comparison-es.jpg",
             "caption": "Comparación de tamaño de las partículas de PM. Imagen de la ",
@@ -12,7 +12,7 @@
             }
         },
         "paragraph2": {
-            "part1": "Es importante enfocarse en la contaminación de PM2.5 porque puede perjudicar nuestra salud.. Las partículas inhalables finas pueden llegar a la profundidad de los pulmones y alcanzar el torrente sanguíneo, empeorando condiciones de salud actuales y posiblemente causando enfermedades  nuevas. La Agencia de Protección Ambiental (Environmental Protection Agency, EPA)",
+            "part1": "Es importante enfocarse en la contaminación de PM2.5 porque puede perjudicar nuestra salud. Las partículas inhalables finas pueden llegar a la profundidad de los pulmones y alcanzar el torrente sanguíneo, empeorando condiciones de salud actuales y posiblemente causando enfermedades  nuevas. La Agencia de Protección Ambiental (Environmental Protection Agency, EPA)",
             "link": "informa",
             "part2": " que el material particulado ha estado vinculado a:",
             "list": {
@@ -28,17 +28,17 @@
     },
     "aqi": {
         "heading": "El Índice de la calidad del aire (Air Quality Index, AQI)",
-        "paragraph1": "Por los impactos de PM2.5, la EPA ha establecido estándares para niveles seguros de PM2.5 y otros contaminantes (por ejemplo, el ozono a nivel del suelo y el monóxido de carbono). Por eso existe el Índice de la calidad del aire (Air Quality Index, AQI) para informar al público que tan contaminado está el aire. El Índice hace esto de manera consistente para cualquier contaminante.",
+        "paragraph1": "Por los impactos de PM2.5, la EPA ha establecido normas para niveles seguros de PM2.5 y otros contaminantes (por ejemplo, el ozono a nivel del suelo y el monóxido de carbono). Por lo cual existe el Índice de la calidad del aire (Air Quality Index, AQI) para informar al público que tan contaminado está el aire, por lo cual lo indica de manera consistente para cualquier contaminante.",
         "paragraph2": {
             "part1": "El AQI varía entre 0 y 500 ",
-            "part2": "para decir si el aire está bien o mal.",
-            "part3": " Los números más altos indican niveles elevados de contaminación y de riesgo a la salud. Un AQI de 100 es la norma nacional de calidad del aire. Los valores menores de 100 generalmente son seguros, mientras que los valores que superan 100 implican que el aire es insalubre, al principio solamente para los grupos sensibles pero según van subiendo, para todos. Es raro que el aire esté tan contaminado que el AQI supere 500.  La EPA considera que eso es «fuera del AQI». Se puede ver la escala entera abajo:"
+            "part2": "para indicar si el aire está bien o mal.",
+            "part3": " Los números más altos indican niveles elevados de contaminación y de riesgo a la salud. Un AQI de 100 es la norma nacional de calidad del aire. Los valores menores de 100 generalmente son más saludables, mientras que los valores que superan 100 implican que el aire es insalubre, al principio solamente para los grupos sensibles pero según van subiendo, para todos. Es raro que el aire esté tan contaminado que el AQI supere 500.  La EPA considera que eso es «fuera del AQI». Se puede ver la escala entera abajo:"
         }
     },
     "protection": {
         "heading": "Protegiendonos",
-        "paragraph1": "Para protegernos lo mejor posible contra los efectos de niveles elevados de PM2.5, debemos evitar el aire contaminado. Esto significa quedarte adentro, fuera del aire contaminado, con las puertas y las ventanas cerradas. También, puedes usar un aire acondicionado equipado con un filtro HEPA (del inglés High Efficiency Particulate Arresting). Al mantenerse dentro, queremos evitar fuentes de contaminación como velas y estufas de gas.",
-        "paragraph2": "Sin embargo, es posible que tengas que salir. Es posible que necesites ir al trabajo o tengas que hacer unas diligencias. Cuando es necesario ir fuera, trata de ir cuando el aire esté menos contaminado y limita tu exposición lo más posible, descansando bajo techo cuando puedas. También,es posible que desees llevar una mascarilla ajustada de estilo respiratorio como un N95 or KN95. Un respirador ajustado puede filtrar PM2.5, pero tienes que llevarlo correctamente. Mascarillas de tela con un filtro instalado también puede filtrar particulados PM2.5, pero las quirúrgicas generalmente no funcionan para eso."
+        "paragraph1": "Para protegernos lo mejor posible contra los efectos de niveles elevados de PM2.5, debemos evitar el aire contaminado. Esto significa quedarte adentro, fuera del aire contaminado, con las puertas y las ventanas cerradas. También, puedes usar un aire acondicionado equipado con un filtro de HEPA (con alta eficiencia para atrapar particulos en el aire). Al mantenerse dentro, queremos evitar fuentes de contaminación como velas y estufas de gas.",
+        "paragraph2": "Sin embargo, es posible que tengas que salir. Es posible que necesites ir al trabajo o tengas que hacer cualquier diligencia. Cuando es necesario ir fuera, trata de salir cuando el aire esté menos contaminado y limita tu exposición lo más posible, descanse bajo techo cuando pueda. También, se recomendamos llevar una mascarilla ajustada de estilo respiratorio como un N95 or KN95. Un respirador ajustado puede filtrar PM2.5 cuando está puesto correctamente. Mascarillas de tela con un filtro instalado también puede filtrar particulados PM2.5, pero las quirúrgicas generalmente no funcionan para eso."
     },
     "references": {
         "heading": "Referencias y recursos adicionales",
