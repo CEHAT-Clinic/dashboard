@@ -2,28 +2,17 @@ import React from 'react';
 import firebase from '../../../firebase';
 import {
   Box,
-  Heading,
-  Flex,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
   Text,
-  IconButton,
   Select,
 } from '@chakra-ui/react';
-import {QuestionOutlineIcon} from '@chakra-ui/icons';
-import {useTranslation} from 'react-i18next';
+import {useTranslation, TFunction} from 'react-i18next';
 
 /**
  * Interface for a PurpleAir sensor
  */
 interface Sensor {
   name: string;
-  purpleAirId: string;
+  purpleAirId: number;
   latitude: number;
   longitude: number;
   isActive: boolean;
@@ -66,7 +55,7 @@ interface SensorInputProps {
   sensors: Sensor[];
   docId: string;
   setDocId: React.Dispatch<React.SetStateAction<string>>;
-  setPurpleAirId: React.Dispatch<React.SetStateAction<string>>;
+  setPurpleAirId: React.Dispatch<React.SetStateAction<number>>;
 }
 
 /**
@@ -92,7 +81,7 @@ const SensorInput: ({
 }: SensorInputProps) => {
   const {t} = useTranslation('administration');
   const options = [];
-  const docIdToPurpleAirId = new Map<string, string>();
+  const docIdToPurpleAirId = new Map<string, number>();
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
     let label;
@@ -116,65 +105,12 @@ const SensorInput: ({
         value={docId}
         onChange={event => {
           setDocId(event.target.value);
-          setPurpleAirId(docIdToPurpleAirId.get(event.target.value) ?? '');
+          setPurpleAirId(docIdToPurpleAirId.get(event.target.value) ?? Number.NaN);
         }}
       >
         {options}
       </Select>
     </Box>
-  );
-};
-
-/**
- * Interface for MoreInfoPopover used for type safety
- */
-interface MoreInfoHeadingProps {
-  message: string;
-  heading: string;
-}
-
-/**
- * Table heading that includes a clickable question mark icon.
- * When the question mark icon is clicked, a popover appears that explains the
- * table field.
- * @param heading - heading for the column with the help icon
- * @param message - help message displayed in popover when help icon clicked
- */
-const MoreInfoHeading: ({
-  message,
-  heading,
-}: MoreInfoHeadingProps) => JSX.Element = ({
-  message,
-  heading,
-}: MoreInfoHeadingProps) => {
-  const {t} = useTranslation(['administration', 'common']);
-  return (
-    <Flex alignItems="center">
-      <Text>{heading}</Text>
-      <Popover>
-        <PopoverTrigger>
-          <IconButton
-            size="xs"
-            variant="unstyled"
-            isRound
-            aria-label={t('common:moreInformation')}
-            icon={<QuestionOutlineIcon />}
-          />
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Heading fontSize="medium">{t('common:moreInformation')}</Heading>
-          </PopoverHeader>
-          <PopoverBody>
-            <Text fontWeight="normal" fontSize="md" textTransform="none">
-              {message}
-            </Text>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    </Flex>
   );
 };
 
@@ -192,5 +128,35 @@ interface PurpleAirGroupMember {
   created: number;
 }
 
+/**
+ *
+ * @param timestamp - the time to convert
+ * @returns human readable date time string, unknown if null
+ */
+  function timestampToDateString(
+  timestamp: firebase.firestore.Timestamp | null,
+  t: TFunction<string[]>
+) {
+  if (timestamp === null) {
+    return t('sensors.unknown');
+  } else {
+    const date: Date = timestamp.toDate();
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+  }
+}
+
+/**
+ *
+ * @param number - a number that can be NaN
+ * @returns human readable string for a number, 'unknown' if `NaN`
+ */
+  function numberToString(number: number, t: TFunction<string[]>) {
+  if (isNaN(number)) {
+    return t('sensors.unknown');
+  } else {
+    return String(number);
+  }
+}
+
 export type {Sensor, PurpleAirGroupMember};
-export {LabelValue, SensorInput, MoreInfoHeading};
+export {LabelValue, SensorInput, timestampToDateString, numberToString};
