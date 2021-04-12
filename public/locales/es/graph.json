@@ -7,5 +7,6 @@
     "saturday":"S",
     "sunday": "D",
     "noSensor": "¡Haz clic en un sensor para ver sus datos!",
-    "time": "Tiempo"
+    "time": "Tiempo",
+    "graphTitle": "(Air Quality Index, AQI) en las últimas 24 horas"
 }
