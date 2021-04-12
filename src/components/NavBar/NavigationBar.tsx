@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Text, Image, Stack, Button, Flex} from '@chakra-ui/react';
+import {Box, Text, Image, Stack, Button, Flex, HStack} from '@chakra-ui/react';
 import {MenuToggle, MenuItem, LanguageToggle, Logo, MenuLinks} from './Util';
 import {useTranslation} from 'react-i18next';
 

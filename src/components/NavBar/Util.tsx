@@ -28,11 +28,9 @@ const MenuToggle: ({toggle, isOpen}: MenuToggleProps) => JSX.Element = ({
   isOpen,
 }: MenuToggleProps) => {
   return (
-    <Flex width="100%" justify="flex-end" align="center">
-      <Button variant="ghost" _hover={{bg: 'teal'}} onClick={toggle}>
+      <Button variant="ghost" _hover={{bg: 'teal'}} onClick={toggle} width="60px">
         {isOpen ? <CloseIcon size="lg" /> : <FaBars size="lg" />}
       </Button>
-    </Flex>
   );
 };
 
