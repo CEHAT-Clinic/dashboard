@@ -174,5 +174,3 @@ const ManageSensors: () => JSX.Element = () => {
 };
 
 export default ManageSensors;
-
-export type {Sensor};
