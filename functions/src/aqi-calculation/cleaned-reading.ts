@@ -13,18 +13,19 @@ interface BasicReading {
 /**
  * Computes an average reading for the time block provided by the first element
  * @param readings - Array of non-null Pm25BufferElements
+ * @returns basic reading with the average pm25 and humidity values of the input buffer elements
  */
 function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
-  let pmReadingSum = 0;
+  let pm25Sum = 0;
   let humiditySum = 0;
 
   for (const reading of readings) {
-    pmReadingSum += reading.pm25;
+    pm25Sum += reading.pm25;
     humiditySum += reading.humidity;
   }
 
   const averageReading: BasicReading = {
-    pm25: pmReadingSum / readings.length,
+    pm25: pm25Sum / readings.length,
     humidity: humiditySum / readings.length,
   };
 
@@ -38,7 +39,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is `undefined`.
+ * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is null
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
@@ -64,10 +65,10 @@ function getHourlyAverages(
   status: bufferStatus,
   bufferIndex: number,
   buffer: Array<Pm25BufferElement>
-): BasicReading[] {
+): (BasicReading | null)[] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
-  const averages = new Array<BasicReading>(LOOKBACK_PERIOD_HOURS);
+  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS);
 
   // If we have the relevant fields:
   if (status === bufferStatus.Exists && buffer && bufferIndex) {
@@ -109,13 +110,14 @@ function getHourlyAverages(
       // Only keep valid readings. A reading is valid if its timestamp is not
       // null, meaning that a new reading was available for that two-minute
       // time period, or if the meanPercentDifference is less than 70%.
-      readings
-        .filter(element => element.timestamp !== null)
-        .filter(
-          element =>
-            !isNaN(element.meanPercentDifference) &&
-            element.meanPercentDifference < PERCENT_THRESHOLD
-        );
+      const nonNullReadings = readings.filter(
+        element => element.timestamp !== null
+      );
+      const validReadings = nonNullReadings.filter(
+        element =>
+          !isNaN(element.meanPercentDifference) &&
+          element.meanPercentDifference < PERCENT_THRESHOLD
+      );
 
       // If we have 1 reading every two minutes, there are 30 readings in an hour.
       // 75% of 30 readings is 23 (22.5) readings. As suggested by the EPA, we use
@@ -125,10 +127,22 @@ function getHourlyAverages(
       // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
       // Expressed this way to avoid imprecision of floating point arithmetic.
       const MEASUREMENT_COUNT_THRESHOLD = 23;
-      if (readings.length >= MEASUREMENT_COUNT_THRESHOLD) {
-        averages[hoursAgo] = averageReadings(readings);
+      if (validReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
+        averages[hoursAgo] = averageReadings(validReadings);
+      } else if (nonNullReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
+        // This case means that meanPercentThreshold was the final straw to make
+        // this hour lack enough valid readings
+        averages[hoursAgo] = null;
+        // TODO: write invalid reason to sensor doc, or propagate
+      } else {
+        // In this case, not enough readings were received from PurpleAir
+        averages[hoursAgo] = null;
+        // TODO: write invalid reason to sensor doc, or propagate
       }
     }
+  } else {
+    // If no buffer exists, there are no valid readings for any hour
+    averages.fill(null);
   }
   return averages;
 }
@@ -141,7 +155,7 @@ function getHourlyAverages(
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  *
  */
-function cleanAverages(averages: BasicReading[]): number[] {
+function cleanAverages(averages: (BasicReading | null)[]): number[] {
   const cleanedAverages = new Array<number>(averages.length).fill(Number.NaN);
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
@@ -173,7 +187,7 @@ function getCleanedAverages(
 ): number[] {
   // Get hourly averages from the PM2.5 Buffer, and mark any hours without enough
   // valid readings as invalid
-  const hourlyAverages: BasicReading[] = getHourlyAverages(
+  const hourlyAverages: (BasicReading | null)[] = getHourlyAverages(
     status,
     bufferIndex,
     buffer
