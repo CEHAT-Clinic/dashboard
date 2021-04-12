@@ -1,24 +1,36 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Text, Image, Stack, Button, Flex, HStack} from '@chakra-ui/react';
-import {MenuToggle, MenuItem, LanguageToggle, Logo, MenuLinks} from './Util';
+import {Flex} from '@chakra-ui/react';
+import {MenuToggle, Logo, MenuLinks} from './Util';
 import {useTranslation} from 'react-i18next';
 
+/**
+ * @returns component for the navigation bar at the top of the screen
+ */
 function NavigationBar(): JSX.Element {
-  const [isOpen, setIsOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
+  const [isOpen, setIsOpen] = useState(!isMobile);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const toggle = () => setIsOpen(!isOpen);
-  const {t, i18n} = useTranslation('menu');
+  const {i18n} = useTranslation('menu');
 
-  /** Toggle the language of the website between English and Spanish. Close menu bar after toggling if on mobile. */
+  /**
+   * Toggles the langauge of the website between English and Spanish
+   * On Mobile, the menu is closed after toggling
+   */
   function toggleLanguage(): void {
     i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
-    setIsOpen(false);
+    if (isMobile) {
+      setIsOpen(false);
+    }
   }
 
-  /** Adjust UI for switching between narrow/mobile and wide/desktop modes */
+  /**
+   * Adjust UI for switching between mobile and desktop modes
+   * @param this - a media query that either matches or doesn't
+   */
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
     if (this.matches) {
@@ -30,7 +42,10 @@ function NavigationBar(): JSX.Element {
     }
   }
 
-  // Updates the state and the dom when the window size is changed
+  /**
+   * Event listener for screen size. Adjusts the state and the dom when
+   * the window size is changed.
+   */
   useEffect(() => {
     const screenSize = window.matchMedia('(max-width: 47.9em)');
     if (screenSize) {
@@ -44,9 +59,31 @@ function NavigationBar(): JSX.Element {
     };
   }, []);
 
+  /**
+   * Sets isScrolled depending on how far the user has scrolled
+   */
+  function handleScroll(): void {
+    const scrollThreshold = 20;
+    const offset = window.scrollY;
+    if (offset > scrollThreshold) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  }
+
+  /**
+   * Event listener for scrolling
+   */
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return function (): void {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  });
+
   return (
     <Flex
-      as="nav"
       align="center"
       justify="space-between"
       wrap="wrap"
@@ -55,6 +92,10 @@ function NavigationBar(): JSX.Element {
       p={3}
       background="teal"
       color="white"
+      position={isScrolled ? 'fixed' : 'static'}
+      top={isScrolled ? '0' : 'auto'}
+      left={isScrolled ? '0' : 'auto'}
+      zIndex="3"
     >
       <Logo />
       {isMobile && <MenuToggle toggle={toggle} isOpen={isOpen} />}

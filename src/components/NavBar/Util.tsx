@@ -1,68 +1,86 @@
 import React from 'react';
-import {
-  Box,
-  Link,
-  Text,
-  Button,
-  Image,
-  Stack,
-  Center,
-  Flex,
-  LinkOverlay,
-  Grid,
-} from '@chakra-ui/react';
+import {Box, Link, Text, Button, Image, Stack} from '@chakra-ui/react';
 import {CloseIcon} from '@chakra-ui/icons';
 import {FaBars, FaGlobeAmericas} from 'react-icons/fa';
-import cehatLogo from './CEHATLogo.png';
 import logo512 from './logo512.png';
+import {useTranslation} from 'react-i18next';
 
-// TODO: write all doc strings
-
+/**
+ * Props for Menu Toggle Button
+ */
 interface MenuToggleProps {
   toggle: () => void;
   isOpen: boolean;
 }
 
+/**
+ * Menu toggle button for mobile-sized screens
+ * @param toggle - function that toggles whether the menu is open or closed
+ * @param isOpen - boolean, is the menu open
+ * @returns a button that toggles the menu when clicked
+ */
 const MenuToggle: ({toggle, isOpen}: MenuToggleProps) => JSX.Element = ({
   toggle,
   isOpen,
 }: MenuToggleProps) => {
   return (
-      <Button variant="ghost" _hover={{bg: 'teal'}} onClick={toggle} width="60px">
-        {isOpen ? <CloseIcon size="lg" /> : <FaBars size="lg" />}
-      </Button>
+    <Button
+      variant="ghost"
+      _hover={{background: 'teal'}}
+      onClick={toggle}
+      width="60px"
+    >
+      {isOpen ? <CloseIcon size="lg" /> : <FaBars size="lg" />}
+    </Button>
   );
 };
 
+/**
+ * Props for the Language Toggle
+ */
 interface LanguageToggleProps {
   toggle: () => void;
 }
 
-// TODO: externalize strings
+/**
+ * Button to change the language between English and Spanish
+ * @param toggle - function that toggles the website language
+ * @returns a button that toggles the language when clicked
+ */
 const LanguageToggle: ({toggle}: LanguageToggleProps) => JSX.Element = ({
   toggle,
 }: LanguageToggleProps) => {
+  const {t} = useTranslation('menu');
   return (
     <Button
       variant="ghost"
-      _hover={{bg: 'teal', fontWeight: 'bold'}}
+      _hover={{background: 'teal', fontWeight: 'bold'}}
       id="changeLanguage"
       onClick={toggle}
+      mt={0}
     >
       <FaGlobeAmericas />
       <Text paddingLeft={2} fontSize="xl">
-        English
+        {t('changeLanguage')}
       </Text>
     </Button>
   );
 };
 
+/**
+ * Props for a single item in the navigation menu
+ */
 interface MenuItemProps {
   label: string;
   href: string;
 }
 
-// TODO: isLast?
+/**
+ * A single item in the navigation menu
+ * @param label - user-facing text for the item
+ * @param href - the page that this item routes to
+ * @returns a navigation link
+ */
 const MenuItem: ({label, href}: MenuItemProps) => JSX.Element = ({
   label,
   href,
@@ -76,7 +94,9 @@ const MenuItem: ({label, href}: MenuItemProps) => JSX.Element = ({
   );
 };
 
-// TODO pass width in as prop
+/**
+ * @returns the logo for the top left corner of the site
+ */
 const Logo: () => JSX.Element = () => {
   return (
     <Box>
@@ -85,34 +105,46 @@ const Logo: () => JSX.Element = () => {
   );
 };
 
+/**
+ * Props for the set of options in the navigation bar
+ */
 interface MenuLinksProps {
   isOpen: boolean;
   toggleLanguage: () => void;
   isMobile: boolean;
 }
 
+/**
+ * The set of all options for the navigation bar
+ * @param isOpen - boolean, is the navigation open (should it be displayed)
+ * @param isMobile - boolean, is the screen small/mobile sized
+ * @param toggleLanguage - function to toggle the website language
+ * @returns a component for all options in the navigation bar
+ */
 const MenuLinks: ({
   isOpen,
-  toggleLanguage,
   isMobile,
+  toggleLanguage,
 }: MenuLinksProps) => JSX.Element = ({
   isOpen,
-  toggleLanguage,
   isMobile,
+  toggleLanguage,
 }: MenuLinksProps) => {
+  const {t} = useTranslation('menu');
+
   return (
-    <Box width="100%">
+    <Box width={['100%', null, 'auto', null]}>
       {isOpen && (
         <Stack
-          spacing={10}
+          spacing={['3', null, '8', '10']}
           alignItems="center"
-          justify={['center', 'center', 'flex-end', null]}
-          direction={['column', 'column', 'row', 'row']}
-          pt={[4, 4, 0, 0]}
+          justify={['center', null, 'flex-end', null]}
+          direction={['column', null, 'row', null]}
+          pt={['4', null, 0, null]}
         >
-          <MenuItem href="/" label="Home" />
-          <MenuItem href="/health" label="Health Information" />
-          <MenuItem href="/about" label="About" />
+          <MenuItem href="/" label={t('home')} />
+          <MenuItem href="/health" label={t('healthInfo')} />
+          <MenuItem href="/about" label={t('about')} />
           <LanguageToggle toggle={toggleLanguage} />
         </Stack>
       )}
@@ -120,4 +152,4 @@ const MenuLinks: ({
   );
 };
 
-export {MenuToggle, MenuItem, LanguageToggle, Logo, MenuLinks};
+export {MenuToggle, Logo, MenuLinks};
