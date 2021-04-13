@@ -1,3 +1,5 @@
+import firebase from './firebase';
+
 /**
  * Upper bounds on AQI categories.
  *
@@ -12,4 +14,14 @@ const aqiCutoffs = {
   veryUnhealthy: 300, // Very unhealthy for all individuals (201-300)
 };
 
+interface SelectedSensor {
+  purpleAirId: number;
+  sensorDocId: string;
+  name: string;
+  aqi: string;
+  isAqiValid: boolean;
+  lastValidAqi: firebase.firestore.Timestamp | null;
+}
+
 export {aqiCutoffs};
+export type {SelectedSensor};

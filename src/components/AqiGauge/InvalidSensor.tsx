@@ -1,16 +1,16 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {Box, Text, Link} from '@chakra-ui/react';
-import firebase, {firestore} from '../../firebase';
 import {formatDate, formatTime} from '../Util/Dates';
 import {useTranslation} from 'react-i18next';
+import {SelectedSensor} from '../../util';
 
 /**
  * Props for the InvalidSensor component that displays in the AQI Gauge box
  * when a gray "invalid" sensor is selected
- * - `purpleAirId` is the PurpleAir ID of the selected sensor
+ * - `selectedSensor` contains the information for the sensor currently selected on the map
  */
 interface InvalidSensorProps {
-  purpleAirId: string;
+  selectedSensor: SelectedSensor;
 }
 
 /**
@@ -18,8 +18,8 @@ interface InvalidSensorProps {
  * sensor is clicked, instead of showing the AQI Gauge we display a message
  * that the sensor is down and give the last time of valid reading
  */
-const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
-  purpleAirId,
+const InvalidSensor: ({selectedSensor}: InvalidSensorProps) => JSX.Element = ({
+  selectedSensor,
 }: InvalidSensorProps) => {
   const {t} = useTranslation('dial');
   const [hasReported, setHasReported] = useState(true);
@@ -29,43 +29,30 @@ const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
   // this state variable stores which form of "at" we should use
   const [atString, setAtString] = useState(t('invalid.atPlural'));
 
-  if (purpleAirId) {
-    const docRef = firestore.collection('current-reading').doc('sensors');
-
-    docRef.get().then(doc => {
-      if (doc.exists) {
-        const data = doc.data()?.data ?? {};
-        const sensorData = data[purpleAirId];
-        if (sensorData) {
-          // Get time of last valid AQI reading
-          const lastValidAqiTimestamp: firebase.firestore.Timestamp =
-            sensorData['lastValidAqiTime'];
-          if (lastValidAqiTimestamp) {
-            setHasReported(true);
-            const lastValidAqiDate: Date = lastValidAqiTimestamp.toDate();
-            // Format date
-            const year: number = lastValidAqiDate.getFullYear();
-            const month: number = lastValidAqiDate.getMonth() + 1;
-            const day: number = lastValidAqiDate.getDate();
-            const hour: number = lastValidAqiDate.getHours();
-            const minutes: number = lastValidAqiDate.getMinutes();
-            setLastValidDate(formatDate(year, month, day));
-            setLastValidTime(formatTime(hour, minutes));
-            // Determine which form of "at" to use
-            const oneAM = 1;
-            const onePM = 13;
-            if (hour === oneAM || hour === onePM) {
-              setAtString(t('invalid.atSingular'));
-            } else {
-              setAtString(t('invalid.atPlural'));
-            }
-          } else {
-            setHasReported(false);
-          }
-        }
+  useEffect(() => {
+    if (selectedSensor.lastValidAqi) {
+      setHasReported(true);
+      const lastValidAqiDate: Date = selectedSensor.lastValidAqi.toDate();
+      // Format date
+      const year: number = lastValidAqiDate.getFullYear();
+      const month: number = lastValidAqiDate.getMonth() + 1;
+      const day: number = lastValidAqiDate.getDate();
+      const hour: number = lastValidAqiDate.getHours();
+      const minutes: number = lastValidAqiDate.getMinutes();
+      setLastValidDate(formatDate(year, month, day));
+      setLastValidTime(formatTime(hour, minutes));
+      // Determine which form of "at" to use
+      const oneAM = 1;
+      const onePM = 13;
+      if (hour === oneAM || hour === onePM) {
+        setAtString(t('invalid.atSingular'));
+      } else {
+        setAtString(t('invalid.atPlural'));
       }
-    });
-  }
+    } else {
+      setHasReported(false);
+    }
+  }, [selectedSensor.lastValidAqi, t]);
 
   return (
     <Box>

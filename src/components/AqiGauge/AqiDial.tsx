@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next';
 import {useColor} from '../../contexts/ColorContext';
 import {aqiCutoffs} from '../../util';
 import {InvalidSensor} from './InvalidSensor';
+import {SelectedSensor} from '../../util';
 
 /**
  * AqiLabelProps
@@ -73,14 +74,10 @@ const AqiLabel: ({currentAqi}: AqiLabelProps) => JSX.Element = ({
 
 /**
  * Interface for the props of the dial
- * - `currentAqi` is the AQI value that the dial should display
- * - `isValid` is true if the selected sensor has a valid AQI to display
- * - `purpleAirId` is the PurpleAir ID of the selected sensor
+ * - `selectedSensor` contains the information of the sensor currently selected on the map
  */
 interface DialProps {
-  currentAqi: string;
-  isValid: boolean;
-  purpleAirId: string;
+  selectedSensor: SelectedSensor;
 }
 
 /**
@@ -89,17 +86,11 @@ interface DialProps {
  * reading for the currently selected sensor. Additionally, there is a key below
  * the dial to label each color on the dial with how severe the health risk is.
  */
-const AqiDial: ({
-  currentAqi,
-  isValid,
-  purpleAirId,
-}: DialProps) => JSX.Element = ({
-  currentAqi,
-  isValid,
-  purpleAirId,
+const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
+  selectedSensor,
 }: DialProps) => {
   const {t} = useTranslation(['dial', 'menu']);
-  if (isValid) {
+  if (selectedSensor.isAqiValid) {
     return (
       <Flex
         height="100%"
@@ -110,10 +101,10 @@ const AqiDial: ({
       >
         <Box>
           <Center>
-            <GaugeSvg currentAqi={currentAqi} />
+            <GaugeSvg currentAqi={selectedSensor.aqi} />
           </Center>
           <Text fontWeight="bold" fontSize={30}>
-            {t('aqi') + currentAqi}
+            {t('aqi') + selectedSensor.aqi}
           </Text>
           <Text fontStyle="italic" fontSize={14} mb={2}>
             {t('moreInfo')}
@@ -122,7 +113,7 @@ const AqiDial: ({
               {t('menu:healthInfo')}
             </Link>
           </Text>
-          <AqiLabel currentAqi={currentAqi} />
+          <AqiLabel currentAqi={selectedSensor.aqi} />
         </Box>
       </Flex>
     );
@@ -135,7 +126,7 @@ const AqiDial: ({
         align="center"
         fontFamily="Oxygen"
       >
-        <InvalidSensor purpleAirId={purpleAirId} />
+        <InvalidSensor selectedSensor={selectedSensor} />
       </Flex>
     );
   }
