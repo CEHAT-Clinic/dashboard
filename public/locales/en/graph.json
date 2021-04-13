@@ -7,5 +7,6 @@
     "saturday":"Sat",
     "sunday": "Sun",
     "noSensor": "Click a sensor to see its data!",
-    "time": "Time"
+    "time": "Time",
+    "graphTitle": "AQI Over the Last 24 Hours"
 }
