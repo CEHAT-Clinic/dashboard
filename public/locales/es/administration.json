@@ -160,6 +160,7 @@
         },
         "date": "Borrar datos más viejos que esta fecha",
         "tooRecent": "Esta fecha es tan recientemente. Debido a razones técnicas, tienes que elegir una fecha más de una semana en el pasado.",
+        "invalidDate": "La fecha no es válida",
         "submit": "Borra"
         },
     "downloadData":{

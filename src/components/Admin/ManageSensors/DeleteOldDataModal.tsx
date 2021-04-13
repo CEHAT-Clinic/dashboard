@@ -104,7 +104,7 @@ function DeleteOldDataModal(): JSX.Element {
     } else if (date.getMonth() !== month - 1) {
       // This error is thrown if the `day` is greater than the last
       // day of the `Month` (ex: Feb 31 is invalid)
-      setError(t('downloadData.error.invalid'));
+      setError(t('deleteOldData.invalid'));
     } else if (!oldEnough()) {
       setError(t('deleteOldData.tooRecent'));
     } else {

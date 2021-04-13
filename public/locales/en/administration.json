@@ -160,6 +160,7 @@
         },
         "date": "Date to Delete Data Before",
         "tooRecent": "This date is too recent. For technical reasons, you must choose a date at least a week in the past.",
+        "invalidDate": "Date is invalid",
         "submit": "Delete"
         },
     "downloadData":{
