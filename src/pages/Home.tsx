@@ -59,7 +59,7 @@ const Home: () => JSX.Element = () => {
 
   return (
     <Box>
-      <Heading as="h1" textAlign="center" marginBottom={1}>
+      <Heading fontFamily="Oxygen" as="h1" textAlign="center" marginBottom={1}>
         {t('heading')}
       </Heading>
       <Flex
