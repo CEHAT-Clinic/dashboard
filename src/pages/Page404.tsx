@@ -9,10 +9,8 @@ import {useTranslation} from 'react-i18next';
 const Page404: React.FC = () => {
   const {t} = useTranslation('page404');
   return (
-    <Flex alignItems="center" flexDir="column">
-      <Heading textAlign="center" marginBottom={1}>
-        {t('heading')}
-      </Heading>
+    <Flex alignItems="center" flexDir="column" margin={2} textAlign="center">
+      <Heading marginBottom={1}>{t('heading')}</Heading>
       <Text>
         {t('whoops')}
         <Link color="#32bfd1" href="/">
