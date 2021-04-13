@@ -100,7 +100,8 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
         fontFamily="Oxygen"
       >
         <Box>
-          <Center>
+          <Center flexDir="column">
+            <Text fontWeight="semibold">Sensor: {selectedSensor.name}</Text>
             <GaugeSvg currentAqi={selectedSensor.aqi} />
           </Center>
           <Text fontWeight="bold" fontSize={30}>
@@ -125,7 +126,9 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
         justifyContent="center"
         align="center"
         fontFamily="Oxygen"
+        flexDir="column"
       >
+        <Text fontWeight="semibold">Sensor: {selectedSensor.name}</Text>
         <InvalidSensor selectedSensor={selectedSensor} />
       </Flex>
     );
