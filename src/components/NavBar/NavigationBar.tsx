@@ -15,7 +15,6 @@ function NavigationBar(): JSX.Element {
   const [isOpen, setIsOpen] = useState(!isMobile);
   const [isScrolled, setIsScrolled] = useState(false);
 
-  const toggle = () => setIsOpen(!isOpen);
   const {i18n} = useTranslation('menu');
 
   /**
@@ -101,7 +100,9 @@ function NavigationBar(): JSX.Element {
       zIndex="3"
     >
       <Logo />
-      {isMobile && <MenuToggle toggle={toggle} isOpen={isOpen} />}
+      {isMobile && (
+        <MenuToggle toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+      )}
       <MenuLinks
         isOpen={isOpen}
         isMobile={isMobile}

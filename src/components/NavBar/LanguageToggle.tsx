@@ -25,6 +25,7 @@ const LanguageToggle: ({toggle}: LanguageToggleProps) => JSX.Element = ({
       _hover={{background: 'teal', fontWeight: 'bold'}}
       id="changeLanguage"
       onClick={toggle}
+      fontWeight="regular"
       mt={0}
     >
       <FaGlobeAmericas />
