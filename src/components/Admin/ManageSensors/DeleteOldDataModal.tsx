@@ -14,12 +14,18 @@ import {
   Text,
   Divider,
   Flex,
+  FormControl,
+  FormLabel,
+  HStack,
+  NumberInput,
+  NumberInputField,
 } from '@chakra-ui/react';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
 import {firestore} from '../../../firebase';
+import {MonthInput, DayInput} from './DownloadData/Util';
 
 /**
  * Modal that allows users to mark old data for deletion
@@ -45,6 +51,13 @@ function DeleteOldDataModal(): JSX.Element {
     isDownloadedDisclosureChecked &&
     isUploadedDisclosureChecked &&
     isIrreversibleDisclosureChecked;
+
+  const [year, setYear] = useState(0);
+  const [month, setMonth] = useState(0);
+  const [day, setDay] = useState(0);
+  const [error, setError] = useState('');
+  const validDate = error === '';
+
   const {t} = useTranslation('administration');
 
   /**
@@ -55,14 +68,55 @@ function DeleteOldDataModal(): JSX.Element {
     setDownloadedDisclosureChecked(false);
     setUploadedDisclosureChecked(false);
     setIrreversibleDisclosureChecked(false);
+    setYear(0);
+    setMonth(0);
+    setDay(0);
+    setError('');
+
     onClose();
   }
+
+  /**
+   * Check that input dates are valid, sets error accordingly
+   */
+  const yearDigits = 4;
+  useEffect(() => {
+    const date = new Date(year, month - 1, day);
+    /**
+     * Determines whether a given date is old enough to serve as the delete before date.
+     *
+     * @returns Whether the inputted date is old enough to be the delete before date
+     */
+    const oldEnough = () => {
+      const offset = 7;
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - offset);
+
+      return date <= sevenDaysAgo;
+    };
+
+    if (!year || !month || !day) {
+      // If any of the fields are empty
+      setError(t('downloadData.error.emptyField'));
+    } else if (('' + year).length !== yearDigits) {
+      // If the years don't have 4 digits
+      setError(t('downloadData.error.yearDigits'));
+    } else if (date.getMonth() !== month - 1) {
+      // This error is thrown if the `day` is greater than the last
+      // day of the `Month` (ex: Feb 31 is invalid)
+      setError(t('deleteOldData.invalid'));
+    } else if (!oldEnough()) {
+      setError(t('deleteOldData.tooRecent'));
+    } else {
+      setError('');
+    }
+  }, [year, month, day, t]);
 
   /**
    * Marks data older than a defined time as ready for deletion by a Cloud Function
    */
   async function markOldDataForDeletion(): Promise<void> {
-    if (allDisclosuresChecked && isAdmin) {
+    if (allDisclosuresChecked && validDate && isAdmin) {
       const sensorsList = await firestore.collection('sensors').get();
       const deletionDocRef = firestore.collection('deletion').doc('todo');
 
@@ -71,10 +125,7 @@ function DeleteOldDataModal(): JSX.Element {
         (await deletionDocRef.get())?.data()?.deletionMap ??
         Object.create(null);
 
-      const offset = 7;
-      const deleteBeforeDate = new Date();
-      // This marks all data older than a week for deletion
-      deleteBeforeDate.setDate(deleteBeforeDate.getDate() - offset);
+      const deleteBeforeDate = new Date(year, month - 1, day);
 
       for (const sensorDoc of sensorsList.docs) {
         mapping[sensorDoc.id] = deleteBeforeDate;
@@ -133,11 +184,31 @@ function DeleteOldDataModal(): JSX.Element {
                 </Checkbox>
               </Stack>
             </CheckboxGroup>
+            <Divider marginTop={2} marginBottom={2} />
+            <FormControl isRequired>
+              <FormLabel>{t('deleteOldData.date')}</FormLabel>
+              <HStack>
+                <NumberInput size="md" width="30%" id="year">
+                  <NumberInputField
+                    placeholder={t('downloadData.year')}
+                    onChange={event => {
+                      setYear(+event.target.value);
+                    }}
+                    value={year}
+                  />
+                </NumberInput>
+                <MonthInput value={month} setValue={setMonth} />
+                <DayInput value={day} setValue={setDay} />
+              </HStack>
+            </FormControl>
+            {!validDate && <Text color="red">{error}</Text>}
+
+            <Divider marginTop={2} marginBottom={2} />
             <Flex justifyContent="center">
               <Button
                 onClick={handleSubmit}
                 colorScheme="red"
-                isDisabled={!allDisclosuresChecked}
+                isDisabled={!allDisclosuresChecked || !validDate}
                 leftIcon={<FaTrash />}
               >
                 {t('deleteOldData.submit')}
