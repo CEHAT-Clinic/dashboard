@@ -65,16 +65,16 @@ const Health: React.FC = () => {
             gap={1}
             textAlign="center"
           >
-            <Link gridRow={1} href="/health/#pollution" color="#32bfd1">
+            <Link gridRow={1} href="#pollution" color="#32bfd1">
               {t('pollution.heading')}
             </Link>
-            <Link gridRow={2} href="/health/#aqi" color="#32bfd1">
+            <Link gridRow={2} href="#aqi" color="#32bfd1">
               {t('aqi.heading')}
             </Link>
-            <Link gridRow={1} href="/health/#protection" color="#32bfd1">
+            <Link gridRow={1} href="#protection" color="#32bfd1">
               {t('protection.heading')}
             </Link>
-            <Link gridRow={2} href="/health/#references" color="#32bfd1">
+            <Link gridRow={2} href="#references" color="#32bfd1">
               {t('references.heading')}
             </Link>
           </Grid>

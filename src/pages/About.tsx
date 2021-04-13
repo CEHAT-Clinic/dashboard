@@ -54,19 +54,19 @@ const About: React.FC = () => {
             gap={1}
             textAlign="center"
           >
-            <Link gridRow={1} href="/about/#cehat" color="#32bfd1">
+            <Link gridRow={1} href="#cehat" color="#32bfd1">
               {t('cehat.heading')}
             </Link>
-            <Link gridRow={2} href="/about/#involved" color="#32bfd1">
+            <Link gridRow={2} href="#involved" color="#32bfd1">
               {t('involved.heading')}
             </Link>
-            <Link gridRow={3} href="/about/#sensorsDown" color="#32bfd1">
+            <Link gridRow={3} href="#sensorsDown" color="#32bfd1">
               {t('sensorsDown.heading')}
             </Link>
-            <Link gridRow={1} href="/about/#acknowledge" color="#32bfd1">
+            <Link gridRow={1} href="#acknowledge" color="#32bfd1">
               {t('acknowledge.heading')}
             </Link>
-            <Link gridRow={2} href="/about/#admin" color="#32bfd1">
+            <Link gridRow={2} href="#admin" color="#32bfd1">
               {t('admin.heading')}
             </Link>
           </Grid>
