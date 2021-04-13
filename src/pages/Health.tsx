@@ -1,3 +1,4 @@
+import React, {useState, useEffect} from 'react';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import {
   Box,
@@ -8,17 +9,76 @@ import {
   ListItem,
   Image,
   Flex,
+  Grid,
 } from '@chakra-ui/react';
-import React from 'react';
 import {useTranslation} from 'react-i18next';
 import AqiTable from '../components/AqiTable';
 
 const Health: React.FC = () => {
   const {t} = useTranslation('health');
+  const [isMobile, setIsMobile] = useState(
+    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
+  );
+  // -------- Detect screen size for conditional formatting --------- //
+  /**
+   * Adjust UI depending on screenwidth. This function is called from event
+   * listeners with a max-width match media query.
+   * @param this - a media query that either matches or doesn't
+   */
+  function handleScreenChange(this: MediaQueryList): void {
+    // Is the screen size mobile size
+    if (this.matches) {
+      // True when the screen-width is at most 47.9em
+      setIsMobile(true);
+    } else {
+      setIsMobile(false);
+    }
+  }
+
+  // Updates the state and the dom when the window size is changed
+  useEffect(() => {
+    const screenSize = window.matchMedia('(max-width: 47.9em)');
+    if (screenSize) {
+      screenSize.addEventListener('change', handleScreenChange);
+    }
+
+    return function (): void {
+      if (screenSize) {
+        screenSize.removeEventListener('change', handleScreenChange);
+      }
+    };
+  }, []);
+  // -----------------  End detect screen size ----------------- //
 
   return (
     <Flex width="full" align="center" direction="column" padding={8}>
       <Heading as="h1">{t('pageHeading')}</Heading>
+      {isMobile && (
+        <Box>
+          <Text textAlign="center" fontStyle="italic">
+            Jump to:
+          </Text>
+          <Grid
+            width="100%"
+            templateColumns="repeat(2,1fr)"
+            gap={1}
+            textAlign="center"
+          >
+            <Link gridRow={1} href="/health/#pollution" color="#32bfd1">
+              {t('pollution.heading')}
+            </Link>
+            <Link gridRow={2} href="/health/#aqi" color="#32bfd1">
+              {t('aqi.heading')}
+            </Link>
+            <Link gridRow={1} href="/health/#protection" color="#32bfd1">
+              {t('protection.heading')}
+            </Link>
+            <Link gridRow={2} href="/health/#references" color="#32bfd1">
+              {t('references.heading')}
+            </Link>
+          </Grid>
+        </Box>
+      )}
       <Flex
         padding={2}
         margin={2}
