@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading, Flex, Button, Text} from '@chakra-ui/react';
+import {Box, Heading, Flex, Button, Text, Grid} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
@@ -64,6 +64,9 @@ const ManageSensors: () => JSX.Element = () => {
   } else if (!isAdmin) {
     return <AccessDenied reason={t('notAdmin')} />;
   } else {
+    const activeSensors = sensors.filter(sensor => sensor.isActive);
+    const inactiveSensors = sensors.filter(sensor => !sensor.isActive);
+
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
@@ -77,25 +80,26 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Flex justifyContent="center">
-            {/* TODO: add spacing and allow for movement */}
+          <Grid
+            justifyContent="center"
+            templateColumns={['repeat(2,1fr)', null, 'repeat(4,1fr)', null]}
+            gap={2}
+          >
             <AddSensorModal />
             <DownloadCSVModal sensors={sensors} />
             <DeleteOldDataModal />
-            <DeleteSensorModal
-              sensors={sensors.filter(sensor => !sensor.isActive)}
-            />
-          </Flex>
+            <DeleteSensorModal sensors={inactiveSensors} />
+          </Grid>
           <SensorTable
             title={t('sensors.activeHeading')}
-            sensors={sensors.filter(sensor => sensor.isActive)}
+            sensors={activeSensors}
             setError={setError}
             activateHeading={t('sensors.active')}
             activateNote={t('sensors.activeNote')}
           />
           <SensorTable
             title={t('sensors.inactiveHeading')}
-            sensors={sensors.filter(sensor => !sensor.isActive)}
+            sensors={inactiveSensors}
             setError={setError}
             activateHeading={t('sensors.inactive')}
             activateNote={t('sensors.inactiveNote')}
