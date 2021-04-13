@@ -145,7 +145,8 @@
           "oct",
           "nov",
           "dec",
-          "Checkbox"
+          "Checkbox",
+          "Merriweather"
         ],
         "skipWords": [
           "Pv"

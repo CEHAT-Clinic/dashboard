@@ -59,10 +59,14 @@ const Home: () => JSX.Element = () => {
 
   return (
     <Box>
-      <Heading as="h1" textAlign="center" marginBottom={1}>
+      <Heading fontFamily="Oxygen" as="h1" textAlign="center" marginBottom={1}>
         {t('heading')}
       </Heading>
-      <Flex direction={['column', 'column', 'row', 'row']} textAlign="center">
+      <Flex
+        direction={['column', 'column', 'row', 'row']}
+        textAlign="center"
+        fontFamily="Oxygen"
+      >
         {/* Start map */}
         {isMobile ? (
           <Box
@@ -174,7 +178,11 @@ const Home: () => JSX.Element = () => {
                     purpleAirId={currentPurpleAirId}
                   />
                 ) : (
-                  <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
+                  <Heading
+                    fontFamily="Oxygen"
+                    fontSize="lg"
+                    marginTop={[null, null, '20%', null]}
+                  >
                     {t('noSensorGauge')}
                   </Heading>
                 )}
@@ -220,6 +228,7 @@ const Home: () => JSX.Element = () => {
                     width="100%"
                     fontSize="lg"
                     marginTop={[null, null, '20%', null]}
+                    fontFamily="Oxygen"
                   >
                     {t('noSensorGraph')}
                   </Heading>
