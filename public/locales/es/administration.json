@@ -114,7 +114,7 @@
         "confirmChange": "Confirma el cambio de status de administrador"
     },
     "sensors": {
-        "activeHeading": "Los sensors activos",
+        "activeHeading": "Los sensores activos",
         "inactiveHeading": "Los sensores inactivos",
         "name": "Nombre del sensor",
         "purpleAirId": "PurpleAir ID",
