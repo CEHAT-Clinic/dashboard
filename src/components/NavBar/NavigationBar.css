@@ -22,6 +22,7 @@ nav {
     grid-template-columns: repeat(4, auto);
     align-items: center;
     justify-items: center;
+    font-family:"Oxygen";
   }
 
 /* Style for navigation links*/

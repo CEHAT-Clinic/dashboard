@@ -65,7 +65,7 @@ export function createSensorIcon(
     '<text x="50%" y="50%" dominant-baseline="central" text-anchor="middle"' +
     ' font-size="' +
     markerSize +
-    '" font-family="DroidSerif" fill=' +
+    '" font-family="Arial" font-style="Bold" fill=' +
     textColor +
     '>' +
     aqiReading +

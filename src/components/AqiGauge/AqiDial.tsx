@@ -63,6 +63,8 @@ const AqiLabel: ({currentAqi}: AqiLabelProps) => JSX.Element = ({
       py={1}
       bg={backgroundColor}
       textColor={textColor}
+      fontFamily="Oxygen"
+      fontWeight="bold"
     >
       {label}
     </Tag>
@@ -99,13 +101,21 @@ const AqiDial: ({
   const {t} = useTranslation(['dial', 'menu']);
   if (isValid) {
     return (
-      <Flex height="100%" width="100%" justifyContent="center" align="center">
+      <Flex
+        height="100%"
+        width="100%"
+        justifyContent="center"
+        align="center"
+        fontFamily="Oxygen"
+      >
         <Box>
           <Center>
             <GaugeSvg currentAqi={currentAqi} />
           </Center>
-          <Text fontSize={30}>{t('aqi') + currentAqi}</Text>
-          <Text fontSize={14} mb={2}>
+          <Text fontWeight="bold" fontSize={30}>
+            {t('aqi') + currentAqi}
+          </Text>
+          <Text fontStyle="italic" fontSize={14} mb={2}>
             {t('moreInfo')}
             <Link fontSize={14} color="#32bfd1" href="/health">
               {' '}
@@ -118,7 +128,13 @@ const AqiDial: ({
     );
   } else {
     return (
-      <Flex height="100%" width="100%" justifyContent="center" align="center">
+      <Flex
+        height="100%"
+        width="100%"
+        justifyContent="center"
+        align="center"
+        fontFamily="Oxygen"
+      >
         <InvalidSensor purpleAirId={purpleAirId} />
       </Flex>
     );
