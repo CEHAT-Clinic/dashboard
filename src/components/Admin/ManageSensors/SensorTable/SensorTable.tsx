@@ -12,38 +12,35 @@ import {ToggleActiveSensorPopover} from './ToggleActivePopover';
  * - `sensors` - sensors to be displayed in the table
  * - `setError` - error state setter for the page
  * - `activateHeading` - heading for the activate/deactivate button column
- * - `activateNote` - note displayed when the activate/deactivate button is clicked
  */
 interface SensorTableProps {
   title: string;
   sensors: Array<Sensor>;
   setError: React.Dispatch<React.SetStateAction<string>>;
   activateHeading: string;
-  activateNote: string;
 }
 
 /**
- * Table of sensors. Includes a heading for the table.
+ * Table of sensors. Includes a heading for the table and a message to describe
+ * what active/inactive means.
  */
 const SensorTable: ({
   title,
   sensors,
   setError,
   activateHeading,
-  activateNote,
 }: SensorTableProps) => JSX.Element = ({
   title,
   sensors,
   setError,
   activateHeading,
-  activateNote,
 }: SensorTableProps) => {
   const {t} = useTranslation('administration');
 
   return (
     <Box maxWidth="100%" overflowX="auto" marginTop={3}>
       <Heading textAlign="justify" fontSize="2xl">
-        {title}
+        <MoreInfoHeading heading={title} message={t('sensors.activeNote')} />
       </Heading>
       <Table>
         <Thead>
@@ -63,12 +60,7 @@ const SensorTable: ({
                 message={t('sensors.lastReadingTimeNote')}
               />
             </Th>
-            <Th>
-              <MoreInfoHeading
-                heading={activateHeading}
-                message={activateNote}
-              />
-            </Th>
+            <Th>{activateHeading}</Th>
           </Tr>
         </Thead>
         <Tbody>

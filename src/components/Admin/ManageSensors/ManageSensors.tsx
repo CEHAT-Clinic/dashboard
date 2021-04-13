@@ -94,15 +94,13 @@ const ManageSensors: () => JSX.Element = () => {
             title={t('sensors.activeHeading')}
             sensors={activeSensors}
             setError={setError}
-            activateHeading={t('sensors.active')}
-            activateNote={t('sensors.activeNote')}
+            activateHeading={t('sensors.deactivate')}
           />
           <SensorTable
             title={t('sensors.inactiveHeading')}
             sensors={inactiveSensors}
             setError={setError}
-            activateHeading={t('sensors.inactive')}
-            activateNote={t('sensors.inactiveNote')}
+            activateHeading={t('sensors.activate')}
           />
           {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>

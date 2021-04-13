@@ -37,7 +37,7 @@ const MoreInfoHeading: ({
   message,
   heading,
 }: MoreInfoHeadingProps) => {
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation('common');
   return (
     <Flex alignItems="center">
       <Text>{heading}</Text>
@@ -47,7 +47,7 @@ const MoreInfoHeading: ({
             size="xs"
             variant="unstyled"
             isRound
-            aria-label={t('common:moreInformation')}
+            aria-label={t('moreInformation')}
             icon={<QuestionOutlineIcon />}
           />
         </PopoverTrigger>
@@ -55,7 +55,7 @@ const MoreInfoHeading: ({
           <PopoverArrow />
           <PopoverCloseButton />
           <PopoverHeader>
-            <Heading fontSize="medium">{t('common:moreInformation')}</Heading>
+            <Heading fontSize="medium">{t('moreInformation')}</Heading>
           </PopoverHeader>
           <PopoverBody>
             <Text fontWeight="normal" fontSize="md" textTransform="none">
