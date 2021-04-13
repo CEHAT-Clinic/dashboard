@@ -2,6 +2,7 @@ import React from 'react';
 import {Sensor} from './Types';
 import {Box, Select} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
+import {numberToString} from './Util';
 
 /**
  * Props for sensor input fields used in `SensorInput`
@@ -39,12 +40,9 @@ const SensorInput: ({
   const docIdToPurpleAirId = new Map<string, number>();
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
-    let label;
-    if (sensor.name) {
-      label = sensor.name;
-    } else {
-      label = sensor.purpleAirId;
-    }
+    const label = sensor.name
+      ? sensor.name
+      : numberToString(sensor.purpleAirId, t('sensors.unknown'));
     options.push(
       <option value={sensor.docId} key={i}>
         {label}
@@ -55,7 +53,6 @@ const SensorInput: ({
   return (
     <Box>
       <Select
-        type="number"
         placeholder={t('downloadData.chooseSensor')}
         value={docId}
         onChange={event => {

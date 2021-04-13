@@ -2,6 +2,15 @@ import firebase from '../../../../firebase';
 
 /**
  * Interface for a PurpleAir sensor
+ * - `name` - PurpleAir sensor name
+ * - `purpleAirId` - PurpleAir sensor ID
+ * - `latitude` - latitude of sensor
+ * - `longitude` - longitude of sensor
+ * - `isActive` - if data is actively being gathered for the sensor
+ * - `isValid` - if the current AQI value is valid
+ * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
+ * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown
+ * - `docId` - document ID of the for the sensor in the sensors collection in Firestore
  */
 interface Sensor {
   name: string;
