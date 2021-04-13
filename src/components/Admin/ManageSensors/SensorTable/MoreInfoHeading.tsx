@@ -29,6 +29,7 @@ interface MoreInfoHeadingProps {
  * table field.
  * @param heading - heading for the column with the help icon
  * @param message - help message displayed in popover when help icon clicked
+ * @returns a heading with a question icon that when clicked, creates a pop up with a message explaining the heading
  */
 const MoreInfoHeading: ({
   message,

@@ -16,7 +16,7 @@ interface LabelValueProps {
  * The label is bold and a colon and space separate the label and value.
  * @param label - text to be in the bold font
  * @param value - text to be after the label, in normal font
- * @returns a single line of text where the `label` is bolded and the `value` is after the label and a colon
+ * @returns a single line of text where the `label` is in bold and the `value` is after the label and a colon
  */
 const LabelValue: ({label, value}: LabelValueProps) => JSX.Element = ({
   label,
