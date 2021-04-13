@@ -23,6 +23,7 @@ import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Sensor, PurpleAirGroupMember} from './Util/Types';
+import {numberToString} from './Util/Util';
 import {SensorInput} from './Util/SensorInput';
 import {FaTrash} from 'react-icons/fa';
 import axios, {AxiosResponse} from 'axios';
@@ -241,7 +242,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
               <Box>
                 <LabelValue
                   label={t('sensors.purpleAirId')}
-                  value={purpleAirId.toString()}
+                  value={numberToString(purpleAirId, t('sensors.unknown'))}
                 />
               </Box>
               <Checkbox
