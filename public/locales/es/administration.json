@@ -158,6 +158,9 @@
             "uploaded": "He almacenado los datos descargados en un lugar seguro.",
             "irreversible": "Entiendo que este proceso es irreversible y no se puede recuperar los datos borrado."
         },
+        "date": "Borrar datos más viejos que esta fecha",
+        "tooRecent": "Esta fecha es tan recientemente. Debido a razones técnicas, tienes que elegir una fecha más de una semana en el pasado.",
+        "invalidDate": "La fecha no es válida",
         "submit": "Borra"
         },
     "downloadData":{
