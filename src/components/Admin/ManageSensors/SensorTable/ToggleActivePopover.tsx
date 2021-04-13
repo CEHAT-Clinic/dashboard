@@ -33,6 +33,8 @@ interface ToggleActiveSensorPopoverProps {
  * a sensor's active status. Active means that data for the sensor will be
  * collected and shown on the map, but does not change anything in PurpleAir.
  * @param sensor - sensor for a row
+ * @param setError - state setter for errors in the activate/deactivate process
+ * @returns button that when clicked creates a confirmation popover
  */
 const ToggleActiveSensorPopover: ({
   sensor,
