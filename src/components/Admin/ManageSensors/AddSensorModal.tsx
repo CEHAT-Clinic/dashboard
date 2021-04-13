@@ -26,7 +26,7 @@ import {SubmitButton} from '../ComponentUtil';
 import firebase, {firestore} from '../../../firebase';
 import {useAuth} from '../../../contexts/AuthContext';
 import axios from 'axios';
-import {LabelValue} from './LabelValue';
+import {LabelValue} from './Util/LabelValue';
 
 /**
  * Component to add a new sensor. Includes a button to make the modal pop up
@@ -205,7 +205,7 @@ function AddSensorModal(): JSX.Element {
   }
 
   return (
-    <Box marginY={2}>
+    <Box>
       <Button colorScheme="teal" onClick={onOpen}>
         {t('sensors.add')}
       </Button>

@@ -22,11 +22,11 @@ import {
 import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import {Sensor, PurpleAirGroupMember} from './Types';
-import {SensorInput} from './SensorInput';
+import {Sensor, PurpleAirGroupMember} from './Util/Types';
+import {SensorInput} from './Util/SensorInput';
 import {FaTrash} from 'react-icons/fa';
 import axios, {AxiosResponse} from 'axios';
-import {LabelValue} from './LabelValue';
+import {LabelValue} from './Util/LabelValue';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety

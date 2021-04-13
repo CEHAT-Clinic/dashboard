@@ -114,6 +114,8 @@
         "confirmChange": "Confirm Admin Status Change"
     },
     "sensors": {
+        "activeHeading": "Active Sensors",
+        "inactiveHeading": "Inactive Sensors",
         "heading": "Current Sensors",
         "name": "Sensor Name",
         "purpleAirId": "PurpleAir ID",
@@ -124,7 +126,6 @@
         "lastValidAqiTimeNote": "The time of the last valid AQI time refers to the last time that a sensor had enough good data to calculate an AQI. PurpleAir sensors have two sensors called channel A and channel B, and if the two channels readings are too different over a period of 24 hours, then we don't use the sensor reading from that time.",
         "readingTime": "Last PM2.5 Reading Time",
         "lastReadingTimeNote": "The time of the most recent sensor reading is the last time that this website received a new sensor reading from PurpleAir. If the sensor is active and the time is old, this may mean that the sensor is no longer sending new readings.",
-        "activeHeading": "Active?",
         "activate": "Activate",
         "confirmActivate": "Confirm you want to activate the sensor ",
         "activateNote": "Please note that this sensor's AQI will not show up on the map for at least 2 hours until enough data is collected to calculate the AQI for this sensor.",
@@ -136,7 +137,7 @@
         "deactivateNote": "Please note that this sensor may take up to 10 minutes to be removed from the website's map. Deactivating the sensor will not delete any historical sensor data, but it will stop collecting new sensor data. This will also not make changes on PurpleAir's website.",
         "inactive": "inactive",
         "unknown": "unknown",
-        "add": "Add new sensor",
+        "add": "Add New Sensor",
         "addComplete": "Sensor added",
         "showAddHelp": "Show help",
         "hideAddHelp": "Hide help",

@@ -1,7 +1,7 @@
 import React from 'react';
 import {Select, Box} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
-import {Sensor} from '../Types';
+import {Sensor} from '../Util/Types';
 
 /**
  * Interface for the fields of the CSV

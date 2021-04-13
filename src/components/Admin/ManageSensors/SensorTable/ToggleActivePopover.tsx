@@ -13,9 +13,9 @@ import {
   Text,
   Divider,
 } from '@chakra-ui/react';
-import {Sensor} from './Types';
-import {useAuth} from '../../../contexts/AuthContext';
-import firebase, {firestore} from '../../../firebase';
+import {Sensor} from '../Util/Types';
+import {useAuth} from '../../../../contexts/AuthContext';
+import firebase, {firestore} from '../../../../firebase';
 import {useTranslation} from 'react-i18next';
 
 /**

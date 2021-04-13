@@ -1,19 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  Box,
-  Heading,
-  Flex,
-  Button,
-  Tbody,
-  Table,
-  Thead,
-  Th,
-  Tr,
-  Td,
-  Center,
-  Text,
-  HStack,
-} from '@chakra-ui/react';
+import {Box, Heading, Flex, Button, Text} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
@@ -23,10 +9,8 @@ import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
-import {numberToString, timestampToDateString} from './Util';
-import {Sensor} from './Types';
-import {MoreInfoHeading} from './MoreInfoHeading';
-import {ToggleActiveSensorPopover} from './ToggleActivePopover';
+import {Sensor} from './Util/Types';
+import {SensorTable} from './SensorTable/SensorTable';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -37,8 +21,9 @@ const ManageSensors: () => JSX.Element = () => {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation('administration');
 
+  // Get sensors, and update sensors list as the data changes
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
       setIsLoading(true);
@@ -54,8 +39,8 @@ const ManageSensors: () => JSX.Element = () => {
               sensorList.push({
                 purpleAirId: sensorData.purpleAirId,
                 name: sensorData.name ?? '',
-                latitude: sensorData.latitude ?? NaN,
-                longitude: sensorData.longitude ?? NaN,
+                latitude: sensorData.latitude ?? Number.NaN,
+                longitude: sensorData.longitude ?? Number.NaN,
                 isActive: sensorData.isActive ?? true,
                 isValid: sensorData.isValid ?? false,
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
@@ -92,77 +77,29 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Center>
-            <HStack>
-              <AddSensorModal />
-              <DownloadCSVModal sensors={sensors} />
-              <DeleteOldDataModal />
-              <DeleteSensorModal
-                sensors={sensors.filter(sensor => !sensor.isActive)}
-              />
-            </HStack>
-          </Center>
-          <Box maxWidth="100%" overflowX="auto">
-            {/* TODO: change this to active and inactive sensors */}
-            <Heading textAlign="justify" fontSize="2xl">
-              {t('sensors.heading')}
-            </Heading>
-            {/* TODO: make component for table of sensors */}
-            <Table>
-              <Thead>
-                <Tr>
-                  <Th>{t('sensors.name')}</Th>
-                  <Th>{t('sensors.purpleAirId')}</Th>
-                  <Th>{t('sensors.latitude')}</Th>
-                  <Th>{t('sensors.longitude')}</Th>
-                  <Th>
-                    <MoreInfoHeading
-                      heading={t('sensors.status')}
-                      message={t('sensors.activeNote')}
-                    />
-                  </Th>
-                  <Th>
-                    <MoreInfoHeading
-                      heading={t('sensors.validAqiTime')}
-                      message={t('sensors.lastValidAqiTimeNote')}
-                    />
-                  </Th>
-                  <Th>
-                    <MoreInfoHeading
-                      heading={t('sensors.readingTime')}
-                      message={t('sensors.lastReadingTimeNote')}
-                    />
-                  </Th>
-                  <Th>{t('sensors.activeHeading')}</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {sensors.map((sensor, id) => (
-                  <Tr key={id}>
-                    <Td>{sensor.name}</Td>
-                    <Td>{sensor.purpleAirId}</Td>
-                    <Td>{numberToString(sensor.latitude, t)}</Td>
-                    <Td>{numberToString(sensor.longitude, t)}</Td>
-                    <Td>
-                      {sensor.isActive
-                        ? t('sensors.active')
-                        : t('sensors.inactive')}
-                    </Td>
-                    <Td>{timestampToDateString(sensor.lastValidAqiTime, t)}</Td>
-                    <Td>
-                      {timestampToDateString(sensor.lastSensorReadingTime, t)}
-                    </Td>
-                    <Td>
-                      <ToggleActiveSensorPopover
-                        sensor={sensor}
-                        setError={setError}
-                      />
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Box>
+          <Flex justifyContent="center">
+            {/* TODO: add spacing and allow for movement */}
+            <AddSensorModal />
+            <DownloadCSVModal sensors={sensors} />
+            <DeleteOldDataModal />
+            <DeleteSensorModal
+              sensors={sensors.filter(sensor => !sensor.isActive)}
+            />
+          </Flex>
+          <SensorTable
+            title={t('sensors.activeHeading')}
+            sensors={sensors.filter(sensor => sensor.isActive)}
+            setError={setError}
+            activateHeading={t('sensors.active')}
+            activateNote={t('sensors.activeNote')}
+          />
+          <SensorTable
+            title={t('sensors.inactiveHeading')}
+            sensors={sensors.filter(sensor => !sensor.isActive)}
+            setError={setError}
+            activateHeading={t('sensors.inactive')}
+            activateNote={t('sensors.inactiveNote')}
+          />
           {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}

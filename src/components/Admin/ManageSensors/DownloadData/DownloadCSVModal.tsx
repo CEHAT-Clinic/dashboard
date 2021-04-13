@@ -24,7 +24,7 @@ import {
 import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
 import {MonthInput, DayInput, CSVModalProps} from './Util';
-import {SensorInput} from '../SensorInput';
+import {SensorInput} from '../Util/SensorInput';
 
 /**
  * Component for the download data modal that appears on the manage sensor page
