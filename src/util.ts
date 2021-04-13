@@ -14,6 +14,10 @@ const aqiCutoffs = {
   veryUnhealthy: 300, // Very unhealthy for all individuals (201-300)
 };
 
+/**
+ * Interface for a Selected Sensor. This is used in the Home page to keep track
+ * of the values for the sensor that is currently selected on the map.
+ */
 interface SelectedSensor {
   purpleAirId: number;
   sensorDocId: string;
