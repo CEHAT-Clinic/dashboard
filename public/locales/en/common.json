@@ -6,5 +6,6 @@
     "generalErrorTemplate": "Error occurred: ",
     "yes": "Yes",
     "no": "No",
-    "moreInformation": "More Information"
+    "moreInformation": "More Information",
+    "jumpTo": "Jump to"
 }

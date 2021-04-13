@@ -12,6 +12,7 @@ const About: React.FC = () => {
    * Adjust UI depending on screenwidth. This function is called from event
    * listeners with a max-width match media query.
    * @param this - a media query that either matches or doesn't
+   * @remarks media query matches when the screen-width is at most 47.9em
    */
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
@@ -38,14 +39,14 @@ const About: React.FC = () => {
   }, []);
   // -----------------  End detect screen size ----------------- //
 
-  const {t} = useTranslation('about');
+  const {t} = useTranslation(['about', 'common']);
   return (
     <Flex width="full" align="center" direction="column" padding={8}>
       <Heading as="h1">{t('pageHeading')}</Heading>
       {isMobile && (
         <Box>
           <Text textAlign="center" fontStyle="italic">
-            Jump to:
+            {t('common:jumpTo')}
           </Text>
           <Grid
             width="100%"

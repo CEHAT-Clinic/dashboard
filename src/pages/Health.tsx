@@ -15,7 +15,7 @@ import {useTranslation} from 'react-i18next';
 import AqiTable from '../components/AqiTable';
 
 const Health: React.FC = () => {
-  const {t} = useTranslation('health');
+  const {t} = useTranslation(['health', 'common']);
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -24,6 +24,7 @@ const Health: React.FC = () => {
    * Adjust UI depending on screenwidth. This function is called from event
    * listeners with a max-width match media query.
    * @param this - a media query that either matches or doesn't
+   * @remarks media query matches when the screen-width is at most 47.9em
    */
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
@@ -56,7 +57,7 @@ const Health: React.FC = () => {
       {isMobile && (
         <Box>
           <Text textAlign="center" fontStyle="italic">
-            Jump to:
+            {t('common:jumpTo')}
           </Text>
           <Grid
             width="100%"
@@ -97,6 +98,7 @@ const Health: React.FC = () => {
           borderRadius={8}
           boxShadow="lg"
           width={['100%', null, '525px', null]}
+          id="pollution"
         >
           <Flex direction="column" align="center">
             <Image
@@ -143,6 +145,7 @@ const Health: React.FC = () => {
         borderWidth={1}
         borderRadius={8}
         boxShadow="lg"
+        id="aqi"
       >
         <Heading>{t('aqi.heading')}</Heading>
         <Text>{t('aqi.paragraph1')}</Text>
@@ -160,6 +163,7 @@ const Health: React.FC = () => {
         borderWidth={1}
         borderRadius={8}
         boxShadow="lg"
+        id="protection"
       >
         <Heading>{t('protection.heading')}</Heading>
         <Text>{t('protection.paragraph1')}</Text>
@@ -172,6 +176,7 @@ const Health: React.FC = () => {
         borderWidth={1}
         borderRadius={8}
         boxShadow="lg"
+        id="references"
       >
         <Heading>{t('references.heading')}</Heading>
         <UnorderedList paddingLeft={4}>
