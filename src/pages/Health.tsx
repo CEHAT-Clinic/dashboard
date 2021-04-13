@@ -18,7 +18,9 @@ const Health: React.FC = () => {
 
   return (
     <Flex width="full" align="center" direction="column" padding={8}>
-      <Heading as="h1">{t('pageHeading')}</Heading>
+      <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
+        {t('pageHeading')}
+      </Heading>
       <Flex
         padding={2}
         margin={2}
@@ -28,7 +30,9 @@ const Health: React.FC = () => {
         boxShadow="lg"
         direction="column"
       >
-        <Heading>{t('pollution.heading')}</Heading>
+        <Heading fontFamily="Merriweather Sans">
+          {t('pollution.heading')}
+        </Heading>
         <Text>{t('pollution.paragraph1')}</Text>
         <Flex
           padding={4}
@@ -84,7 +88,7 @@ const Health: React.FC = () => {
         borderRadius={8}
         boxShadow="lg"
       >
-        <Heading>{t('aqi.heading')}</Heading>
+        <Heading fontFamily="Merriweather Sans">{t('aqi.heading')}</Heading>
         <Text>{t('aqi.paragraph1')}</Text>
         <Text>
           {t('aqi.paragraph2.part1')}
@@ -101,7 +105,9 @@ const Health: React.FC = () => {
         borderRadius={8}
         boxShadow="lg"
       >
-        <Heading>{t('protection.heading')}</Heading>
+        <Heading fontFamily="Merriweather Sans">
+          {t('protection.heading')}
+        </Heading>
         <Text>{t('protection.paragraph1')}</Text>
         <Text>{t('protection.paragraph2')}</Text>
       </Box>
@@ -113,7 +119,9 @@ const Health: React.FC = () => {
         borderRadius={8}
         boxShadow="lg"
       >
-        <Heading>{t('references.heading')}</Heading>
+        <Heading fontFamily="Merriweather Sans">
+          {t('references.heading')}
+        </Heading>
         <UnorderedList paddingLeft={4}>
           <ListItem>
             <Link color="#32bfd1" href={t('references.pm25.link')} isExternal>
