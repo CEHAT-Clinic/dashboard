@@ -41,5 +41,10 @@
             "text": "Visita el panel administrativo"
         },
         "purpose": " para actuar como administrador."
+    },
+    "purpleAir": {
+        "heading": "Sensores de PurpleAir",
+        "part1": "Part 1 here.",
+        "part2": "Part 2 here."
     }
 }

@@ -62,13 +62,16 @@ const About: React.FC = () => {
             <Link gridRow={2} href="#involved" color="#32bfd1">
               {t('involved.heading')}
             </Link>
-            <Link gridRow={3} href="#sensorsDown" color="#32bfd1">
+            <Link gridRow={3} href="#purpleAir" color="#32bfd1">
+              {t('purpleAir.heading')}
+            </Link>
+            <Link gridRow={1} href="#sensorsDown" color="#32bfd1">
               {t('sensorsDown.heading')}
             </Link>
-            <Link gridRow={1} href="#acknowledge" color="#32bfd1">
+            <Link gridRow={2} href="#acknowledge" color="#32bfd1">
               {t('acknowledge.heading')}
             </Link>
-            <Link gridRow={2} href="#admin" color="#32bfd1">
+            <Link gridRow={3} href="#admin" color="#32bfd1">
               {t('admin.heading')}
             </Link>
           </Grid>
@@ -117,6 +120,21 @@ const About: React.FC = () => {
           </Link>
           {t('involved.part3')}
         </Text>
+      </Box>
+      <Box
+        padding={2}
+        margin={2}
+        width="full"
+        borderWidth={1}
+        borderRadius={8}
+        boxShadow="lg"
+        id="purpleAir"
+      >
+        <Heading fontFamily="Merriweather Sans">
+          {t('purpleAir.heading')}
+        </Heading>
+        <Text paddingY={1}> {t('purpleAir.part1')}</Text>
+        <Text paddingY={1}> {t('purpleAir.part2')}</Text>
       </Box>
       <Box
         padding={2}

@@ -41,5 +41,10 @@
             "text": "Visit the administrative pane"
         },
         "purpose": " to perform administrator functions."
+    },
+    "purpleAir": {
+        "heading": "PurpleAir Sensors",
+        "part1": "Part 1 here.",
+        "part2": "Part 2 here."
     }
 }
