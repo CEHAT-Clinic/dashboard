@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, lazy} from 'react';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import {
   Box,
@@ -12,7 +12,11 @@ import {
   Grid,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
-import AqiTable from '../components/AqiTable';
+import AqiTable from '../components/Health/AqiTable';
+
+// TODO: make component for each of these images
+const pm25En = lazy(() => import('../media/pm25-size-comparison-en.jpg'));
+const pm25Es = lazy(() => import('../media/pm25-size-comparison-es.jpg'));
 
 const Health: React.FC = () => {
   const {t} = useTranslation(['health', 'common']);
