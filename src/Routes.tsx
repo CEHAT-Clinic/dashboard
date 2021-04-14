@@ -16,6 +16,7 @@ const ManageUsers = lazy(
 const ManageSensors = lazy(
   () => import('./components/Admin/ManageSensors/ManageSensors')
 );
+const Page404 = lazy(() => import('./pages/Page404'));
 
 function Routes(): JSX.Element {
   return (
@@ -29,6 +30,7 @@ function Routes(): JSX.Element {
           <Route path="/admin/users" component={ManageUsers} />
           <Route path="/admin/sensors" component={ManageSensors} />
           <Route exact path="/" component={Home} />
+          <Route component={Page404} />
         </Switch>
       </Suspense>
     </Router>

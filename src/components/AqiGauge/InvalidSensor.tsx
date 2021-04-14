@@ -21,10 +21,13 @@ interface InvalidSensorProps {
 const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
   purpleAirId,
 }: InvalidSensorProps) => {
+  const {t} = useTranslation('dial');
+  const [hasReported, setHasReported] = useState(true);
   const [lastValidDate, setLastValidDate] = useState('');
   const [lastValidTime, setLastValidTime] = useState('');
-
-  const {t} = useTranslation('dial');
+  // In Spanish, we use 'a las' for hours greater than 1 and 'a la' for 1 o'clock
+  // this state variable stores which form of "at" we should use
+  const [atString, setAtString] = useState(t('invalid.atPlural'));
 
   if (purpleAirId) {
     const docRef = firestore.collection('current-reading').doc('sensors');
@@ -37,15 +40,28 @@ const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
           // Get time of last valid AQI reading
           const lastValidAqiTimestamp: firebase.firestore.Timestamp =
             sensorData['lastValidAqiTime'];
-          const lastValidAqiDate: Date = lastValidAqiTimestamp.toDate();
-          // Format date
-          const year: number = lastValidAqiDate.getFullYear();
-          const month: number = lastValidAqiDate.getMonth() + 1;
-          const day: number = lastValidAqiDate.getDate();
-          const hour: number = lastValidAqiDate.getHours();
-          const minutes: number = lastValidAqiDate.getMinutes();
-          setLastValidDate(formatDate(year, month, day));
-          setLastValidTime(formatTime(hour, minutes));
+          if (lastValidAqiTimestamp) {
+            setHasReported(true);
+            const lastValidAqiDate: Date = lastValidAqiTimestamp.toDate();
+            // Format date
+            const year: number = lastValidAqiDate.getFullYear();
+            const month: number = lastValidAqiDate.getMonth() + 1;
+            const day: number = lastValidAqiDate.getDate();
+            const hour: number = lastValidAqiDate.getHours();
+            const minutes: number = lastValidAqiDate.getMinutes();
+            setLastValidDate(formatDate(year, month, day));
+            setLastValidTime(formatTime(hour, minutes));
+            // Determine which form of "at" to use
+            const oneAM = 1;
+            const onePM = 13;
+            if (hour === oneAM || hour === onePM) {
+              setAtString(t('invalid.atSingular'));
+            } else {
+              setAtString(t('invalid.atPlural'));
+            }
+          } else {
+            setHasReported(false);
+          }
         }
       }
     });
@@ -53,14 +69,28 @@ const InvalidSensor: ({purpleAirId}: InvalidSensorProps) => JSX.Element = ({
 
   return (
     <Box>
-      <Text fontSize="lg">
-        {t('invalid.lastTime')}
-        {lastValidDate} {t('invalid.at')} {lastValidTime}
-        {t('invalid.learnMore')}
-        <Link color="#32bfd1" href="/about">
-          {t('invalid.aboutPage')}
-        </Link>
-      </Text>
+      {hasReported ? (
+        <Box>
+          <Text fontSize="lg">
+            {t('invalid.lastTime')}
+            {lastValidDate} {atString} {lastValidTime}
+            {t('invalid.learnMore')}
+            <Link color="#32bfd1" href="/about">
+              {t('invalid.aboutPage')}
+            </Link>
+          </Text>
+        </Box>
+      ) : (
+        <Box>
+          <Text fontSize="lg">
+            {t('invalid.neverReported')}
+            {t('invalid.learnMore')}
+            <Link color="#32bfd1" href="/about">
+              {t('invalid.aboutPage')}
+            </Link>
+          </Text>
+        </Box>
+      )}
     </Box>
   );
 };

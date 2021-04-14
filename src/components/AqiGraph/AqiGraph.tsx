@@ -162,24 +162,25 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
 
   const formatLabels = (hoursAgo: number): string => {
     const weekdays = [
+      t('sunday'),
       t('monday'),
       t('tuesday'),
       t('wednesday'),
       t('thursday'),
       t('friday'),
       t('saturday'),
-      t('sunday'),
     ];
-    const sunday = 6;
+    const saturday = 6;
     // Get the local time from the user's browser
     const date = new Date();
-    let day = date.getDay() - 1; // Subtract 1 to put in [0,6] range
+    let day = date.getDay();
     let hour = date.getHours() - hoursAgo;
     const minutes = date.getMinutes();
     // Adjust values if the label is from the previous day
     if (hour < 0) {
       if (day === 0) {
-        day = sunday;
+        // If it's Sunday, the previous day is Saturday
+        day = saturday;
       } else {
         day -= 1;
       }
@@ -198,7 +199,12 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         justifyContent="center"
         align="center"
         padding={1}
+        flexDir="column"
+        fontFamily="Oxygen"
       >
+        <Heading fontFamily="Oxygen" fontSize="lg" marginBottom={2}>
+          {t('graphTitle')}
+        </Heading>
         <ResponsiveContainer height={250} width="90%">
           <ScatterChart>
             <CartesianGrid horizontalFill={horizontalFill} fillOpacity={0.2} />
@@ -207,7 +213,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               dataKey="x"
               height={70}
               name={t('time')}
-              tick={{dy: 25, dx: -30}}
+              tick={{dy: 25, dx: -30, fill: 'black'}}
               ticks={hourTicks}
               tickFormatter={tick => formatLabels(tick)}
               angle={-40}
@@ -220,7 +226,14 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               dataKey="y"
               name="AQI"
               unit=""
-              label={{value: 'AQI', position: 'Right', dx: -20, rotate: 0}}
+              label={{
+                value: 'AQI',
+                position: 'Right',
+                dx: -20,
+                rotate: 0,
+                fontWeight: 'bold',
+              }}
+              tick={{fill: 'black'}}
               ticks={yAxisTicks}
               interval={0}
               padding={{top: 1}}
