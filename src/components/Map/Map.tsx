@@ -117,8 +117,8 @@ class Map extends React.Component<MapProps> {
           sensorDocId: data.sensorDocId,
           name: data.name,
           aqi: data.aqi,
-          isAqiValid: data.isValid,
-          lastValidAqi: data.lastValidAqi,
+          isValid: data.isValid,
+          lastValidAqiTime: data.lastValidAqiTime,
         };
         this.props.updateSelectedSensor(selectedSensor);
 
@@ -235,7 +235,7 @@ class Map extends React.Component<MapProps> {
               name: sensorVal.name,
               aqi: aqi,
               isValid: sensorVal.isValid,
-              lastValidAqi: sensorVal.lastValidAqiTime,
+              lastValidAqiTime: sensorVal.lastValidAqiTime,
             }); // Data for marker events
             marker.addEventListener('tap', registerClick); // Tap event
             marker.addEventListener('pointerenter', registerHoverStart); // Begin hover

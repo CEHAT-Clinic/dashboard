@@ -19,8 +19,8 @@ const Home: () => JSX.Element = () => {
     sensorDocId: '',
     name: '',
     aqi: '',
-    isAqiValid: false,
-    lastValidAqi: null,
+    isValid: false,
+    lastValidAqiTime: null,
   });
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false

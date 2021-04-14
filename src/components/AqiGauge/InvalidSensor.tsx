@@ -30,9 +30,9 @@ const InvalidSensor: ({selectedSensor}: InvalidSensorProps) => JSX.Element = ({
   const [atString, setAtString] = useState(t('invalid.atPlural'));
 
   useEffect(() => {
-    if (selectedSensor.lastValidAqi) {
+    if (selectedSensor.lastValidAqiTime) {
       setHasReported(true);
-      const lastValidAqiDate: Date = selectedSensor.lastValidAqi.toDate();
+      const lastValidAqiDate: Date = selectedSensor.lastValidAqiTime.toDate();
       // Format date
       const year: number = lastValidAqiDate.getFullYear();
       const month: number = lastValidAqiDate.getMonth() + 1;
@@ -52,7 +52,7 @@ const InvalidSensor: ({selectedSensor}: InvalidSensorProps) => JSX.Element = ({
     } else {
       setHasReported(false);
     }
-  }, [selectedSensor.lastValidAqi, t]);
+  }, [selectedSensor.lastValidAqiTime, t]);
 
   return (
     <Box>

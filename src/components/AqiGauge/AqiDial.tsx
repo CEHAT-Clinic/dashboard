@@ -90,7 +90,7 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
   selectedSensor,
 }: DialProps) => {
   const {t} = useTranslation(['dial', 'menu']);
-  if (selectedSensor.isAqiValid) {
+  if (selectedSensor.isValid) {
     return (
       <Flex
         height="100%"

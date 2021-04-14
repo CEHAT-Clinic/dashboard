@@ -17,14 +17,20 @@ const aqiCutoffs = {
 /**
  * Interface for a Selected Sensor. This is used in the Home page to keep track
  * of the values for the sensor that is currently selected on the map.
+ * - purpleAirId: The PurpleAir ID of the sensor
+ * - sensorDocId: the ID of the document for this sensor in the "sensors" collection
+ * - name: The name of this sensor on PurpleAir
+ * - aqi: The current AQI value of this sensor
+ * - isValid: boolean, is the sensor currently displaying an AQI
+ * - lastValidAqiTime: the last time this sensor reported a valid AQI
  */
 interface SelectedSensor {
   purpleAirId: number;
   sensorDocId: string;
   name: string;
   aqi: string;
-  isAqiValid: boolean;
-  lastValidAqi: firebase.firestore.Timestamp | null;
+  isValid: boolean;
+  lastValidAqiTime: firebase.firestore.Timestamp | null;
 }
 
 export {aqiCutoffs};
