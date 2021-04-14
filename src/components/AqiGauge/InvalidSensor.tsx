@@ -27,7 +27,7 @@ const InvalidSensor: ({selectedSensor}: InvalidSensorProps) => JSX.Element = ({
   const [lastValidTime, setLastValidTime] = useState('');
   // In Spanish, we use 'a las' for hours greater than 1 and 'a la' for 1 o'clock
   // this state variable stores which form of "at" we should use
-  const [atString, setAtString] = useState(t('invalid.atPlural'));
+  const [atString, setAtString] = useState('' + t('invalid.atPlural'));
 
   useEffect(() => {
     if (selectedSensor.lastValidAqiTime) {
