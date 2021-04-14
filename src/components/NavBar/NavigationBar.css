@@ -22,13 +22,14 @@ nav {
     grid-template-columns: repeat(4, auto);
     align-items: center;
     justify-items: center;
+    font-family:"Oxygen";
   }
 
 /* Style for navigation links*/
 nav a, #changeLanguage {
     color: #fff;
     font-size: 20px;
-    font-weight: 500;
+    font-weight: bold;
     transition: 0.5s;
     text-decoration: none;
   }
