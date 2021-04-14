@@ -5,15 +5,6 @@ import * as os from 'os';
 import * as admin from 'firebase-admin';
 import {firestore} from './admin';
 
-// Used for downloading the old data format
-const oldDataCsvHeader: string =
-  'timestamp, ' +
-  'channelAPm25, ' +
-  'channelBPm25, ' +
-  'humidity, ' +
-  'latitude, ' +
-  'longitude\n';
-
 /**
  * Uploads a file with name filename and specified data to the default storage
  * bucket of the Firebase project.
@@ -92,8 +83,14 @@ async function generateReadingsCsv(
   }
 
   // Initialize csv with headers
-  // TODO: set headers based on the type of data
-  const headings = oldDataCsvHeader;
+  const headings =
+    'name, ' +
+    'timestamp, ' +
+    'channelAPm25, ' +
+    'channelBPm25, ' +
+    'humidity, ' +
+    'latitude, ' +
+    'longitude\n';
 
   const sensorList = (await firestore.collection('/sensors').get()).docs;
   const readingsArrays = new Array<Array<string>>(sensorList.length);
@@ -112,7 +109,6 @@ async function generateReadingsCsv(
     // Contains readings for this sensor
     const readingsArray = new Array<string>(readingsList.length);
 
-    // TODO: Create separate files for different types of readings
     for (
       let readingIndex = 0;
       readingIndex < readingsList.length;
@@ -120,10 +116,7 @@ async function generateReadingsCsv(
     ) {
       const data = readingsList[readingIndex].data();
 
-      const reading = `
-        ${data.timestamp.toDate()}, ${data.channelAPm25}, ${data.channelBPm25}, 
-        ${data.humidity}, ${data.latitude}, ${data.longitude}\n
-      `;
+      const reading = `${data.name}, ${data.timestamp.toDate()}, ${data.channelAPm25}, ${data.channelBPm25}, ${data.humidity}, ${data.latitude}, ${data.longitude}\n`;
 
       readingsArray[readingIndex] = reading;
     }
@@ -144,43 +137,4 @@ async function generateReadingsCsv(
   return uploadFileToFirebaseBucket(filename, readingsCsv);
 }
 
-/**
- * Fetches the current-readings from Firestore and creates a corresponding CSV
- */
-function generateAverageReadingsCsv(): void {
-  // Initialize csv with headers
-  let csvData = 'latitude, longitude, corrected_hour_average_pm25 \n';
-
-  // Current-reading collection has single doc
-  const currentReadingDocRef = firestore
-    .collection('current-reading')
-    .doc('sensors');
-  currentReadingDocRef.get().then(doc => {
-    if (doc.exists) {
-      const docData = doc.data();
-      if (docData) {
-        const sensorMap = docData.data;
-        for (const sensorId in sensorMap) {
-          const sensorData = sensorMap[sensorId];
-          csvData += `${sensorData.latitude}, ${sensorData.longitude}, ${sensorData.nowCastPm25}\n`;
-        }
-
-        // Generate filename
-        const timestamp: FirebaseFirestore.Timestamp = docData.lastUpdated;
-
-        // Put timestamp into human-readable, computer friendly form
-        // Regex removes all non-word characters in the date string
-        const dateTime = timestamp.toDate().toISOString().replace(/\W/g, '_');
-        const filename = `hour_averages_pm25_${dateTime}.csv`;
-
-        return uploadFileToFirebaseBucket(filename, csvData);
-      } else {
-        throw new Error('Document does not contain data');
-      }
-    } else {
-      throw new Error('pm25 document does not exist');
-    }
-  });
-}
-
-export {generateReadingsCsv, generateAverageReadingsCsv};
+export {generateReadingsCsv};

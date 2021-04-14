@@ -1,6 +1,5 @@
 import {
   generateReadingsCsv,
-  generateAverageReadingsCsv,
 } from './download-readings';
 import {functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
@@ -25,10 +24,6 @@ exports.generateReadingsCsv = functions
   .runWith(runLongOptions)
   .pubsub.topic('generate-readings-csv')
   .onPublish(generateReadingsCsv);
-
-exports.generateAverageReadingsCsv = functions.pubsub
-  .topic('generate-average-readings-csv')
-  .onPublish(generateAverageReadingsCsv);
 
 exports.deleteMarkedReadings = functions
   .runWith(runLongOptions)
