@@ -95,6 +95,8 @@ async function generateReadingsCsv(
   const sensorList = (await firestore.collection('/sensors').get()).docs;
   const readingsArrays = new Array<Array<string>>(sensorList.length);
   for (let sensorIndex = 0; sensorIndex < sensorList.length; sensorIndex++) {
+    const name: string = sensorList[sensorIndex].data().name ?? '';
+    const safeName: string = name.replace(/\//g, '-').replace(/\\/g, '-');
     const resolvedPath = `/sensors/${sensorList[sensorIndex].id}/readings`;
 
     // Only fetch readings within the start and end bounds
@@ -107,7 +109,9 @@ async function generateReadingsCsv(
     ).docs;
 
     // Contains readings for this sensor
-    const readingsArray = new Array<string>(readingsList.length);
+    const readingsArray = new Array<string>();
+
+    const timestampStringSet = new Set();
 
     for (
       let readingIndex = 0;
@@ -115,12 +119,30 @@ async function generateReadingsCsv(
       readingIndex++
     ) {
       const data = readingsList[readingIndex].data();
+      const timestamp: FirebaseFirestore.Timestamp = data.timestamp;
+      const dateString: string = timestamp.toDate().toISOString();
 
-      const reading = `${data.name}, ${data.timestamp.toDate()}, ${data.channelAPm25}, ${data.channelBPm25}, ${data.humidity}, ${data.latitude}, ${data.longitude}\n`;
-
-      readingsArray[readingIndex] = reading;
+      // Ensure that it's the old reading format and that we don't already have
+      // that reading in the file
+      if (
+        typeof data.channelBPm25 !== 'undefined' &&
+        !timestampStringSet.has(dateString)
+      ) {
+        const reading = `${safeName}, ${dateString}, ${
+          data.channelAPm25
+        }, ${data.channelBPm25}, ${data.humidity}, ${data.latitude}, ${
+          data.longitude
+        }\n`;
+  
+        readingsArray.push(reading);
+        timestampStringSet.add(dateString);
+      } else {
+        const reason = typeof data.channelBPm25 !== 'undefined' ? 'duplicate' : 'undefined';
+        console.log('Bad reading :o', reason);
+      }
     }
     readingsArrays[sensorIndex] = readingsArray;
+    timestampStringSet.clear();
   }
 
   // Combine the data into one string to be written in the CSV file
@@ -130,10 +152,9 @@ async function generateReadingsCsv(
   // Generate filename
   // Put timestamp into human-readable, computer friendly for
   // Regex removes all non-word characters in the date string
-  const startDateISOString = startDate.toISOString().replace(/\W/g, '');
-  const endDateISOString = endDate.toISOString().replace(/\W/g, '');
+  const startDateISOString = startDate.toISOString().replace(/\W/g, '-');
+  const endDateISOString = endDate.toISOString().replace(/\W/g, '-');
   const filename = `pm25_${startDateISOString}_to_${endDateISOString}.csv`;
-
   return uploadFileToFirebaseBucket(filename, readingsCsv);
 }
 

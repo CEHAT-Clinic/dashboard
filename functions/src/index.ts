@@ -1,6 +1,4 @@
-import {
-  generateReadingsCsv,
-} from './download-readings';
+import {generateReadingsCsv} from './download-readings';
 import {functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
 import {purpleAirToFirestore} from './aqi-calculation/purple-air-response';
