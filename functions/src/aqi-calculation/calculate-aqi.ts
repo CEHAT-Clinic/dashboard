@@ -6,7 +6,7 @@ import {
   Pm25BufferElement,
   getDefaultAqiBufferElement,
 } from './buffer';
-import {CurrentReadingSensorData} from './types';
+import {CurrentReadingSensorData, SensorErrors} from './types';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
@@ -134,7 +134,6 @@ function aqiFromPm25(pm25Concentration: number): number {
  * updates the `current-readings` AQI data and AQI-validity status. Also updates
  * the aqiBuffer in each sensor doc.
  */
-
 async function calculateAqi(): Promise<void> {
   // Initialize the currentData map
   const currentData = Object.create(null);
@@ -163,6 +162,9 @@ async function calculateAqi(): Promise<void> {
       aqi: Number.NaN,
       isValid: false,
     };
+
+    // Get all current sensor errors
+    const currentErrors: Array<boolean> = [];
 
     // Data used to calculate hourly averages
     const pm25BufferStatus: bufferStatus =
