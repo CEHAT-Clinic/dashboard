@@ -12,10 +12,12 @@ import {
   Grid,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
-import AqiTable from '../components/AqiTable';
+import AqiTable from '../components/Health/AqiTable';
+import pm25En from '../media/pm25-size-comparison-en.jpg';
+import pm25Es from '../media/pm25-size-comparison-es.jpg';
 
 const Health: React.FC = () => {
-  const {t} = useTranslation(['health', 'common']);
+  const {t, i18n} = useTranslation(['health', 'common']);
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -82,7 +84,6 @@ const Health: React.FC = () => {
           </Grid>
         </Box>
       )}
-
       <Flex
         padding={2}
         margin={2}
@@ -107,7 +108,7 @@ const Health: React.FC = () => {
         >
           <Flex direction="column" align="center">
             <Image
-              src={t('pollution.image.fileName')}
+              src={i18n.language === 'en' ? pm25En : pm25Es}
               alt={t('pollution.image.caption')}
               maxWidth={['95%', null, '500px', null]}
             />
