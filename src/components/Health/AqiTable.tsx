@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {EpaColorScheme} from './Util/Colors';
+import {EpaColorScheme} from '../Util/Colors';
 
 const AqiTable: React.FC = () => {
   const {t} = useTranslation('aqiTable');
