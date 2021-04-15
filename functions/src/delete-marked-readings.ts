@@ -1,5 +1,5 @@
 import {firestore} from './admin';
-import {readingsSubcollection} from './aqi-calculation/util';
+import {readingsSubcollection} from './util';
 
 /**
  * Deletes readings before date marked for sensors in the deletion list
