@@ -1,4 +1,3 @@
-import {generateReadingsCsv} from './download-readings';
 import {functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
 import {purpleAirToFirestore} from './aqi-calculation/purple-air-response';
@@ -17,11 +16,6 @@ exports.calculateAqi = functions.pubsub
 const runLongOptions: functions.RuntimeOptions = {
   timeoutSeconds: 540,
 };
-
-exports.generateReadingsCsv = functions
-  .runWith(runLongOptions)
-  .pubsub.topic('generate-readings-csv')
-  .onPublish(generateReadingsCsv);
 
 exports.deleteMarkedReadings = functions
   .runWith(runLongOptions)
