@@ -4,7 +4,7 @@ import {PurpleAirReading} from './types';
  * Converts PurpleAir's confidence value into percent difference
  * @param confidence - confidence value from PurpleAir, between 0 and 100
  * @returns meanPercentDifference value, or 2 (the maximum possible percent difference ) if the value is lost in calculation.
- * 
+ *
  * @remarks
  * Any input that results in 2 means that the meanPercentDifference is high
  * enough that the reading should be discarded anyways.
