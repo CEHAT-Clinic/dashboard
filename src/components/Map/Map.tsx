@@ -3,6 +3,7 @@ import {firestore} from '../../firebase';
 import {createSensorIcon} from './markerStyle';
 import {Box} from '@chakra-ui/react';
 import {ColorScheme} from '../Util/Colors';
+import {SelectedSensor} from '../../util';
 
 /**
  * Interface for the props of the Map component
@@ -10,10 +11,7 @@ import {ColorScheme} from '../Util/Colors';
  * information about a sensor when it is selected.
  */
 interface MapProps {
-  updateCurrentReading: (sensorID: string) => void;
-  updateCurrentSensorDoc: (sensorDocId: string) => void;
-  updateCurrentIsValid: (isValid: boolean) => void;
-  updateCurrentPurpleAirId: (purpleAirId: string) => void;
+  updateSelectedSensor: (selectedSensor: SelectedSensor) => void;
   isMobile: boolean;
   currentColorScheme: ColorScheme;
 }
@@ -113,10 +111,16 @@ class Map extends React.Component<MapProps> {
       // Update sensor icons only if we are selecting a different sensor
       if (prevSensor !== newSensor) {
         // Update state of home to display selected sensor
-        this.props.updateCurrentReading(newSensor.getData().aqi);
-        this.props.updateCurrentSensorDoc(newSensor.getData().sensorDocId);
-        this.props.updateCurrentIsValid(newSensor.getData().isValid);
-        this.props.updateCurrentPurpleAirId(newSensor.getData().purpleAirId);
+        const data = newSensor.getData();
+        const selectedSensor: SelectedSensor = {
+          purpleAirId: data.purpleAirId,
+          sensorDocId: data.sensorDocId,
+          name: data.name,
+          aqi: data.aqi,
+          isValid: data.isValid,
+          lastValidAqiTime: data.lastValidAqiTime,
+        };
+        this.props.updateSelectedSensor(selectedSensor);
 
         // Update icon of currently selected sensor
         const newIcon = createSensorIcon(
@@ -226,11 +230,12 @@ class Map extends React.Component<MapProps> {
               {icon: icon}
             );
             marker.setData({
-              sensorID: sensorID,
-              aqi: aqi,
-              sensorDocId: sensorDocId,
-              isValid: sensorVal.isValid,
               purpleAirId: sensorVal.purpleAirId,
+              sensorDocId: sensorDocId,
+              name: sensorVal.name,
+              aqi: aqi,
+              isValid: sensorVal.isValid,
+              lastValidAqiTime: sensorVal.lastValidAqiTime,
             }); // Data for marker events
             marker.addEventListener('tap', registerClick); // Tap event
             marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
