@@ -1,11 +1,11 @@
 import React, {Suspense} from 'react';
 import NavigationBar from './components/NavBar/NavigationBar';
-import Loading from './components/Util/Loading';
+import LoadingNavBar from './components/NavBar/LoadingNavBar';
 import Routes from './Routes';
 
 const App: React.FC = () => (
   <div>
-    <Suspense fallback={<Loading />}>
+    <Suspense fallback={<LoadingNavBar />}>
       <NavigationBar />
     </Suspense>
     <Routes />
