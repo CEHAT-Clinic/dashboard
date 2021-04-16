@@ -102,8 +102,7 @@
           "uid",
           "purpleair",
           "Recurse",
-          "readonly",
-          "enum"
+          "readonly"
         ]
       }
     ]

@@ -1,5 +1,3 @@
-import {PurpleAirReading} from './types';
-
 /**
  * Converts PurpleAir's confidence value into percent difference
  * @param confidence - confidence value from PurpleAir, between 0 and 100
@@ -41,109 +39,8 @@ function getMeanPercentDifference(confidence: number): number {
       return 0;
     default:
       // Otherwise, undo the calculation from the PurpleAir confidence value
-      /* eslint-disable-next-line no-magic-numbers */
+      // eslint-disable-next-line no-magic-numbers
       return ((maxConfidence - confidence + 25) * 1.6) / 100;
-  }
-}
-
-/**
- * Converts a PurpleAir reading returned from the group API query into a PurpleAirReading
- * @param data - list of data from PurpleAir for a given sensor
- * @param fieldNames - list of field names from PurpleAir that match the order of the data fields
- * @returns
- */
-function getReading(
-  data: (string | number)[],
-  fieldNames: string[]
-): [number, [PurpleAirReading | null, boolean[]]] {
-  // Initialize all values
-  let id: number = Number.NaN;
-  let name: string | undefined = undefined;
-  let latitude: number | undefined = undefined;
-  let longitude: number | undefined = undefined;
-  let meanPercentDifference: number | undefined = undefined;
-  let pm25: number | undefined = undefined;
-  let humidity: number | undefined = undefined;
-  let timestamp: Date | undefined = undefined;
-
-  // Initialize the error array
-  const sensorErrors: boolean[] = getDefaultSensorReadingErrors();
-
-  data.forEach((value, index) => {
-    // Check the corresponding field name to determine how to handle the value
-    switch (fieldNames[index]) {
-      case 'sensor_index':
-        if (typeof value === 'number') id = value;
-        break;
-      case 'name':
-        if (typeof value === 'string') name = value;
-        break;
-      case 'latitude': {
-        if (typeof value === 'number') latitude = value;
-        break;
-      }
-      case 'longitude':
-        if (typeof value === 'number') longitude = value;
-        break;
-      case 'confidence':
-        if (typeof value === 'number') {
-          meanPercentDifference = getMeanPercentDifference(value);
-        }
-        break;
-      case 'pm2.5':
-        if (typeof value === 'number') pm25 = value;
-        break;
-      case 'humidity':
-        if (typeof value === 'number') humidity = value;
-        break;
-      case 'last_seen':
-        if (typeof value === 'number') {
-          // PurpleAir returns seconds since EPOCH, but the Date constructor
-          // takes milliseconds, so we convert from seconds to milliseconds
-          timestamp = new Date(value * 1000); // eslint-disable-line no-magic-numbers
-        }
-        break;
-      default:
-        // Unknown field, ignore
-        break;
-    }
-  });
-
-  // Only return a PurpleAirReading if all fields are defined
-  if (
-    id &&
-    name &&
-    latitude !== undefined && // Can be zero
-    longitude !== undefined && // Can be zero
-    meanPercentDifference !== undefined && // Can be zero
-    pm25 !== undefined && // Can be zero
-    humidity !== undefined && // Can be zero
-    timestamp
-  ) {
-    const reading: PurpleAirReading = {
-      id: id,
-      name: name,
-      latitude: latitude,
-      longitude: longitude,
-      meanPercentDifference: meanPercentDifference,
-      pm25: pm25,
-      humidity: humidity,
-      timestamp: timestamp,
-    };
-
-    const percentDifferenceThreshold = 0.7;
-    if (meanPercentDifference > percentDifferenceThreshold) {
-      sensorErrors[SensorReadingErrors.ChannelsDiverged] = true;
-    }
-    return [id, [reading, sensorErrors]];
-  } else {
-    if (humidity === undefined) {
-      sensorErrors[SensorReadingErrors.NoHumidityReading] = true;
-      sensorErrors[SensorReadingErrors.IncompleteSensorReading] = true;
-    } else {
-      // TODO: Add channel down check
-    }
-    return [id, [null, sensorErrors]];
   }
 }
 
@@ -204,15 +101,15 @@ enum SensorReadingErrors {
  * @returns an array for each `SensorReadingError` with the error set to `false`.
  */
 function getDefaultSensorReadingErrors(): boolean[] {
-  // TypeScript does not provide a way to get the number of elements in an enum,
-  // so this gets the number of elements using the enum reverse mapping.
+  // TypeScript does not provide a way to get the number of elements in an
+  // enumeration, so this gets the number of elements using the enumeration
+  // reverse mapping.
   const sensorReadingErrorCount = Object.keys(SensorReadingErrors).length / 2;
   return new Array<boolean>(sensorReadingErrorCount).fill(false);
 }
 
 export {
   getLastSensorReadingTime,
-  getReading,
   getMeanPercentDifference,
   SensorReadingErrors,
   getDefaultSensorReadingErrors,

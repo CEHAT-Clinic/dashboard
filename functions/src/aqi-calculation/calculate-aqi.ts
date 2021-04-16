@@ -231,12 +231,14 @@ async function calculateAqi(): Promise<void> {
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
     currentData[currentSensorData.purpleAirId.toString()] = currentSensorData;
 
-    // Update the AQI circular buffer for this element
+    // Data to update in the sensor doc
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
+    sensorDocUpdate.aqiCalculationErrors = aqiCalculationErrors;
 
+    // Update the AQI circular buffer for this element
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
@@ -248,7 +250,7 @@ async function calculateAqi(): Promise<void> {
     } else if (status === bufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocData.aqiBufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.aqiBufferStatus = bufferStatus.InProgress;
     }
 
     // Send the updated data to the database

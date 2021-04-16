@@ -9,7 +9,7 @@ import {
 import {HistoricalSensorReading, PurpleAirReading} from './types';
 import {readingsSubcollection} from '../util';
 import {
-  getReading,
+  getMeanPercentDifference,
   getLastSensorReadingTime,
   getDefaultSensorReadingErrors,
   SensorReadingErrors,
@@ -52,6 +52,107 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
   });
 
   return purpleAirResponse;
+}
+
+/**
+ * Converts a PurpleAir reading returned from the group API query into a PurpleAirReading
+ * @param data - list of data from PurpleAir for a given sensor
+ * @param fieldNames - list of field names from PurpleAir that match the order of the data fields
+ * @returns
+ */
+function getReading(
+  data: (string | number)[],
+  fieldNames: string[]
+): [number, [PurpleAirReading | null, boolean[]]] {
+  // Initialize all values
+  let id: number = Number.NaN;
+  let name: string | undefined = undefined;
+  let latitude: number | undefined = undefined;
+  let longitude: number | undefined = undefined;
+  let meanPercentDifference: number | undefined = undefined;
+  let pm25: number | undefined = undefined;
+  let humidity: number | undefined = undefined;
+  let timestamp: Date | undefined = undefined;
+
+  // Initialize the error array
+  const sensorErrors: boolean[] = getDefaultSensorReadingErrors();
+
+  data.forEach((value, index) => {
+    // Check the corresponding field name to determine how to handle the value
+    switch (fieldNames[index]) {
+      case 'sensor_index':
+        if (typeof value === 'number') id = value;
+        break;
+      case 'name':
+        if (typeof value === 'string') name = value;
+        break;
+      case 'latitude': {
+        if (typeof value === 'number') latitude = value;
+        break;
+      }
+      case 'longitude':
+        if (typeof value === 'number') longitude = value;
+        break;
+      case 'confidence':
+        if (typeof value === 'number') {
+          meanPercentDifference = getMeanPercentDifference(value);
+        }
+        break;
+      case 'pm2.5':
+        if (typeof value === 'number') pm25 = value;
+        break;
+      case 'humidity':
+        if (typeof value === 'number') humidity = value;
+        break;
+      case 'last_seen':
+        if (typeof value === 'number') {
+          // PurpleAir returns seconds since EPOCH, but the Date constructor
+          // takes milliseconds, so we convert from seconds to milliseconds
+          timestamp = new Date(value * 1000); // eslint-disable-line no-magic-numbers
+        }
+        break;
+      default:
+        // Unknown field, ignore
+        break;
+    }
+  });
+
+  // Only return a PurpleAirReading if all fields are defined
+  if (
+    id &&
+    name &&
+    latitude !== undefined && // Can be zero
+    longitude !== undefined && // Can be zero
+    meanPercentDifference !== undefined && // Can be zero
+    pm25 !== undefined && // Can be zero
+    humidity !== undefined && // Can be zero
+    timestamp
+  ) {
+    const reading: PurpleAirReading = {
+      id: id,
+      name: name,
+      latitude: latitude,
+      longitude: longitude,
+      meanPercentDifference: meanPercentDifference,
+      pm25: pm25,
+      humidity: humidity,
+      timestamp: timestamp,
+    };
+
+    const percentDifferenceThreshold = 0.7;
+    if (meanPercentDifference > percentDifferenceThreshold) {
+      sensorErrors[SensorReadingErrors.ChannelsDiverged] = true;
+    }
+    return [id, [reading, sensorErrors]];
+  } else {
+    if (humidity === undefined) {
+      sensorErrors[SensorReadingErrors.NoHumidityReading] = true;
+      sensorErrors[SensorReadingErrors.IncompleteSensorReading] = true;
+    } else {
+      // TODO: Add channel down check
+    }
+    return [id, [null, sensorErrors]];
+  }
 }
 
 /**
@@ -177,7 +278,7 @@ async function purpleAirToFirestore(): Promise<void> {
     } else if (status === bufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocData.pm25BufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.pm25BufferStatus = bufferStatus.InProgress;
     }
 
     // Send the updated data to the database

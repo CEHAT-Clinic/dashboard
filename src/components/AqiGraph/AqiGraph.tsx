@@ -29,7 +29,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const defaultYLimit = 300;
   const hoursPerDay = 24;
   const minutesPerHour = 60;
-  /* eslint-disable-next-line no-magic-numbers */
+  // eslint-disable-next-line no-magic-numbers
   const hourTicks = [0, 6, 12, 18, 24];
   /* --------------- State maintenance variables ---------------  */
   const [data, setData] = useState<GraphData>({
