@@ -6,7 +6,7 @@ import {CloseIcon, HamburgerIcon} from '@chakra-ui/icons';
  * Props for Menu Toggle Button
  */
 interface MenuToggleProps {
-  toggle: () => void;
+  menuToggle: () => void;
   isOpen: boolean;
 }
 
@@ -16,15 +16,15 @@ interface MenuToggleProps {
  * @param isOpen - boolean, is the menu open
  * @returns a button that toggles the menu when clicked
  */
-const MenuToggle: ({toggle, isOpen}: MenuToggleProps) => JSX.Element = ({
-  toggle,
+const MenuToggle: ({menuToggle, isOpen}: MenuToggleProps) => JSX.Element = ({
+  menuToggle,
   isOpen,
 }: MenuToggleProps) => {
   return (
     <Button
       variant="ghost"
       _hover={{background: '#32bfd1'}}
-      onClick={toggle}
+      onClick={menuToggle}
       width="60px"
     >
       {isOpen ? <CloseIcon size="lg" /> : <HamburgerIcon w={7} h={7} />}

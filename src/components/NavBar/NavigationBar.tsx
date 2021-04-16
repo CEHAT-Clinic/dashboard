@@ -105,7 +105,7 @@ function NavigationBar(): JSX.Element {
     >
       <Logo />
       {isMobile && (
-        <MenuToggle toggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
+        <MenuToggle menuToggle={() => setIsOpen(!isOpen)} isOpen={isOpen} />
       )}
       <MenuLinks
         isOpen={isOpen}

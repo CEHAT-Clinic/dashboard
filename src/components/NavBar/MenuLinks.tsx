@@ -70,7 +70,7 @@ const MenuLinks: ({
           <MenuItem href="/" label={t('map')} />
           <MenuItem href="/health" label={t('healthInfo')} />
           <MenuItem href="/about" label={t('about')} />
-          <LanguageToggle toggle={toggleLanguage} />
+          <LanguageToggle languageToggle={toggleLanguage} />
         </Stack>
       )}
     </Box>

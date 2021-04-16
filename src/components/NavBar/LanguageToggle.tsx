@@ -7,7 +7,7 @@ import {FaGlobeAmericas} from 'react-icons/fa';
  * Props for the Language Toggle
  */
 interface LanguageToggleProps {
-  toggle: () => void;
+  languageToggle: () => void;
 }
 
 /**
@@ -15,8 +15,10 @@ interface LanguageToggleProps {
  * @param toggle - function that toggles the website language
  * @returns a button that toggles the language when clicked
  */
-const LanguageToggle: ({toggle}: LanguageToggleProps) => JSX.Element = ({
-  toggle,
+const LanguageToggle: ({
+  languageToggle,
+}: LanguageToggleProps) => JSX.Element = ({
+  languageToggle,
 }: LanguageToggleProps) => {
   const {t} = useTranslation('menu');
   return (
@@ -24,7 +26,7 @@ const LanguageToggle: ({toggle}: LanguageToggleProps) => JSX.Element = ({
       variant="ghost"
       _hover={{background: '#32bfd1', fontWeight: 'bold'}}
       id="changeLanguage"
-      onClick={toggle}
+      onClick={languageToggle}
       fontWeight="regular"
       mt={0}
     >
