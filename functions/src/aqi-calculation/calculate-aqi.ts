@@ -6,7 +6,11 @@ import {
   Pm25BufferElement,
   getDefaultAqiBufferElement,
 } from './buffer';
-import {CurrentReadingSensorData, SensorErrors} from './types';
+import {
+  CurrentReadingSensorData,
+  getDefaultInvalidAqiErrors,
+  InvalidAqiErrors,
+} from './util';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
@@ -150,7 +154,7 @@ async function calculateAqi(): Promise<void> {
     // Data sent to the current-readings collection
     // Initially the previous data's value or the default values
     const currentSensorData: CurrentReadingSensorData = {
-      purpleAirId: sensorDocData.purpleAirId ?? '',
+      purpleAirId: sensorDocData.purpleAirId ?? Number.NaN,
       name: sensorDocData.name ?? '',
       latitude: sensorDocData.latitude ?? Number.NaN,
       longitude: sensorDocData.longitude ?? Number.NaN,
@@ -163,18 +167,15 @@ async function calculateAqi(): Promise<void> {
       isValid: false,
     };
 
-    // Get all current sensor errors
-    const currentErrors: Array<boolean> = [];
-
     // Data used to calculate hourly averages
     const pm25BufferStatus: bufferStatus =
       sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
-    const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? [];
+    const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? new Array<Pm25BufferElement>();
 
     // Get cleaned hourly averages from the PM2.5 Buffer for the last 12 hours
-    // If an hour lacks enough data, the entry for the hour is `NaN`
-    const cleanedAverages: Array<number> = getCleanedAverages(
+    // If an hour lacks enough data, the entry for the hour is `NaN`.
+    const [cleanedAverages, dataCleaningErrors] = getCleanedAverages(
       pm25BufferStatus,
       pm25BufferIndex,
       pm25Buffer
@@ -193,6 +194,9 @@ async function calculateAqi(): Promise<void> {
     // If there's enough info, the sensor's data is updated
     // If there isn't, we send the AQI buffer element with default values
     let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
+
+    // Initialize the error array for the AQI calculation process
+    const aqiCalculationErrors: Array<boolean> = getDefaultInvalidAqiErrors();
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -213,15 +217,19 @@ async function calculateAqi(): Promise<void> {
         };
       } else {
         // Infinite AQI
-        // TODO: write invalid reason to sensor doc, or propagate
+        aqiCalculationErrors[InvalidAqiErrors.InfiniteAqi] = true;
       }
     } else {
-      // Not enough recent readings
-      // TODO: write invalid reason to sensor doc, or propagate
+      // There weren't enough valid readings in the last 3 hours, so we propagate
+      // the errors from the data cleaning step.
+      aqiCalculationErrors[InvalidAqiErrors.NotEnoughNewReadings] =
+        dataCleaningErrors[InvalidAqiErrors.NotEnoughNewReadings];
+      aqiCalculationErrors[InvalidAqiErrors.NotEnoughRecentValidReadings] =
+        dataCleaningErrors[InvalidAqiErrors.NotEnoughRecentValidReadings];
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
-    currentData[currentSensorData.purpleAirId] = currentSensorData;
+    currentData[currentSensorData.purpleAirId.toString()] = currentSensorData;
 
     // Update the AQI circular buffer for this element
     const sensorDocUpdate = Object.create(null);

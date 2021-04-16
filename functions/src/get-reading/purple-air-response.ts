@@ -55,7 +55,7 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
  */
 async function getReadingsMap(): Promise<Map<number, PurpleAirReading | null>> {
   const purpleAirResponse = await fetchPurpleAirResponse();
-  const readings: Map<number, PurpleAirReading | null> = new Map();
+  const readings: Map<number, [PurpleAirReading | null, Array<boolean>]> = new Map();
   const purpleAirData = purpleAirResponse.data;
   const fieldNames: string[] = purpleAirData.fields;
   const rawReadings: (string | number)[][] = purpleAirData.data;

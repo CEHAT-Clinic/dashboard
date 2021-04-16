@@ -34,7 +34,7 @@ import {User, ToggleUserPopoverProps} from './Types';
 const ManageUsers: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isAuthenticated, isAdmin, isLoading: fetchingAuthInfo} = useAuth();
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<Array<User>>(new Array<User>());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   // -------------- End state maintenance variables -------------------------
@@ -51,7 +51,7 @@ const ManageUsers: () => JSX.Element = () => {
       const unsubscribe = firestore
         .collection('users')
         .onSnapshot(querySnapshot => {
-          const userList: User[] = [];
+          const userList: Array<User> = new Array<User>();
           querySnapshot.docs.forEach(doc => {
             if (doc.exists) {
               const userData = doc.data();

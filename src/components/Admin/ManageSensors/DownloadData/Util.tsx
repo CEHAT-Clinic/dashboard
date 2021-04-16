@@ -49,7 +49,7 @@ interface CSVButtonProps {
  * sensors - the list of PurpleAir sensors to include in the drop down menu
  */
 interface CSVModalProps {
-  sensors: Sensor[];
+  sensors: Array<Sensor>;
 }
 
 /**
@@ -85,7 +85,7 @@ const MonthInput: ({value, setValue}: InputProps) => JSX.Element = ({
     t('downloadData.months.nov'),
     t('downloadData.months.dec'),
   ];
-  const options = [];
+  const options: Array<React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>> = new Array<React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>>();
   for (let i = 1; i < labels.length; i++) {
     options.push(
       <option value={i} key={i}>
@@ -119,7 +119,7 @@ const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
   setValue,
 }: InputProps) => {
   const {t} = useTranslation('administration');
-  const options = [];
+  const options: Array<React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>> = new Array<React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>>();
   const maxDaysPerMonth = 31;
   for (let i = 0; i < maxDaysPerMonth; i++) {
     options.push(

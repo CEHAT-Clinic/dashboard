@@ -33,16 +33,16 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const hourTicks = [0, 6, 12, 18, 24];
   /* --------------- State maintenance variables ---------------  */
   const [data, setData] = useState<GraphData>({
-    good: [],
-    moderate: [],
-    sensitive: [],
-    unhealthy: [],
-    veryUnhealthy: [],
-    hazardous: [],
+    good: new Array<GraphElement>(),
+    moderate: new Array<GraphElement>(),
+    sensitive: new Array<GraphElement>(),
+    unhealthy: new Array<GraphElement>(),
+    veryUnhealthy: new Array<GraphElement>(),
+    hazardous: new Array<GraphElement>(),
   });
   const [yAxisLimit, setYAxisLimit] = useState(defaultYLimit);
-  const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
-  const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
+  const [yAxisTicks, setYAxisTicks] = useState<Array<number>>(new Array<number>());
+  const [horizontalFill, setHorizontalFill] = useState<Array<string>>(new Array<string>());
   const {currentColorScheme} = useColor();
   const {t} = useTranslation(['graph', 'aqiTable']);
 
@@ -55,14 +55,14 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         if (doc.exists) {
           const data = doc.data();
           if (data) {
-            const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? [];
+            const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? new Array<AqiBufferElement>();
             const allData: GraphData = {
-              good: [],
-              moderate: [],
-              sensitive: [],
-              unhealthy: [],
-              veryUnhealthy: [],
-              hazardous: [],
+              good: new Array<GraphElement>(),
+              moderate: new Array<GraphElement>(),
+              sensitive: new Array<GraphElement>(),
+              unhealthy: new Array<GraphElement>(),
+              veryUnhealthy: new Array<GraphElement>(),
+              hazardous: new Array<GraphElement>(),
             };
 
             // Get the local time from the user's browser

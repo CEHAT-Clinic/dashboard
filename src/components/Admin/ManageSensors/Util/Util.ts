@@ -25,7 +25,7 @@ function timestampToDateString(
  * @returns human readable string for a number, `unknownMessage` if `NaN`
  */
 function numberToString(number: number, unknownMessage: string): string {
-  if (isNaN(number)) {
+  if (Number.isNaN(number)) {
     return unknownMessage;
   } else {
     return String(number);

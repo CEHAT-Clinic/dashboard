@@ -18,7 +18,7 @@ import {SensorTable} from './SensorTable/SensorTable';
  */
 const ManageSensors: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading: fetchingAuthInfo} = useAuth();
-  const [sensors, setSensors] = useState<Sensor[]>([]);
+  const [sensors, setSensors] = useState<Array<Sensor>>(new Array<Sensor>());
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const {t} = useTranslation('administration');
@@ -32,7 +32,7 @@ const ManageSensors: () => JSX.Element = () => {
       const unsubscribe = firestore
         .collection('sensors')
         .onSnapshot(querySnapshot => {
-          const sensorList: Sensor[] = [];
+          const sensorList: Array<Sensor> = new Array<Sensor>();
           querySnapshot.docs.forEach(doc => {
             if (doc.data()) {
               const sensorData = doc.data();
