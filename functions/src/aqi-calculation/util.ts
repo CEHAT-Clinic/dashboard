@@ -138,6 +138,11 @@ function getReading(
       },
     ];
   } else {
+    if (humidity === undefined) {
+      // TODO: set humidity issue
+    } else {
+      // TODO: Add channel down check
+    }
     return [id, null];
   }
 }
