@@ -22,7 +22,7 @@ const LanguageToggle: ({toggle}: LanguageToggleProps) => JSX.Element = ({
   return (
     <Button
       variant="ghost"
-      _hover={{background: 'teal', fontWeight: 'bold'}}
+      _hover={{background: '#32bfd1', fontWeight: 'bold'}}
       id="changeLanguage"
       onClick={toggle}
       fontWeight="regular"

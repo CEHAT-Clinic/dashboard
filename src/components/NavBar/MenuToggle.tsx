@@ -24,7 +24,7 @@ const MenuToggle: ({toggle, isOpen}: MenuToggleProps) => JSX.Element = ({
   return (
     <Button
       variant="ghost"
-      _hover={{background: 'teal'}}
+      _hover={{background: '#32bfd1'}}
       onClick={toggle}
       width="60px"
     >

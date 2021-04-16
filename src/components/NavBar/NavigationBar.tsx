@@ -92,7 +92,7 @@ function NavigationBar(): JSX.Element {
       w="100%"
       mb={2}
       p={3}
-      background="teal"
+      background="#32bfd1"
       color="white"
       position={isScrolled ? 'fixed' : 'static'}
       top={isScrolled ? '0' : 'auto'}
