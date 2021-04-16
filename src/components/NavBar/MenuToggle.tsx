@@ -1,7 +1,6 @@
 import React from 'react';
 import {Button} from '@chakra-ui/react';
-import {CloseIcon} from '@chakra-ui/icons';
-import {FaBars} from 'react-icons/fa';
+import {CloseIcon, HamburgerIcon} from '@chakra-ui/icons';
 
 /**
  * Props for Menu Toggle Button
@@ -28,7 +27,7 @@ const MenuToggle: ({toggle, isOpen}: MenuToggleProps) => JSX.Element = ({
       onClick={toggle}
       width="60px"
     >
-      {isOpen ? <CloseIcon size="lg" /> : <FaBars size="lg" />}
+      {isOpen ? <CloseIcon size="lg" /> : <HamburgerIcon w={7} h={7} />}
     </Button>
   );
 };
