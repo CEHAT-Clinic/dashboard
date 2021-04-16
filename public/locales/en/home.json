@@ -1,5 +1,4 @@
 {
-    "heading": "South Gate Air Quality Dashboard",
     "noSensorGauge": "Click a sensor on the map to see its AQI value here!",
     "dataVizBox": "Data Visualization Box",
     "expandMap": "Expand to see the sensor map",
