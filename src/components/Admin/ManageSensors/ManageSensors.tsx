@@ -1,37 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {
-  Box,
-  Heading,
-  Flex,
-  Button,
-  Tbody,
-  Table,
-  Thead,
-  Th,
-  Tr,
-  Td,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  Center,
-  Text,
-  Divider,
-  HStack,
-} from '@chakra-ui/react';
+import {Box, Heading, Flex, Button, Text, Grid} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
-import firebase, {firestore} from '../../../firebase';
+import {firestore} from '../../../firebase';
 import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
-import {Sensor, MoreInfoHeading} from './Util';
+import {Sensor} from './Util/Types';
+import {SensorTable} from './SensorTable/SensorTable';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -42,8 +21,9 @@ const ManageSensors: () => JSX.Element = () => {
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation('administration');
 
+  // Get sensors, and update sensors list as the data changes
   useEffect(() => {
     if (isAuthenticated && isAdmin) {
       setIsLoading(true);
@@ -56,13 +36,11 @@ const ManageSensors: () => JSX.Element = () => {
           querySnapshot.docs.forEach(doc => {
             if (doc.data()) {
               const sensorData = doc.data();
-              const purpleAirId: string =
-                sensorData.purpleAirId?.toString() ?? '';
               sensorList.push({
-                purpleAirId: purpleAirId,
+                purpleAirId: sensorData.purpleAirId,
                 name: sensorData.name ?? '',
-                latitude: sensorData.latitude ?? NaN,
-                longitude: sensorData.longitude ?? NaN,
+                latitude: sensorData.latitude ?? Number.NaN,
+                longitude: sensorData.longitude ?? Number.NaN,
                 isActive: sensorData.isActive ?? true,
                 isValid: sensorData.isValid ?? false,
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
@@ -79,139 +57,6 @@ const ManageSensors: () => JSX.Element = () => {
     return;
   }, [isAuthenticated, isAdmin]);
 
-  /**
-   * Toggles `isActive` in a sensor's doc. This also resets the AQI buffer
-   * and PM2.5 buffer when activating or deactivating.
-   * @param event - click button event
-   * @param currentSensor - sensor for which to toggle isActive status
-   *
-   * @remarks
-   * Note that when a sensor is activated or deactivated, we do not change it in
-   * our PurpleAir group: 490. We will still get data from PurpleAir in our API
-   * call, but the resulting data will not be used anywhere.
-   */
-  function toggleActiveSensorStatus(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    currentSensor: Sensor
-  ) {
-    event.preventDefault();
-
-    if (isAdmin) {
-      // Value from bufferStatus enum in backend
-      const bufferDoesNotExist = 2;
-
-      // Toggle the isActive and remove the buffers
-      firestore
-        .collection('sensors')
-        .doc(currentSensor.docId)
-        .update({
-          isActive: !currentSensor.isActive,
-          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
-          aqiBufferStatus: bufferDoesNotExist,
-          aqiBuffer: firebase.firestore.FieldValue.delete(),
-          aqiBufferIndex: firebase.firestore.FieldValue.delete(),
-          pm25BufferStatus: bufferDoesNotExist,
-          pm25Buffer: firebase.firestore.FieldValue.delete(),
-          pm25BufferIndex: firebase.firestore.FieldValue.delete(),
-        })
-        .catch(() => {
-          setError(
-            t('sensors.changeActiveSensorError') + currentSensor.name ??
-              currentSensor.purpleAirId
-          );
-        });
-    }
-  }
-
-  /**
-   * Interface for ToggleActiveSensorPopover used for type safety
-   */
-  interface ToggleActiveSensorPopoverProps {
-    sensor: Sensor;
-  }
-
-  /**
-   * Creates a button that when clicked, creates a confirmation popup to change
-   * a sensor's active status. Active means that data for the sensor will be
-   * collected and shown on the map, but does not change anything in PurpleAir.
-   * @param sensor - sensor for a row
-   */
-  const ToggleActiveSensorPopover: ({
-    sensor,
-  }: ToggleActiveSensorPopoverProps) => JSX.Element = ({
-    sensor,
-  }: ToggleActiveSensorPopoverProps) => {
-    const name = sensor.name ? sensor.name : sensor.purpleAirId;
-
-    const popoverMessage =
-      (sensor.isActive
-        ? t('sensors.confirmDeactivate')
-        : t('sensors.confirmActivate')) + name;
-    const popoverNote = sensor.isActive
-      ? t('sensors.deactivateNote')
-      : t('sensors.activateNote');
-
-    return (
-      <Popover>
-        <PopoverTrigger>
-          <Button colorScheme={sensor.isActive ? 'red' : 'green'} width="full">
-            {sensor.isActive ? t('sensors.deactivate') : t('sensors.activate')}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Heading fontSize="medium">{t('common:confirm')}</Heading>
-          </PopoverHeader>
-          <PopoverBody>
-            <Text>{popoverMessage}</Text>
-            <Divider marginY={1} />
-            <Text marginBottom={1}>{popoverNote}</Text>
-            <Center>
-              <Button
-                paddingY={2}
-                colorScheme={sensor.isActive ? 'red' : 'green'}
-                onClick={event => toggleActiveSensorStatus(event, sensor)}
-              >
-                {t('common:confirm')}
-              </Button>
-            </Center>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    );
-  };
-
-  /**
-   *
-   * @param timestamp - the time to convert
-   * @returns human readable date time string, unknown if null
-   */
-  function timestampToDateString(
-    timestamp: firebase.firestore.Timestamp | null
-  ) {
-    if (timestamp === null) {
-      return t('sensors.unknown');
-    } else {
-      const date: Date = timestamp.toDate();
-      return date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
-    }
-  }
-
-  /**
-   *
-   * @param number - a number that can be NaN
-   * @returns human readable string for a number, 'unknown' if `NaN`
-   */
-  function numberToString(number: number) {
-    if (isNaN(number)) {
-      return t('sensors.unknown');
-    } else {
-      return String(number);
-    }
-  }
-
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
   } else if (!isAuthenticated) {
@@ -219,6 +64,9 @@ const ManageSensors: () => JSX.Element = () => {
   } else if (!isAdmin) {
     return <AccessDenied reason={t('notAdmin')} />;
   } else {
+    const activeSensors = sensors.filter(sensor => sensor.isActive);
+    const inactiveSensors = sensors.filter(sensor => !sensor.isActive);
+
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
@@ -232,72 +80,28 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Center>
-            <HStack>
-              <AddSensorModal />
-              <DownloadCSVModal sensors={sensors} />
-              <DeleteOldDataModal />
-              <DeleteSensorModal
-                sensors={sensors.filter(sensor => !sensor.isActive)}
-              />
-            </HStack>
-          </Center>
-          <Box maxWidth="100%" overflowX="auto">
-            <Heading textAlign="justify" fontSize="2xl">
-              {t('sensors.heading')}
-            </Heading>
-            <Table>
-              <Thead>
-                <Tr>
-                  <Th>{t('sensors.name')}</Th>
-                  <Th>{t('sensors.purpleAirId')}</Th>
-                  <Th>{t('sensors.latitude')}</Th>
-                  <Th>{t('sensors.longitude')}</Th>
-                  <Th>
-                    <MoreInfoHeading
-                      heading={t('sensors.status')}
-                      message={t('sensors.activeNote')}
-                    />
-                  </Th>
-                  <Th>
-                    <MoreInfoHeading
-                      heading={t('sensors.validAqiTime')}
-                      message={t('sensors.lastValidAqiTimeNote')}
-                    />
-                  </Th>
-                  <Th>
-                    <MoreInfoHeading
-                      heading={t('sensors.readingTime')}
-                      message={t('sensors.lastReadingTimeNote')}
-                    />
-                  </Th>
-                  <Th>{t('sensors.activeHeading')}</Th>
-                </Tr>
-              </Thead>
-              <Tbody>
-                {sensors.map((sensor, id) => (
-                  <Tr key={id}>
-                    <Td>{sensor.name}</Td>
-                    <Td>{sensor.purpleAirId}</Td>
-                    <Td>{numberToString(sensor.latitude)}</Td>
-                    <Td>{numberToString(sensor.longitude)}</Td>
-                    <Td>
-                      {sensor.isActive
-                        ? t('sensors.active')
-                        : t('sensors.inactive')}
-                    </Td>
-                    <Td>{timestampToDateString(sensor.lastValidAqiTime)}</Td>
-                    <Td>
-                      {timestampToDateString(sensor.lastSensorReadingTime)}
-                    </Td>
-                    <Td>
-                      <ToggleActiveSensorPopover sensor={sensor} />
-                    </Td>
-                  </Tr>
-                ))}
-              </Tbody>
-            </Table>
-          </Box>
+          <Grid
+            justifyContent="center"
+            templateColumns={['repeat(2,1fr)', null, 'repeat(4,1fr)', null]}
+            gap={2}
+          >
+            <AddSensorModal />
+            <DownloadCSVModal sensors={sensors} />
+            <DeleteOldDataModal />
+            <DeleteSensorModal sensors={inactiveSensors} />
+          </Grid>
+          <SensorTable
+            title={t('sensors.activeHeading')}
+            sensors={activeSensors}
+            setError={setError}
+            activateHeading={t('sensors.deactivate')}
+          />
+          <SensorTable
+            title={t('sensors.inactiveHeading')}
+            sensors={inactiveSensors}
+            setError={setError}
+            activateHeading={t('sensors.activate')}
+          />
           {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
@@ -309,5 +113,3 @@ const ManageSensors: () => JSX.Element = () => {
 };
 
 export default ManageSensors;
-
-export type {Sensor};

@@ -200,8 +200,9 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         align="center"
         padding={1}
         flexDir="column"
+        fontFamily="Oxygen"
       >
-        <Heading fontSize="lg" marginBottom={2}>
+        <Heading fontFamily="Oxygen" fontSize="lg" marginBottom={2}>
           {t('graphTitle')}
         </Heading>
         <ResponsiveContainer height={250} width="90%">
@@ -212,7 +213,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               dataKey="x"
               height={70}
               name={t('time')}
-              tick={{dy: 25, dx: -30}}
+              tick={{dy: 25, dx: -30, fill: 'black'}}
               ticks={hourTicks}
               tickFormatter={tick => formatLabels(tick)}
               angle={-40}
@@ -225,7 +226,14 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
               dataKey="y"
               name="AQI"
               unit=""
-              label={{value: 'AQI', position: 'Right', dx: -20, rotate: 0}}
+              label={{
+                value: 'AQI',
+                position: 'Right',
+                dx: -20,
+                rotate: 0,
+                fontWeight: 'bold',
+              }}
+              tick={{fill: 'black'}}
               ticks={yAxisTicks}
               interval={0}
               padding={{top: 1}}

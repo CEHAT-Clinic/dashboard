@@ -7,16 +7,21 @@ import {useTranslation} from 'react-i18next';
 import AqiGraph from '../components/AqiGraph/AqiGraph';
 import {ColorContext} from '../contexts/ColorContext';
 import {ColorToggle} from '../components/Util/Colors';
+import {SelectedSensor} from '../util';
 
 /**
  * Home screen component
  */
 const Home: () => JSX.Element = () => {
-  // State for which sensor to display in the current sensor box
-  const [currentSensorReading, setCurrentSensorReading] = useState('');
-  const [currentSensorDocId, setCurrentSensorDocId] = useState('');
-  const [currentIsValid, setCurrentIsValid] = useState(true);
-  const [currentPurpleAirId, setCurrentPurpleAirId] = useState('');
+  // State for the sensor currently selected from on map
+  const [selectedSensor, setSelectedSensor] = useState<SelectedSensor>({
+    purpleAirId: Number.NaN,
+    sensorDocId: '',
+    name: '',
+    aqi: '',
+    isValid: false,
+    lastValidAqiTime: null,
+  });
   const [isMobile, setIsMobile] = useState(
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
@@ -59,7 +64,11 @@ const Home: () => JSX.Element = () => {
 
   return (
     <Box>
-      <Flex direction={['column', 'column', 'row', 'row']} textAlign="center">
+      <Flex
+        direction={['column', 'column', 'row', 'row']}
+        textAlign="center"
+        fontFamily="Oxygen"
+      >
         {/* Start map */}
         {isMobile ? (
           <Box
@@ -91,10 +100,7 @@ const Home: () => JSX.Element = () => {
                 <ColorContext.Consumer>
                   {colorContext => (
                     <Map
-                      updateCurrentReading={setCurrentSensorReading}
-                      updateCurrentSensorDoc={setCurrentSensorDocId}
-                      updateCurrentIsValid={setCurrentIsValid}
-                      updateCurrentPurpleAirId={setCurrentPurpleAirId}
+                      updateSelectedSensor={setSelectedSensor}
                       currentColorScheme={colorContext.currentColorScheme}
                       isMobile={isMobile}
                     />
@@ -109,10 +115,7 @@ const Home: () => JSX.Element = () => {
             <ColorContext.Consumer>
               {colorContext => (
                 <Map
-                  updateCurrentReading={setCurrentSensorReading}
-                  updateCurrentSensorDoc={setCurrentSensorDocId}
-                  updateCurrentIsValid={setCurrentIsValid}
-                  updateCurrentPurpleAirId={setCurrentPurpleAirId}
+                  updateSelectedSensor={setSelectedSensor}
                   currentColorScheme={colorContext.currentColorScheme}
                   isMobile={isMobile}
                 />
@@ -164,14 +167,14 @@ const Home: () => JSX.Element = () => {
                 justifyContent="center"
                 alignContent="center"
               >
-                {currentSensorDocId ? (
-                  <AqiDial
-                    currentAqi={currentSensorReading}
-                    isValid={currentIsValid}
-                    purpleAirId={currentPurpleAirId}
-                  />
+                {selectedSensor.sensorDocId ? (
+                  <AqiDial selectedSensor={selectedSensor} />
                 ) : (
-                  <Heading fontSize="lg" marginTop={[null, null, '20%', null]}>
+                  <Heading
+                    fontFamily="Oxygen"
+                    fontSize="lg"
+                    marginTop={[null, null, '20%', null]}
+                  >
                     {t('noSensorGauge')}
                   </Heading>
                 )}
@@ -210,13 +213,14 @@ const Home: () => JSX.Element = () => {
             )}
             {(!isMobile || showGraphUi) && (
               <Flex height="100%" width="100%" alignContent="center">
-                {currentSensorDocId ? (
-                  <AqiGraph sensorDocId={currentSensorDocId} />
+                {selectedSensor.sensorDocId ? (
+                  <AqiGraph sensorDocId={selectedSensor.sensorDocId} />
                 ) : (
                   <Heading
                     width="100%"
                     fontSize="lg"
                     marginTop={[null, null, '20%', null]}
+                    fontFamily="Oxygen"
                   >
                     {t('noSensorGraph')}
                   </Heading>
