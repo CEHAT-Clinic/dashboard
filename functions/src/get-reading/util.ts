@@ -53,9 +53,9 @@ function getMeanPercentDifference(confidence: number): number {
  * @returns
  */
 function getReading(
-  data: Array<(string | number)>,
-  fieldNames: Array<string>
-): [number, [PurpleAirReading | null, Array<number>]] {
+  data: (string | number)[],
+  fieldNames: string[]
+): [number, [PurpleAirReading | null, boolean[]]] {
   // Initialize all values
   let id: number = Number.NaN;
   let name: string | undefined = undefined;
@@ -67,7 +67,7 @@ function getReading(
   let timestamp: Date | undefined = undefined;
 
   // Initialize the error array
-  const sensorErrors = getDefaultSensorReadingErrors();
+  const sensorErrors: boolean[] = getDefaultSensorReadingErrors();
 
   data.forEach((value, index) => {
     // Check the corresponding field name to determine how to handle the value
@@ -131,23 +131,19 @@ function getReading(
       timestamp: timestamp,
     };
 
-    const epaPercentDifferenceThreshold = 0.7
-    if (meanPercentDifference > epaPercentDifferenceThreshold) {
+    const percentDifferenceThreshold = 0.7;
+    if (meanPercentDifference > percentDifferenceThreshold) {
       sensorErrors[SensorReadingErrors.ChannelsDiverged] = true;
     }
-    return [
-      id,
-      ,
-    ];
+    return [id, [reading, sensorErrors]];
   } else {
     if (humidity === undefined) {
-      // TODO: set humidity issue
       sensorErrors[SensorReadingErrors.NoHumidityReading] = true;
       sensorErrors[SensorReadingErrors.IncompleteSensorReading] = true;
     } else {
       // TODO: Add channel down check
     }
-    return [id, null];
+    return [id, [null, sensorErrors]];
   }
 }
 
@@ -207,7 +203,7 @@ enum SensorReadingErrors {
  * Returns a default error array for sensor errors
  * @returns an array for each `SensorReadingError` with the error set to `false`.
  */
-function getDefaultSensorReadingErrors(): Array<boolean> {
+function getDefaultSensorReadingErrors(): boolean[] {
   // TypeScript does not provide a way to get the number of elements in an enum,
   // so this gets the number of elements using the enum reverse mapping.
   const sensorReadingErrorCount = Object.keys(SensorReadingErrors).length / 2;

@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import {firestore} from '../../firebase';
 import {useTranslation} from 'react-i18next';
-import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
+import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Types';
 import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
 import {formatTime} from '../Util/Dates';
@@ -33,16 +33,16 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const hourTicks = [0, 6, 12, 18, 24];
   /* --------------- State maintenance variables ---------------  */
   const [data, setData] = useState<GraphData>({
-    good: new Array<GraphElement>(),
-    moderate: new Array<GraphElement>(),
-    sensitive: new Array<GraphElement>(),
-    unhealthy: new Array<GraphElement>(),
-    veryUnhealthy: new Array<GraphElement>(),
-    hazardous: new Array<GraphElement>(),
+    good: [],
+    moderate: [],
+    sensitive: [],
+    unhealthy: [],
+    veryUnhealthy: [],
+    hazardous: [],
   });
   const [yAxisLimit, setYAxisLimit] = useState(defaultYLimit);
-  const [yAxisTicks, setYAxisTicks] = useState<Array<number>>(new Array<number>());
-  const [horizontalFill, setHorizontalFill] = useState<Array<string>>(new Array<string>());
+  const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
+  const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
   const {currentColorScheme} = useColor();
   const {t} = useTranslation(['graph', 'aqiTable']);
 
@@ -55,14 +55,14 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         if (doc.exists) {
           const data = doc.data();
           if (data) {
-            const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? new Array<AqiBufferElement>();
+            const aqiBuffer: AqiBufferElement[] = data.aqiBuffer ?? [];
             const allData: GraphData = {
-              good: new Array<GraphElement>(),
-              moderate: new Array<GraphElement>(),
-              sensitive: new Array<GraphElement>(),
-              unhealthy: new Array<GraphElement>(),
-              veryUnhealthy: new Array<GraphElement>(),
-              hazardous: new Array<GraphElement>(),
+              good: [],
+              moderate: [],
+              sensitive: [],
+              unhealthy: [],
+              veryUnhealthy: [],
+              hazardous: [],
             };
 
             // Get the local time from the user's browser

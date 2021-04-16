@@ -34,7 +34,7 @@ import {LabelValue} from './Util/LabelValue';
  * sensors - all current sensors
  */
 interface DeleteSensorModalProps {
-  sensors: Array<Sensor>;
+  sensors: Sensor[];
 }
 
 /**
@@ -108,7 +108,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
       },
     }).then(purpleAirResponse => {
       const purpleAirData = purpleAirResponse.data;
-      const groupMembers: Array<PurpleAirGroupMember> = purpleAirData.members;
+      const groupMembers: PurpleAirGroupMember[] = purpleAirData.members;
 
       // Find the member ID of group 490 for the sensor to be deleted
       for (const member of groupMembers) {

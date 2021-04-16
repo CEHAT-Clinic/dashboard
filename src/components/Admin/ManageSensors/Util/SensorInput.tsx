@@ -8,7 +8,7 @@ import {numberToString} from './Util';
  * Props for sensor input fields used in `SensorInput`
  */
 interface SensorInputProps {
-  sensors: Array<Sensor>;
+  sensors: Sensor[];
   docId: string;
   setDocId: React.Dispatch<React.SetStateAction<string>>;
   setPurpleAirId: React.Dispatch<React.SetStateAction<number>>;
@@ -36,7 +36,10 @@ const SensorInput: ({
   setPurpleAirId,
 }: SensorInputProps) => {
   const {t} = useTranslation('administration');
-  const options: Array<React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>> = new Array<React.DetailedHTMLProps<React.OptionHTMLAttributes<HTMLOptionElement>, HTMLOptionElement>>();
+  const options: React.DetailedHTMLProps<
+    React.OptionHTMLAttributes<HTMLOptionElement>,
+    HTMLOptionElement
+  >[] = [];
   const docIdToPurpleAirId = new Map<string, number>();
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];

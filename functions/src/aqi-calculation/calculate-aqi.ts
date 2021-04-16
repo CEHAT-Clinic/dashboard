@@ -171,7 +171,7 @@ async function calculateAqi(): Promise<void> {
     const pm25BufferStatus: bufferStatus =
       sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
-    const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? new Array<Pm25BufferElement>();
+    const pm25Buffer: Pm25BufferElement[] = sensorDocData.pm25Buffer ?? [];
 
     // Get cleaned hourly averages from the PM2.5 Buffer for the last 12 hours
     // If an hour lacks enough data, the entry for the hour is `NaN`.
@@ -196,7 +196,7 @@ async function calculateAqi(): Promise<void> {
     let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
 
     // Initialize the error array for the AQI calculation process
-    const aqiCalculationErrors: Array<boolean> = getDefaultInvalidAqiErrors();
+    const aqiCalculationErrors: boolean[] = getDefaultInvalidAqiErrors();
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -240,7 +240,7 @@ async function calculateAqi(): Promise<void> {
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
-      const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+      const aqiBuffer: AqiBufferElement[] = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;

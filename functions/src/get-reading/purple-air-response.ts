@@ -8,7 +8,12 @@ import {
 } from '../aqi-calculation/buffer';
 import {HistoricalSensorReading, PurpleAirReading} from './types';
 import {readingsSubcollection} from '../util';
-import {getReading, getLastSensorReadingTime} from './util';
+import {
+  getReading,
+  getLastSensorReadingTime,
+  getDefaultSensorReadingErrors,
+  SensorReadingErrors,
+} from './util';
 
 /**
  * Make the PurpleAir API to using the group query
@@ -53,9 +58,11 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
  * Translates PurpleAir response into map of sensor ID to PurpleAirReading
  * @returns map of sensor ID to PurpleAirReading
  */
-async function getReadingsMap(): Promise<Map<number, PurpleAirReading | null>> {
+async function getReadingsMap(): Promise<
+  Map<number, [PurpleAirReading | null, boolean[]]>
+> {
   const purpleAirResponse = await fetchPurpleAirResponse();
-  const readings: Map<number, [PurpleAirReading | null, Array<boolean>]> = new Map();
+  const readings: Map<number, [PurpleAirReading | null, boolean[]]> = new Map();
   const purpleAirData = purpleAirResponse.data;
   const fieldNames: string[] = purpleAirData.fields;
   const rawReadings: (string | number)[][] = purpleAirData.data;
@@ -85,7 +92,8 @@ async function purpleAirToFirestore(): Promise<void> {
     );
 
     // Get the existing data from Firestore for this sensor
-    const sensorDocData = sensorDoc.data() ?? {};
+    const sensorDocData: FirebaseFirestore.DocumentData =
+      sensorDoc.data() ?? {};
     const purpleAirId: number = sensorDocData.purpleAirId;
 
     // If the lastSensorReadingTime field isn't set, query the readings
@@ -94,16 +102,20 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocData.lastSensorReadingTime ??
       (await getLastSensorReadingTime(readingsCollectionRef));
 
+    // Initialize sensor errors
+    let errors: boolean[] = getDefaultSensorReadingErrors();
+    let reading: PurpleAirReading | null = null;
+
     // If a reading for this sensor was not in the group query, then it did not
     // receive a new reading recently enough
-    const reading = readingsMap.get(purpleAirId);
+    const purpleAirResult = readingsMap.get(purpleAirId);
 
-    if (typeof reading === 'undefined') {
+    if (typeof purpleAirResult === 'undefined') {
       // No reading was received from PurpleAir
-      // TODO: write invalid reason to sensor doc, or propagate
-    } else if (!reading) {
-      // An incomplete reading was received from PurpleAir
-      // TODO: write invalid reason to sensor doc, or propagate
+      errors[SensorReadingErrors.ReadingNotReceived] = true;
+    } else {
+      // If the reading was invalid or incomplete, the errors will be propagated
+      [reading, errors] = purpleAirResult;
     }
 
     const readingTimestamp: FirebaseFirestore.Timestamp | null = reading
@@ -116,6 +128,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // Initialize the sensor doc update data
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
+    sensorDocUpdate.sensorReadingErrors = errors;
 
     if (reading && readingTimestamp) {
       // Before adding the reading to the historical database, check that it

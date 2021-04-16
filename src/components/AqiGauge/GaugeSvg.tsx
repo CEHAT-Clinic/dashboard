@@ -55,7 +55,7 @@ const GaugeSvg: ({currentAqi}: GaugeSvgProps) => JSX.Element = ({
   const arcGenerator = arc(); // Used to make arcs
 
   // Draw background arcs
-  const arcs: Array<string> = new Array<string>();
+  const arcs: string[] = [];
   let startAngle = initialAngle;
   const categories = [
     aqiCutoffs.good,
@@ -102,7 +102,7 @@ const GaugeSvg: ({currentAqi}: GaugeSvgProps) => JSX.Element = ({
 
   const needleColor = '#636360';
   const aqiColor = assignColor(aqi); // Color that needle points to
-  const pathObjects: Array<React.SVGProps<SVGPathElement>> = new Array<React.SVGProps<SVGPathElement>>();
+  const pathObjects: React.SVGProps<SVGPathElement>[] = [];
   for (let i = 0; i < arcs.length; i++) {
     const arcColor = assignColor(categories[i]);
     const opacity =

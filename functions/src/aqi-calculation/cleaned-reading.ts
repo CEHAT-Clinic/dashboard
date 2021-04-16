@@ -16,7 +16,7 @@ interface BasicReading {
  * @param readings - Array of non-null Pm25BufferElements
  * @returns basic reading with the average pm25 and humidity values of the input buffer elements
  */
-function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
+function averageReadings(readings: Pm25BufferElement[]): BasicReading {
   let pm25Sum = 0;
   let humiditySum = 0;
 
@@ -65,18 +65,20 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
 function getHourlyAverages(
   status: bufferStatus,
   bufferIndex: number,
-  buffer: Array<Pm25BufferElement>
-): [Array<BasicReading | null>, Array<boolean>] {
+  buffer: Pm25BufferElement[]
+): [(BasicReading | null)[], boolean[]] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
-  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS);
+  const averages: (BasicReading | null)[] = new Array<BasicReading | null>(
+    LOOKBACK_PERIOD_HOURS
+  );
 
   // Initialize the AQI calculation errors
-  const aqiCalculationErrors: Array<boolean> = getDefaultInvalidAqiErrors();
+  const aqiCalculationErrors: boolean[] = getDefaultInvalidAqiErrors();
 
   // If we have the relevant fields:
   if (status === bufferStatus.Exists && buffer && bufferIndex) {
-    let readings: Array<Pm25BufferElement> = new Array<Pm25BufferElement>();
+    let readings: Pm25BufferElement[] = new Array<Pm25BufferElement>();
     // Get sub-array that is relevant for each hour
     let endIndex = bufferIndex;
     let startIndex = bufferIndex - ELEMENTS_PER_HOUR;
@@ -178,8 +180,10 @@ function getHourlyAverages(
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  *
  */
-function cleanAverages(averages: Array<BasicReading | null>): Array<number> {
-  const cleanedAverages = new Array<number>(averages.length).fill(Number.NaN);
+function cleanAverages(averages: (BasicReading | null)[]): number[] {
+  const cleanedAverages: number[] = new Array<number>(averages.length).fill(
+    Number.NaN
+  );
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
     // If less than 23 data points were available for that hour, the reading
@@ -206,8 +210,8 @@ function cleanAverages(averages: Array<BasicReading | null>): Array<number> {
 function getCleanedAverages(
   status: bufferStatus,
   bufferIndex: number,
-  buffer: Array<Pm25BufferElement>
-): [Array<number>, Array<boolean>] {
+  buffer: Pm25BufferElement[]
+): [number[], boolean[]] {
   // Get hourly averages from the PM2.5 Buffer, and mark any hours without enough
   // valid readings as invalid
   const [hourlyAverages, aqiCalculationErrors] = getHourlyAverages(
@@ -216,7 +220,7 @@ function getCleanedAverages(
     buffer
   );
   // Apply EPA correction factor to the PurpleAir readings
-  const cleanedAverages: Array<number> = cleanAverages(hourlyAverages);
+  const cleanedAverages: number[] = cleanAverages(hourlyAverages);
   return [cleanedAverages, aqiCalculationErrors];
 }
 
@@ -227,7 +231,7 @@ function getCleanedAverages(
  * @param cleanedAverages - A list of numbers with 12 hours of data where at least two of the last three hours are valid data points
  * @returns the NowCast PM2.5 corrected value
  */
-function cleanedReadingsToNowCastPm25(cleanedAverages: Array<number>): number {
+function cleanedReadingsToNowCastPm25(cleanedAverages: number[]): number {
   let minimum = Number.MAX_VALUE;
   let maximum = Number.MIN_VALUE;
 

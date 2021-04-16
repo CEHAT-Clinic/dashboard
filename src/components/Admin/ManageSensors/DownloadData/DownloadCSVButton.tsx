@@ -36,8 +36,8 @@ const DownloadCSVButton: ({
 }: CSVButtonProps) => {
   const {t} = useTranslation('administration');
   /* --------------- State maintenance variables ------------------------ */
-  const [body, setBody] = useState<Array<BodyElement>>(new Array<BodyElement>());
-  const [header, setHeader] = useState<Array<HeaderElement>>(new Array<HeaderElement>());
+  const [body, setBody] = useState<BodyElement[]>([]);
+  const [header, setHeader] = useState<HeaderElement[]>([]);
   const [progress, setProgress] = useState(0);
   const [totalSensors, setTotalSensors] = useState(1);
   const [filename, setFilename] = useState('');
@@ -47,8 +47,8 @@ const DownloadCSVButton: ({
 
   function resetAllFields() {
     // Reset download data fields
-    setBody(new Array<BodyElement>());
-    setHeader(new Array<HeaderElement>());
+    setBody([]);
+    setHeader([]);
     setProgress(0);
     setTotalSensors(1);
     setFilename('');
@@ -68,16 +68,16 @@ const DownloadCSVButton: ({
    * @returns the updated body with the elements from Firestore
    */
   async function getData(
-    newBody: Array<BodyElement>,
+    newBody: BodyElement[],
     startDate: Date,
     endDate: Date
   ) {
     setFetchingData(true);
     const sensorsRef = firestore.collection('sensors');
-    let sensorDocs: Array<(
+    let sensorDocs: (
       | firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
       | firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
-    )> = new Array();
+    )[] = [];
     if (downloadAll) {
       sensorDocs = (await sensorsRef.get()).docs;
     } else {
@@ -166,8 +166,8 @@ const DownloadCSVButton: ({
     }
     setFilename(newFilename);
 
-    const newBody: Array<BodyElement> = new Array<BodyElement>();
-    const newHeaders: Array<HeaderElement> = [
+    const newBody: BodyElement[] = [];
+    const newHeaders: HeaderElement[] = [
       {label: 'Timestamp', key: 'timestamp'},
       {label: 'Name', key: 'name'},
       {label: 'PM2.5', key: 'pm25'},

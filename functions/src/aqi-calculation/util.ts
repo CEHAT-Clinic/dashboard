@@ -53,7 +53,7 @@ enum InvalidAqiErrors {
  * Returns a default error array for AQI calculation errors
  * @returns an array for each `InvalidAqiErrors` with each error set to `false`.
  */
-function getDefaultInvalidAqiErrors(): Array<boolean> {
+function getDefaultInvalidAqiErrors(): boolean[] {
   // TypeScript does not provide a way to get the number of elements in an enum,
   // so this gets the number of elements using the enum reverse mapping.
   // eslint-disable-next-line no-magic-numbers
