@@ -62,27 +62,31 @@ function NavigationBar(): JSX.Element {
   }, []);
 
   /**
-   * Sets isScrolled depending on how far the user has scrolled
-   */
-  function handleScroll(): void {
-    const scrollThreshold = 120;
-    const offset = window.scrollY;
-    if (offset > scrollThreshold) {
-      setIsScrolled(true);
-    } else {
-      setIsScrolled(false);
-    }
-  }
-
-  /**
    * Event listener for scrolling
    */
   useEffect(() => {
+    /**
+     * Sets isScrolled depending on how far the user has scrolled
+     */
+    function handleScroll(): void {
+      let scrollThreshold = 120;
+      if (isMobile) {
+        /* eslint-disable-next-line no-magic-numbers */
+        scrollThreshold = 800;
+      }
+      const offset = window.scrollY;
+      if (offset > scrollThreshold) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    }
+
     window.addEventListener('scroll', handleScroll);
     return function (): void {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [isMobile]);
 
   return (
     <Flex
