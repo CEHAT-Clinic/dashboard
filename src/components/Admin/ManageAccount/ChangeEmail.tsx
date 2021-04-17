@@ -102,6 +102,8 @@ const ChangeEmailModal: ({
    * Updates the user's email in Firebase and in their Firestore user doc
    */
   function updateEmail(): Promise<void> {
+    // TODO: What happens to the user's password?
+    // What happens if the user is a Google user only and they update their password?
     return updateEmailInFirebase()
       .then(updateUserDoc)
       .then(() => setEmailChangeComplete(true))
