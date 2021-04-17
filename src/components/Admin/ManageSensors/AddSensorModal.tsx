@@ -246,7 +246,10 @@ function AddSensorModal(): JSX.Element {
                   {/* Start confirm sensor details page */}
                   <Box>
                     <LabelValue label={t('name')} value={sensorName} />
-                    <LabelValue label={t('purpleAirId')} value={purpleAirIdString} />
+                    <LabelValue
+                      label={t('purpleAirId')}
+                      value={purpleAirIdString}
+                    />
                     <LabelValue
                       label={t('latitude')}
                       value={latitude.toString()}
