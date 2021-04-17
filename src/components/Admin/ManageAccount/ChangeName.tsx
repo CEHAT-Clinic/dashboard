@@ -23,6 +23,7 @@ import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {handleReauthenticationWithPassword} from './Util';
+import {USERS} from '../../../firestore';
 
 /**
  * Props for ChangeNameModal component. Used for type safety.
@@ -96,7 +97,7 @@ const ChangeNameModal: ({
             // Update Firestore user document
             // Any errors are caught by the following catch statement
             firestore
-              .collection('users')
+              .collection(USERS)
               .doc(user.uid)
               .update({
                 name: newName,

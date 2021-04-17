@@ -1,5 +1,6 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
 import {firebaseAuth, firestore} from '../firebase';
+import {USERS} from '../firestore';
 import {Props} from './AppProviders';
 
 /**
@@ -74,7 +75,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
       // updates their account information, this change is reflected on the user's
       // account page.
       const unsubscribe = firestore
-        .collection('users')
+        .collection(USERS)
         .doc(user.uid)
         .onSnapshot(snapshot => {
           if (snapshot.exists) {
@@ -96,7 +97,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               admin: false,
             };
             firestore
-              .collection('users')
+              .collection(USERS)
               .doc(user.uid)
               .set(newUserData)
               .catch(error => {

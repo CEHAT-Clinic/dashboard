@@ -26,6 +26,7 @@ import Loading from '../../Util/Loading';
 import {firebaseAuth, firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {User, ToggleUserPopoverProps} from './Types';
+import {USERS} from '../../../firestore';
 
 /**
  * Component for administrative page to manage site users.
@@ -49,7 +50,7 @@ const ManageUsers: () => JSX.Element = () => {
 
       // Creates a listener that updates the data on any changes
       const unsubscribe = firestore
-        .collection('users')
+        .collection(USERS)
         .onSnapshot(querySnapshot => {
           const userList: User[] = [];
           querySnapshot.docs.forEach(doc => {
@@ -93,7 +94,7 @@ const ManageUsers: () => JSX.Element = () => {
 
     if (isAdmin) {
       firestore
-        .collection('users')
+        .collection(USERS)
         .doc(user.userId)
         .update({
           admin: !user.admin,
