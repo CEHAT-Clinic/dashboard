@@ -36,8 +36,10 @@ interface ToggleActiveModalProps {
  * a sensor's active status. Active means that data for the sensor will be
  * collected and shown on the map, but does not change anything in PurpleAir.
  * @param isActive - if the sensors are currently active or not
- * @param sensors - a list of sensors whose active status is `active`
+ * @param sensors - a list of sensors whose active status is `isActive`
  * @returns button that when clicked creates a popover to activate or deactivate a sensor
+ *
+ * @remarks Note that currently active sensors will make this a "deactivate sensor" modal while inactive sensors will make this a "activate sensor" modal.
  */
 const ToggleActiveModal: ({
   isActive,

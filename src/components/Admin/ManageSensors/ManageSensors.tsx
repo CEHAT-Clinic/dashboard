@@ -93,7 +93,7 @@ const ManageSensors: () => JSX.Element = () => {
             <ToggleActiveModal sensors={inactiveSensors} isActive={false} />
             <AddSensorModal />
             <DownloadCSVModal sensors={sensors} />
-            <ToggleActiveModal sensors={activeSensors} isActive />
+            <ToggleActiveModal sensors={activeSensors} isActive={true} />
             <DeleteSensorModal sensors={inactiveSensors} />
             <DeleteOldDataModal />
           </Grid>
