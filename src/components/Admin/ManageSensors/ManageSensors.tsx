@@ -80,7 +80,7 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('manageSensors')}</Heading>
-          <Button as="a" href="/admin" margin={1}>
+          <Button as="a" href="/admin" margin={1} marginBottom={3}>
             {t('returnAdmin')}
           </Button>
           <Grid
