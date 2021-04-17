@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Heading,
   Button,
@@ -13,44 +13,50 @@ import {
   Text,
   Divider,
 } from '@chakra-ui/react';
-import {Sensor} from '../Util/Types';
-import {useAuth} from '../../../../contexts/AuthContext';
-import firebase, {firestore} from '../../../../firebase';
+import {Sensor} from './Util/Types';
+import {useAuth} from '../../../contexts/AuthContext';
+import firebase, {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 
 /**
- * Interface for ToggleActiveSensorPopover used for type safety
- * - `sensor` - the sensor for a row in the table
- * - `setError` - the state setter for errors in the activate/deactivate process
+ * Interface for ToggleActiveModalProps used for type safety
+ * - `active` - if the sensors are currently active or not
+ * - `sensors` - a list of sensors whose active status is `active`
  */
-interface ToggleActiveSensorPopoverProps {
-  sensor: Sensor;
-  setError: React.Dispatch<React.SetStateAction<string>>;
+interface ToggleActiveModalProps {
+  active: boolean;
+  sensors: Sensor[];
 }
 
 /**
- * Creates a button that when clicked, creates a confirmation popup to change
+ * Creates a button that when clicked, creates a modal popup to change
  * a sensor's active status. Active means that data for the sensor will be
  * collected and shown on the map, but does not change anything in PurpleAir.
  * @param sensor - sensor for a row
  * @param setError - state setter for errors in the activate/deactivate process
  * @returns button that when clicked creates a confirmation popover
  */
-const ToggleActiveSensorPopover: ({
-  sensor,
-  setError,
-}: ToggleActiveSensorPopoverProps) => JSX.Element = ({
-  sensor,
-  setError,
-}: ToggleActiveSensorPopoverProps) => {
+const ToggleActiveModal: ({
+  active,
+  sensors,
+}: ToggleActiveModalProps) => JSX.Element = ({
+  active,
+  sensors,
+}: ToggleActiveModalProps) => {
   const {isAdmin} = useAuth();
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation(['sensors', 'common']);
+
+  // Sensor states
+  const [purpleAirId, setPurpleAirId] = useState(Number.NaN);
+  const [sensorDocId, setSensorDocId] = useState('');
+
+  // TOD
 
   /**
    * Toggles `isActive` in a sensor's doc. This also resets the AQI buffer
    * and PM2.5 buffer when activating or deactivating.
    * @param event - click button event
-   * @param currentSensor - sensor for which to toggle isActive status
+   * @param sensor - sensor for which to toggle isActive status
    *
    * @remarks
    * Note that when a sensor is activated or deactivated, we do not change it in
@@ -59,7 +65,7 @@ const ToggleActiveSensorPopover: ({
    */
   function toggleActiveSensorStatus(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    currentSensor: Sensor
+    sensor: Sensor
   ) {
     event.preventDefault();
 
@@ -70,9 +76,9 @@ const ToggleActiveSensorPopover: ({
       // Toggle the isActive and remove the buffers
       firestore
         .collection('sensors')
-        .doc(currentSensor.docId)
+        .doc(sensor.docId)
         .update({
-          isActive: !currentSensor.isActive,
+          isActive: !sensor.isActive,
           lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
           aqiBufferStatus: bufferDoesNotExist,
           aqiBuffer: firebase.firestore.FieldValue.delete(),
@@ -82,27 +88,26 @@ const ToggleActiveSensorPopover: ({
           pm25BufferIndex: firebase.firestore.FieldValue.delete(),
         })
         .catch(() => {
-          setError(
-            t('sensors.changeActiveSensorError') + currentSensor.name ??
-              currentSensor.purpleAirId
-          );
+          const errorStart = sensor.isActive ? t('deactivate.error') : t('activate.error');
+          setError(errorStart + sensor.name);
         });
     }
   }
 
   const popoverMessage =
     (sensor.isActive
-      ? t('sensors.confirmDeactivate')
-      : t('sensors.confirmActivate')) + sensor.name;
+      ? t('deactivate.confirm')
+      : t('activate.confirm')) + sensor.name;
   const popoverNote = sensor.isActive
-    ? t('sensors.deactivateNote')
-    : t('sensors.activateNote');
+    ? t('deactivate.note')
+    : t('activate.note');
 
+  // TODO: convert to modal
   return (
     <Popover>
       <PopoverTrigger>
         <Button colorScheme={sensor.isActive ? 'red' : 'green'} width="full">
-          {sensor.isActive ? t('sensors.deactivate') : t('sensors.activate')}
+          {sensor.isActive ? t('deactivate.heading') : t('activate.heading')}
         </Button>
       </PopoverTrigger>
       <PopoverContent>
@@ -130,4 +135,4 @@ const ToggleActiveSensorPopover: ({
   );
 };
 
-export {ToggleActiveSensorPopover};
+export {ToggleActiveModal};

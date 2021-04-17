@@ -31,7 +31,7 @@ import {LabelValue} from './Util/LabelValue';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
- * sensors - all current sensors
+ * `sensors` - all current sensors
  */
 interface DeleteSensorModalProps {
   sensors: Sensor[];
@@ -71,7 +71,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
     acknowledgeDeletion &&
     acknowledgePermanent;
 
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation(['sensors', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -241,8 +241,8 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
             <Box marginTop={2}>
               <Box>
                 <LabelValue
-                  label={t('sensors.purpleAirId')}
-                  value={numberToString(purpleAirId, t('sensors.unknown'))}
+                  label={t('purpleAirId')}
+                  value={numberToString(purpleAirId, t('unknown'))}
                 />
               </Box>
               <Checkbox

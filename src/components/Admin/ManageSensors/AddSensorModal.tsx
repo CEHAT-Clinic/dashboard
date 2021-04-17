@@ -58,6 +58,7 @@ function AddSensorModal(): JSX.Element {
   const [sensorAdded, setSensorAdded] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
+  // TODO: update to sensors
   const {t} = useTranslation(['administration', 'common']);
 
   /**

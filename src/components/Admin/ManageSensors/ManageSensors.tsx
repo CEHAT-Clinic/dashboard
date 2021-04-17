@@ -20,8 +20,7 @@ const ManageSensors: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading: fetchingAuthInfo} = useAuth();
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation(['sensors', 'administration']);
 
   // Get sensors, and update sensors list as the data changes
   useEffect(() => {
@@ -60,9 +59,9 @@ const ManageSensors: () => JSX.Element = () => {
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
   } else if (!isAuthenticated) {
-    return <AccessDenied reason={t('notSignedIn')} />;
+    return <AccessDenied reason={t('administration:notSignedIn')} />;
   } else if (!isAdmin) {
-    return <AccessDenied reason={t('notAdmin')} />;
+    return <AccessDenied reason={t('administration:notAdmin')} />;
   } else {
     const activeSensors = sensors.filter(sensor => sensor.isActive);
     const inactiveSensors = sensors.filter(sensor => !sensor.isActive);
@@ -79,7 +78,7 @@ const ManageSensors: () => JSX.Element = () => {
           boxShadow="lg"
           textAlign="center"
         >
-          <Heading marginY={2}>{t('manageSensors')}</Heading>
+          <Heading marginY={2}>{t('heading')}</Heading>
           <Grid
             justifyContent="center"
             templateColumns={['repeat(2,1fr)', null, 'repeat(4,1fr)', null]}
@@ -91,20 +90,15 @@ const ManageSensors: () => JSX.Element = () => {
             <DeleteSensorModal sensors={inactiveSensors} />
           </Grid>
           <SensorTable
-            title={t('sensors.activeHeading')}
+            title={t('activeHeading')}
             sensors={activeSensors}
-            setError={setError}
-            activateHeading={t('sensors.deactivate')}
           />
           <SensorTable
-            title={t('sensors.inactiveHeading')}
+            title={t('inactiveHeading')}
             sensors={inactiveSensors}
-            setError={setError}
-            activateHeading={t('sensors.activate')}
           />
-          {error && <Text textColor="red.500">{error}</Text>}
           <Button as="a" href="/admin" margin={1}>
-            {t('returnAdmin')}
+            {t('administration:returnAdmin')}
           </Button>
         </Box>
       </Flex>

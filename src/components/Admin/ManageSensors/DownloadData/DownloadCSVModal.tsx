@@ -33,7 +33,7 @@ import {SensorInput} from '../Util/SensorInput';
 const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
   sensors,
 }: CSVModalProps) => {
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
   /* --------------- State maintenance variables ------------------------ */
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [startYear, setStartYear] = useState(0);
