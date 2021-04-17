@@ -58,7 +58,7 @@ function AddSensorModal(): JSX.Element {
   const [sensorAdded, setSensorAdded] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation(['sensors', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -118,10 +118,10 @@ function AddSensorModal(): JSX.Element {
           setSensorName(sensorData.name);
           setShowConfirmPage(true);
         } else {
-          setError(t('sensors.sensorAlreadyExists'));
+          setError(t('add.sensorAlreadyExists'));
         }
       } catch (error) {
-        setError(t('sensors.unableToAddSensor'));
+        setError(t('add.unableToAddSensor'));
       } finally {
         setIsLoading(false);
       }
@@ -207,13 +207,13 @@ function AddSensorModal(): JSX.Element {
 
   return (
     <Box>
-      <Button colorScheme="teal" onClick={onOpen}>
-        {t('sensors.add')}
+      <Button minWidth="80%" colorScheme="teal" onClick={onOpen}>
+        {t('add.heading')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t('sensors.add')}</ModalHeader>
+          <ModalHeader>{t('add.heading')}</ModalHeader>
           <ModalCloseButton />
           {showFinalPage ? (
             <Box>
@@ -225,7 +225,7 @@ function AddSensorModal(): JSX.Element {
                   marginTop="1em"
                 >
                   <CheckCircleIcon color="green.500" />
-                  <Text fontSize="lg">{t('sensors.addComplete')}</Text>
+                  <Text fontSize="lg">{t('add.complete')}</Text>
                 </Flex>
               ) : (
                 <Flex
@@ -234,7 +234,7 @@ function AddSensorModal(): JSX.Element {
                   marginTop="1em"
                 >
                   <WarningIcon color="red.500" />
-                  <Text fontSize="lg">{t('sensors.addSensorFailure')}</Text>
+                  <Text fontSize="lg">{t('add.failure')}</Text>
                 </Flex>
               )}
               {/* End show success or failure to add a sensor */}
@@ -245,17 +245,17 @@ function AddSensorModal(): JSX.Element {
                 <Flex>
                   {/* Start confirm sensor details page */}
                   <Box>
+                    <LabelValue label={t('name')} value={sensorName} />
                     <LabelValue
-                      label={t('sensors.purpleAirId')}
+                      label={t('purpleAirId')}
                       value={purpleAirIdString}
                     />
-                    <LabelValue label={t('sensors.name')} value={sensorName} />
                     <LabelValue
-                      label={t('sensors.latitude')}
+                      label={t('latitude')}
                       value={latitude.toString()}
                     />
                     <LabelValue
-                      label={t('sensors.longitude')}
+                      label={t('longitude')}
                       value={longitude.toString()}
                     />
                     <Box>
@@ -264,7 +264,7 @@ function AddSensorModal(): JSX.Element {
                         marginRight={3}
                         onClick={goBackToStart}
                       >
-                        {t('sensors.goBack')}
+                        {t('add.goBack')}
                       </Button>
                       {/* Start confirm sensor button */}
                       <Button
@@ -297,7 +297,7 @@ function AddSensorModal(): JSX.Element {
                       isInvalid={error !== ''}
                       marginTop={4}
                     >
-                      <FormLabel>{t('sensors.purpleAirId')}</FormLabel>
+                      <FormLabel>{t('purpleAirId')}</FormLabel>
                       <Input
                         placeholder="30971"
                         size="md"
@@ -318,16 +318,12 @@ function AddSensorModal(): JSX.Element {
                     <Divider marginY={3} />
                     {/* Being helper message */}
                     <Button onClick={() => setShowHelp(!showHelp)}>
-                      {showHelp
-                        ? t('sensors.hideAddHelp')
-                        : t('sensors.showAddHelp')}
+                      {showHelp ? t('add.hideHelp') : t('add.showHelp')}
                     </Button>
                     {showHelp && (
                       <Box marginTop={2}>
-                        <Heading fontSize="md">
-                          {t('sensors.purpleAirId')}
-                        </Heading>
-                        <Text>{t('sensors.addHelpPurpleAirId')}</Text>
+                        <Heading fontSize="md">{t('purpleAirId')}</Heading>
+                        <Text>{t('add.helpMessage')}</Text>
                       </Box>
                     )}
                     {/* End helper message */}

@@ -58,7 +58,7 @@ function DeleteOldDataModal(): JSX.Element {
   const [error, setError] = useState('');
   const validDate = error === '';
 
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
 
   /**
    * Resets modal state values before closing the modal.
@@ -147,7 +147,7 @@ function DeleteOldDataModal(): JSX.Element {
 
   return (
     <Box>
-      <Button colorScheme="red" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="red" onClick={onOpen}>
         {t('deleteOldData.launchButton')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
