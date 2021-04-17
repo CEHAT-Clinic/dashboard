@@ -138,7 +138,7 @@ const ChangeNameModal: ({
   return (
     <Box marginY={2}>
       <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
-        {t('nameModal.launchButton')}
+        {t('nameModal.header')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
@@ -195,17 +195,14 @@ const ChangeNameModal: ({
                 </Box>
               </ModalBody>
             )}
-            <ModalFooter>
+            <ModalFooter justifyContent="center">
               {!nameChangeComplete && (
                 <SubmitButton
-                  label={t('nameModal.submitButton')}
+                  label={t('common:submit')}
                   isLoading={modalIsLoading}
                   error={error}
                 />
               )}
-              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
-                {t('common:close')}
-              </Button>
             </ModalFooter>
           </form>
         </ModalContent>

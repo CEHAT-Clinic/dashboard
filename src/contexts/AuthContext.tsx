@@ -99,7 +99,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               name: user.displayName ?? '',
               email: user.email ?? '',
               admin: false,
-              emailVerified: user.emailVerified
+              emailVerified: user.emailVerified,
             };
             firestore
               .collection('users')

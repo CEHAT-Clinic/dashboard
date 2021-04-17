@@ -7,6 +7,7 @@ import {firebaseAuth} from '../../../firebase';
 import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
+import ChangeEmailModal from './ChangeEmail';
 
 /**
  * Component for a user to manage their own account information.
@@ -30,13 +31,16 @@ const ManageAccount: () => JSX.Element = () => {
 
   const {t} = useTranslation(['administration', 'common']);
 
-  // TODO: this should happen before creating an account by email
+  // TODO: make this happen on click
   function sendEmailVerificationEmail() {
     if (isAuthenticated && firebaseAuth.currentUser && !verificationEmailSent) {
       const user = firebaseAuth.currentUser;
-      user.sendEmailVerification().then(() => setVerificationEmailSent(true)).catch(error => {
-        setError(t('common:generalErrorTemplate') + error.message)
-      });
+      user
+        .sendEmailVerification()
+        .then(() => setVerificationEmailSent(true))
+        .catch(error => {
+          setError(t('common:generalErrorTemplate') + error.message);
+        });
     }
   }
 
@@ -88,7 +92,13 @@ const ManageAccount: () => JSX.Element = () => {
           <Text textAlign="left" fontSize="md">
             {email}
           </Text>
-          {!emailVerified && !verificationEmailSent && <Button onClick={sendEmailVerificationEmail}>{t('manageAccount.sendEmailVerificationEmail')}</Button>}
+          {!emailVerified && !verificationEmailSent && (
+            <Button onClick={sendEmailVerificationEmail}>
+              {t('manageAccount.sendEmailVerificationEmail')}
+            </Button>
+          )}
+          {/* TODO: add message for "Verification email sent. Refresh the page to send the email again" */}
+          <ChangeEmailModal passwordUser={passwordUser} />
           <Divider marginY={2} />
           <Text textAlign="left" fontSize="lg" fontWeight="bold">
             {t('name')}

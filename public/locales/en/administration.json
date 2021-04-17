@@ -36,11 +36,13 @@
         "forgot": "Send password reset email"
     },
     "nameModal": {
-        "launchButton": "Update your name",
         "header": "Update Name",
-        "submitButton": "Update name",
         "success": "Name updated",
         "formHelperMessage": "Your name is used so that site admins can identify your account"
+    },
+    "emailModal": {
+        "header": "Update Email",
+        "success": "Email updated"
     },
     "signIn": {
         "google": "Sign in with Google",

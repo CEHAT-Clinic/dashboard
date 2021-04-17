@@ -16,19 +16,16 @@ import {
   FormLabel,
   Input,
   FormErrorMessage,
-  FormHelperText,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import {
-  handleReauthenticationWithPassword,
-  PasswordFormInput,
-  SubmitButton,
-} from './Util';
+import {handleReauthenticationWithPassword} from './Util';
+import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 
 /**
- * Props for ChangeEmailModal component. Used for type safety.
+ * Props for ChangeEmailModal component
+ * - `passwordUser` - if the signed in user is a password-based user
  */
 interface ChangeEmailModalProps {
   passwordUser: boolean;
@@ -37,9 +34,7 @@ interface ChangeEmailModalProps {
 /**
  * Component for changing an authenticated user's email. Includes button that
  * opens modal to update the user's email.
- * @param props - passwordUser
- * - `passwordUser`: if user uses a password for authentication, used to
- *                   reauthenticate if necessary before updating the user's email
+ * @param passwordUser - if user uses a password for authentication, used to reauthenticate if necessary before updating the user's email
  */
 const ChangeEmailModal: ({
   passwordUser,
@@ -60,7 +55,6 @@ const ChangeEmailModal: ({
   const [emailChangeComplete, setEmailChangeComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  // TODO: add translations for email modal
   const {t} = useTranslation(['administration', 'common']);
 
   /**
@@ -78,74 +72,88 @@ const ChangeEmailModal: ({
   }
 
   /**
+   * Updates the user's doc in firestore with their new email
+   * @returns A promise that when resolved means that the user doc has been updated with the new email
+   */
+  function updateUserDoc(): Promise<void> {
+    if (firebaseAuth.currentUser) {
+      return firestore
+        .collection('users')
+        .doc(firebaseAuth.currentUser.uid)
+        .update({email: newEmail});
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  /**
+   * Updates the user's email in Firebase Authentication
+   * @returns A promise that when resolved means that the user email in Firebase Authentication has been updated
+   */
+  function updateEmailInFirebase(): Promise<void> {
+    if (firebaseAuth.currentUser) {
+      return firebaseAuth.currentUser.updateEmail(newEmail);
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  /**
+   * Updates the user's email in Firebase and in their Firestore user doc
+   */
+  function updateEmail(): Promise<void> {
+    return updateEmailInFirebase()
+      .then(updateUserDoc)
+      .then(() => setEmailChangeComplete(true))
+      .catch(error =>
+        setError(t('common:generalErrorTemplate') + error.message)
+      );
+  }
+
+  /**
    * Updates an authenticated user using Firebase authentication
    * @param event - submit form event
    */
-  function handleEmailUpdate(event: React.FormEvent<HTMLFormElement>) {
+  function handleEmailUpdate(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     event.preventDefault();
     setModalIsLoading(true);
 
-    /**
-     * Updates the user's email in Firebase and in their Firestore user doc
-     */
-    function updateEmail(): void {
-      if (firebaseAuth.currentUser) {
-        const user = firebaseAuth.currentUser;
-        // Update Firebase account
-        user
-          .updateEmail(newEmail)
-          .then(() => {
-            // Update Firestore user document
-            // Any errors are caught by the following catch statement
-            firestore
-              .collection('users')
-              .doc(user.uid)
-              .update({
-                email: newEmail,
-              })
-              .then(() => setEmailChangeComplete(true));
-          })
-          .catch(error =>
-            setError(t('common:generalErrorTemplate') + error.message)
-          )
-          .finally(() => {
-            setModalIsLoading(false);
-          });
-      }
-    }
-
     // Verify that the inputted password is correct before proceeding
     if (passwordUser) {
-      handleReauthenticationWithPassword(password, t)
+      return handleReauthenticationWithPassword(password, t)
         .then(error => {
           if (error) {
             // This error can be handled by the user
             setPasswordError(error);
             setModalIsLoading(false);
+            return Promise.resolve();
           } else {
             // No error, so proceed with name update
-            updateEmail();
+            return updateEmail().finally(() => setModalIsLoading(false));
           }
         })
         .catch(error => {
           // Propagate the error, since this error cannot be handled by the user
           throw new Error(error);
-        });
+        })
+        .finally(() => setModalIsLoading(false));
     } else {
       // If user is not a password-based user, proceed with updating the name
-      updateEmail();
+      return updateEmail().finally(() => setModalIsLoading(false));
     }
   }
 
   return (
     <Box marginY={2}>
       <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
-        {t('nameModal.launchButton')}
+        {t('emailModal.header')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t('nameModal.header')}</ModalHeader>
+          <ModalHeader>{t('emailModal.header')}</ModalHeader>
           <ModalCloseButton />
           <form onSubmit={handleEmailUpdate}>
             {emailChangeComplete ? (
@@ -178,10 +186,10 @@ const ChangeEmailModal: ({
                     marginTop={4}
                     isInvalid={error !== ''}
                   >
-                    <FormLabel>{t('name')}</FormLabel>
+                    <FormLabel>{t('email')}</FormLabel>
                     <Input
-                      type="text"
-                      placeholder="Bob"
+                      type="email"
+                      placeholder="bob@example.com"
                       size="md"
                       onChange={event => {
                         setNewEmail(event.target.value);
@@ -190,24 +198,18 @@ const ChangeEmailModal: ({
                       value={newEmail}
                     />
                     <FormErrorMessage>{error}</FormErrorMessage>
-                    <FormHelperText>
-                      {t('nameModal.formHelperMessage')}
-                    </FormHelperText>
                   </FormControl>
                 </Box>
               </ModalBody>
             )}
-            <ModalFooter>
+            <ModalFooter justifyContent="center">
               {!emailChangeComplete && (
                 <SubmitButton
-                  label={t('nameModal.submitButton')}
+                  label={t('common:submit')}
                   isLoading={modalIsLoading}
                   error={error}
                 />
               )}
-              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
-                {t('common:close')}
-              </Button>
             </ModalFooter>
           </form>
         </ModalContent>

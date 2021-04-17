@@ -36,11 +36,13 @@
         "forgot": "Envia el correo electrónico"
     },
     "nameModal": {
-        "launchButton": "Actualiza tu nombre",
         "header": "Actualiza tu nombre",
-        "submitButton": "Actualiza tu nombre",
         "success": "Nombre actualizado",
         "formHelperMessage": "Tu nombre se usa para que los administradores del sitio puedan identificar tu cuenta"
+    },
+    "emailModal": {
+        "header": "Actualiza tu correo electrónico",
+        "success": "Correo electrónico actualizado"
     },
     "signIn": {
         "google": "Inicia sesión con Google",
