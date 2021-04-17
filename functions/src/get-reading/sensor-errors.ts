@@ -14,7 +14,8 @@
  *   We determine if the channels have diverged by calculating the mean percent
  *   difference between the readings for the channels from the confidence value
  *   from PurpleAir. The EPA recommends using a maximum mean percent difference
- *   of 0.7 for valid sensor readings.
+ *   of 0.7 for valid sensor readings. `ChannelsDiverged` is also true if either
+ *   channel of a sensor has been downgraded.
  * - `ChannelADowngraded` - If PurpleAir has downgraded Channel A of a sensor.
  * - `ChannelBDowngraded` - If PurpleAir has downgraded Channel B of a sensor.
  */

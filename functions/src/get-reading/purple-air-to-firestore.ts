@@ -55,7 +55,7 @@ async function purpleAirToFirestore(): Promise<void> {
       // No reading was received from PurpleAir
       errors[SensorReadingErrors.ReadingNotReceived] = true;
     } else {
-      // If the reading was invalid or incomplete, the errors will be propagated
+      // If PurpleAir returned anything for a sensor, the errors will be propagated
       [reading, errors] = purpleAirResult;
     }
 
