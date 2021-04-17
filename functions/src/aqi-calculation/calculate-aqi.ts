@@ -6,11 +6,11 @@ import {
   Pm25BufferElement,
   getDefaultAqiBufferElement,
 } from './buffer';
+import {CurrentReadingSensorData} from './types';
 import {
-  CurrentReadingSensorData,
-  getDefaultInvalidAqiErrors,
   InvalidAqiErrors,
-} from './util';
+  getDefaultInvalidAqiErrors,
+} from './invalid-aqi-errors';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,

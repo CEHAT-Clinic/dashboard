@@ -1,5 +1,8 @@
 import {Pm25BufferElement, bufferStatus} from './buffer';
-import {getDefaultInvalidAqiErrors, InvalidAqiErrors} from './util';
+import {
+  getDefaultInvalidAqiErrors,
+  InvalidAqiErrors,
+} from './invalid-aqi-errors';
 
 /**
  * Basic sensor reading used in data cleaning
@@ -174,7 +177,7 @@ function getHourlyAverages(
 
 /**
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
- * excluding thoses data points that indicate sensor malfunction. Those
+ * excluding those data points that indicate sensor malfunction. Those
  * data points are represented by `NaN`.
  * @param averages - array containing sensor readings representing hourly averages. An entry in the array can be undefined if there were not enough valid readings for the corresponding hour.
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
