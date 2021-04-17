@@ -1,4 +1,4 @@
-import {FieldValue, firestore} from '../admin';
+import {FieldValue, firestore} from './admin';
 
 /**
  * Interface for a single element in the `pm25Buffer`.
@@ -94,15 +94,15 @@ export enum bufferStatus {
  * @param docId - document ID for the sensor to update
  */
 function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
-  const docRef = firestore.collection('/sensors').doc(docId);
+  const docRef = firestore.collection('sensors').doc(docId);
   const bufferIndex = 0;
   if (aqiBuffer) {
     // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to
     // create a graph with 24 hours of data
     const bufferSize = 144;
-    const aqiBuffer: Array<AqiBufferElement> = Array(bufferSize).fill(
-      defaultAqiBufferElement
-    );
+    const aqiBuffer: AqiBufferElement[] = new Array<AqiBufferElement>(
+      bufferSize
+    ).fill(defaultAqiBufferElement);
     // Update document
     docRef.get().then(doc => {
       if (doc.exists) {
@@ -118,9 +118,9 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
     // 360 = (30 calls/ hour * 12 hours) is the amount of data needed for
     // the AQI NowCast calculation
     const bufferSize = 360;
-    const pm25Buffer: Array<Pm25BufferElement> = Array(bufferSize).fill(
-      defaultPm25BufferElement
-    );
+    const pm25Buffer: Pm25BufferElement[] = new Array<Pm25BufferElement>(
+      bufferSize
+    ).fill(defaultPm25BufferElement);
 
     // Update document
     docRef.get().then(doc => {
