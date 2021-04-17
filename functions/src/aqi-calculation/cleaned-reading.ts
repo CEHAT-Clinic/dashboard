@@ -1,4 +1,4 @@
-import {Pm25BufferElement, bufferStatus} from './buffer';
+import {Pm25BufferElement, bufferStatus} from '../buffer';
 import {
   getDefaultInvalidAqiErrors,
   InvalidAqiErrors,
@@ -81,7 +81,7 @@ function getHourlyAverages(
 
   // If we have the relevant fields:
   if (status === bufferStatus.Exists && buffer && bufferIndex) {
-    let readings: Pm25BufferElement[] = new Array<Pm25BufferElement>();
+    let readings: Pm25BufferElement[] = [];
     // Get sub-array that is relevant for each hour
     let endIndex = bufferIndex;
     let startIndex = bufferIndex - ELEMENTS_PER_HOUR;

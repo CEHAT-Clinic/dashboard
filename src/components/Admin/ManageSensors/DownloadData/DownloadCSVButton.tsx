@@ -34,7 +34,7 @@ const DownloadCSVButton: ({
   sensorDocId,
   resetSelectedSensor,
 }: CSVButtonProps) => {
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
   /* --------------- State maintenance variables ------------------------ */
   const [body, setBody] = useState<BodyElement[]>([]);
   const [header, setHeader] = useState<HeaderElement[]>([]);

@@ -1,4 +1,4 @@
-import {FieldValue, firestore} from '../admin';
+import {FieldValue, firestore} from './admin';
 
 /**
  * Interface for a single element in the `pm25Buffer`.
@@ -94,7 +94,7 @@ export enum bufferStatus {
  * @param docId - document ID for the sensor to update
  */
 function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
-  const docRef = firestore.collection('/sensors').doc(docId);
+  const docRef = firestore.collection('sensors').doc(docId);
   const bufferIndex = 0;
   if (aqiBuffer) {
     // 144 = (6 calls/hour * 24 hours) is the amount of entries we need to

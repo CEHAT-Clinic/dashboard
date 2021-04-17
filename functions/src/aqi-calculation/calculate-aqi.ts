@@ -5,7 +5,7 @@ import {
   AqiBufferElement,
   Pm25BufferElement,
   getDefaultAqiBufferElement,
-} from './buffer';
+} from '../buffer';
 import {CurrentReadingSensorData} from './types';
 import {
   InvalidAqiErrors,

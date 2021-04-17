@@ -1,0 +1,106 @@
+{
+	"heading": "Manage Sensors",
+	"activeHeading": "Active Sensors",
+	"inactiveHeading": "Inactive Sensors",
+	"name": "Sensor Name",
+	"purpleAirId": "PurpleAir ID",
+	"latitude": "Latitude",
+	"longitude": "Longitude",
+	"validAqiTime": "Last valid AQI Time",
+	"lastValidAqiTimeNote": "The time of the last valid AQI time refers to the last time that a sensor had enough good data to calculate an AQI. PurpleAir sensors have two sensors called channel A and channel B, and if the two channels readings are too different over a period of 24 hours, then we don't use the sensor reading from that time.",
+	"readingTime": "Last PM2.5 Reading Time",
+	"lastReadingTimeNote": "The time of the most recent sensor reading is the last time that this website received a new sensor reading from PurpleAir. If the sensor is active and the time is old, this may mean that the sensor is no longer sending new readings.",
+	"activeNote": "Active denotes whether this website is collecting data for and displaying a sensor. This does not reflect any changes on the PurpleAir site.",
+	"unknown": "unknown",
+	"activate": {
+		"heading": "Activate Sensor",
+		"note": "Please note that this sensor's AQI will not show up on the map for at least 2 hours until enough data is collected to calculate the AQI for this sensor.",
+		"error": "Unable to activate the sensor.",
+        "whichSensor": "Which sensor would you like to activate?"
+	},
+	"deactivate": {
+		"heading": "Deactivate Sensor",
+		"note": "Please note that this sensor may take up to 10 minutes to be removed from the website's map. Deactivating the sensor will not delete any historical sensor data, but it will stop collecting new sensor data. This will also not make changes on PurpleAir's website.",
+		"error": "Unable to deactivate the sensor.",
+        "whichSensor": "Which sensor would you like to deactivate?"
+	},
+	"add": {
+		"heading": "Add New Sensor",
+		"complete": "Sensor added",
+		"showHelp": "Show help",
+		"hideHelp": "Hide help",
+		"helpMessage": "To find the PurpleAir ID, go to the PurpleAir map, and click on the sensor you want to add. On the popup for the sensor, hover over 'Get This Widget', which is at the bottom. This will show text like this: '<div id='PurpleAirWidget_39165_module_...'. The PurpleAir ID is the number after the PurpleAirWidget, so in this case, the PurpleAir ID is 39165.",
+		"sensorAlreadyExists": "A sensor with this PurpleAir ID already exists.",
+		"unableToAddSensor": "Unable to add sensor. Please check that the PurpleAir ID is correct.",
+		"goBack": "Go Back",
+		"failure": "Unable to add sensor. Please try again later."
+    },
+    "deleteOldData": {
+        "launchButton": "Delete Old Data",
+        "modalHeader": "Delete Old Data",
+        "body": {
+            "paragraph1": "As time goes on, this system accumulates historical readings so that the team can use this data to analyze. However, the cost of storing this data in the database compounds and may exceed the budget of the organization. For this reason, from time to time, you may wish to migrate this data to a cheaper storage location.",
+            "paragraph2": "First, you should download the data using the download data feature and store it somewhere safe, like a Google Drive or other file storage service. Then, you can delete the old data (data older than 7 days) from this panel. In order to delete data, you must first acknowledge the following conditions:"
+        },
+        "conditions": {
+            "downloaded": "I have downloaded the old data using the download data feature and verified it looks correct.",
+            "uploaded": "I have uploaded the downloaded data to a safe file storage location.",
+            "irreversible": "I understand this process is irreversible and the deleted data cannot be recovered from this system."
+        },
+        "date": "Date to Delete Data Before",
+        "tooRecent": "This date is too recent. For technical reasons, you must choose a date at least a week in the past.",
+        "invalidDate": "Date is invalid",
+        "submit": "Delete"
+    },
+    "downloadData":{
+        "error":{
+            "invalidStart": "Start date is invalid",
+            "invalidEnd": "End date is invalid",
+            "startBeforeEnd": "Start date must be before end date",
+            "validDates": "Dates are valid",
+            "emptyField": "At least one field is empty",
+            "yearDigits": "Years need to have 4 digits"
+        },
+        "fetchData": "Fetch Data",
+        "fetching": "Fetching data, this may take a while",
+        "download": "Download Data",
+        "whenReady": "The data is ready for download!",
+        "header": "Download Sensor Data",
+        "startDate": "Start Date",
+        "startHelper": "If the start date is earlier than the first entry, the data will start at the first entry.",
+        "endDate": "End Date",
+        "endHelper": "If the end date is later than the last entry, gets data until the last entry.",
+        "close": "Close",
+        "year": "year",
+        "month": "month",
+        "day": "day",
+        "months":{
+            "jan": "Jan",
+            "feb": "Feb",
+            "mar": "Mar",
+            "apr": "Apr",
+            "may": "May",
+            "jun": "Jun",
+            "jul": "Jul",
+            "aug": "Aug",
+            "sep": "Sep",
+            "oct": "Oct",
+            "nov": "Nov",
+            "dec": "Dec"
+        },
+        "downloadAll": "Download data for all sensors",
+        "whichSensor": "Which sensor would you like to download data for?",
+        "chooseSensor": "Choose sensor",
+        "anotherSensor": "Download data for another sensor"
+    },
+    "deleteSensor": {
+        "delete": "Delete Sensor",
+        "confirmDownload": "I have downloaded any data I need.",
+        "acknowledgeDelete": "I acknowledge that this action will delete any historical data for this sensor.",
+        "cannotBeUndone": "I acknowledge that this action cannot be undone",
+        "note": "Deleting a sensor will remove it from the map and delete all of its data. You will need to re-add the sensor to show this sensor on the map again and to collect this sensor's data. If you only want to temporarily stop showing this sensor or collecting data for this sensor, deactivate the sensor instead. You can only delete a sensor that has been deactivated, so make sure you deactivate a sensor you intend to delete first.",
+        "confirmPurpleAirId": "Type the PurpleAir ID of the sensor to confirm deletion",
+        "whichSensorToDelete": "Which sensor would you like to delete?",
+		"error": "The sensor was not able to be deleted. Please try again later."
+    }
+}

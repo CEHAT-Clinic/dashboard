@@ -1,17 +1,17 @@
-import {getReadingsMap} from './purple-air-response';
 import {firestore, Timestamp, FieldValue} from '../admin';
 import {
   populateDefaultBuffer,
   bufferStatus,
   Pm25BufferElement,
   getDefaultPm25BufferElement,
-} from '../aqi-calculation/buffer';
+} from '../buffer';
 import {HistoricalSensorReading, PurpleAirReading} from './types';
 import {readingsSubcollection} from '../util';
 import {getLastSensorReadingTime} from './util';
+import {getReadingsMap} from './purple-air-response';
 import {
-  getDefaultSensorReadingErrors,
   SensorReadingErrors,
+  getDefaultSensorReadingErrors,
 } from './sensor-errors';
 
 /**
