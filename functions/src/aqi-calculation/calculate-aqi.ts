@@ -1,6 +1,6 @@
 import {firestore, FieldValue, Timestamp} from '../admin';
 import {
-  bufferStatus,
+  BufferStatus,
   populateDefaultBuffer,
   AqiBufferElement,
   Pm25BufferElement,
@@ -165,8 +165,8 @@ async function calculateAqi(): Promise<void> {
     };
 
     // Data used to calculate hourly averages
-    const pm25BufferStatus: bufferStatus =
-      sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+    const pm25BufferStatus: BufferStatus =
+      sensorDocData.pm25BufferStatus ?? BufferStatus.DoesNotExist;
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
     const pm25Buffer: Pm25BufferElement[] = sensorDocData.pm25Buffer ?? [];
 
@@ -228,18 +228,18 @@ async function calculateAqi(): Promise<void> {
     sensorDocUpdate.isValid = currentSensorData.isValid;
 
     // Update the AQI circular buffer for this element
-    const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
-    if (status === bufferStatus.Exists) {
+    const status = sensorDocData.aqiBufferStatus ?? BufferStatus.DoesNotExist;
+    if (status === BufferStatus.Exists) {
       // The buffer exists, proceed with normal update
       const aqiBuffer: AqiBufferElement[] = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
-    } else if (status === bufferStatus.DoesNotExist) {
+    } else if (status === BufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocUpdate.aqiBufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.aqiBufferStatus = BufferStatus.InProgress;
     }
 
     // Send the updated data to the database
@@ -251,7 +251,7 @@ async function calculateAqi(): Promise<void> {
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
     // that the buffer is not re-created while the buffer is being created.
-    if (status === bufferStatus.DoesNotExist) {
+    if (status === BufferStatus.DoesNotExist) {
       // This function updates the bufferStatus once the buffer has been
       // fully initialized, which uses an additional write to the database
       populateDefaultBuffer(true, sensorDoc.id);

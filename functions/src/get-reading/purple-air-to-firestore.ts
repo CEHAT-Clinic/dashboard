@@ -1,12 +1,12 @@
 import {firestore, Timestamp, FieldValue} from '../admin';
 import {
   populateDefaultBuffer,
-  bufferStatus,
+  BufferStatus,
   Pm25BufferElement,
   getDefaultPm25BufferElement,
 } from '../buffer';
 import {HistoricalSensorReading} from './types';
-import {readingsSubcollection} from '../util';
+import {readingsSubcollection} from '../firestore';
 import {getLastSensorReadingTime} from './util';
 import {getReadingsMap} from './purple-air-response';
 
@@ -96,8 +96,8 @@ async function purpleAirToFirestore(): Promise<void> {
     }
 
     // Update the PM2.5 buffer
-    const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
-    if (status === bufferStatus.Exists) {
+    const status = sensorDocData.pm25BufferStatus ?? BufferStatus.DoesNotExist;
+    if (status === BufferStatus.Exists) {
       // If the buffer exists, update normally
       const pm25Buffer = sensorDocData.pm25Buffer;
       pm25Buffer[sensorDocData.pm25BufferIndex] = pm25BufferElement;
@@ -105,10 +105,10 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocUpdate.pm25BufferIndex =
         (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length; // eslint-disable-line no-magic-numbers
       sensorDocUpdate.pm25Buffer = pm25Buffer;
-    } else if (status === bufferStatus.DoesNotExist) {
+    } else if (status === BufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocData.pm25BufferStatus = bufferStatus.InProgress;
+      sensorDocData.pm25BufferStatus = BufferStatus.InProgress;
     }
 
     // Send the updated data to the database
@@ -120,7 +120,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
     // that the buffer is not re-created while the buffer is being created.
-    if (status === bufferStatus.DoesNotExist) {
+    if (status === BufferStatus.DoesNotExist) {
       // This function updates the bufferStatus once the buffer has been
       // fully initialized, which uses an additional write to the database
       populateDefaultBuffer(false, sensorDoc.id);

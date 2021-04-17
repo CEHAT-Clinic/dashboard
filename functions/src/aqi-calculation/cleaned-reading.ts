@@ -1,4 +1,4 @@
-import {Pm25BufferElement, bufferStatus} from '../buffer';
+import {Pm25BufferElement, BufferStatus} from '../buffer';
 
 /**
  * Basic sensor reading used in data cleaning
@@ -62,7 +62,7 @@ function averageReadings(readings: Pm25BufferElement[]): BasicReading {
  * the raw threshold.
  */
 function getHourlyAverages(
-  status: bufferStatus,
+  status: BufferStatus,
   bufferIndex: number,
   buffer: Pm25BufferElement[]
 ): (BasicReading | null)[] {
@@ -71,7 +71,7 @@ function getHourlyAverages(
   const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS);
 
   // If we have the relevant fields:
-  if (status === bufferStatus.Exists && buffer && bufferIndex) {
+  if (status === BufferStatus.Exists && buffer && bufferIndex) {
     let readings: Pm25BufferElement[] = [];
     // Get sub-array that is relevant for each hour
     let endIndex = bufferIndex;
@@ -181,7 +181,7 @@ function cleanAverages(averages: (BasicReading | null)[]): number[] {
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  */
 function getCleanedAverages(
-  status: bufferStatus,
+  status: BufferStatus,
   bufferIndex: number,
   buffer: Pm25BufferElement[]
 ): number[] {

@@ -147,7 +147,8 @@
           "dec",
           "Checkbox",
           "Merriweather",
-          "semibold"
+          "semibold",
+          "Subcollection"
         ],
         "skipWords": [
           "Pv"
