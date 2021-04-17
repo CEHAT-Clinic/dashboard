@@ -1,74 +1,14 @@
-import axios, {AxiosResponse} from 'axios';
-import {firestore, config, Timestamp, FieldValue} from '../admin';
+import {firestore, Timestamp, FieldValue} from '../admin';
 import {
   populateDefaultBuffer,
   bufferStatus,
   Pm25BufferElement,
   getDefaultPm25BufferElement,
-} from './buffer';
-import {HistoricalSensorReading, PurpleAirReading} from './types';
-
-import {
-  readingsSubcollection,
-  getReading,
-  getLastSensorReadingTime,
-} from './util';
-
-/**
- * Make the PurpleAir API to using the group query
- * @returns PurpleAir API response
- */
-async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
-  // The Group ID for the CEHAT's sensors is 490
-  const purpleAirGroupApiUrl =
-    'https://api.purpleair.com/v1/groups/490/members';
-
-  // Fetch these data fields for each sensor. Available fields are documented
-  // by the PurpleAir API
-  const fieldList = [
-    'sensor_index',
-    'name',
-    'latitude',
-    'longitude',
-    'confidence',
-    'pm2.5',
-    'humidity',
-    'last_seen',
-  ];
-
-  // Only get readings from sensors that have an updated reading in the last 4 minutes
-  const maxSensorAge = 240;
-
-  // If an error is thrown, then it will be logged in Firestore
-  const purpleAirResponse = await axios.get(purpleAirGroupApiUrl, {
-    headers: {
-      'X-API-Key': config.purpleair.read_key,
-    },
-    params: {
-      fields: fieldList.join(),
-      max_age: maxSensorAge, // eslint-disable-line camelcase
-    },
-  });
-
-  return purpleAirResponse;
-}
-
-/**
- * Translates PurpleAir response into map of sensor ID to PurpleAirReading
- * @returns map of sensor ID to PurpleAirReading
- */
-async function getReadingsMap(): Promise<Map<number, PurpleAirReading | null>> {
-  const purpleAirResponse = await fetchPurpleAirResponse();
-  const readings: Map<number, PurpleAirReading | null> = new Map();
-  const purpleAirData = purpleAirResponse.data;
-  const fieldNames: string[] = purpleAirData.fields;
-  const rawReadings: (string | number)[][] = purpleAirData.data;
-  rawReadings.forEach(rawReading => {
-    const [id, reading] = getReading(rawReading, fieldNames);
-    readings.set(id, reading);
-  });
-  return readings;
-}
+} from '../buffer';
+import {HistoricalSensorReading} from './types';
+import {readingsSubcollection} from '../util';
+import {getLastSensorReadingTime} from './util';
+import {getReadingsMap} from './purple-air-response';
 
 /**
  * Handles the PurpleAir API call for all active sensors,

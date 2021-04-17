@@ -36,7 +36,10 @@ const SensorInput: ({
   setPurpleAirId,
 }: SensorInputProps) => {
   const {t} = useTranslation('administration');
-  const options = [];
+  const options: React.DetailedHTMLProps<
+    React.OptionHTMLAttributes<HTMLOptionElement>,
+    HTMLOptionElement
+  >[] = [];
   const docIdToPurpleAirId = new Map<string, number>();
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];

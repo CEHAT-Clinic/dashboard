@@ -44,7 +44,7 @@ function AddSensorModal(): JSX.Element {
   const {isAdmin} = useAuth();
 
   // Sensor state
-  const [purpleAirId, setPurpleAirId] = useState('');
+  const [purpleAirIdString, setPurpleAirIdString] = useState('');
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [sensorName, setSensorName] = useState('');
@@ -65,7 +65,7 @@ function AddSensorModal(): JSX.Element {
    */
   function handleClose(): void {
     // Sensor state
-    setPurpleAirId('');
+    setPurpleAirIdString('');
     setLatitude(0);
     setLongitude(0);
     setSensorName('');
@@ -93,16 +93,17 @@ function AddSensorModal(): JSX.Element {
     if (isAdmin) {
       setIsLoading(true);
       try {
+        const purpleAirId = +purpleAirIdString;
         // Make sure that no sensor with this ID already exists in Firestore
         const querySnapshot = await firestore
           .collection('sensors')
-          .where('purpleAirId', 'in', [purpleAirId, +purpleAirId])
+          .where('purpleAirId', '==', purpleAirId)
           .get();
 
         // If the query snapshot is not empty, a sensor doc with this PurpleAir ID
         // already exists in Firestore
         if (querySnapshot.empty) {
-          const purpleAirApiUrl = `https://api.purpleair.com/v1/sensors/${purpleAirId}`;
+          const purpleAirApiUrl = `https://api.purpleair.com/v1/sensors/${purpleAirIdString}`;
           const purpleAirResponse = await axios({
             method: 'GET',
             url: purpleAirApiUrl,
@@ -158,7 +159,7 @@ function AddSensorModal(): JSX.Element {
 
     if (isAdmin) {
       setIsLoading(true);
-      const purpleAirIdNumber = +purpleAirId;
+      const purpleAirId = +purpleAirIdString;
       // Add to PurpleAir Group
       const purpleAirGroupApiUrl =
         'https://api.purpleair.com/v1/groups/490/members';
@@ -172,7 +173,7 @@ function AddSensorModal(): JSX.Element {
             'X-API-Key': process.env.REACT_APP_PURPLEAIR_WRITE_API_KEY,
           },
           params: {
-            sensor_index: purpleAirIdNumber, // eslint-disable-line camelcase
+            sensor_index: purpleAirId, // eslint-disable-line camelcase
           },
         });
 
@@ -182,7 +183,7 @@ function AddSensorModal(): JSX.Element {
         // Create a sensor doc for the added sensor
         await firestore.collection('sensors').add({
           name: sensorName,
-          purpleAirId: purpleAirIdNumber,
+          purpleAirId: purpleAirId,
           latitude: latitude,
           longitude: longitude,
           isActive: true,
@@ -246,7 +247,7 @@ function AddSensorModal(): JSX.Element {
                   <Box>
                     <LabelValue
                       label={t('sensors.purpleAirId')}
-                      value={purpleAirId}
+                      value={purpleAirIdString}
                     />
                     <LabelValue label={t('sensors.name')} value={sensorName} />
                     <LabelValue
@@ -301,10 +302,10 @@ function AddSensorModal(): JSX.Element {
                         placeholder="30971"
                         size="md"
                         onChange={event => {
-                          setPurpleAirId(event.target.value);
+                          setPurpleAirIdString(event.target.value);
                           setError('');
                         }}
-                        value={purpleAirId}
+                        value={purpleAirIdString}
                         type="number"
                       />
                       <FormErrorMessage>{error}</FormErrorMessage>
@@ -312,7 +313,7 @@ function AddSensorModal(): JSX.Element {
                     <SubmitButton
                       label={t('common:submit')}
                       isLoading={isLoading}
-                      isDisabled={purpleAirId === '' || error !== ''}
+                      isDisabled={purpleAirIdString === '' || error !== ''}
                     />
                     <Divider marginY={3} />
                     {/* Being helper message */}
