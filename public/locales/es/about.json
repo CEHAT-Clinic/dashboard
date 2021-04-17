@@ -44,7 +44,20 @@
     },
     "purpleAir": {
         "heading": "Sensores de PurpleAir",
-        "part1": "Part 1 here.",
-        "part2": "Part 2 here."
+        "part1a": "Este sitio web utiliza datos de sensores de calidad del aire fabricados por ",
+        "purpleAirLink": {
+            "link": "https://www.purpleair.com/",
+            "text": "PurpleAir"
+        },
+        "part1b": ". Los sensores PurpleAir son una opción de sensor de calidad del aire asequible, con un costo de $249 a partir de abril de 2021. En contraste, los sensores de mayor calidad pueden variar en precio desde $15,000 a $50,000. Los sensores PurpleAir se pueden instalar en cualquier lugar con una fuente de alimentación y una conexión WiFi, e informan el tamaño de las partículas 1, 2,5 y 10. Para obtener más información sobre las partículas, consulta la página de",
+        "healthInfoLink": {
+            "link": "/health",
+            "text": "la página de Información de salud."
+        },
+        "image": {
+            "caption": "Ejemplo de una instalación de sensor PurpleAir",
+            "alt": "Una instalación de sensor PurpleAir"
+        },
+        "part2": "Si bien no son de tan alta calidad como los sensores más costosos, los sensores PurpleAir proporcionan datos de manera económica y fácil que pueden usar comunidades como South Gate. Estos sensores permiten al CEHAT obtener datos de la calidad del aire a través de South Gate a pesar de la falta de sensores regulatorios de la EPA en la ciudad. Si estás interesado en alojar un sensor en tu hogar o lugar de trabajo, consulta la sección Cómo Involucrarte en esta página."
     }
 }

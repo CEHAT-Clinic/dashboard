@@ -3,6 +3,7 @@ import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import cehatLogo from '../media/CEHATLogo.png';
+import purpleAirSensor from '../media/PurpleAir-sensor-installation.jpg';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
@@ -134,7 +135,41 @@ const About: React.FC = () => {
         <Heading fontFamily="Merriweather Sans">
           {t('purpleAir.heading')}
         </Heading>
-        <Text paddingY={1}> {t('purpleAir.part1')}</Text>
+        <Text paddingY={1}> {t('purpleAir.part1a')}</Text>
+        <Link
+          color="#32bfd1"
+          href={t('purpleAir.purpleAirLink.link')}
+          isExternal
+        >
+          {/* TODO: make this link inline */}
+          {t('purpleAir.purpleAirLink.text')}
+          <ExternalLinkIcon />
+        </Link>
+        <Text paddingY={1}> {t('purpleAir.part1b')}</Text>
+        {/* TODO: make the link inline */}
+        <Link
+          color="#32bfd1"
+          href={t('purpleAir.healthInfoLink.link')}
+          isExternal
+        >
+          {t('purpleAir.healthInfoLink.text')}
+        </Link>
+        <Flex
+          width="500px"
+          direction="column"
+          justifySelf="center"
+          justifyContent="center"
+          boxShadow="lg"
+          borderRadius={8}
+        >
+          {/* TODO: Fix the image formatting */}
+          <Image
+            src={purpleAirSensor}
+            alt={t('purpleAir.image.alt')}
+            maxWidth="420px"
+          />
+          <Text>{t('purpleAir.image.caption')}</Text>
+        </Flex>
         <Text paddingY={1}> {t('purpleAir.part2')}</Text>
       </Box>
       <Box
