@@ -15,7 +15,7 @@ import {ToggleActiveSensorPopover} from './ToggleActivePopover';
  */
 interface SensorTableProps {
   title: string;
-  sensors: Array<Sensor>;
+  sensors: Sensor[];
   setError: React.Dispatch<React.SetStateAction<string>>;
   activateHeading: string;
 }
