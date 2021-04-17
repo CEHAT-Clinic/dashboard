@@ -80,6 +80,9 @@ const ManageSensors: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginY={2}>{t('heading')}</Heading>
+          <Button as="a" href="/admin" margin={1} marginBottom={3}>
+            {t('returnAdmin')}
+          </Button>
           <Grid
             justifyContent="center"
             templateColumns={[

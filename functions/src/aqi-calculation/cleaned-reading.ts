@@ -1,4 +1,4 @@
-import {Pm25BufferElement, bufferStatus} from './buffer';
+import {Pm25BufferElement, bufferStatus} from '../buffer';
 
 /**
  * Basic sensor reading used in data cleaning
@@ -15,7 +15,7 @@ interface BasicReading {
  * @param readings - Array of non-null Pm25BufferElements
  * @returns basic reading with the average pm25 and humidity values of the input buffer elements
  */
-function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
+function averageReadings(readings: Pm25BufferElement[]): BasicReading {
   let pm25Sum = 0;
   let humiditySum = 0;
 
@@ -64,7 +64,7 @@ function averageReadings(readings: Array<Pm25BufferElement>): BasicReading {
 function getHourlyAverages(
   status: bufferStatus,
   bufferIndex: number,
-  buffer: Array<Pm25BufferElement>
+  buffer: Pm25BufferElement[]
 ): (BasicReading | null)[] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
@@ -72,7 +72,7 @@ function getHourlyAverages(
 
   // If we have the relevant fields:
   if (status === bufferStatus.Exists && buffer && bufferIndex) {
-    let readings: Array<Pm25BufferElement> = [];
+    let readings: Pm25BufferElement[] = [];
     // Get sub-array that is relevant for each hour
     let endIndex = bufferIndex;
     let startIndex = bufferIndex - ELEMENTS_PER_HOUR;
@@ -115,7 +115,7 @@ function getHourlyAverages(
       );
       const validReadings = nonNullReadings.filter(
         element =>
-          !isNaN(element.meanPercentDifference) &&
+          !Number.isNaN(element.meanPercentDifference) &&
           element.meanPercentDifference < PERCENT_THRESHOLD
       );
 
@@ -149,8 +149,8 @@ function getHourlyAverages(
 
 /**
  * Cleans hourly averages of PM2.5 readings using the published EPA formula,
- * excluding thoses data points that indicate sensor malfunction. Those
- * data points are represented by NaN.
+ * excluding those data points that indicate sensor malfunction. Those
+ * data points are represented by `NaN`.
  * @param averages - array containing sensor readings representing hourly averages. An entry in the array can be undefined if there were not enough valid readings for the corresponding hour.
  * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
  *
@@ -160,7 +160,7 @@ function cleanAverages(averages: (BasicReading | null)[]): number[] {
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
     // If less than 23 data points were available for that hour, the reading
-    // would have been undefined, and this hour is discarded (represented by NaN)
+    // would have been undefined, and this hour is discarded (represented by `NaN`)
     if (reading) {
       // Formula from EPA to correct PurpleAir PM 2.5 readings
       // https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=349513&Lab=CEMM&simplesearch=0&showcriteria=2&sortby=pubDate&timstype=&datebeginpublishedpresented=08/25/2018
@@ -183,7 +183,7 @@ function cleanAverages(averages: (BasicReading | null)[]): number[] {
 function getCleanedAverages(
   status: bufferStatus,
   bufferIndex: number,
-  buffer: Array<Pm25BufferElement>
+  buffer: Pm25BufferElement[]
 ): number[] {
   // Get hourly averages from the PM2.5 Buffer, and mark any hours without enough
   // valid readings as invalid

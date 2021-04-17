@@ -20,12 +20,12 @@ function timestampToDateString(
 
 /**
  * Converts a (possibly `NaN`) number to a human-readable string
- * @param number - a number that can be NaN
+ * @param number - a number that can be `NaN`
  * @param unknownMessage - message displayed when the inputted `number` is `NaN`
  * @returns human readable string for a number, `unknownMessage` if `NaN`
  */
 function numberToString(number: number, unknownMessage: string): string {
-  if (isNaN(number)) {
+  if (Number.isNaN(number)) {
     return unknownMessage;
   } else {
     return String(number);

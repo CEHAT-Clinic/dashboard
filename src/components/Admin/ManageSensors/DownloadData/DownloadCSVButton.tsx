@@ -162,7 +162,7 @@ const DownloadCSVButton: ({
       'pm25_' + startDateString + '_to_' + endDateString + '.csv';
     // If downloading data for one sensor, add the Purple Air ID to the output
     if (!downloadAll) {
-      newFilename = purpleAirId + '_' + newFilename;
+      newFilename = purpleAirId.toString() + '_' + newFilename;
     }
     setFilename(newFilename);
 

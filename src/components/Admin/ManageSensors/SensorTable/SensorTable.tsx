@@ -12,7 +12,7 @@ import {MoreInfoHeading} from './MoreInfoHeading';
  */
 interface SensorTableProps {
   title: string;
-  sensors: Array<Sensor>;
+  sensors: Sensor[];
 }
 
 /**
