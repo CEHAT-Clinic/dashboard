@@ -195,6 +195,9 @@ const ManageUsers: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading>{t('manageUsers')}</Heading>
+          <Button as="a" href="/admin" margin={1}>
+            {t('returnAdmin')}
+          </Button>
           {/* Admin users table */}
           <Box marginY={5} overflowX="auto" maxWidth="100%">
             <Heading textAlign="left" fontSize="lg">

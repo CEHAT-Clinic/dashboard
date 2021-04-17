@@ -50,7 +50,7 @@
         "google": "Sign up with Google",
         "email": "Sign up with email"
     },
-    "signOut": "Sign out",
+    "signOut": "Sign Out",
     "signOutError": "Error occurred with sign out. Please try again",
     "pageHeader": {
         "signIn": "Sign In",
