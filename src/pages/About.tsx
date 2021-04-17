@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Flex, Heading, Text, Link, Grid} from '@chakra-ui/react';
+import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
+import cehatLogo from '../media/CEHATLogo.png';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
@@ -166,6 +167,7 @@ const About: React.FC = () => {
           {t('admin.purpose')}
         </Text>
       </Box>
+      <Image src={cehatLogo} alt="Logo"></Image>
     </Flex>
   );
 };

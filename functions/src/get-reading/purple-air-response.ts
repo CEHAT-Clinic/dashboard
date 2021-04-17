@@ -5,14 +5,10 @@ import {
   bufferStatus,
   Pm25BufferElement,
   getDefaultPm25BufferElement,
-} from './buffer';
+} from '../aqi-calculation/buffer';
 import {HistoricalSensorReading, PurpleAirReading} from './types';
-
-import {
-  readingsSubcollection,
-  getReading,
-  getLastSensorReadingTime,
-} from './util';
+import {readingsSubcollection} from '../util';
+import {getReading, getLastSensorReadingTime} from './util';
 
 /**
  * Make the PurpleAir API to using the group query

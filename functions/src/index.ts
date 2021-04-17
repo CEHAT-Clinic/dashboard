@@ -1,6 +1,6 @@
 import {functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
-import {purpleAirToFirestore} from './aqi-calculation/purple-air-response';
+import {purpleAirToFirestore} from './get-reading/purple-air-response';
 import deleteMarkedReadings from './delete-marked-readings';
 
 exports.purpleAirToFirestore = functions.pubsub
