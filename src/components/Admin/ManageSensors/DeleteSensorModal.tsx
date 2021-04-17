@@ -31,7 +31,7 @@ import {LabelValue} from './Util/LabelValue';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
- * `sensors` - all current sensors
+ * `sensors` - an array of inactive sensors
  */
 interface DeleteSensorModalProps {
   sensors: Sensor[];
@@ -209,7 +209,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
         .then(deleteSensorDoc)
         .then(handleClose)
         .catch(() => {
-          setError('deleteSensor.deleteSensorError');
+          setError('deleteSensor.error');
           setIsLoading(false);
         });
     }
@@ -217,7 +217,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
   return (
     <Box>
-      <Button colorScheme="red" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="red" onClick={onOpen}>
         {t('deleteSensor.delete')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
@@ -239,12 +239,10 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
               />
             </Box>
             <Box marginTop={2}>
-              <Box>
-                <LabelValue
-                  label={t('purpleAirId')}
-                  value={numberToString(purpleAirId, t('unknown'))}
-                />
-              </Box>
+              <LabelValue
+                label={t('purpleAirId')}
+                value={numberToString(purpleAirId, t('unknown'))}
+              />
               <Checkbox
                 isChecked={confirmDownload}
                 onChange={() => setConfirmDownload(!confirmDownload)}

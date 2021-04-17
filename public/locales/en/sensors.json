@@ -13,16 +13,16 @@
 	"activeNote": "Active denotes whether this website is collecting data for and displaying a sensor. This does not reflect any changes on the PurpleAir site.",
 	"unknown": "unknown",
 	"activate": {
-		"heading": "Activate",
-		"confirm": "Confirm you want to activate the sensor ",
+		"heading": "Activate Sensor",
 		"note": "Please note that this sensor's AQI will not show up on the map for at least 2 hours until enough data is collected to calculate the AQI for this sensor.",
-		"error": "Unable to activate the sensor."
+		"error": "Unable to activate the sensor.",
+        "whichSensor": "Which sensor would you like to activate?"
 	},
 	"deactivate": {
-		"heading": "Deactivate",
-		"confirm": "Confirm that you want to deactivate the sensor ",
+		"heading": "Deactivate Sensor",
 		"note": "Please note that this sensor may take up to 10 minutes to be removed from the website's map. Deactivating the sensor will not delete any historical sensor data, but it will stop collecting new sensor data. This will also not make changes on PurpleAir's website.",
-		"error": "Unable to deactivate the sensor."
+		"error": "Unable to deactivate the sensor.",
+        "whichSensor": "Which sensor would you like to deactivate?"
 	},
 	"add": {
 		"heading": "Add New Sensor",

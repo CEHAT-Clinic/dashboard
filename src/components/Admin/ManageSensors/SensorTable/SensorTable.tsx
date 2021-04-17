@@ -19,10 +19,7 @@ interface SensorTableProps {
  * Table of sensors. Includes a heading for the table and a message to describe
  * what active/inactive means.
  */
-const SensorTable: ({
-  title,
-  sensors,
-}: SensorTableProps) => JSX.Element = ({
+const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
   title,
   sensors,
 }: SensorTableProps) => {
@@ -33,7 +30,7 @@ const SensorTable: ({
       <Heading textAlign="justify" fontSize="2xl">
         <MoreInfoHeading heading={title} message={t('activeNote')} />
       </Heading>
-      <Table>
+      <Table overflow="hidden">
         <Thead>
           <Tr>
             <Th>{t('name')}</Th>
@@ -64,10 +61,7 @@ const SensorTable: ({
                   numberToString(sensor.longitude, t('unknown'))}
               </Td>
               <Td>
-                {timestampToDateString(
-                  sensor.lastValidAqiTime,
-                  t('unknown')
-                )}
+                {timestampToDateString(sensor.lastValidAqiTime, t('unknown'))}
               </Td>
               <Td>
                 {timestampToDateString(

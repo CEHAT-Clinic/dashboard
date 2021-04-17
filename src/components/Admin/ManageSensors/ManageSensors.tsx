@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading, Flex, Button, Text, Grid} from '@chakra-ui/react';
+import {Box, Heading, Flex, Button, Grid} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
@@ -11,6 +11,7 @@ import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
 import {Sensor} from './Util/Types';
 import {SensorTable} from './SensorTable/SensorTable';
+import {ToggleActiveModal} from './ToggleActiveModal';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -81,22 +82,23 @@ const ManageSensors: () => JSX.Element = () => {
           <Heading marginY={2}>{t('heading')}</Heading>
           <Grid
             justifyContent="center"
-            templateColumns={['repeat(2,1fr)', null, 'repeat(4,1fr)', null]}
+            templateColumns={[
+              'repeat(1,1fr)',
+              'repeat(2,1fr)',
+              'repeat(3,1fr)',
+              'repeat(6,1fr)',
+            ]}
             gap={2}
           >
+            <ToggleActiveModal sensors={inactiveSensors} isActive={false} />
             <AddSensorModal />
             <DownloadCSVModal sensors={sensors} />
-            <DeleteOldDataModal />
+            <ToggleActiveModal sensors={activeSensors} isActive />
             <DeleteSensorModal sensors={inactiveSensors} />
+            <DeleteOldDataModal />
           </Grid>
-          <SensorTable
-            title={t('activeHeading')}
-            sensors={activeSensors}
-          />
-          <SensorTable
-            title={t('inactiveHeading')}
-            sensors={inactiveSensors}
-          />
+          <SensorTable title={t('activeHeading')} sensors={activeSensors} />
+          <SensorTable title={t('inactiveHeading')} sensors={inactiveSensors} />
           <Button as="a" href="/admin" margin={1}>
             {t('administration:returnAdmin')}
           </Button>

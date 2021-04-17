@@ -111,7 +111,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
 
   return (
     <Box>
-      <Button colorScheme="teal" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="teal" onClick={onOpen}>
         {t('downloadData.download')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>

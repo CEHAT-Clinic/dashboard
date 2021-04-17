@@ -69,7 +69,7 @@ const MonthInput: ({value, setValue}: InputProps) => JSX.Element = ({
   value,
   setValue,
 }: InputProps) => {
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
   const labels = [
     '',
     t('downloadData.months.jan'),
@@ -118,7 +118,7 @@ const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
   value,
   setValue,
 }: InputProps) => {
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
   const options = [];
   const maxDaysPerMonth = 31;
   for (let i = 0; i < maxDaysPerMonth; i++) {

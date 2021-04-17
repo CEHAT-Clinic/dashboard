@@ -147,7 +147,7 @@ function DeleteOldDataModal(): JSX.Element {
 
   return (
     <Box>
-      <Button colorScheme="red" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="red" onClick={onOpen}>
         {t('deleteOldData.launchButton')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
