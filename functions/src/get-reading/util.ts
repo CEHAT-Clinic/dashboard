@@ -1,19 +1,12 @@
 import {PurpleAirReading} from './types';
 
 /**
- * Get the readings subcollection path from a sensor's doc ID
- * @param docId - document ID of the sensor in the sensors collection
- * @returns the path to the readings subcollection for a sensor
- *
- */
-const readingsSubcollection: (docId: string) => string = (docId: string) =>
-  `/sensors/${docId}/readings`;
-
-/**
  * Converts PurpleAir's confidence value into percent difference
  * @param confidence - confidence value from PurpleAir, between 0 and 100
- * @returns meanPercentDifference value, or NaN if value lost in calculation.
- * Any input that results in NaN means that the meanPercentDifference is high
+ * @returns meanPercentDifference value, or 2 (the maximum possible percent difference ) if the value is lost in calculation.
+ *
+ * @remarks
+ * Any input that results in 2 means that the meanPercentDifference is high
  * enough that the reading should be discarded anyways.
  *
  * @remarks
@@ -39,8 +32,8 @@ function getMeanPercentDifference(confidence: number): number {
   /* eslint-disable no-magic-numbers */
   switch (confidence) {
     case minConfidence:
-      // If the confidence is zero, then we want to discard this reading
-      return NaN;
+      // If the confidence is zero, then we return the maximum possible percent difference
+      return 2;
     case maxConfidence:
       // The confidence value from PurpleAir can be 100 even if channel A and
       // channel B do not completely match, but if the confidence value is 100,
@@ -165,4 +158,4 @@ async function getLastSensorReadingTime(
   return lastSensorReadingTime;
 }
 
-export {readingsSubcollection, getReading, getLastSensorReadingTime};
+export {getLastSensorReadingTime, getReading, getMeanPercentDifference};
