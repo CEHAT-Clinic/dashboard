@@ -24,7 +24,7 @@ import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
-import {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase';
 import {MonthInput, DayInput} from './DownloadData/Util';
 
 /**
@@ -131,7 +131,10 @@ function DeleteOldDataModal(): JSX.Element {
         mapping[sensorDoc.id] = deleteBeforeDate;
       }
 
-      deletionDocRef.update({deletionMap: mapping});
+      deletionDocRef.update({
+        deletionMap: mapping,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      });
     }
   }
 

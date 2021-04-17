@@ -167,10 +167,10 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
     newDeletionMap[sensorDocId] = new Date();
 
-    return firestore
-      .collection('deletion')
-      .doc('todo')
-      .update({deletionMap: newDeletionMap});
+    return firestore.collection('deletion').doc('todo').update({
+      deletionMap: newDeletionMap,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+    });
   }
 
   /**
