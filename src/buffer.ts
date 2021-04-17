@@ -2,6 +2,14 @@ import firebase from './firebase';
 
 /**
  * Interface for a single element in the `pm25Buffer`.
+ * - `timestamp` - timestamp of the reading, or `null` if no complete reading
+ *   exists for that entry
+ * - `pm25` - PM2.5 reading for a sensor. This value is the average of the
+ *   PM2.5 reading for channelA and channelB
+ * - `meanPercentDifference` - mean percent difference between the pseudo averages
+ *   of the readings for channelA and channelB, as calculated from the confidence
+ *   value returned by the PurpleAir API. This value ranges from 0 to 2.
+ * - `humidity` - humidity reading for a sensor
  */
 interface Pm25BufferElement {
   timestamp: firebase.firestore.Timestamp | null;
