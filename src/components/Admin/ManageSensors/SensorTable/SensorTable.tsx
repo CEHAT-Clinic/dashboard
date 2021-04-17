@@ -30,7 +30,7 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
       <Heading textAlign="justify" fontSize="2xl">
         <MoreInfoHeading heading={title} message={t('activeNote')} />
       </Heading>
-      <Table overflow="hidden">
+      <Table>
         <Thead>
           <Tr>
             <Th>{t('name')}</Th>

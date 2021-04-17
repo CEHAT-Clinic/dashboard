@@ -108,16 +108,10 @@ const ToggleActiveModal: ({
           const errorStart = isActive
             ? t('deactivate.error')
             : t('activate.error');
-          setError(errorStart + purpleAirId);
+          setError(errorStart + numberToString(purpleAirId, t('unknown')));
         });
     }
   }
-
-  const note = isActive ? t('deactivate.note') : t('activate.note');
-
-  const whichSensor = isActive
-    ? t('deactivate.whichSensor')
-    : t('activate.whichSensor');
 
   return (
     <Box>
@@ -135,8 +129,14 @@ const ToggleActiveModal: ({
           <ModalCloseButton />
           <ModalBody>
             <Box paddingBottom={2}>
-              <Text marginBottom={2}>{note}</Text>
-              <Text fontWeight="bold">{whichSensor}</Text>
+              <Text marginBottom={2}>
+                {isActive ? t('deactivate.note') : t('activate.note')}
+              </Text>
+              <Text fontWeight="bold">
+                {isActive
+                  ? t('deactivate.whichSensor')
+                  : t('activate.whichSensor')}
+              </Text>
               <SensorInput
                 sensors={sensors}
                 docId={sensorDocId}
