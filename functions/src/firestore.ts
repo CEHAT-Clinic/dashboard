@@ -150,7 +150,7 @@ interface CurrentReadingSensorDoc {
 
 const DELETION = 'deletion';
 
-const TODO_DOC = 'todo'
+const TODO_DOC = 'todo';
 
 /**
  * The map of the documents to be deleted in the `todo` doc in the `deletion`
@@ -164,8 +164,8 @@ interface DeletionMap {
 
 /**
  * Interface for the structure of the `todo` doc in the `deletion` collection.
- * - `deletionMap` - map of a sensor's doc ID in the `sensors` colelction to the
- *   timestmap for which data before that timestamp should be deleted
+ * - `deletionMap` - map of a sensor's doc ID in the `sensors` collection to the
+ *   timestamp for which data before that timestamp should be deleted
  * - `lastUpdated` - when the document was last updated
  */
 interface DeletionTodoDoc {
