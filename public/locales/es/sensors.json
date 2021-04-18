@@ -112,16 +112,16 @@
             "heading": "Lectura no recibida",
             "explanation": "No se recibió ninguna lectura nueva de PurpleAir la última vez que intentamos obtener una lectura."
         },
-        "nohumidity": {
-            "heading": "No se recibió lectura de humedad",
+        "noHumidity": {
+            "heading": "No lectura de humedad",
             "explanation": "No se recibió ninguna lectura de humedad para este sensor. La lectura de humedad es necesaria para aplicar la corrección de EPA a las lecturas de PurpleAir. Esto puede indicar que el sensor de humedad no funciona correctamente."
         },
         "incompleteReading": {
-            "heading": "Lectura de sensor incompleta",
+            "heading": "Lectura incompleta",
             "explanation": "A la última lectura que recibimos de PurpleAir le faltaba al menos un campo, por lo que no podemos usar la lectura. Esto puede indicar un mal funcionamiento del sensor."
         },
         "channelsDiverged": {
-            "heading": "Canales de sensor divergentes",
+            "heading": "Canales divergentes",
             "explanation": "Las lecturas del canal A y el canal B del sensor se han alejado demasiado para poder usar la lectura en el cálculo del AQI. Esto puede indicar que uno o ambos canales han fallado."
         },
         "channelADowngraded": {
@@ -141,11 +141,11 @@
             "explanation": "El AQI calculado fue más alto que el posible rango de AQI, lo que probablemente significa que el sensor no funciona correctamente."
         },
         "notEnoughNew": {
-            "heading": "No hay suficientes lecturas",
+            "heading": "No suficientes lecturas",
             "explanation": "No se recibieron suficientes lecturas nuevas para este sensor en las últimas tres horas para calcular el NowCast AQI."
         },
         "notEnoughValid": {
-            "heading": "No hay suficientes lecturas válidas",
+            "heading": "No suficientes lecturas válidas",
             "explanation": "No se recibieron suficientes lecturas nuevas y válidas para este sensor en las últimas tres horas para calcular el NowCast AQI. Esto podría significar que el canal A y el canal B del sensor han divergido, lo que podría indicar un mal funcionamiento del sensor."
         }
     }

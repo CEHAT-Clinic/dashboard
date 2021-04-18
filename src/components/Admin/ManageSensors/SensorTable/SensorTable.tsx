@@ -1,9 +1,21 @@
 import React from 'react';
-import {Box, Heading, Tbody, Table, Thead, Th, Tr, Td} from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Tbody,
+  Table,
+  Thead,
+  Th,
+  Tr,
+  Td,
+  VStack,
+} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {numberToString, timestampToDateString} from '../Util/Util';
 import {Sensor} from '../Util/Types';
 import {MoreInfoHeading} from './MoreInfoHeading';
+import {InvalidAqiErrors, SensorReadingErrors} from '../../../../ErrorsTypes';
+import {ErrorTag} from './ErrorTags';
 
 /**
  * Interface for props for SensorTable
@@ -24,6 +36,112 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
   sensors,
 }: SensorTableProps) => {
   const {t} = useTranslation('sensors');
+
+  /**
+   * Get the human readable error name and explanation
+   * @param error - the error that occurred
+   * @returns a tuple of the human readable error name and explanation
+   */
+  function getSensorReadingErrorInfo(
+    error: SensorReadingErrors
+  ): [name: string, explanation: string] {
+    switch (error) {
+      case SensorReadingErrors.ReadingNotReceived:
+        return [
+          t('sensorErrors.readingNotReceived.heading'),
+          t('sensorErrors.readingNotReceived.explanation'),
+        ];
+      case SensorReadingErrors.NoHumidityReading:
+        return [
+          t('sensorErrors.noHumidity.heading'),
+          t('sensorErrors.noHumidity.explanation'),
+        ];
+      case SensorReadingErrors.IncompleteSensorReading:
+        return [
+          t('sensorErrors.incompleteReading.heading'),
+          t('sensorErrors.incompleteReading.explanation'),
+        ];
+      case SensorReadingErrors.ChannelsDiverged:
+        return [
+          t('sensorErrors.channelsDiverged.heading'),
+          t('sensorErrors.channelsDiverged.explanation'),
+        ];
+      case SensorReadingErrors.ChannelADowngraded:
+        return [
+          t('sensorErrors.channelADowngraded.heading'),
+          t('sensorErrors.channelADowngraded.explanation'),
+        ];
+      case SensorReadingErrors.ChannelBDowngraded:
+        return [
+          t('sensorErrors.channelBDowngraded.heading'),
+          t('sensorErrors.channelBDowngraded.explanation'),
+        ];
+      default:
+        // Unknown error
+        return ['', ''];
+    }
+  }
+
+  /**
+   * Get the error tags for all sensor errors of a sensor
+   * @param sensor - the sensor to check the sensor errors of
+   * @returns an array of the error tags that are true for that sensor
+   */
+  function getSensorErrorTags(sensor: Sensor): JSX.Element[] {
+    const errorTags: JSX.Element[] = [];
+    sensor.sensorReadingErrors.forEach((value, index) => {
+      if (value) {
+        const [name, explanation] = getSensorReadingErrorInfo(index);
+        errorTags.push(<ErrorTag name={name} explanation={explanation} />);
+      }
+    });
+    return errorTags;
+  }
+
+  /**
+   * Get the human readable error name and explanation
+   * @param error - the error that occurred
+   * @returns a tuple of the human readable error name and explanation
+   */
+  function getInvalidAqiErrorInfo(
+    error: InvalidAqiErrors
+  ): [name: string, explanation: string] {
+    switch (error) {
+      case InvalidAqiErrors.InfiniteAqi:
+        return [
+          t('aqiErrors.tooHigh.heading'),
+          t('aqiErrors.tooHigh.explanation'),
+        ];
+      case InvalidAqiErrors.NotEnoughNewReadings:
+        return [
+          t('aqiErrors.notEnoughNew.heading'),
+          t('aqiErrors.notEnoughNew.explanation'),
+        ];
+      case InvalidAqiErrors.NotEnoughRecentValidReadings:
+        return [
+          t('aqiErrors.notEnoughValid.heading'),
+          t('aqiErrors.notEnoughValid.explanation'),
+        ];
+      default:
+        // Unknown error
+        return ['', ''];
+    }
+  }
+  /**
+   * Get the error tags for all invalid AQI of a sensor
+   * @param sensor - the sensor to check the invalid AQI errors of
+   * @returns an array of the error tags that are true for that sensor
+   */
+  function getInvalidAqiErrorTags(sensor: Sensor): JSX.Element[] {
+    const errorTags: JSX.Element[] = [];
+    sensor.aqiCalculationErrors.forEach((value, index) => {
+      if (value) {
+        const [name, explanation] = getInvalidAqiErrorInfo(index);
+        errorTags.push(<ErrorTag name={name} explanation={explanation} />);
+      }
+    });
+    return errorTags;
+  }
 
   return (
     <Box maxWidth="100%" overflowX="auto" marginTop={3}>
@@ -50,14 +168,14 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
             </Th>
             <Th>
               <MoreInfoHeading
-                heading={t('readingTime')}
-                message={t('lastReadingTimeNote')}
+                heading={t('sensorErrors.heading')}
+                message={t('sensorErrors.explanation')}
               />
             </Th>
             <Th>
               <MoreInfoHeading
-                heading={t('readingTime')}
-                message={t('lastReadingTimeNote')}
+                heading={t('aqiErrors.heading')}
+                message={t('aqiErrors.explanation')}
               />
             </Th>
           </Tr>
@@ -80,6 +198,12 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
                   sensor.lastSensorReadingTime,
                   t('unknown')
                 )}
+              </Td>
+              <Td>
+                <VStack>{getSensorErrorTags(sensor)}</VStack>
+              </Td>
+              <Td>
+                <VStack>{getInvalidAqiErrorTags(sensor)}</VStack>
               </Td>
             </Tr>
           ))}

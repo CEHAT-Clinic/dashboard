@@ -110,7 +110,7 @@
             "heading": "Reading Not Received",
             "explanation": "No new reading was received from PurpleAir the last time we attempted to get a reading."
         },
-        "nohumidity": {
+        "noHumidity": {
             "heading": "No Humidity Reading Received",
             "explanation": "No humidity reading was received for this sensor. The humidity reading is necessary to apply the EPA correction to the PurpleAir readings. This may indicate that the humidity sensor is malfunctioning."
         },
@@ -119,7 +119,7 @@
             "explanation": "The last reading we received from PurpleAir was missing at least one field, so we cannot use the reading. This may indicate sensor malfunction."
         },
         "channelsDiverged": {
-            "heading": "Sensor Channels Diverged",
+            "heading": "Channels Diverged",
             "explanation": "The readings from Channel A and Channel B of the sensor have gotten too far apart to be able to use the reading in the AQI calculation. This may indicate that one or both of the channels has malfunctioned."
         },
         "channelADowngraded": {

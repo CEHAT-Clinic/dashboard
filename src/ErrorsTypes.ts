@@ -19,13 +19,26 @@
  * - `ChannelADowngraded` - If PurpleAir has downgraded Channel A of a sensor.
  * - `ChannelBDowngraded` - If PurpleAir has downgraded Channel B of a sensor.
  */
- enum SensorReadingErrors {
+enum SensorReadingErrors {
   ReadingNotReceived,
   NoHumidityReading,
   IncompleteSensorReading,
   ChannelsDiverged,
   ChannelADowngraded,
   ChannelBDowngraded,
+}
+
+/**
+ * Returns a default error array for sensor errors
+ * @returns an array for each `SensorReadingError` with the error set to `false`.
+ */
+function getDefaultSensorReadingErrors(): boolean[] {
+  // TypeScript does not provide a way to get the number of elements in an
+  // enumeration, so this gets the number of elements using the enumeration
+  // reverse mapping.
+  // eslint-disable-next-line no-magic-numbers
+  const sensorReadingErrorCount = Object.keys(SensorReadingErrors).length / 2;
+  return new Array<boolean>(sensorReadingErrorCount).fill(false);
 }
 
 /**
@@ -44,10 +57,28 @@
  *   difference between Channel A and Channel B is larger than 0.7, the threshold
  *   recommended by the EPA for PurpleAir sensors.
  */
- enum InvalidAqiErrors {
+enum InvalidAqiErrors {
   InfiniteAqi,
   NotEnoughNewReadings,
   NotEnoughRecentValidReadings,
 }
 
-export {InvalidAqiErrors, SensorReadingErrors};
+/**
+ * Returns a default error array for AQI calculation errors
+ * @returns an array for each `InvalidAqiErrors` with each error set to `false`.
+ */
+function getDefaultInvalidAqiErrors(): boolean[] {
+  // TypeScript does not provide a way to get the number of elements in an
+  // enumeration, so this gets the number of elements using the enumeration
+  // reverse mapping.
+  // eslint-disable-next-line no-magic-numbers
+  const invalidAqiErrorCount = Object.keys(InvalidAqiErrors).length / 2;
+  return new Array<boolean>(invalidAqiErrorCount).fill(false);
+}
+
+export {
+  InvalidAqiErrors,
+  getDefaultInvalidAqiErrors,
+  SensorReadingErrors,
+  getDefaultSensorReadingErrors,
+};
