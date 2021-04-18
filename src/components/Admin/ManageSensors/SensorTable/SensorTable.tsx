@@ -127,6 +127,7 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
         return ['', ''];
     }
   }
+
   /**
    * Get the error tags for all invalid AQI of a sensor
    * @param sensor - the sensor to check the invalid AQI errors of
