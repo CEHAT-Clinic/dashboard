@@ -104,5 +104,49 @@
         "confirmPurpleAirId": "Escriba el ID de PurpleAir del sensor para confirmar la supresión",
         "whichSensorToDelete": "¿Cuál sensor te gustaría borrar?",
         "error": "No se puede borrar el sensor. Por favor trata otra vez más tarde."
+    },
+    "sensorErrors": {
+        "heading": "Errores de sensor recientes",
+        "explanation": "Estos errores ocurrieron la vez más reciente que intentamos obtener una lectura para este sensor de PurpleAir.",
+        "readingNotReceived": {
+            "heading": "Lectura no recibida",
+            "explanation": "No se recibió ninguna lectura nueva de PurpleAir la última vez que intentamos obtener una lectura."
+        },
+        "nohumidity": {
+            "heading": "No se recibió lectura de humedad",
+            "explanation": "No se recibió ninguna lectura de humedad para este sensor. La lectura de humedad es necesaria para aplicar la corrección de EPA a las lecturas de PurpleAir. Esto puede indicar que el sensor de humedad no funciona correctamente."
+        },
+        "incompleteReading": {
+            "heading": "Lectura de sensor incompleta",
+            "explanation": "A la última lectura que recibimos de PurpleAir le faltaba al menos un campo, por lo que no podemos usar la lectura. Esto puede indicar un mal funcionamiento del sensor."
+        },
+        "channelsDiverged": {
+            "heading": "Canales de sensor divergentes",
+            "explanation": "Las lecturas del canal A y el canal B del sensor se han alejado demasiado para poder usar la lectura en el cálculo del AQI. Esto puede indicar que uno o ambos canales han fallado."
+        },
+        "channelADowngraded": {
+            "heading": "Canal A degradado",
+            "explanation": "PurpleAir ha degradado el canal A, lo que probablemente indica un mal funcionamiento del sensor."
+        },
+        "channelBDowngraded": {
+            "heading": "Canal B degradado",
+            "explanation": "PurpleAir ha degradado el canal B, lo que probablemente indica un mal funcionamiento del sensor."
+        }
+    },
+    "aqiErrors": {
+        "heading": "Errores recientes de cálculo del AQI",
+        "explanation": "Estos errores son posibles razones por las que un sensor no tiene actualmente un AQI válido.",
+        "tooHigh": {
+            "heading": "AQI demasiado alto",
+            "explanation": "El AQI calculado fue más alto que el posible rango de AQI, lo que probablemente significa que el sensor no funciona correctamente."
+        },
+        "notEnoughNew": {
+            "heading": "No hay suficientes lecturas",
+            "explanation": "No se recibieron suficientes lecturas nuevas para este sensor en las últimas tres horas para calcular el NowCast AQI."
+        },
+        "notEnoughValid": {
+            "heading": "No hay suficientes lecturas válidas",
+            "explanation": "No se recibieron suficientes lecturas nuevas y válidas para este sensor en las últimas tres horas para calcular el NowCast AQI. Esto podría significar que el canal A y el canal B del sensor han divergido, lo que podría indicar un mal funcionamiento del sensor."
+        }
     }
 }

@@ -48,6 +48,18 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
                 message={t('lastReadingTimeNote')}
               />
             </Th>
+            <Th>
+              <MoreInfoHeading
+                heading={t('readingTime')}
+                message={t('lastReadingTimeNote')}
+              />
+            </Th>
+            <Th>
+              <MoreInfoHeading
+                heading={t('readingTime')}
+                message={t('lastReadingTimeNote')}
+              />
+            </Th>
           </Tr>
         </Thead>
         <Tbody>
