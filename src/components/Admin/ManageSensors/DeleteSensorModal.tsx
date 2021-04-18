@@ -31,7 +31,7 @@ import {LabelValue} from './Util/LabelValue';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
- * sensors - all current sensors
+ * `sensors` - an array of inactive sensors
  */
 interface DeleteSensorModalProps {
   sensors: Sensor[];
@@ -53,7 +53,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   const [sensorDocId, setSensorDocId] = useState('');
 
   // Confirmation states
-  const [confirmPurpleAirId, setConfirmPurpleAirId] = useState('');
+  const [confirmPurpleAirIdString, setConfirmPurpleAirIdString] = useState('');
   const [confirmDownload, setConfirmDownload] = useState(false);
   const [acknowledgeDeletion, setAcknowledgeDeletion] = useState(false);
   const [acknowledgePermanent, setAcknowledgePermanent] = useState(false);
@@ -64,14 +64,14 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   // --------------- End state maintenance variables ------------------------
 
   const readyToSubmit =
-    confirmPurpleAirId !== '' &&
-    purpleAirId === +confirmPurpleAirId &&
+    confirmPurpleAirIdString !== '' &&
+    purpleAirId === +confirmPurpleAirIdString &&
     error === '' &&
     confirmDownload &&
     acknowledgeDeletion &&
     acknowledgePermanent;
 
-  const {t} = useTranslation(['administration', 'common']);
+  const {t} = useTranslation(['sensors', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
@@ -82,7 +82,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
     setSensorDocId('');
 
     // Confirmations
-    setConfirmPurpleAirId('');
+    setConfirmPurpleAirIdString('');
     setConfirmDownload(false);
     setAcknowledgeDeletion(false);
     setAcknowledgePermanent(false);
@@ -108,16 +108,16 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
       },
     }).then(purpleAirResponse => {
       const purpleAirData = purpleAirResponse.data;
-      const groupMembers: Array<PurpleAirGroupMember> = purpleAirData.members;
+      const groupMembers: PurpleAirGroupMember[] = purpleAirData.members;
 
       // Find the member ID of group 490 for the sensor to be deleted
       for (const member of groupMembers) {
-        if (member.sensor_index === +purpleAirId) {
+        if (member.sensor_index === purpleAirId) {
           return member.id;
         }
       }
       // If the sensor was not in the members list, then we don't need to delete
-      // that sensor from the group, which is marked with NaN
+      // that sensor from the group, which is marked with `NaN`
       return Number.NaN;
     });
   }
@@ -131,7 +131,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
     memberId: number
   ): Promise<AxiosResponse | void> {
     if (Number.isNaN(memberId)) {
-      // If memberId is NaN, then the sensor to be deleted is already not a member
+      // If memberId is `NaN`, then the sensor to be deleted is already not a member
       // of the PurpleAir group 490
       return Promise.resolve();
     } else {
@@ -167,10 +167,10 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
     newDeletionMap[sensorDocId] = new Date();
 
-    return firestore
-      .collection('deletion')
-      .doc('todo')
-      .update({deletionMap: newDeletionMap});
+    return firestore.collection('deletion').doc('todo').update({
+      deletionMap: newDeletionMap,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+    });
   }
 
   /**
@@ -209,7 +209,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
         .then(deleteSensorDoc)
         .then(handleClose)
         .catch(() => {
-          setError('deleteSensor.deleteSensorError');
+          setError('deleteSensor.error');
           setIsLoading(false);
         });
     }
@@ -217,7 +217,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
   return (
     <Box>
-      <Button colorScheme="red" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="red" onClick={onOpen}>
         {t('deleteSensor.delete')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
@@ -239,12 +239,10 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
               />
             </Box>
             <Box marginTop={2}>
-              <Box>
-                <LabelValue
-                  label={t('sensors.purpleAirId')}
-                  value={numberToString(purpleAirId, t('sensors.unknown'))}
-                />
-              </Box>
+              <LabelValue
+                label={t('purpleAirId')}
+                value={numberToString(purpleAirId, t('unknown'))}
+              />
               <Checkbox
                 isChecked={confirmDownload}
                 onChange={() => setConfirmDownload(!confirmDownload)}
@@ -269,10 +267,10 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
                   placeholder="30971"
                   size="md"
                   onChange={event => {
-                    setConfirmPurpleAirId(event.target.value);
+                    setConfirmPurpleAirIdString(event.target.value);
                     setError('');
                   }}
-                  value={confirmPurpleAirId}
+                  value={confirmPurpleAirIdString}
                 />
                 <FormErrorMessage>{error}</FormErrorMessage>
               </FormControl>

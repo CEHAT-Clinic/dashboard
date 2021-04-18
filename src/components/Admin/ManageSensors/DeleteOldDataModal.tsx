@@ -24,7 +24,7 @@ import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
-import {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase';
 import {MonthInput, DayInput} from './DownloadData/Util';
 
 /**
@@ -58,7 +58,7 @@ function DeleteOldDataModal(): JSX.Element {
   const [error, setError] = useState('');
   const validDate = error === '';
 
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
 
   /**
    * Resets modal state values before closing the modal.
@@ -131,7 +131,10 @@ function DeleteOldDataModal(): JSX.Element {
         mapping[sensorDoc.id] = deleteBeforeDate;
       }
 
-      deletionDocRef.update({deletionMap: mapping});
+      deletionDocRef.update({
+        deletionMap: mapping,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      });
     }
   }
 
@@ -144,7 +147,7 @@ function DeleteOldDataModal(): JSX.Element {
 
   return (
     <Box>
-      <Button colorScheme="red" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="red" onClick={onOpen}>
         {t('deleteOldData.launchButton')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>

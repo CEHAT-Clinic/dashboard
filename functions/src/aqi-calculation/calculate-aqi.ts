@@ -5,7 +5,7 @@ import {
   AqiBufferElement,
   Pm25BufferElement,
   getDefaultAqiBufferElement,
-} from './buffer';
+} from '../buffer';
 import {CurrentReadingSensorData} from './types';
 import {
   getCleanedAverages,
@@ -151,7 +151,7 @@ async function calculateAqi(): Promise<void> {
     // Data sent to the current-readings collection
     // Initially the previous data's value or the default values
     const currentSensorData: CurrentReadingSensorData = {
-      purpleAirId: sensorDocData.purpleAirId ?? '',
+      purpleAirId: sensorDocData.purpleAirId ?? Number.NaN,
       name: sensorDocData.name ?? '',
       latitude: sensorDocData.latitude ?? Number.NaN,
       longitude: sensorDocData.longitude ?? Number.NaN,
@@ -168,11 +168,11 @@ async function calculateAqi(): Promise<void> {
     const pm25BufferStatus: bufferStatus =
       sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
-    const pm25Buffer: Array<Pm25BufferElement> = sensorDocData.pm25Buffer ?? [];
+    const pm25Buffer: Pm25BufferElement[] = sensorDocData.pm25Buffer ?? [];
 
     // Get cleaned hourly averages from the PM2.5 Buffer for the last 12 hours
     // If an hour lacks enough data, the entry for the hour is `NaN`
-    const cleanedAverages: Array<number> = getCleanedAverages(
+    const cleanedAverages: number[] = getCleanedAverages(
       pm25BufferStatus,
       pm25BufferIndex,
       pm25Buffer
@@ -221,16 +221,17 @@ async function calculateAqi(): Promise<void> {
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
     currentData[currentSensorData.purpleAirId] = currentSensorData;
 
-    // Update the AQI circular buffer for this element
+    // Data to update in the sensor doc
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
 
+    // Update the AQI circular buffer for this element
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
     if (status === bufferStatus.Exists) {
       // The buffer exists, proceed with normal update
-      const aqiBuffer: Array<AqiBufferElement> = sensorDocData.aqiBuffer;
+      const aqiBuffer: AqiBufferElement[] = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
@@ -238,7 +239,7 @@ async function calculateAqi(): Promise<void> {
     } else if (status === bufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocData.aqiBufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.aqiBufferStatus = bufferStatus.InProgress;
     }
 
     // Send the updated data to the database

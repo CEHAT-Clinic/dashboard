@@ -14,7 +14,7 @@
  * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown
  */
 interface CurrentReadingSensorData {
-  purpleAirId: string;
+  purpleAirId: number;
   name: string;
   latitude: number;
   longitude: number;

@@ -1,26 +1,28 @@
-import {firestore} from './admin';
+import {firestore, FieldValue} from './admin';
 import {readingsSubcollection} from './util';
 
 /**
- * Deletes readings before date marked for sensors in the deletion list
+ * Deletes readings before date marked for sensors in the deletion list.
+ * This function deletes documents in batches of 500 documents.
  */
 async function deleteMarkedReadings(): Promise<void> {
-  const batchSize = 2000;
+  // The max batch size for batched writes according to Firestore is 500
+  const batchSize = 500;
 
   const deletionMap =
     (await firestore.collection('deletion').doc('todo').get()).data()
       ?.deletionMap ?? Object.create(null);
 
   for (const sensorDocId in deletionMap) {
-    const deleteBeforeDate = deletionMap[sensorDocId];
-    const readingsCollectionRef = firestore.collection(
-      readingsSubcollection(sensorDocId)
-    );
-    const query = readingsCollectionRef
+    const deleteBeforeDate: FirebaseFirestore.Timestamp =
+      deletionMap[sensorDocId];
+
+    const query = firestore
+      .collection(readingsSubcollection(sensorDocId))
       .where('timestamp', '<', deleteBeforeDate)
       .limit(batchSize);
 
-    deleteSensorSubcollectionBatch(query, batchSize, sensorDocId);
+    await deleteSensorSubcollectionBatch(query, batchSize, sensorDocId);
   }
 }
 
@@ -30,25 +32,20 @@ async function deleteMarkedReadings(): Promise<void> {
  * @param maxBatchSize - the maximum documents to delete in a single tick
  * @param sensorDocId - the sensor doc id for the sensor who the query is on
  */
-function deleteSensorSubcollectionBatch(
+async function deleteSensorSubcollectionBatch(
   query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
   maxBatchSize: number,
   sensorDocId: string
 ) {
   // The resolve function will only be called when there are no documents matching the query
   const resolve = async () => {
-    const deletionDocRef = firestore.collection('deletion').doc('todo');
-
-    const deletionMap =
-      (await deletionDocRef.get()).data()?.deletionMap ?? Object.create(null);
-
-    if (sensorDocId in deletionMap) {
-      delete deletionMap[sensorDocId];
-      deletionDocRef.update({deletionMap: deletionMap});
-    }
+    const updates = Object.create(null);
+    updates['lastUpdated'] = FieldValue.serverTimestamp();
+    updates[`deletionMap.${sensorDocId}`] = FieldValue.delete();
+    await firestore.collection('deletion').doc('todo').update(updates);
   };
 
-  deleteQueryBatch(query, resolve, maxBatchSize);
+  await deleteQueryBatch(query, resolve, maxBatchSize);
 }
 
 /**
@@ -62,29 +59,22 @@ async function deleteQueryBatch(
   query: FirebaseFirestore.Query<FirebaseFirestore.DocumentData>,
   resolve: (value?: unknown) => void,
   maxBatchSize: number
-) {
-  const db = query.firestore;
-
+): Promise<void> {
   const snapshot = await query.limit(maxBatchSize).get();
-  const batchSize = snapshot.size;
-  if (batchSize === 0) {
-    // When there are no documents left, we are done
+
+  // When there are no documents left in the query, we are done.
+  if (snapshot.empty) {
     resolve();
     return;
   }
 
   // Delete documents in a batch
-  const batch = db.batch();
-  snapshot.docs.forEach(doc => {
-    batch.delete(doc.ref);
-  });
+  const batch = query.firestore.batch();
+  snapshot.docs.forEach(doc => batch.delete(doc.ref));
   await batch.commit();
 
-  // Recurse on the next process tick, to avoid
-  // exploding the stack.
-  process.nextTick(() => {
-    deleteQueryBatch(query, resolve, maxBatchSize);
-  });
+  // Recurse on the next process tick, to avoid exploding the stack.
+  process.nextTick(() => deleteQueryBatch(query, resolve, maxBatchSize));
 }
 
 export default deleteMarkedReadings;

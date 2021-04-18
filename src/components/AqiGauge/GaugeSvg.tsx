@@ -102,7 +102,7 @@ const GaugeSvg: ({currentAqi}: GaugeSvgProps) => JSX.Element = ({
 
   const needleColor = '#636360';
   const aqiColor = assignColor(aqi); // Color that needle points to
-  const pathObjects = [];
+  const pathObjects: React.SVGProps<SVGPathElement>[] = [];
   for (let i = 0; i < arcs.length; i++) {
     const arcColor = assignColor(categories[i]);
     const opacity =

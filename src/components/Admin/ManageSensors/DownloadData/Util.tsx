@@ -69,7 +69,7 @@ const MonthInput: ({value, setValue}: InputProps) => JSX.Element = ({
   value,
   setValue,
 }: InputProps) => {
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
   const labels = [
     '',
     t('downloadData.months.jan'),
@@ -85,7 +85,10 @@ const MonthInput: ({value, setValue}: InputProps) => JSX.Element = ({
     t('downloadData.months.nov'),
     t('downloadData.months.dec'),
   ];
-  const options = [];
+  const options: React.DetailedHTMLProps<
+    React.OptionHTMLAttributes<HTMLOptionElement>,
+    HTMLOptionElement
+  >[] = [];
   for (let i = 1; i < labels.length; i++) {
     options.push(
       <option value={i} key={i}>
@@ -118,8 +121,11 @@ const DayInput: ({value, setValue}: InputProps) => JSX.Element = ({
   value,
   setValue,
 }: InputProps) => {
-  const {t} = useTranslation('administration');
-  const options = [];
+  const {t} = useTranslation('sensors');
+  const options: React.DetailedHTMLProps<
+    React.OptionHTMLAttributes<HTMLOptionElement>,
+    HTMLOptionElement
+  >[] = [];
   const maxDaysPerMonth = 31;
   for (let i = 0; i < maxDaysPerMonth; i++) {
     options.push(
