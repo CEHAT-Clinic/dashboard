@@ -159,7 +159,7 @@ const About: React.FC = () => {
             href="https://github.com/CEHAT-Clinic/dashboard"
             isExternal
           >
-            Github
+            GitHub
             <ExternalLinkIcon />
           </Link>
           {t('acknowledge.githubPart2')}
