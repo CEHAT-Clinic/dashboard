@@ -225,7 +225,7 @@ async function calculateAqi(): Promise<void> {
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
-    currentData[currentSensorData.purpleAirId.toString()] = currentSensorData;
+    currentData[currentSensorData.purpleAirId] = currentSensorData;
 
     // Data to update in the sensor doc
     const sensorDocUpdate = Object.create(null);
