@@ -2,10 +2,10 @@ import React from 'react';
 import {Box, Flex, Button, Text} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase/firebase';
 import SignOut from './Authentication/SignOut';
+import {useTranslation} from 'react-i18next';
 
 const AccountDeleted: () => JSX.Element = () => {
-  const deleteMessage =
-    'Your account has been deleted by an administrator of the website, and the account will be deleted within the next 24 hours. If you believe this is a mistake, reach out to an administrator of the website and recreate your account after this account has been deleted. You may choose to complete account deletion at this time.';
+  const {t} = useTranslation('administration');
 
   function deleteAccount(): Promise<void> {
     if (firebaseAuth.currentUser) {
@@ -19,7 +19,7 @@ const AccountDeleted: () => JSX.Element = () => {
     <Flex width="full" align="center" justifyContent="center">
       <Box
         padding={8}
-        margin={8}
+        marginX={8}
         width="full"
         maxWidth="500px"
         borderWidth={1}
@@ -27,9 +27,9 @@ const AccountDeleted: () => JSX.Element = () => {
         boxShadow="lg"
         textAlign="center"
       >
-        <Text>{deleteMessage}</Text>
+        <Text>{t('deletedAccount.explanation')}</Text>
         <Button onClick={deleteAccount} marginTop={2} colorScheme="red">
-          Complete Account Deletion Now
+          {t('deletedAccount.deleteNow')}
         </Button>
         <SignOut />
       </Box>

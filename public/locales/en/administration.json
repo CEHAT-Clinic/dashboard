@@ -51,7 +51,6 @@
         "email": "Sign up with email"
     },
     "signOut": "Sign Out",
-    "signOutError": "Error occurred with sign out. Please try again",
     "pageHeader": {
         "signIn": "Sign In",
         "signUp": "Sign Up"
@@ -112,5 +111,9 @@
         },
         "changeAdminError": "Unable to change admin status for ",
         "confirmChange": "Confirm Admin Status Change"
+    }, 
+    "deletedAccount": {
+        "deleteNow": "Finish Account Deletion Now",
+        "explanation": "Your account has been deleted by an administrator of the website, and the account will be deleted within the next 24 hours. If you believe this is a mistake, reach out to an administrator of the website and recreate your account after this account has been deleted. You may choose to complete account deletion at this time."
     }
 }
