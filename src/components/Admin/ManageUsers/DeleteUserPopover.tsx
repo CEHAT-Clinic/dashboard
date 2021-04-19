@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   Heading,
   Button,
@@ -10,7 +10,7 @@ import {
   PopoverCloseButton,
   PopoverHeader,
   PopoverBody,
-  Center,
+  VStack,
 } from '@chakra-ui/react';
 import {User, DeleteUserPopoverProps} from './Types';
 import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
@@ -21,18 +21,14 @@ import {useAuth} from '../../../contexts/AuthContext';
  * Creates a button that when clicked, creates a confirmation popup to delete a
  * user. Only non-admin users can be deleted.
  * @param user - The current user for a row
- * @param setError - the setter for an error state
- * @returns button that when clicked, creates a popover where an admin user can click to toggle that user's admin status
+ * @returns button that when clicked, creates a popover where an admin user can click to mark a user's account for deletion
  */
-const DeleteUserPopover: ({
+const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
   user,
-  setError,
-}: DeleteUserPopoverProps) => JSX.Element = ({
-  user,
-  setError,
 }: DeleteUserPopoverProps) => {
   const {isAdmin} = useAuth();
   const {t} = useTranslation(['administration', 'common']);
+  const [error, setError] = useState('');
 
   /**
    * Marks a user's document in the `USERS_COLLECTION` and the user's
@@ -50,7 +46,7 @@ const DeleteUserPopover: ({
       return markUserDocAsDeleted(user)
         .then(() => markUserForDeletion(user))
         .catch(() => {
-          setError('Unable to mark user for deletion');
+          setError(t('deleteUser.error'));
         });
     } else {
       return firebaseAuth.signOut();
@@ -78,9 +74,12 @@ const DeleteUserPopover: ({
   }
 
   /**
-   * Marks a user's doc as deleted
+   * Marks a user's doc as deleted so that the user no longer shows up in the
+   * ManageUser's page and so that if the deleted user signs into their account
+   * before their account is deleted by the Cloud Functions, they will know that
+   * their account has been marked for deletion
    * @param user - user doc to mark as deleted
-   * @returns a promise that when resolved
+   * @returns a promise that when resolved means a user's doc has been marked as `isDeleted`
    */
   function markUserDocAsDeleted(user: User): Promise<void> {
     if (isAdmin) {
@@ -92,33 +91,35 @@ const DeleteUserPopover: ({
     }
   }
 
-  const popoverMessage =
-    'Once you confirm deletion, this action cannot be undone. The user will be deleted in the next 24 hours. Until then, the user will still be able to use their account.';
-
   return (
     <Popover>
       <PopoverTrigger>
         <Button colorScheme="red" width="full">
-          {'Delete User'}
+          {t('deleteUser.heading')}
         </Button>
       </PopoverTrigger>
       <PopoverContent>
         <PopoverArrow />
         <PopoverCloseButton />
         <PopoverHeader>
-          <Heading fontSize="medium">{'Confirm User Deletion'}</Heading>
+          <Heading fontSize="medium">{t('deleteUser.heading')}</Heading>
         </PopoverHeader>
         <PopoverBody>
-          <Text>{popoverMessage}</Text>
-          <Center>
-            <Button
-              paddingY={2}
-              colorScheme="red"
-              onClick={event => handleDeletion(event, user)}
-            >
-              {t('common:confirm')}
-            </Button>
-          </Center>
+          {error ? (
+            <Text textColor="red.500">{error}</Text>
+          ) : (
+            <VStack>
+              <Text>{t('deleteUser.message')}</Text>
+              <Button
+                paddingY={2}
+                colorScheme="red"
+                onClick={event => handleDeletion(event, user)}
+                minWidth="50%"
+              >
+                {t('common:confirm')}
+              </Button>
+            </VStack>
+          )}
         </PopoverBody>
       </PopoverContent>
     </Popover>
