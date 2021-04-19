@@ -154,7 +154,15 @@ const About: React.FC = () => {
         </Heading>
         <Text paddingY={1}>
           {t('acknowledge.clinic')} {t('acknowledge.githubPart1')}
-          <Link>Github</Link> {t('acknowledge.githubPart2')}
+          <Link
+            color={LinkColor}
+            href="https://github.com/CEHAT-Clinic/dashboard"
+            isExternal
+          >
+            Github
+            <ExternalLinkIcon />
+          </Link>
+          {t('acknowledge.githubPart2')}
         </Text>
         <Text paddingY={1}>{t('acknowledge.grant')}</Text>
       </Box>
