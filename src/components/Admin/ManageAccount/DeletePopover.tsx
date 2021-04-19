@@ -37,7 +37,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const [error, setError] = useState('');
+  const [error, setError] = useState(''); // TODO: use error somewhere
   const {t} = useTranslation('administration'); // TODO: add translations
 
   /**
