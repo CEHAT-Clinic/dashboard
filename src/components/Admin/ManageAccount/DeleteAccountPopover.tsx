@@ -25,13 +25,15 @@ import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Props for DeleteAccountPopover component. Used for type safety.
+ * - `passwordUser` - whether or not the user is password-based
  */
 interface DeleteAccountPopoverProps {
   passwordUser: boolean;
 }
 
 /**
- * @returns
+ * Creates a button that when clicked allows a non-admin user to delete their account.
+ * @returns a button that when clicked allows a user to delete their account
  */
 const DeleteAccountPopover: ({
   passwordUser,
@@ -63,6 +65,22 @@ const DeleteAccountPopover: ({
     (passwordUser ? passwordUserReadyToSubmit : true);
 
   /**
+   * Marks a user's `isDeleted` field as true in a user's doc so that the user
+   * does not show up on the ManageUsers page for admins.
+   * @returns a promise that when resolved means a user's doc has been marked as deleted
+   */
+  function markUserDocAsDeleted(): Promise<void> {
+    if (firebaseAuth.currentUser) {
+      return firestore.collection('users').doc(firebaseAuth.currentUser.uid)
+      .update({
+        isDeleted: true
+      });
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  /**
    * Mark a user's doc for deletion in the `DELETION` collection.
    * @returns a promise that when resolved means that the user's uid has been added to the user deletion doc
    * @remarks We don't delete the user doc immediately because it will just be recreated while the user is signed in.
@@ -84,17 +102,26 @@ const DeleteAccountPopover: ({
   }
 
   /**
+   * Deletes the user's Firebase Authentication account
+   * @returns a promise that when resolved means that a user's Firebase Authentication account has been deleted and the user is signed out
+   */
+  function deleteFirebaseAuthAccount(): Promise<void> {
+    if (firebaseAuth.currentUser) {
+      return firebaseAuth.currentUser.delete();
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  /**
    * Marks a user's doc in Firestore for deletion and then deletes the Firebase
    * Authentication account for the signed in user.
    * @returns a promise that when resolved means that a user's account has been deleted
    */
   function deleteAccount(): Promise<void> {
     return markUserDocForDeletion()
-      .then(() => {
-        if (firebaseAuth.currentUser) {
-          firebaseAuth.currentUser.delete();
-        }
-      })
+      .then(markUserDocAsDeleted)
+      .then(deleteFirebaseAuthAccount)
       .catch(() => {
         setError(t('deleteAccount.error'));
       });
