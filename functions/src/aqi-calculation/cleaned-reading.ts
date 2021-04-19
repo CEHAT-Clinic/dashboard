@@ -147,9 +147,7 @@ function getHourlyAverages(
         // three hours, since any null hour that occurred more than 3 hours ago
         // can safely be discarded without affecting the validity of the AQI.
         if (hoursAgo < THREE_HOURS) {
-          invalidAqiErrors.add(
-            InvalidAqiError.NotEnoughRecentValidReadings
-          );
+          invalidAqiErrors.add(InvalidAqiError.NotEnoughRecentValidReadings);
         }
       } else {
         // In this case, not enough readings were received from PurpleAir
