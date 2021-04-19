@@ -148,11 +148,8 @@
           "Checkbox",
           "Merriweather",
           "semibold",
-<<<<<<< HEAD
+          "booleans",
           "Subcollection"
-=======
-          "booleans"
->>>>>>> main
         ],
         "skipWords": [
           "Pv"
