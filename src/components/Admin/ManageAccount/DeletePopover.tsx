@@ -47,6 +47,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
    */
   function markUserDocForDeletion(): Promise<void> {
     // TODO: Add separate document for user deletion
+    // TODO: Use different fields for user doc and user Firebase account
     if (firebaseAuth.currentUser) {
       return firestore
         .collection('deletion')
