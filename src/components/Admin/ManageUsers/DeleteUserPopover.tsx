@@ -58,6 +58,8 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
    * deletion.
    * @param user - user to mark for deletion
    * @returns a promise that when resolved means that the user's account and document have been marked for deletion
+   *
+   * @remarks We don't delete the user's document immediately since if the user signs into their account before the Cloud Function deletes their account, their user document will be automatically recreated.
    */
   function markUserForDeletion(user: User): Promise<void> {
     if (isAdmin) {
