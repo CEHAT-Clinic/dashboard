@@ -9,10 +9,7 @@ import {HistoricalSensorReading, PurpleAirReading} from './types';
 import {readingsSubcollection} from '../util';
 import {getLastSensorReadingTime} from './util';
 import {getReadingsMap} from './purple-air-response';
-import {
-  SensorReadingErrors,
-  getDefaultSensorReadingErrors,
-} from './sensor-errors';
+import {SensorReadingError} from './sensor-errors';
 
 /**
  * Handles the PurpleAir API call for all active sensors,
@@ -44,7 +41,7 @@ async function purpleAirToFirestore(): Promise<void> {
       (await getLastSensorReadingTime(readingsCollectionRef));
 
     // Initialize sensor errors
-    let errors: boolean[] = getDefaultSensorReadingErrors();
+    let errors: SensorReadingError[] = [];
     let reading: PurpleAirReading | null = null;
 
     // If a reading for this sensor was not in the group query, then it did not
@@ -53,7 +50,7 @@ async function purpleAirToFirestore(): Promise<void> {
 
     if (typeof purpleAirResult === 'undefined') {
       // No reading was received from PurpleAir
-      errors[SensorReadingErrors.ReadingNotReceived] = true;
+      errors.push(SensorReadingError.ReadingNotReceived);
     } else {
       // If PurpleAir returned anything for a sensor, the errors will be propagated
       [reading, errors] = purpleAirResult;

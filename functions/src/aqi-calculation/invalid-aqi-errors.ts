@@ -20,17 +20,4 @@ enum InvalidAqiErrors {
   NotEnoughRecentValidReadings,
 }
 
-/**
- * Returns a default error array for AQI calculation errors
- * @returns an array for each `InvalidAqiErrors` with each error set to `false`.
- */
-function getDefaultInvalidAqiErrors(): boolean[] {
-  // TypeScript does not provide a way to get the number of elements in an
-  // enumeration, so this gets the number of elements using the enumeration
-  // reverse mapping.
-  // eslint-disable-next-line no-magic-numbers
-  const invalidAqiErrorCount = Object.keys(InvalidAqiErrors).length / 2;
-  return new Array<boolean>(invalidAqiErrorCount).fill(false);
-}
-
-export {InvalidAqiErrors, getDefaultInvalidAqiErrors};
+export {InvalidAqiErrors};

@@ -2,13 +2,11 @@ import axios, {AxiosResponse} from 'axios';
 import {config} from '../admin';
 import {PurpleAirReading} from './types';
 import {getMeanPercentDifference} from './util';
-import {
-  getDefaultSensorReadingErrors,
-  SensorReadingErrors,
-} from './sensor-errors';
+import {SensorReadingError} from './sensor-errors';
 
 /**
- * Make the PurpleAir API to using the group query
+ * Make the PurpleAir API to using the group query. For our API key, the current
+ * sensor for the South Gate CEHAT are in group 490.
  * @returns PurpleAir API response
  */
 async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
@@ -49,34 +47,37 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
 
 /**
  * Gets any errors for channels being downgraded in a sensor
- * @param index - index that corresponds to a flag name in the channelFlagNames
- * @param channelFlagNames - array of flag names
- * @returns array of errors that correspond to channel downgrade errors
+ * @param flagIndex - index that corresponds to a flag name in the channelFlagNames
+ * @param channelFlagNames - array of channel flag names from PurpleAir
+ * @returns array of errors that correspond to channel downgrade errors, which is an empty array if the `channel_flag` is 'Normal'
+ *
+ * @remarks PurpleAir's API returns an array of strings that corresponds to the different flags a channel can have (called `channel_flags`), 'Normal', 'A-Downgraded', 'B-Downgraded', or 'A+B-Downgraded'. For each sensor reading, PurpleAir indicates the flag for the channel by returning a number that corresponds to the index of the `channel_flags` array. This function uses that channel flag to indicate if Channel A or Channel B has been downgraded.
  */
-function getChannelFlag(
-  index: number,
+function getChannelDowngradeErrors(
+  flagIndex: number,
   channelFlagNames: string[]
-): SensorReadingErrors[] {
-  const errors: SensorReadingErrors[] = [];
-  switch (channelFlagNames[index]) {
+): SensorReadingError[] {
+  const errors: SensorReadingError[] = [];
+  const channelFlag = channelFlagNames[flagIndex];
+  switch (channelFlag) {
     case 'Normal':
       // No channels were downgraded, so return no errors
       break;
     case 'A-Downgraded':
-      errors.push(SensorReadingErrors.ChannelADowngraded);
+      errors.push(SensorReadingError.ChannelADowngraded);
       break;
     case 'B-Downgraded':
-      errors.push(SensorReadingErrors.ChannelBDowngraded);
+      errors.push(SensorReadingError.ChannelBDowngraded);
       break;
     case 'A+B-Downgraded':
       errors.push(
-        SensorReadingErrors.ChannelADowngraded,
-        SensorReadingErrors.ChannelBDowngraded
+        SensorReadingError.ChannelADowngraded,
+        SensorReadingError.ChannelBDowngraded
       );
       break;
     default:
-      // Unknown value, ignore
-      break;
+      // Unknown channel flag
+      throw new Error('Unknown PurpleAir Channel Flag');
   }
   return errors;
 }
@@ -86,13 +87,13 @@ function getChannelFlag(
  * @param data - list of data from PurpleAir for a given sensor
  * @param fieldNames - list of field names from PurpleAir that match the order of the data fields
  * @param channelFlagNames - list of channel flag names from PurpleAir that correspond to an index in the sensor reading's data
- * @returns
+ * @returns a tuple of the PurpleAir ID to a tuple of a PurpleAir reading (or `null` if the reading was incomplete) and an array of `SensorReadingError` for that reading.
  */
 function getReading(
   data: (string | number)[],
   fieldNames: string[],
   channelFlagNames: string[]
-): [number, [PurpleAirReading | null, boolean[]]] {
+): [number, [PurpleAirReading | null, SensorReadingError[]]] {
   // Initialize all values
   let id: number = Number.NaN;
   let name: string | undefined = undefined;
@@ -104,11 +105,12 @@ function getReading(
   let timestamp: Date | undefined = undefined;
 
   // Initialize the error array
-  const sensorErrors: boolean[] = getDefaultSensorReadingErrors();
+  let sensorErrors: SensorReadingError[] = new Array<SensorReadingError>();
 
-  data.forEach((value, index) => {
+  for (const [index, value] of data.entries()) {
     // Check the corresponding field name to determine how to handle the value
-    switch (fieldNames[index]) {
+    const fieldName: string = fieldNames[index];
+    switch (fieldName) {
       case 'sensor_index':
         if (typeof value === 'number') id = value;
         break;
@@ -137,22 +139,22 @@ function getReading(
         if (typeof value === 'number') {
           // PurpleAir returns seconds since EPOCH, but the Date constructor
           // takes milliseconds, so we convert from seconds to milliseconds
-          timestamp = new Date(value * 1000); // eslint-disable-line no-magic-numbers
+          // eslint-disable-next-line no-magic-numbers
+          timestamp = new Date(value * 1000);
         }
         break;
       case 'channel_flags':
         if (typeof value === 'number') {
-          const channelDownErrors = getChannelFlag(value, channelFlagNames);
-
-          // Add the channel down errors to the overall sensor errors
-          channelDownErrors.forEach(error => (sensorErrors[error] = true));
+          // The value is the index of the name of the flag for that channel in
+          // the channelFlagNames array.
+          // Add any channel downgrade errors to the overall sensor errors
+          sensorErrors = getChannelDowngradeErrors(value, channelFlagNames);
         }
         break;
       default:
-        // Unknown field, ignore
-        break;
+        throw new Error('Unknown PurpleAir field');
     }
-  });
+  }
 
   // Only return a PurpleAirReading if all fields are defined
   if (
@@ -186,28 +188,29 @@ function getReading(
      * meanPercentDifference to the maximum value of 2.
      */
     if (
-      sensorErrors[SensorReadingErrors.ChannelADowngraded] ||
-      sensorErrors[SensorReadingErrors.ChannelADowngraded]
+      sensorErrors.includes(SensorReadingError.ChannelADowngraded) ||
+      sensorErrors.includes(SensorReadingError.ChannelBDowngraded)
     ) {
       const maxPercentDifference = 2;
       meanPercentDifference = maxPercentDifference;
     }
 
     // If the mean percent difference is higher than the EPA threshold of 0.7,
-    // then we signal that the most recent sensor reading's channels had diverged.
+    // then we signal that the most recent sensor reading's channels had
+    // diverged.
     const percentDifferenceThreshold = 0.7;
     if (meanPercentDifference > percentDifferenceThreshold) {
-      sensorErrors[SensorReadingErrors.ChannelsDiverged] = true;
+      sensorErrors.push(SensorReadingError.ChannelsDiverged);
     }
 
     return [id, [reading, sensorErrors]];
   } else {
     if (humidity === undefined) {
-      sensorErrors[SensorReadingErrors.NoHumidityReading] = true;
+      sensorErrors.push(SensorReadingError.NoHumidityReading);
     }
 
     // If some field was undefined, then the sensor reading was incomplete
-    sensorErrors[SensorReadingErrors.IncompleteSensorReading] = true;
+    sensorErrors.push(SensorReadingError.IncompleteSensorReading);
 
     return [id, [null, sensorErrors]];
   }
@@ -218,17 +221,24 @@ function getReading(
  * @returns map of sensor ID to a tuple of a PurpleAirReading and a list of sensor errors. If the reading received from PurpleAir is incomplete, it is then `null`.
  */
 async function getReadingsMap(): Promise<
-  Map<number, [PurpleAirReading | null, boolean[]]>
+  Map<number, [PurpleAirReading | null, SensorReadingError[]]>
 > {
   const purpleAirResponse = await fetchPurpleAirResponse();
-  const readings: Map<number, [PurpleAirReading | null, boolean[]]> = new Map();
+  const readings: Map<
+    number,
+    [PurpleAirReading | null, SensorReadingError[]]
+  > = new Map();
   const purpleAirData = purpleAirResponse.data;
   const fieldNames: string[] = purpleAirData.fields;
   const channelFlagNames: string[] = purpleAirData.channel_flags;
   const rawReadings: (string | number)[][] = purpleAirData.data;
   rawReadings.forEach(rawReading => {
-    const [id, reading] = getReading(rawReading, fieldNames, channelFlagNames);
-    readings.set(id, reading);
+    const [id, readingResult] = getReading(
+      rawReading,
+      fieldNames,
+      channelFlagNames
+    );
+    readings.set(id, readingResult);
   });
   return readings;
 }
