@@ -14,10 +14,10 @@
  *   difference between Channel A and Channel B is larger than 0.7, the threshold
  *   recommended by the EPA for PurpleAir sensors.
  */
-enum InvalidAqiErrors {
+enum InvalidAqiError {
   InfiniteAqi,
   NotEnoughNewReadings,
   NotEnoughRecentValidReadings,
 }
 
-export {InvalidAqiErrors};
+export {InvalidAqiError};
