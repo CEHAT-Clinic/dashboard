@@ -4,7 +4,7 @@ import Loading from './components/Util/Loading';
 
 // Import Pages: lazy imports to save on load time
 const About = lazy(() => import('./pages/About'));
-const Home = lazy(() => import('./pages/Home'));
+const Home = lazy(() => import('./pages/home/Home'));
 const Health = lazy(() => import('./pages/Health'));
 const Admin = lazy(() => import('./pages/Admin'));
 const ManageAccount = lazy(

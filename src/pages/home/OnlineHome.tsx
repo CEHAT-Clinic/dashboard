@@ -1,18 +1,18 @@
 import React, {useState, useEffect} from 'react';
-import Map from '../components/Map/Map';
+import Map from '../../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer, IconButton} from '@chakra-ui/react';
 import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
-import AqiDial from '../components/AqiGauge/AqiDial';
+import AqiDial from '../../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
-import AqiGraph from '../components/AqiGraph/AqiGraph';
-import {ColorContext} from '../contexts/ColorContext';
-import {ColorToggle} from '../components/Util/Colors';
-import {SelectedSensor} from '../util';
+import AqiGraph from '../../components/AqiGraph/AqiGraph';
+import {ColorContext} from '../../contexts/ColorContext';
+import {ColorToggle} from '../../components/Util/Colors';
+import {SelectedSensor} from '../../util';
 
 /**
  * Home screen component
  */
-const Home: () => JSX.Element = () => {
+const OnlineHome: () => JSX.Element = () => {
   // State for the sensor currently selected from on map
   const [selectedSensor, setSelectedSensor] = useState<SelectedSensor>({
     purpleAirId: Number.NaN,
@@ -236,4 +236,4 @@ const Home: () => JSX.Element = () => {
   );
 };
 
-export default Home;
+export default OnlineHome;
