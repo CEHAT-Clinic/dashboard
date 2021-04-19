@@ -11,21 +11,14 @@ import {
   Th,
   Tbody,
   Text,
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverArrow,
-  PopoverCloseButton,
-  PopoverHeader,
-  PopoverBody,
-  Center,
 } from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
-import {firebaseAuth, firestore} from '../../../firebase/firebase';
+import {firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
-import {User, ToggleUserPopoverProps} from './Types';
+import {User} from './Types';
+import {ToggleUserPopover} from './ToggleUserPopover';
 
 /**
  * Component for administrative page to manage site users.
@@ -50,6 +43,7 @@ const ManageUsers: () => JSX.Element = () => {
       // Creates a listener that updates the data on any changes
       const unsubscribe = firestore
         .collection('users')
+        .where('isDeleted', '==', false)
         .onSnapshot(querySnapshot => {
           const userList: User[] = [];
           querySnapshot.docs.forEach(doc => {
@@ -79,96 +73,6 @@ const ManageUsers: () => JSX.Element = () => {
     }
     return;
   }, [isAdmin]);
-
-  /**
-   *
-   * @param event - click button event
-   * @param user - user for which to toggle admin status
-   */
-  function toggleAdminStatus(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    user: User
-  ) {
-    event.preventDefault();
-
-    if (isAdmin) {
-      firestore
-        .collection('users')
-        .doc(user.userId)
-        .update({
-          admin: !user.admin,
-        })
-        .catch(() => {
-          setError(t('users.changeAdminError') + user.name);
-        });
-    }
-  }
-
-  /**
-   * Creates a button that when clicked, creates a confirmation popup to change
-   * a user's status. If a user tries to remove their own admin status, a
-   * warning is shown that the action cannot be undone without another admin
-   * user changing their status back.
-   * @param user - The current user for a row
-   * @param isLastAdmin - if there is only one remaining admin user
-   */
-  const ToggleUserPopover: ({
-    user,
-    isLastAdmin,
-  }: ToggleUserPopoverProps) => JSX.Element = ({
-    user,
-    isLastAdmin,
-  }: ToggleUserPopoverProps) => {
-    const popoverMessage = user.admin
-      ? t('users.removeAdmin.confirmStart') +
-        user.name +
-        t('users.removeAdmin.confirmEnd')
-      : t('users.makeAdmin.confirmStart') +
-        user.name +
-        t('users.makeAdmin.confirmEnd');
-
-    const isSelf = user.userId === firebaseAuth.currentUser?.uid;
-
-    return (
-      <Popover>
-        <PopoverTrigger>
-          <Button
-            colorScheme={user.admin ? 'red' : 'green'}
-            width="full"
-            isDisabled={isLastAdmin && user.admin}
-          >
-            {user.admin
-              ? t('users.removeAdmin.button')
-              : t('users.makeAdmin.button')}
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverCloseButton />
-          <PopoverHeader>
-            <Heading fontSize="medium">{t('users.confirmChange')}</Heading>
-          </PopoverHeader>
-          <PopoverBody>
-            <Text>{popoverMessage}</Text>
-            {isSelf && (
-              <Text color="red.500">
-                {t('users.removeAdmin.cannotBeUndone')}
-              </Text>
-            )}
-            <Center>
-              <Button
-                paddingY={2}
-                colorScheme={user.admin ? 'red' : 'green'}
-                onClick={event => toggleAdminStatus(event, user)}
-              >
-                {t('common:confirm')}
-              </Button>
-            </Center>
-          </PopoverBody>
-        </PopoverContent>
-      </Popover>
-    );
-  };
 
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
@@ -220,6 +124,7 @@ const ManageUsers: () => JSX.Element = () => {
                       <ToggleUserPopover
                         isLastAdmin={isLastAdmin}
                         user={user}
+                        setError={setError}
                       />
                     </Td>
                   </Tr>
@@ -252,6 +157,7 @@ const ManageUsers: () => JSX.Element = () => {
                       <ToggleUserPopover
                         isLastAdmin={isLastAdmin}
                         user={user}
+                        setError={setError}
                       />
                     </Td>
                   </Tr>

@@ -3,16 +3,21 @@ import SignOut from './Authentication/SignOut';
 import {Heading, Box, Flex, Button} from '@chakra-ui/react';
 import {useAuth} from '../../contexts/AuthContext';
 import {useTranslation} from 'react-i18next';
+import {AccountDeleted} from './AccountDeleted';
 
 /**
  * Admin component for authenticated users.
  */
 const AuthenticatedAdmin: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
-  const {isAdmin} = useAuth();
+  const {isAdmin, isDeleted} = useAuth();
   // --------------- End state maintenance variables ------------------------
 
   const {t} = useTranslation('administration');
+
+  if (isDeleted) {
+    return <AccountDeleted />;
+  }
 
   return (
     <Flex width="full" align="center" justifyContent="center">

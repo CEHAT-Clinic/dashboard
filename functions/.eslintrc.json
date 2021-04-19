@@ -94,7 +94,8 @@
           "Recurse",
           "readonly",
           "outlier",
-          "uid"
+          "uid",
+          "Ds"
         ]
       }
     ]
