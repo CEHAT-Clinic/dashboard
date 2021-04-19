@@ -17,7 +17,7 @@ import {
   Box,
 } from '@chakra-ui/react';
 import {WarningTwoIcon} from '@chakra-ui/icons';
-import firebase, {firebaseAuth, firestore} from '../../../firebase';
+import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {handleReauthenticationWithPassword} from './Util';
 import {useTranslation} from 'react-i18next';
 import {PasswordFormInput} from '../ComponentUtil';

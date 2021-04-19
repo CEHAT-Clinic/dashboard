@@ -13,7 +13,7 @@ import {
   Center,
 } from '@chakra-ui/react';
 import {User, DeleteUserPopoverProps} from './Types';
-import firebase, {firebaseAuth, firestore} from '../../../firebase';
+import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 
