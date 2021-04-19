@@ -1,5 +1,5 @@
 import React from 'react';
-import {Box, Flex, Button, Text} from '@chakra-ui/react';
+import {Box, Flex, Button, Text, Heading} from '@chakra-ui/react';
 import {firebaseAuth} from '../../firebase/firebase';
 import SignOut from './Authentication/SignOut';
 import {useTranslation} from 'react-i18next';
@@ -27,6 +27,7 @@ const AccountDeleted: () => JSX.Element = () => {
         boxShadow="lg"
         textAlign="center"
       >
+        <Heading>{t('deletedAccount.heading')}</Heading>
         <Text>{t('deletedAccount.explanation')}</Text>
         <Button onClick={deleteAccount} marginTop={2} colorScheme="red">
           {t('deletedAccount.deleteNow')}
