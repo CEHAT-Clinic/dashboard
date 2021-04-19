@@ -93,6 +93,15 @@ const About: React.FC = () => {
             <ExternalLinkIcon />
           </Link>
           {t('cehat.part2')}
+          <Link
+            color={LinkColor}
+            href="http://www.aqmd.gov/nav/about/initiatives/environmental-justice/ab617-134"
+            isExternal
+          >
+            {t('cehat.ab617')}
+            <ExternalLinkIcon />
+          </Link>
+          {t('cehat.part3')}
         </Text>
       </Box>
       <Box
