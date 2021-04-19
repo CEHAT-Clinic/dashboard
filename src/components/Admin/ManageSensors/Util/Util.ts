@@ -1,4 +1,4 @@
-import firebase from '../../../../firebase';
+import firebase from '../../../../firebase/firebase';
 
 /**
  * Converts a Firestore timestamp to a human readable date and time string

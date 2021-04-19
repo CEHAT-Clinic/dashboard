@@ -4,7 +4,7 @@ import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
-import {firestore} from '../../../firebase';
+import {firestore} from '../../../firebase/firebase';
 import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';

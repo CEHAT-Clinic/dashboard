@@ -19,7 +19,7 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react';
-import firebase, {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Sensor, PurpleAirGroupMember} from './Util/Types';

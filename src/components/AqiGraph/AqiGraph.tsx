@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
-import {firestore} from '../../firebase';
+import {firestore} from '../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
 import {aqiCutoffs} from '../../util';

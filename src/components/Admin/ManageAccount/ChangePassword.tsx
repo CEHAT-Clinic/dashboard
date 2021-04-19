@@ -15,7 +15,7 @@ import {
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {handleReauthenticationWithPassword} from './Util';
 

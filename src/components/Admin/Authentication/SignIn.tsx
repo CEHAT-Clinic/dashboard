@@ -5,7 +5,7 @@ import {
   EmailFormInput,
   PasswordFormInput,
 } from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import ForgotPasswordModal from './ForgotPassword';
 import {useTranslation} from 'react-i18next';
