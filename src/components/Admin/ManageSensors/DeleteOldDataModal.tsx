@@ -118,7 +118,7 @@ function DeleteOldDataModal(): JSX.Element {
   async function markOldDataForDeletion(): Promise<void> {
     if (allDisclosuresChecked && validDate && isAdmin) {
       const sensorsList = await firestore.collection('sensors').get();
-      const deletionDocRef = firestore.collection('deletion').doc('todo');
+      const deletionDocRef = firestore.collection('deletion').doc('readings');
 
       // Get current mapping or set to empty
       const mapping =
