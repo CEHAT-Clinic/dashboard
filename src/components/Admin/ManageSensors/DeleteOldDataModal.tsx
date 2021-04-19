@@ -24,7 +24,7 @@ import React, {useEffect, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
-import firebase, {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase/firebase';
 import {MonthInput, DayInput} from './DownloadData/Util';
 
 /**

@@ -1,5 +1,5 @@
 import {TFunction} from 'i18next';
-import firebase, {firebaseAuth} from '../../../firebase';
+import firebase, {firebaseAuth} from '../../../firebase/firebase';
 
 /**
  * Signs in or signs up a user with Google authentication through a pop up.

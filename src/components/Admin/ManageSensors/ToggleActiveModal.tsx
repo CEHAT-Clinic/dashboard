@@ -18,7 +18,7 @@ import {SensorInput} from './Util/SensorInput';
 import {LabelValue} from './Util/LabelValue';
 import {numberToString} from './Util/Util';
 import {useAuth} from '../../../contexts/AuthContext';
-import firebase, {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 
 /**
