@@ -59,24 +59,15 @@ const About: React.FC = () => {
             gap={1}
             textAlign="center"
           >
+            <Link gridRow={1} href="#purpleAir" color={LinkColor}>
+              {t('purpleAir.heading')}
+            </Link>
             <Link gridRow={1} href="#cehat" color={LinkColor}>
               {t('cehat.heading')}
             </Link>
             <Link gridRow={2} href="#involved" color={LinkColor}>
               {t('involved.heading')}
             </Link>
-<<<<<<< HEAD
-            <Link gridRow={3} href="#purpleAir" color="#32bfd1">
-              {t('purpleAir.heading')}
-            </Link>
-            <Link gridRow={1} href="#sensorsDown" color="#32bfd1">
-              {t('sensorsDown.heading')}
-            </Link>
-            <Link gridRow={2} href="#acknowledge" color="#32bfd1">
-              {t('acknowledge.heading')}
-            </Link>
-            <Link gridRow={3} href="#admin" color="#32bfd1">
-=======
             <Link gridRow={3} href="#sensorsDown" color={LinkColor}>
               {t('sensorsDown.heading')}
             </Link>
@@ -84,7 +75,6 @@ const About: React.FC = () => {
               {t('acknowledge.heading')}
             </Link>
             <Link gridRow={2} href="#admin" color={LinkColor}>
->>>>>>> main
               {t('admin.heading')}
             </Link>
           </Grid>
