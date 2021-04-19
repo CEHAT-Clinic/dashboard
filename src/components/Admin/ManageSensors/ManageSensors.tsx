@@ -73,7 +73,7 @@ const ManageSensors: () => JSX.Element = () => {
       <Flex width="full" align="center" justifyContent="center">
         <Box
           padding={8}
-          margin={8}
+          marginX={8}
           width="full"
           maxWidth="1400px"
           borderWidth={1}
