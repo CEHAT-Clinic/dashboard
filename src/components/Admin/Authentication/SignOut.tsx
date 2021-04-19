@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {SubmitButton} from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 
 /**

@@ -23,7 +23,7 @@ import {
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
-import {firebaseAuth, firestore} from '../../../firebase';
+import {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {User, ToggleUserPopoverProps} from './Types';
 

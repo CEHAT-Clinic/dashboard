@@ -81,7 +81,7 @@ function getDefaultAqiBufferElement(): AqiBufferElement {
  * cloud function called again before the buffer is finished initializing. This
  * way we avoid having a buffer that begins re-initializing indefinitely.
  */
-export enum bufferStatus {
+export enum BufferStatus {
   Exists,
   InProgress,
   DoesNotExist,
@@ -109,7 +109,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
         docRef.update({
           aqiBufferIndex: bufferIndex,
           aqiBuffer: aqiBuffer,
-          aqiBufferStatus: bufferStatus.Exists,
+          aqiBufferStatus: BufferStatus.Exists,
           lastUpdated: FieldValue.serverTimestamp(),
         });
       }
@@ -128,7 +128,7 @@ function populateDefaultBuffer(aqiBuffer: boolean, docId: string): void {
         docRef.update({
           pm25BufferIndex: bufferIndex,
           pm25Buffer: pm25Buffer,
-          pm25BufferStatus: bufferStatus.Exists,
+          pm25BufferStatus: BufferStatus.Exists,
           lastUpdated: FieldValue.serverTimestamp(),
         });
       }
