@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import {firestore} from '../../firebase';
 import {useTranslation} from 'react-i18next';
-import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
+import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Types';
 import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
 import {formatTime} from '../Util/Dates';

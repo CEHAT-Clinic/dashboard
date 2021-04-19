@@ -117,7 +117,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
         }
       }
       // If the sensor was not in the members list, then we don't need to delete
-      // that sensor from the group, which is marked with `NaN`
+      // that sensor from the group, which is marked with `NaN`.
       return Number.NaN;
     });
   }
