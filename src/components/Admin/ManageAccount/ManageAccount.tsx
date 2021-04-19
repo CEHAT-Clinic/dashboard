@@ -8,6 +8,7 @@ import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {DeletePopover} from './DeletePopover';
+import {AccountDeleted} from '../AccountDeleted';
 
 /**
  * Component for a user to manage their own account information.
@@ -20,6 +21,7 @@ const ManageAccount: () => JSX.Element = () => {
     isLoading: fetchingAuthContext,
     name,
     email,
+    isDeleted,
   } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [passwordUser, setPasswordUser] = useState(false);
@@ -57,6 +59,8 @@ const ManageAccount: () => JSX.Element = () => {
     return <Loading />;
   } else if (!isAuthenticated) {
     return <AccessDenied reason={t('notSignedIn')} />;
+  } else if (isDeleted) {
+    return <AccountDeleted />;
   } else {
     return (
       <Flex width="full" align="center" justifyContent="center">
@@ -71,16 +75,16 @@ const ManageAccount: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginBottom={2}>{t('manageAccount.heading')}</Heading>
-          <Text textAlign="left" fontSize="lg" fontWeight="bold">
+          <Heading textAlign="left" fontSize="lg" as="h2">
             {t('email')}
-          </Text>
+          </Heading>
           <Text textAlign="left" fontSize="md">
             {email}
           </Text>
           <Divider marginY={2} />
-          <Text textAlign="left" fontSize="lg" fontWeight="bold">
+          <Heading textAlign="left" fontSize="lg" as="h2">
             {t('name')}
-          </Text>
+          </Heading>
           <Text
             color={name ? 'black.500' : 'red.500'}
             textAlign="left"
@@ -90,16 +94,18 @@ const ManageAccount: () => JSX.Element = () => {
           </Text>
           <ChangeNameModal passwordUser={passwordUser} />
           <Divider marginY={2} />
-          <Text marginTop={2} fontSize="lg" fontWeight="bold" textAlign="left">
+          <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
-          </Text>
+          </Heading>
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Divider marginY={2} />
-          <Text color="red.500">{error}</Text>
-          <Divider marginY={2} />
+          <Heading fontSize="lg" as="h2" textAlign="left">
+            {'Delete Account'}
+          </Heading>
           <DeletePopover passwordUser={passwordUser} />
           <Divider marginY={2} />
+          <Text color="red.500">{error}</Text>
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>

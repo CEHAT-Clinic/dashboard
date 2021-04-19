@@ -3,17 +3,19 @@ import {readingsSubcollection} from './util';
 
 /**
  * Deletes readings before date marked for sensors in the deletion list.
- * Deletes any users that an admin user has deleted.
+ * Deletes any users from Firebase Authentication that an admin user has
+ * deleted. Deletes any user documents from `USER_COLLECTION` that a user or
+ * admin user has deleted.
  * This function deletes documents in batches of 500 documents.
  */
-async function deleteMarked(): Promise<void> {
+async function deleteMarkedData(): Promise<void> {
   // The max batch size for batched writes according to Firestore is 500
   const batchSize = 500;
 
-  const deletionDocData = (await firestore.collection('deletion').doc('todo').get()).data() ?? {};
+  const readingsDeletionData =
+    (await firestore.collection('deletion').doc('todo').get()).data() ?? {};
 
-  // TODO: change this name to readingsMap in Firestore
-  const readingsMap = deletionDocData.deletionMap ?? Object.create(null);
+  const readingsMap = readingsDeletionData.deletionMap ?? Object.create(null);
 
   for (const sensorDocId in readingsMap) {
     const deleteBeforeDate: FirebaseFirestore.Timestamp =
@@ -27,9 +29,41 @@ async function deleteMarked(): Promise<void> {
     await deleteSensorSubcollectionBatch(query, batchSize, sensorDocId);
   }
 
-  const userIds: string[] = deletionDocData.userIds ?? [];
+  // Handle any user deletion tasks
+  const userDeletionData =
+    (await firestore.collection('deletion').doc('users').get()).data() ?? {};
+
+  const userDocs: string[] = userDeletionData.userDocs ?? [];
+  await deleteUserDocs(userDocs);
+
+  const firebaseUsers: string[] = userDeletionData.firebaseUsers ?? [];
+  await deleteFirebaseUsers(firebaseUsers);
+
+  // Reset arrays after docs have been deleted
+  await firestore.collection('deletion').doc('users').update({
+    userDocs: [],
+    firebaseUsers: [],
+    lastUpdated: FieldValue.serverTimestamp(),
+  });
+}
+
+/**
+ * Handles deletion of Firebase authentication accounts
+ * @param userIds - user IDs of the Firebase authentication accounts to delete
+ */
+async function deleteFirebaseUsers(userIds: string[]): Promise<void> {
   for (const userId of userIds) {
     await auth.deleteUser(userId);
+  }
+}
+
+/**
+ * Handles deletion of user documents
+ * @param userIds - user IDs of the documents to delete in `USERS_COLLECTION`
+ */
+async function deleteUserDocs(userIds: string[]): Promise<void> {
+  for (const userId of userIds) {
+    await firestore.collection('users').doc(userId).delete();
   }
 }
 
@@ -84,4 +118,4 @@ async function deleteQueryBatch(
   process.nextTick(() => deleteQueryBatch(query, resolve, maxBatchSize));
 }
 
-export default deleteMarked;
+export default deleteMarkedData;

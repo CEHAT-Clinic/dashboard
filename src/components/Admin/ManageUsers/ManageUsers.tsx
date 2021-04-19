@@ -19,6 +19,7 @@ import {firestore} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
 import {User} from './Types';
 import {ToggleUserPopover} from './ToggleUserPopover';
+import {DeleteUserPopover} from './DeleteUserPopover';
 
 /**
  * Component for administrative page to manage site users.
@@ -43,6 +44,7 @@ const ManageUsers: () => JSX.Element = () => {
       // Creates a listener that updates the data on any changes
       const unsubscribe = firestore
         .collection('users')
+        .where('isDeleted', '!=', true)
         .onSnapshot(querySnapshot => {
           const userList: User[] = [];
           querySnapshot.docs.forEach(doc => {
@@ -145,6 +147,7 @@ const ManageUsers: () => JSX.Element = () => {
                   <Th>{t('users.name')}</Th>
                   <Th>{t('email')}</Th>
                   <Th>{t('users.makeAdmin.button')}</Th>
+                  <Th>Delete User</Th>
                 </Tr>
               </Thead>
               <Tbody>
@@ -158,6 +161,9 @@ const ManageUsers: () => JSX.Element = () => {
                         user={user}
                         setError={setError}
                       />
+                    </Td>
+                    <Td>
+                      <DeleteUserPopover user={user} setError={setError} />
                     </Td>
                   </Tr>
                 ))}

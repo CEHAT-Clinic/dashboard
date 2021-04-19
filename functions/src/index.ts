@@ -1,7 +1,7 @@
 import {functions} from './admin';
 import {calculateAqi} from './aqi-calculation/calculate-aqi';
 import {purpleAirToFirestore} from './get-reading/purple-air-to-firestore';
-import deleteMarked from './deletion';
+import deleteMarkedData from './deletion';
 
 exports.purpleAirToFirestore = functions.pubsub
   .schedule('every 2 minutes')
@@ -20,4 +20,4 @@ const runLongOptions: functions.RuntimeOptions = {
 exports.deleteMarkedReadings = functions
   .runWith(runLongOptions)
   .pubsub.schedule('every 24 hours')
-  .onRun(deleteMarked);
+  .onRun(deleteMarkedData);

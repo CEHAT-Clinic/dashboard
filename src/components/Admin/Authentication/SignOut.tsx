@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
-import {SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase';
 import {useTranslation} from 'react-i18next';
+import {Button, Box} from '@chakra-ui/react';
 
 /**
  * Button that signs the user out
@@ -13,25 +13,22 @@ const SignOut: () => JSX.Element = () => {
    * Signs out the user and sets authentication status to false.
    * @param event - submit form event
    */
-  async function handleSignOut(event: React.FormEvent<HTMLFormElement>) {
-    // Prevents submission before sign out is complete
-    event.preventDefault();
-
-    try {
-      await firebaseAuth.signOut();
-    } catch {
-      setError(t('signOutError'));
-    }
+  function handleSignOut(): Promise<void> {
+    return firebaseAuth.signOut().catch(() => setError(t('signOutError')));
   }
 
   return (
-    <form onSubmit={handleSignOut}>
-      <SubmitButton
-        label={t('signOut')}
-        color={'red'}
+    <Box justifyContent="center">
+      <Button
+        minWidth="50%"
+        marginY={4}
+        onClick={handleSignOut}
+        colorScheme="red"
         error={error}
-      ></SubmitButton>
-    </form>
+      >
+        {t('signOut')}
+      </Button>
+    </Box>
   );
 };
 

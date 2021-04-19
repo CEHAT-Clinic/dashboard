@@ -13,12 +13,15 @@ import {
   Heading,
   Flex,
   HStack,
+  Center,
+  Box,
 } from '@chakra-ui/react';
 import {WarningTwoIcon} from '@chakra-ui/icons';
 import firebase, {firebaseAuth, firestore} from '../../../firebase';
 import {handleReauthenticationWithPassword} from './Util';
 import {useTranslation} from 'react-i18next';
 import {PasswordFormInput} from '../ComponentUtil';
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Props for DeletePopover component. Used for type safety.
@@ -37,8 +40,15 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const [error, setError] = useState(''); // TODO: use error somewhere
+  const {isAdmin} = useAuth();
+
+  const [error, setError] = useState('');
   const {t} = useTranslation('administration'); // TODO: add translations
+
+  const readyToDelete: boolean =
+    error === '' && !isAdmin && passwordUser
+      ? password !== '' && passwordError === ''
+      : true;
 
   /**
    * Mark a user's doc for deletion in the `DELETION` collection.
@@ -46,18 +56,16 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
    * @remarks We don't delete the user doc immediately because it will just be recreated while the user is signed in.
    */
   function markUserDocForDeletion(): Promise<void> {
-    // TODO: Add separate document for user deletion
-    // TODO: Use different fields for user doc and user Firebase account
     if (firebaseAuth.currentUser) {
       return firestore
         .collection('deletion')
         .doc('users')
         .update({
-          userIds: firebase.firestore.FieldValue.arrayUnion(
+          userDocs: firebase.firestore.FieldValue.arrayUnion(
             firebaseAuth.currentUser.uid
           ),
         })
-        .catch(() => setError('Unable to add user to deletion doc'));
+        .catch(() => setError('Unable to mark user document for deletion'));
     } else {
       return firebaseAuth.signOut();
     }
@@ -128,31 +136,48 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
           </PopoverHeader>
           <PopoverCloseButton />
           <PopoverBody>
-            {passwordUser && (
-              <PasswordFormInput
-                label={t('password')}
-                handlePasswordChange={event => {
-                  setPassword(event.target.value);
-                  setError('');
-                  setPasswordError('');
-                }}
-                showPassword={passwordVisible}
-                handlePasswordVisibility={() => {
-                  setPasswordVisible(!passwordVisible);
-                }}
-                error={passwordError}
-                value={password}
-                helpMessage={t('passwordHelpMessage')}
-              />
+            {isAdmin ? (
+              <Text textColor="red.500">
+                {
+                  'You must remove yourself as an admin before deleting your account'
+                }
+              </Text>
+            ) : (
+              <Box>
+                {passwordUser && (
+                  <PasswordFormInput
+                    label={t('password')}
+                    handlePasswordChange={event => {
+                      setPassword(event.target.value);
+                      setError('');
+                      setPasswordError('');
+                    }}
+                    showPassword={passwordVisible}
+                    handlePasswordVisibility={() => {
+                      setPasswordVisible(!passwordVisible);
+                    }}
+                    error={passwordError}
+                    value={password}
+                    helpMessage={t('passwordHelpMessage')}
+                  />
+                )}
+                <Text marginY={2} fontWeight="bold">
+                  {
+                    'Are you sure that you want to delete your account? This action is permanent.'
+                  }
+                </Text>
+                <Center>
+                  <Button
+                    isDisabled={readyToDelete}
+                    colorScheme="red"
+                    onClick={handleDeleteAccount}
+                  >
+                    {'Confirm account deletion'}
+                  </Button>
+                </Center>
+                <Text textColor="red.500">{error}</Text>
+              </Box>
             )}
-            <Text>
-              {
-                'Are you sure that you want to delete your account? This action is permanent'
-              }
-            </Text>
-            <Button onClick={handleDeleteAccount}>
-              {'Confirm account deletion'}
-            </Button>
           </PopoverBody>
         </PopoverContent>
       </Portal>
