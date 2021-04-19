@@ -11,4 +11,6 @@ const FieldValue = admin.firestore.FieldValue;
 
 const config = functions.config();
 
-export {firestore, functions, config, Timestamp, FieldValue};
+const auth = admin.auth();
+
+export {firestore, functions, config, auth, Timestamp, FieldValue};

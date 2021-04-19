@@ -20,7 +20,7 @@ import {
 import {CheckCircleIcon} from '@chakra-ui/icons';
 import {handleReauthenticationWithPassword} from './Util';
 import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
-import {firestore, firebaseAuth} from '../../../firebase';
+import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 
 /**

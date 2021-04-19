@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   ResponsiveContainer,
 } from 'recharts';
-import {firestore} from '../../firebase';
+import {firestore} from '../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Types';
 import {aqiCutoffs} from '../../util';
@@ -94,13 +94,13 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
                 // Add element to data
                 if (element.aqi <= aqiCutoffs.good) {
                   allData.good.push(newElement);
-                } else if (element.aqi < aqiCutoffs.moderate) {
+                } else if (element.aqi <= aqiCutoffs.moderate) {
                   allData.moderate.push(newElement);
-                } else if (element.aqi < aqiCutoffs.sensitive) {
+                } else if (element.aqi <= aqiCutoffs.sensitive) {
                   allData.sensitive.push(newElement);
-                } else if (element.aqi < aqiCutoffs.unhealthy) {
+                } else if (element.aqi <= aqiCutoffs.unhealthy) {
                   allData.unhealthy.push(newElement);
-                } else if (element.aqi < aqiCutoffs.veryUnhealthy) {
+                } else if (element.aqi <= aqiCutoffs.veryUnhealthy) {
                   allData.veryUnhealthy.push(newElement);
                 } else {
                   allData.hazardous.push(newElement);

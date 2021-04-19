@@ -53,7 +53,6 @@
         "email": "Inscríbete por correo electrónico"
     },
     "signOut": "Cierra sesión",
-    "signOutError": "Al tratar de cerrar la sesión, ha ocurrido un error. Por favor, vuelve a intentar",
     "pageHeader": {
         "signIn": "Inicia Sesión",
         "signUp": "Inscríbete"
@@ -115,5 +114,10 @@
         },
         "changeAdminError": "No se puede cambiar el status de administrador(a) de ",
         "confirmChange": "Confirma el cambio de status de administrador"
+    }, 
+    "deletedAccount": {
+        "heading": "Aviso: cuenta eliminada",
+        "deleteNow": "Finalizar la supresión de la cuenta ahora",
+        "explanation": "Un administrador del sitio web ha borrado tu cuenta y la cuenta se borrará en las próximas 24 horas. Si crees que se trata de un error, comunícate con un administrador del sitio web y vuelve a crear tu cuenta después de que esta se haya borrado. Puedes optar por finalizar de borrar tu cuenta ahora haciendo clic en el botón 'Finalizar supresión de cuenta ahora'."
     }
 }

@@ -5,11 +5,12 @@ import {
   EmailFormInput,
   PasswordFormInput,
 } from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import ForgotPasswordModal from './ForgotPassword';
 import {useTranslation} from 'react-i18next';
 import {signInWithGoogle} from './Util';
+import {LinkColor} from '../../Util/Colors';
 
 /**
  * Component to sign in.
@@ -123,7 +124,7 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
         {t('needAccount')}
-        <Link color="teal.500" onClick={() => setIsNewUser(true)}>
+        <Link color={LinkColor} onClick={() => setIsNewUser(true)}>
           {t('signUpLink')}
         </Link>
       </Text>

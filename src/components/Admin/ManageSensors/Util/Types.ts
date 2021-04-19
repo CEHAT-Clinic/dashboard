@@ -1,5 +1,8 @@
-import {InvalidAqiError, SensorReadingError} from '../../../../ErrorsTypes';
-import firebase from '../../../../firebase';
+import {
+  InvalidAqiError,
+  SensorReadingError,
+} from '../../../../firebase/ErrorTypes';
+import firebase from '../../../../firebase/firebase';
 
 /**
  * Interface for a PurpleAir sensor
@@ -14,7 +17,7 @@ import firebase from '../../../../firebase';
  *   `null` if unknown
  * - `sensorReadingErrors` - array of booleans that correspond to `SensorReadingErrors`
  *   indices
- * - `aqiCalculationErrors` - array of booleans that correspond to `InvalidAqiErrors`
+ * - `invalidAqiErrors` - array of booleans that correspond to `InvalidAqiErrors`
  *   indices
  * - `docId` - document ID of the for the sensor in the sensors collection in
  *   Firestore
