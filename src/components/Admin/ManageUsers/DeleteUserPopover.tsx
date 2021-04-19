@@ -12,7 +12,7 @@ import {
   PopoverBody,
   VStack,
 } from '@chakra-ui/react';
-import {User, DeleteUserPopoverProps} from './Types';
+import {DeleteUserPopoverProps} from './Types';
 import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -37,7 +37,7 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
    * @returns a promise that when resolved means a user's doc has been marked as deleted and the user account has been marked for deletion by the Cloud Functions
    */
   function handleDeletion(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
   ): Promise<void> {
     event.preventDefault();
 
