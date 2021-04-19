@@ -1,3 +1,4 @@
+import {InvalidAqiError, SensorReadingError} from '../../../../firebase/ErrorTypes';
 import firebase from '../../../../firebase/firebase';
 
 /**
@@ -9,8 +10,14 @@ import firebase from '../../../../firebase/firebase';
  * - `isActive` - if data is actively being gathered for the sensor
  * - `isValid` - if the current AQI value is valid
  * - `lastValidAqiTime` - the last time the AQI was valid, or null if unknown
- * - `lastSensorReadingTime` - the last time the sensor gave a reading, or null if unknown
- * - `docId` - document ID of the for the sensor in the sensors collection in Firestore
+ * - `lastSensorReadingTime` - the last time the sensor gave a reading, or
+ *   `null` if unknown
+ * - `sensorReadingErrors` - array of booleans that correspond to `SensorReadingErrors`
+ *   indices
+ * - `invalidAqiErrors` - array of booleans that correspond to `InvalidAqiErrors`
+ *   indices
+ * - `docId` - document ID of the for the sensor in the sensors collection in
+ *   Firestore
  */
 interface Sensor {
   name: string;
@@ -21,6 +28,8 @@ interface Sensor {
   isValid: boolean;
   lastValidAqiTime: firebase.firestore.Timestamp | null;
   lastSensorReadingTime: firebase.firestore.Timestamp | null;
+  sensorReadingErrors: SensorReadingError[];
+  invalidAqiErrors: InvalidAqiError[];
   docId: string;
 }
 

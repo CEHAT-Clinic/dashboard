@@ -7,7 +7,7 @@ import {
   getDefaultAqiBufferElement,
 } from '../buffer';
 import {CurrentReadingSensorData} from './types';
-import {InvalidAqiErrors} from './invalid-aqi-errors';
+import {InvalidAqiError} from './invalid-aqi-errors';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
@@ -195,7 +195,7 @@ async function calculateAqi(): Promise<void> {
     let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
 
     // Initialize the invalid AQI errors
-    let invalidAqiErrors: InvalidAqiErrors[] = [];
+    let invalidAqiErrors: InvalidAqiError[] = [];
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -216,7 +216,7 @@ async function calculateAqi(): Promise<void> {
         };
       } else {
         // Infinite AQI
-        invalidAqiErrors.push(InvalidAqiErrors.InfiniteAqi);
+        invalidAqiErrors.push(InvalidAqiError.InfiniteAqi);
       }
     } else {
       // There weren't enough valid readings in the last 3 hours, so we propagate
