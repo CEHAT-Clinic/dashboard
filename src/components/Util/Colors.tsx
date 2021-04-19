@@ -67,10 +67,13 @@ const InactiveSensorColor: Color = {
   textColor: 'black',
 };
 
+const LinkColor = '#1899f5';
+
 export type {ColorScheme, Color};
 export {
   EpaColorScheme,
   AccessibleColorScheme,
   ColorToggle,
   InactiveSensorColor,
+  LinkColor,
 };
