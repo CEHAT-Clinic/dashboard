@@ -13,12 +13,12 @@ interface Props {
 
 /**
  * Provider to combine all app providers
- * ChakraProvider: Provider for UI
- * ColorProvider: Provider for current color scheme and to update color scheme
- * AuthProvider: Provider for current authentication status and to update
- *               authentication status
+ * - `ChakraProvider`: Provider for UI
+ * - `ColorProvider`: Provider for current color scheme and to update color scheme
+ * - `AuthProvider`: Provider for current authentication status and to update
+ *   authentication status
  *
- * @param props - React components wrapped by the providers
+ * @param children - React components wrapped by the providers
  */
 const AppProviders: React.FC<Props> = ({children}: Props) => {
   return (
