@@ -12,7 +12,7 @@ import {
 } from '@chakra-ui/react';
 import React from 'react';
 import {useTranslation} from 'react-i18next';
-import {EpaColorScheme} from '../Util/Colors';
+import {EpaColorScheme, LinkColor} from '../Util/Colors';
 
 const AqiTable: React.FC = () => {
   const {t} = useTranslation('aqiTable');
@@ -89,7 +89,7 @@ const AqiTable: React.FC = () => {
       </Box>
       <Text>
         {t('source.lead')}
-        <Link color="#32bfd1" href={t('source.link')} isExternal>
+        <Link color={LinkColor} href={t('source.link')} isExternal>
           {t('source.text')}
           <ExternalLinkIcon />
         </Link>
