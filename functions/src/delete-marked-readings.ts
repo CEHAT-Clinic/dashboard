@@ -1,5 +1,5 @@
 import {firestore, FieldValue} from './admin';
-import {readingsSubcollection} from './util';
+import {readingsSubcollection} from './firestore';
 
 /**
  * Deletes readings before date marked for sensors in the deletion list.
