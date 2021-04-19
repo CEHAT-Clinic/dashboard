@@ -3,6 +3,7 @@ import {Box, Text, Link} from '@chakra-ui/react';
 import {formatDate, formatTime} from '../Util/Dates';
 import {useTranslation} from 'react-i18next';
 import {SelectedSensor} from '../../util';
+import {LinkColor} from '../Util/Colors';
 
 /**
  * Props for the InvalidSensor component that displays in the AQI Gauge box
@@ -62,7 +63,7 @@ const InvalidSensor: ({selectedSensor}: InvalidSensorProps) => JSX.Element = ({
             {t('invalid.lastTime')}
             {lastValidDate} {atString} {lastValidTime}
             {t('invalid.learnMore')}
-            <Link color="#32bfd1" href="/about">
+            <Link color={LinkColor} href="/about">
               {t('invalid.aboutPage')}
             </Link>
           </Text>
@@ -72,7 +73,7 @@ const InvalidSensor: ({selectedSensor}: InvalidSensorProps) => JSX.Element = ({
           <Text fontSize="lg">
             {t('invalid.neverReported')}
             {t('invalid.learnMore')}
-            <Link color="#32bfd1" href="/about">
+            <Link color={LinkColor} href="/about">
               {t('invalid.aboutPage')}
             </Link>
           </Text>

@@ -7,8 +7,8 @@ import {firebaseAuth} from '../../../firebase/firebase';
 import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
-import {DeletePopover} from './DeletePopover';
 import {AccountDeleted} from '../AccountDeleted';
+import {DeletePopover} from './DeletePopover';
 
 /**
  * Component for a user to manage their own account information.

@@ -44,7 +44,7 @@ const ManageUsers: () => JSX.Element = () => {
       // Creates a listener that updates the data on any changes
       const unsubscribe = firestore
         .collection('users')
-        .where('isDeleted', '!=', true)
+        .where('isDeleted', '==', false)
         .onSnapshot(querySnapshot => {
           const userList: User[] = [];
           querySnapshot.docs.forEach(doc => {

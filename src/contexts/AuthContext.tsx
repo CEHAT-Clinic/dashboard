@@ -85,12 +85,14 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
             const userData = snapshot.data();
 
             if (userData) {
-              if (typeof userData.admin === 'boolean')
+              if (typeof userData.admin === 'boolean') {
                 setIsAdmin(userData.admin);
+              }
               if (typeof userData.name === 'string') setName(userData.name);
               if (typeof userData.email === 'string') setEmail(userData.email);
-              if (typeof userData.isDeleted === 'boolean')
+              if (typeof userData.isDeleted === 'boolean') {
                 setIsDeleted(userData.isDeleted);
+              }
             }
             setIsLoading(false);
           } else {
