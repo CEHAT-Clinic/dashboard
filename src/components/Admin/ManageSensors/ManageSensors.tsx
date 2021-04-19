@@ -12,10 +12,6 @@ import DeleteOldDataModal from './DeleteOldDataModal';
 import {Sensor} from './Util/Types';
 import {SensorTable} from './SensorTable/SensorTable';
 import {ToggleActiveModal} from './ToggleActiveModal';
-import {
-  getDefaultSensorReadingErrors,
-  getDefaultInvalidAqiErrors,
-} from '../../../ErrorsTypes';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -50,11 +46,9 @@ const ManageSensors: () => JSX.Element = () => {
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
                 lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null,
                 sensorReadingErrors:
-                  sensorData.sensorReadingErrors ??
-                  getDefaultSensorReadingErrors(),
-                aqiCalculationErrors:
-                  sensorData.aqiCalculationErrors ??
-                  getDefaultInvalidAqiErrors(),
+                  sensorData.sensorReadingErrors ?? [],
+                invalidAqiErrors:
+                  sensorData.invalidAqiErrors ?? [],
                 docId: doc.id,
               });
             }

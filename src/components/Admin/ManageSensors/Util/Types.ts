@@ -1,3 +1,4 @@
+import { InvalidAqiError, SensorReadingError } from '../../../../ErrorsTypes';
 import firebase from '../../../../firebase';
 
 /**
@@ -27,8 +28,8 @@ interface Sensor {
   isValid: boolean;
   lastValidAqiTime: firebase.firestore.Timestamp | null;
   lastSensorReadingTime: firebase.firestore.Timestamp | null;
-  sensorReadingErrors: boolean[];
-  aqiCalculationErrors: boolean[];
+  sensorReadingErrors: SensorReadingError[];
+  invalidAqiErrors: InvalidAqiError[];
   docId: string;
 }
 

@@ -14,7 +14,7 @@ import {useTranslation} from 'react-i18next';
 import {numberToString, timestampToDateString} from '../Util/Util';
 import {Sensor} from '../Util/Types';
 import {MoreInfoHeading} from './MoreInfoHeading';
-import {InvalidAqiErrors, SensorReadingErrors} from '../../../../ErrorsTypes';
+import {InvalidAqiError, SensorReadingError} from '../../../../ErrorsTypes';
 import {ErrorTag} from './ErrorTags';
 
 /**
@@ -43,37 +43,37 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
    * @returns a tuple of the human readable error name and explanation
    */
   function getSensorReadingErrorInfo(
-    error: SensorReadingErrors
+    error: SensorReadingError
   ): [name: string, explanation: string] {
     switch (error) {
-      case SensorReadingErrors.ReadingNotReceived:
+      case SensorReadingError.ReadingNotReceived:
         return [
-          t('sensorErrors.readingNotReceived.heading'),
+          t('sensorErrors.readingNotReceived.name'),
           t('sensorErrors.readingNotReceived.explanation'),
         ];
-      case SensorReadingErrors.NoHumidityReading:
+      case SensorReadingError.NoHumidityReading:
         return [
-          t('sensorErrors.noHumidity.heading'),
+          t('sensorErrors.noHumidity.name'),
           t('sensorErrors.noHumidity.explanation'),
         ];
-      case SensorReadingErrors.IncompleteSensorReading:
+      case SensorReadingError.IncompleteSensorReading:
         return [
-          t('sensorErrors.incompleteReading.heading'),
+          t('sensorErrors.incompleteReading.name'),
           t('sensorErrors.incompleteReading.explanation'),
         ];
-      case SensorReadingErrors.ChannelsDiverged:
+      case SensorReadingError.ChannelsDiverged:
         return [
-          t('sensorErrors.channelsDiverged.heading'),
+          t('sensorErrors.channelsDiverged.name'),
           t('sensorErrors.channelsDiverged.explanation'),
         ];
-      case SensorReadingErrors.ChannelADowngraded:
+      case SensorReadingError.ChannelADowngraded:
         return [
-          t('sensorErrors.channelADowngraded.heading'),
+          t('sensorErrors.channelADowngraded.name'),
           t('sensorErrors.channelADowngraded.explanation'),
         ];
-      case SensorReadingErrors.ChannelBDowngraded:
+      case SensorReadingError.ChannelBDowngraded:
         return [
-          t('sensorErrors.channelBDowngraded.heading'),
+          t('sensorErrors.channelBDowngraded.name'),
           t('sensorErrors.channelBDowngraded.explanation'),
         ];
       default:
@@ -89,11 +89,9 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
    */
   function getSensorErrorTags(sensor: Sensor): JSX.Element[] {
     const errorTags: JSX.Element[] = [];
-    sensor.sensorReadingErrors.forEach((value, index) => {
-      if (value) {
-        const [name, explanation] = getSensorReadingErrorInfo(index);
-        errorTags.push(<ErrorTag name={name} explanation={explanation} />);
-      }
+    sensor.sensorReadingErrors.forEach(error => {
+      const [name, explanation] = getSensorReadingErrorInfo(error);
+      errorTags.push(<ErrorTag name={name} explanation={explanation} />);
     });
     return errorTags;
   }
@@ -104,27 +102,27 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
    * @returns a tuple of the human readable error name and explanation
    */
   function getInvalidAqiErrorInfo(
-    error: InvalidAqiErrors
+    error: InvalidAqiError
   ): [name: string, explanation: string] {
     switch (error) {
-      case InvalidAqiErrors.InfiniteAqi:
+      case InvalidAqiError.InfiniteAqi:
         return [
-          t('aqiErrors.tooHigh.heading'),
+          t('aqiErrors.tooHigh.name'),
           t('aqiErrors.tooHigh.explanation'),
         ];
-      case InvalidAqiErrors.NotEnoughNewReadings:
+      case InvalidAqiError.NotEnoughNewReadings:
         return [
-          t('aqiErrors.notEnoughNew.heading'),
+          t('aqiErrors.notEnoughNew.name'),
           t('aqiErrors.notEnoughNew.explanation'),
         ];
-      case InvalidAqiErrors.NotEnoughRecentValidReadings:
+      case InvalidAqiError.NotEnoughRecentValidReadings:
         return [
-          t('aqiErrors.notEnoughValid.heading'),
+          t('aqiErrors.notEnoughValid.name'),
           t('aqiErrors.notEnoughValid.explanation'),
         ];
       default:
         // Unknown error
-        return ['', ''];
+        throw new Error('Uknown InvalidAqiError');
     }
   }
 
@@ -135,11 +133,9 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
    */
   function getInvalidAqiErrorTags(sensor: Sensor): JSX.Element[] {
     const errorTags: JSX.Element[] = [];
-    sensor.aqiCalculationErrors.forEach((value, index) => {
-      if (value) {
-        const [name, explanation] = getInvalidAqiErrorInfo(index);
-        errorTags.push(<ErrorTag name={name} explanation={explanation} />);
-      }
+    sensor.invalidAqiErrors.forEach(error => {
+      const [name, explanation] = getInvalidAqiErrorInfo(error);
+      errorTags.push(<ErrorTag name={name} explanation={explanation} />);
     });
     return errorTags;
   }
