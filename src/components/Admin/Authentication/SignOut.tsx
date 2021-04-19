@@ -12,7 +12,7 @@ const SignOut: () => JSX.Element = () => {
    * Signs out the user and sets authentication status to false.
    * @param event - submit form event
    */
-   function handleSignOut(): Promise<void> {
+  function handleSignOut(): Promise<void> {
     return firebaseAuth.signOut();
   }
 
@@ -23,7 +23,7 @@ const SignOut: () => JSX.Element = () => {
         marginY={4}
         onClick={handleSignOut}
         colorScheme="red"
-        >
+      >
         {t('signOut')}
       </Button>
     </Box>
