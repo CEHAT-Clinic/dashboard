@@ -172,7 +172,7 @@ interface CurrentReadingMap {
 }
 
 /**
- * Interface for the structure of `SENSORS_DOC` in `CURRENT_READINGS_COLLECTION`.
+ * Interface for the structure of `SENSORS_DOC` in `CURRENT_READING_COLLECTION`.
  * - `data` - map of a sensor's PurpleAir ID to that sensor's `CurrentSensorData`
  * - `lastUpdated` - when `SENSORS_DOC` was last updated
  */
@@ -219,7 +219,7 @@ export {
   SENSORS_COLLECTION,
   readingsSubcollection,
   USERS_COLLECTION,
-  CURRENT_READING_COLLECTION as CURRENT_READINGS_COLLECTION,
+  CURRENT_READING_COLLECTION,
   SENSORS_DOC,
   DELETION_COLLECTION,
   TODO_DOC,
