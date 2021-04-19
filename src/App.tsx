@@ -7,14 +7,14 @@ import AppProviders from './contexts/AppProviders';
 
 const App: React.FC = () => (
   // The overflowX and position prevent horizontal scrolling
-  <Box overflowX="hidden" position="relative" maxWidth="100%">
-    <AppProviders>
+  <AppProviders>
+    <Box overflowX="hidden" position="relative" maxWidth="100%">
       <Suspense fallback={<LoadingNavBar />}>
         <NavigationBar />
       </Suspense>
       <Routes />
-    </AppProviders>
-  </Box>
+    </Box>
+  </AppProviders>
 );
 
 export default App;
