@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Heading, Flex, Button, Text, Grid} from '@chakra-ui/react';
+import {Box, Heading, Flex, Button, Grid} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
@@ -11,6 +11,7 @@ import {DeleteSensorModal} from './DeleteSensorModal';
 import DeleteOldDataModal from './DeleteOldDataModal';
 import {Sensor} from './Util/Types';
 import {SensorTable} from './SensorTable/SensorTable';
+import {ToggleActiveModal} from './ToggleActiveModal';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -20,8 +21,7 @@ const ManageSensors: () => JSX.Element = () => {
   const {isAuthenticated, isAdmin, isLoading: fetchingAuthInfo} = useAuth();
   const [sensors, setSensors] = useState<Sensor[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation(['sensors', 'administration']);
 
   // Get sensors, and update sensors list as the data changes
   useEffect(() => {
@@ -45,6 +45,8 @@ const ManageSensors: () => JSX.Element = () => {
                 isValid: sensorData.isValid ?? false,
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
                 lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null,
+                sensorReadingErrors: sensorData.sensorReadingErrors ?? [],
+                invalidAqiErrors: sensorData.invalidAqiErrors ?? [],
                 docId: doc.id,
               });
             }
@@ -60,9 +62,9 @@ const ManageSensors: () => JSX.Element = () => {
   if (isLoading || fetchingAuthInfo) {
     return <Loading />;
   } else if (!isAuthenticated) {
-    return <AccessDenied reason={t('notSignedIn')} />;
+    return <AccessDenied reason={t('administration:notSignedIn')} />;
   } else if (!isAdmin) {
-    return <AccessDenied reason={t('notAdmin')} />;
+    return <AccessDenied reason={t('administration:notAdmin')} />;
   } else {
     const activeSensors = sensors.filter(sensor => sensor.isActive);
     const inactiveSensors = sensors.filter(sensor => !sensor.isActive);
@@ -79,32 +81,31 @@ const ManageSensors: () => JSX.Element = () => {
           boxShadow="lg"
           textAlign="center"
         >
-          <Heading marginY={2}>{t('manageSensors')}</Heading>
+          <Heading marginY={2}>{t('heading')}</Heading>
+          <Button as="a" href="/admin" margin={1} marginBottom={3}>
+            {t('administration:returnAdmin')}
+          </Button>
           <Grid
             justifyContent="center"
-            templateColumns={['repeat(2,1fr)', null, 'repeat(4,1fr)', null]}
+            templateColumns={[
+              'repeat(1,1fr)',
+              'repeat(2,1fr)',
+              'repeat(3,1fr)',
+              'repeat(6,1fr)',
+            ]}
             gap={2}
           >
+            <ToggleActiveModal sensors={inactiveSensors} isActive={false} />
             <AddSensorModal />
             <DownloadCSVModal sensors={sensors} />
-            <DeleteOldDataModal />
+            <ToggleActiveModal sensors={activeSensors} isActive={true} />
             <DeleteSensorModal sensors={inactiveSensors} />
+            <DeleteOldDataModal />
           </Grid>
-          <SensorTable
-            title={t('sensors.activeHeading')}
-            sensors={activeSensors}
-            setError={setError}
-            activateHeading={t('sensors.deactivate')}
-          />
-          <SensorTable
-            title={t('sensors.inactiveHeading')}
-            sensors={inactiveSensors}
-            setError={setError}
-            activateHeading={t('sensors.activate')}
-          />
-          {error && <Text textColor="red.500">{error}</Text>}
+          <SensorTable title={t('activeHeading')} sensors={activeSensors} />
+          <SensorTable title={t('inactiveHeading')} sensors={inactiveSensors} />
           <Button as="a" href="/admin" margin={1}>
-            {t('returnAdmin')}
+            {t('administration:returnAdmin')}
           </Button>
         </Box>
       </Flex>

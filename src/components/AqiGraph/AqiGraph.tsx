@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import {firestore} from '../../firebase';
 import {useTranslation} from 'react-i18next';
-import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Util';
+import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Types';
 import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
 import {formatTime} from '../Util/Dates';
@@ -29,7 +29,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const defaultYLimit = 300;
   const hoursPerDay = 24;
   const minutesPerHour = 60;
-  /* eslint-disable-next-line no-magic-numbers */
+  // eslint-disable-next-line no-magic-numbers
   const hourTicks = [0, 6, 12, 18, 24];
   /* --------------- State maintenance variables ---------------  */
   const [data, setData] = useState<GraphData>({
@@ -55,7 +55,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         if (doc.exists) {
           const data = doc.data();
           if (data) {
-            const aqiBuffer: Array<AqiBufferElement> = data.aqiBuffer ?? [];
+            const aqiBuffer: AqiBufferElement[] = data.aqiBuffer ?? [];
             const allData: GraphData = {
               good: [],
               moderate: [],

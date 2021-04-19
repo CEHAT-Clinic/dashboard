@@ -76,33 +76,24 @@
       {
         "skipWordIfMatch": [
           "aqi",
-          "timestamps",
           "firebase",
           "Firebase",
           "firestore",
           "Firestore",
-          "thingspeak",
-          "Thingspeak",
           "axios",
           "Axios",
-          "csv",
-          "Csv",
           "pubsub",
           "Aqi",
           "nowcast",
-          "fs",
-          "os",
-          "tmpdir",
-          "Atm",
           "camelcase",
           "subcollection",
           "Subcollection",
           "breakpoint",
           "Breakpoint",
-          "uid",
           "purpleair",
           "Recurse",
-          "readonly"
+          "readonly",
+          "outlier"
         ]
       }
     ]

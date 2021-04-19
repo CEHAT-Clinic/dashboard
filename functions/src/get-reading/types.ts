@@ -10,7 +10,10 @@
  * - `humidity` - humidity reading for a sensor
  * - `meanPercentDifference` - mean percent difference between the pseudo averages
  *   of the readings for channelA and channelB, as calculated from the confidence
- *   value returned by the PurpleAir API
+ *   value returned by the PurpleAir API. This value ranges from 0 to 2. If
+ *   either of the channels has been downgraded by PurpleAir, then the
+ *   `meanPercentDifference` is set to the maximum possible mean percent
+ *   difference, 2.
  * - `timestamp` - the timestamp of the current reading
  */
 interface PurpleAirReading {
@@ -33,7 +36,10 @@ interface PurpleAirReading {
  * - `humidity` - humidity reading for a sensor
  * - `meanPercentDifference` - mean percent difference between the pseudo averages
  *   of the readings for channelA and channelB, as calculated from the confidence
- *   value returned by the PurpleAir API
+ *   value returned by the PurpleAir API.  This value ranges from 0 to 2. If
+ *   either of the channels has been downgraded by PurpleAir, then the
+ *   `meanPercentDifference` is set to the maximum possible mean percent
+ *   difference, 2.
  * - `timestamp` - the timestamp of the current reading
  */
 interface HistoricalSensorReading {

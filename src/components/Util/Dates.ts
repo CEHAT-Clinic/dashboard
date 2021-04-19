@@ -35,8 +35,9 @@ function formatTime(hour: number, minutes: number): string {
     period = ' PM';
     hour = hour % hoursPerPeriod;
   }
+
   let leadingZero = '';
-  /* eslint-disable-next-line no-magic-numbers */
+  // eslint-disable-next-line no-magic-numbers
   if (minutes < 10) {
     leadingZero = '0';
   }

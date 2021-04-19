@@ -35,14 +35,17 @@ const SensorInput: ({
   setDocId,
   setPurpleAirId,
 }: SensorInputProps) => {
-  const {t} = useTranslation('administration');
-  const options = [];
+  const {t} = useTranslation('sensors');
+  const options: React.DetailedHTMLProps<
+    React.OptionHTMLAttributes<HTMLOptionElement>,
+    HTMLOptionElement
+  >[] = [];
   const docIdToPurpleAirId = new Map<string, number>();
   for (let i = 0; i < sensors.length; i++) {
     const sensor = sensors[i];
     const label = sensor.name
       ? sensor.name
-      : numberToString(sensor.purpleAirId, t('sensors.unknown'));
+      : numberToString(sensor.purpleAirId, t('unknown'));
     options.push(
       <option value={sensor.docId} key={i}>
         {label}

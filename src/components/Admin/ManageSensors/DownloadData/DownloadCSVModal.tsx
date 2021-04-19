@@ -33,7 +33,7 @@ import {SensorInput} from '../Util/SensorInput';
 const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
   sensors,
 }: CSVModalProps) => {
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation('sensors');
   /* --------------- State maintenance variables ------------------------ */
   const {isOpen, onOpen, onClose} = useDisclosure();
   const [startYear, setStartYear] = useState(0);
@@ -111,7 +111,7 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
 
   return (
     <Box>
-      <Button colorScheme="teal" onClick={onOpen}>
+      <Button minWidth="80%" colorScheme="teal" onClick={onOpen}>
         {t('downloadData.download')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>

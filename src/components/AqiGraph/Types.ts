@@ -40,12 +40,12 @@ interface GraphProps {
  * hazardous - array of points that fall in the "hazardous" category
  */
 interface GraphData {
-  good: Array<GraphElement>;
-  moderate: Array<GraphElement>;
-  sensitive: Array<GraphElement>;
-  unhealthy: Array<GraphElement>;
-  veryUnhealthy: Array<GraphElement>;
-  hazardous: Array<GraphElement>;
+  good: GraphElement[];
+  moderate: GraphElement[];
+  sensitive: GraphElement[];
+  unhealthy: GraphElement[];
+  veryUnhealthy: GraphElement[];
+  hazardous: GraphElement[];
 }
 
 export type {GraphData, GraphElement, GraphProps, AqiBufferElement};

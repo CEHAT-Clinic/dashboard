@@ -1,15 +1,17 @@
 import React, {Suspense} from 'react';
 import NavigationBar from './components/NavBar/NavigationBar';
-import Loading from './components/Util/Loading';
+import LoadingNavBar from './components/NavBar/LoadingNavBar';
 import Routes from './Routes';
+import {Box} from '@chakra-ui/react';
 
 const App: React.FC = () => (
-  <div>
-    <Suspense fallback={<Loading />}>
+  // The overflowX and position prevent horizontal scrolling
+  <Box overflowX="hidden" position="relative">
+    <Suspense fallback={<LoadingNavBar />}>
       <NavigationBar />
     </Suspense>
     <Routes />
-  </div>
+  </Box>
 );
 
 export default App;
