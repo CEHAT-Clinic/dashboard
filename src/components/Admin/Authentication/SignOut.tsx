@@ -4,24 +4,17 @@ import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 
 /**
- * Button that signs the user out
+ * Button that signs the user out when clicked
  */
 const SignOut: () => JSX.Element = () => {
   const {t} = useTranslation('administration');
-  /**
-   * Signs out the user and sets authentication status to false.
-   * @param event - submit form event
-   */
-  function handleSignOut(): Promise<void> {
-    return firebaseAuth.signOut();
-  }
 
   return (
     <Box justifyContent="center">
       <Button
         minWidth="50%"
         marginY={4}
-        onClick={handleSignOut}
+        onClick={() => firebaseAuth.signOut()}
         colorScheme="red"
       >
         {t('signOut')}
