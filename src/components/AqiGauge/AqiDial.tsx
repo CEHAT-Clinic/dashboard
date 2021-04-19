@@ -6,6 +6,7 @@ import {useColor} from '../../contexts/ColorContext';
 import {aqiCutoffs} from '../../util';
 import {InvalidSensor} from './InvalidSensor';
 import {SelectedSensor} from '../../util';
+import {LinkColor} from '../Util/Colors';
 
 /**
  * AqiLabelProps
@@ -109,7 +110,7 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
           </Text>
           <Text fontStyle="italic" fontSize={14} mb={2}>
             {t('moreInfo')}
-            <Link fontSize={14} color="#32bfd1" href="/health">
+            <Link fontSize={14} color={LinkColor} href="/health">
               {' '}
               {t('menu:healthInfo')}
             </Link>
