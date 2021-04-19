@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import {Pm25BufferElement, BufferStatus} from '../buffer';
-import {InvalidAqiErrors} from './invalid-aqi-errors';
-=======
-import {Pm25BufferElement, bufferStatus} from '../buffer';
 import {InvalidAqiError} from './invalid-aqi-errors';
->>>>>>> main
 
 /**
  * Basic sensor reading used in data cleaning
