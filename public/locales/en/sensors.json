@@ -107,27 +107,27 @@
         "heading": "Recent Sensor Errors",
         "explanation": "These errors occurred the most recent time we attempted to get a reading for this sensor from PurpleAir.",
         "readingNotReceived": {
-            "heading": "Reading Not Received",
+            "name": "Reading Not Received",
             "explanation": "No new reading was received from PurpleAir the last time we attempted to get a reading."
         },
         "noHumidity": {
-            "heading": "No Humidity Reading Received",
+            "name": "No Humidity Reading Received",
             "explanation": "No humidity reading was received for this sensor. The humidity reading is necessary to apply the EPA correction to the PurpleAir readings. This may indicate that the humidity sensor is malfunctioning."
         },
         "incompleteReading": {
-            "heading": "Incomplete Sensor Reading",
+            "name": "Incomplete Sensor Reading",
             "explanation": "The last reading we received from PurpleAir was missing at least one field, so we cannot use the reading. This may indicate sensor malfunction."
         },
         "channelsDiverged": {
-            "heading": "Channels Diverged",
+            "name": "Channels Diverged",
             "explanation": "The readings from Channel A and Channel B of the sensor have gotten too far apart to be able to use the reading in the AQI calculation. This may indicate that one or both of the channels has malfunctioned."
         },
         "channelADowngraded": {
-            "heading": "Channel A Downgraded",
+            "name": "Channel A Downgraded",
             "explanation": "Channel A has been downgraded by PurpleAir, likely indicating sensor malfunction."
         },
         "channelBDowngraded": {
-            "heading": "Channel B Downgraded",
+            "name": "Channel B Downgraded",
             "explanation": "Channel B has been downgraded by PurpleAir, likely indicating sensor malfunction."
         }
     },
@@ -135,15 +135,15 @@
         "heading": "Recent AQI Calculation Errors",
         "explanation": "These errors are possible reasons that a sensor does not currently have a valid AQI.",
         "tooHigh": {
-            "heading": "AQI Too High",
-            "explanation": "The calculated AQI was higher than the possible AQI range, which likely means that the sensor is malfunctioning."
+            "name": "AQI Too High",
+            "explanation": "The calculated AQI was higher than 500, which is the maximum AQI. This likely means that the sensor is sending unreasonably high PM2.5 readings, which may indicate that the sensor is malfunctioning."
         },
         "notEnoughNew": {
-            "heading": "Not Enough Readings",
-            "explanation": "Not enough new readings were received for this sensor in the last three hours to calculate the NowCast AQI."
+            "name": "Not Enough Readings",
+            "explanation": "There are not enough new readings for this sensor in the last three hours to calculate the NowCast AQI. This may be true if the sensor was recently added or activated. Otherwise, this error indicates that the sensor is not sending new readings."
         },
         "notEnoughValid": {
-            "heading": "Not Enough Valid Readings",
+            "name": "Not Enough Valid Readings",
             "explanation": "Not enough new and valid readings were received for this sensor in the last three hours to calculate the NowCast AQI. This could mean that Channel A and Channel B of the sensor have diverged, which might indicate sensor malfunction."
         }
     }
