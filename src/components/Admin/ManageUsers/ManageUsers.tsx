@@ -163,7 +163,7 @@ const ManageUsers: () => JSX.Element = () => {
                       />
                     </Td>
                     <Td>
-                      <DeleteUserPopover user={user} setError={setError} />
+                      <DeleteUserPopover user={user} />
                     </Td>
                   </Tr>
                 ))}
