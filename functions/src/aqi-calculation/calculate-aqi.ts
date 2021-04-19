@@ -7,6 +7,7 @@ import {
   getDefaultAqiBufferElement,
 } from '../buffer';
 import {CurrentReadingSensorData} from './types';
+import {InvalidAqiErrors} from './invalid-aqi-errors';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
@@ -134,7 +135,6 @@ function aqiFromPm25(pm25Concentration: number): number {
  * updates the `current-readings` AQI data and AQI-validity status. Also updates
  * the aqiBuffer in each sensor doc.
  */
-
 async function calculateAqi(): Promise<void> {
   // Initialize the currentData map
   const currentData = Object.create(null);
@@ -171,8 +171,10 @@ async function calculateAqi(): Promise<void> {
     const pm25Buffer: Pm25BufferElement[] = sensorDocData.pm25Buffer ?? [];
 
     // Get cleaned hourly averages from the PM2.5 Buffer for the last 12 hours
-    // If an hour lacks enough data, the entry for the hour is `NaN`
-    const cleanedAverages: number[] = getCleanedAverages(
+    // If an hour lacks enough data, the entry for the hour is `NaN`.
+    // Note that we only use the dataCleaningErrors if the errors result in an
+    // invalid AQI, since one hour can have errors and the AQI can still be valid.
+    const [cleanedAverages, dataCleaningErrors] = getCleanedAverages(
       pm25BufferStatus,
       pm25BufferIndex,
       pm25Buffer
@@ -191,6 +193,9 @@ async function calculateAqi(): Promise<void> {
     // If there's enough info, the sensor's data is updated
     // If there isn't, we send the AQI buffer element with default values
     let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
+
+    // Initialize the invalid AQI errors
+    let invalidAqiErrors: InvalidAqiErrors[] = [];
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -211,11 +216,12 @@ async function calculateAqi(): Promise<void> {
         };
       } else {
         // Infinite AQI
-        // TODO: write invalid reason to sensor doc, or propagate
+        invalidAqiErrors.push(InvalidAqiErrors.InfiniteAqi);
       }
     } else {
-      // Not enough recent readings
-      // TODO: write invalid reason to sensor doc, or propagate
+      // There weren't enough valid readings in the last 3 hours, so we propagate
+      // the errors from the data cleaning step.
+      invalidAqiErrors = dataCleaningErrors;
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
@@ -226,6 +232,7 @@ async function calculateAqi(): Promise<void> {
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
+    sensorDocUpdate.invalidAqiErrors = invalidAqiErrors;
 
     // Update the AQI circular buffer for this element
     const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;

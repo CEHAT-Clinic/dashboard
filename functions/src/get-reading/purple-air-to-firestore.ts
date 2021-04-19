@@ -5,10 +5,11 @@ import {
   Pm25BufferElement,
   getDefaultPm25BufferElement,
 } from '../buffer';
-import {HistoricalSensorReading} from './types';
+import {HistoricalSensorReading, PurpleAirReading} from './types';
 import {readingsSubcollection} from '../util';
 import {getLastSensorReadingTime} from './util';
 import {getReadingsMap} from './purple-air-response';
+import {SensorReadingError} from './sensor-errors';
 
 /**
  * Handles the PurpleAir API call for all active sensors,
@@ -29,7 +30,8 @@ async function purpleAirToFirestore(): Promise<void> {
     );
 
     // Get the existing data from Firestore for this sensor
-    const sensorDocData = sensorDoc.data() ?? {};
+    const sensorDocData: FirebaseFirestore.DocumentData =
+      sensorDoc.data() ?? {};
     const purpleAirId: number = sensorDocData.purpleAirId;
 
     // If the lastSensorReadingTime field isn't set, query the readings
@@ -38,16 +40,20 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocData.lastSensorReadingTime ??
       (await getLastSensorReadingTime(readingsCollectionRef));
 
+    // Initialize sensor errors
+    let errors: SensorReadingError[] = [];
+    let reading: PurpleAirReading | null = null;
+
     // If a reading for this sensor was not in the group query, then it did not
     // receive a new reading recently enough
-    const reading = readingsMap.get(purpleAirId);
+    const purpleAirResult = readingsMap.get(purpleAirId);
 
-    if (typeof reading === 'undefined') {
+    if (typeof purpleAirResult === 'undefined') {
       // No reading was received from PurpleAir
-      // TODO: write invalid reason to sensor doc, or propagate
-    } else if (!reading) {
-      // An incomplete reading was received from PurpleAir
-      // TODO: write invalid reason to sensor doc, or propagate
+      errors.push(SensorReadingError.ReadingNotReceived);
+    } else {
+      // If PurpleAir returned anything for a sensor, the errors will be propagated
+      [reading, errors] = purpleAirResult;
     }
 
     const readingTimestamp: FirebaseFirestore.Timestamp | null = reading
@@ -60,6 +66,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // Initialize the sensor doc update data
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
+    sensorDocUpdate.sensorReadingErrors = errors;
 
     if (reading && readingTimestamp) {
       // Before adding the reading to the historical database, check that it
@@ -108,7 +115,7 @@ async function purpleAirToFirestore(): Promise<void> {
     } else if (status === bufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocData.pm25BufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.pm25BufferStatus = bufferStatus.InProgress;
     }
 
     // Send the updated data to the database
