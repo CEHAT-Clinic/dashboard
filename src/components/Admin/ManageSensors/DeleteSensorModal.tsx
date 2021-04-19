@@ -19,7 +19,7 @@ import {
   Text,
   Flex,
 } from '@chakra-ui/react';
-import firebase, {firestore} from '../../../firebase';
+import firebase, {firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Sensor, PurpleAirGroupMember} from './Util/Types';
@@ -117,7 +117,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
         }
       }
       // If the sensor was not in the members list, then we don't need to delete
-      // that sensor from the group, which is marked with `NaN`
+      // that sensor from the group, which is marked with `NaN`.
       return Number.NaN;
     });
   }
@@ -167,7 +167,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
     newDeletionMap[sensorDocId] = new Date();
 
-    return firestore.collection('deletion').doc('todo').update({
+    return firestore.collection('deletion').doc('readings').update({
       deletionMap: newDeletionMap,
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -181,7 +181,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   function getDeletionToDoDoc(): Promise<
     firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
   > {
-    return firestore.collection('deletion').doc('todo').get();
+    return firestore.collection('deletion').doc('readings').get();
   }
 
   /**

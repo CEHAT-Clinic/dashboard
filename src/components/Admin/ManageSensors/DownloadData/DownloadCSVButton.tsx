@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Box, Button, Text, Progress, Flex} from '@chakra-ui/react';
-import firebase, {firestore} from '../../../../firebase';
+import firebase, {firestore} from '../../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {CSVButtonProps, HeaderElement, BodyElement} from './Util';
 import {CSVLink} from 'react-csv';

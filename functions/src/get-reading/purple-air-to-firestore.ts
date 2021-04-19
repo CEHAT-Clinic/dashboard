@@ -1,14 +1,15 @@
 import {firestore, Timestamp, FieldValue} from '../admin';
 import {
   populateDefaultBuffer,
-  bufferStatus,
+  BufferStatus,
   Pm25BufferElement,
   getDefaultPm25BufferElement,
 } from '../buffer';
-import {HistoricalSensorReading} from './types';
-import {readingsSubcollection} from '../util';
+import {HistoricalSensorReading, PurpleAirReading} from './types';
+import {readingsSubcollection} from '../firestore';
 import {getLastSensorReadingTime} from './util';
 import {getReadingsMap} from './purple-air-response';
+import {SensorReadingError} from './sensor-errors';
 
 /**
  * Handles the PurpleAir API call for all active sensors,
@@ -29,7 +30,8 @@ async function purpleAirToFirestore(): Promise<void> {
     );
 
     // Get the existing data from Firestore for this sensor
-    const sensorDocData = sensorDoc.data() ?? {};
+    const sensorDocData: FirebaseFirestore.DocumentData =
+      sensorDoc.data() ?? {};
     const purpleAirId: number = sensorDocData.purpleAirId;
 
     // If the lastSensorReadingTime field isn't set, query the readings
@@ -38,16 +40,20 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocData.lastSensorReadingTime ??
       (await getLastSensorReadingTime(readingsCollectionRef));
 
+    // Initialize sensor errors
+    let errors: SensorReadingError[] = [];
+    let reading: PurpleAirReading | null = null;
+
     // If a reading for this sensor was not in the group query, then it did not
     // receive a new reading recently enough
-    const reading = readingsMap.get(purpleAirId);
+    const purpleAirResult = readingsMap.get(purpleAirId);
 
-    if (typeof reading === 'undefined') {
+    if (typeof purpleAirResult === 'undefined') {
       // No reading was received from PurpleAir
-      // TODO: write invalid reason to sensor doc, or propagate
-    } else if (!reading) {
-      // An incomplete reading was received from PurpleAir
-      // TODO: write invalid reason to sensor doc, or propagate
+      errors.push(SensorReadingError.ReadingNotReceived);
+    } else {
+      // If PurpleAir returned anything for a sensor, the errors will be propagated
+      [reading, errors] = purpleAirResult;
     }
 
     const readingTimestamp: FirebaseFirestore.Timestamp | null = reading
@@ -60,6 +66,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // Initialize the sensor doc update data
     const sensorDocUpdate = Object.create(null);
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
+    sensorDocUpdate.sensorReadingErrors = errors;
 
     if (reading && readingTimestamp) {
       // Before adding the reading to the historical database, check that it
@@ -96,8 +103,8 @@ async function purpleAirToFirestore(): Promise<void> {
     }
 
     // Update the PM2.5 buffer
-    const status = sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
-    if (status === bufferStatus.Exists) {
+    const status = sensorDocData.pm25BufferStatus ?? BufferStatus.DoesNotExist;
+    if (status === BufferStatus.Exists) {
       // If the buffer exists, update normally
       const pm25Buffer = sensorDocData.pm25Buffer;
       pm25Buffer[sensorDocData.pm25BufferIndex] = pm25BufferElement;
@@ -105,10 +112,10 @@ async function purpleAirToFirestore(): Promise<void> {
       sensorDocUpdate.pm25BufferIndex =
         (sensorDocData.pm25BufferIndex + 1) % pm25Buffer.length; // eslint-disable-line no-magic-numbers
       sensorDocUpdate.pm25Buffer = pm25Buffer;
-    } else if (status === bufferStatus.DoesNotExist) {
+    } else if (status === BufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocData.pm25BufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.pm25BufferStatus = BufferStatus.InProgress;
     }
 
     // Send the updated data to the database
@@ -120,7 +127,7 @@ async function purpleAirToFirestore(): Promise<void> {
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
     // that the buffer is not re-created while the buffer is being created.
-    if (status === bufferStatus.DoesNotExist) {
+    if (status === BufferStatus.DoesNotExist) {
       // This function updates the bufferStatus once the buffer has been
       // fully initialized, which uses an additional write to the database
       populateDefaultBuffer(false, sensorDoc.id);

@@ -1,12 +1,13 @@
 import {firestore, FieldValue, Timestamp} from '../admin';
 import {
-  bufferStatus,
+  BufferStatus,
   populateDefaultBuffer,
   AqiBufferElement,
   Pm25BufferElement,
   getDefaultAqiBufferElement,
 } from '../buffer';
 import {CurrentReadingSensorData} from './types';
+import {InvalidAqiError} from './invalid-aqi-errors';
 import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
@@ -134,7 +135,6 @@ function aqiFromPm25(pm25Concentration: number): number {
  * updates the `current-readings` AQI data and AQI-validity status. Also updates
  * the aqiBuffer in each sensor doc.
  */
-
 async function calculateAqi(): Promise<void> {
   // Initialize the currentData map
   const currentData = Object.create(null);
@@ -165,14 +165,16 @@ async function calculateAqi(): Promise<void> {
     };
 
     // Data used to calculate hourly averages
-    const pm25BufferStatus: bufferStatus =
-      sensorDocData.pm25BufferStatus ?? bufferStatus.DoesNotExist;
+    const pm25BufferStatus: BufferStatus =
+      sensorDocData.pm25BufferStatus ?? BufferStatus.DoesNotExist;
     const pm25BufferIndex: number = sensorDocData.pm25BufferIndex ?? 0;
     const pm25Buffer: Pm25BufferElement[] = sensorDocData.pm25Buffer ?? [];
 
     // Get cleaned hourly averages from the PM2.5 Buffer for the last 12 hours
-    // If an hour lacks enough data, the entry for the hour is `NaN`
-    const cleanedAverages: number[] = getCleanedAverages(
+    // If an hour lacks enough data, the entry for the hour is `NaN`.
+    // Note that we only use the dataCleaningErrors if the errors result in an
+    // invalid AQI, since one hour can have errors and the AQI can still be valid.
+    const [cleanedAverages, dataCleaningErrors] = getCleanedAverages(
       pm25BufferStatus,
       pm25BufferIndex,
       pm25Buffer
@@ -191,6 +193,9 @@ async function calculateAqi(): Promise<void> {
     // If there's enough info, the sensor's data is updated
     // If there isn't, we send the AQI buffer element with default values
     let aqiBufferElement: AqiBufferElement = getDefaultAqiBufferElement();
+
+    // Initialize the invalid AQI errors
+    let invalidAqiErrors: InvalidAqiError[] = [];
 
     // If there is not enough info, the sensor's status is not valid
     const NOWCAST_RECENT_DATA_THRESHOLD = 2;
@@ -211,11 +216,12 @@ async function calculateAqi(): Promise<void> {
         };
       } else {
         // Infinite AQI
-        // TODO: write invalid reason to sensor doc, or propagate
+        invalidAqiErrors.push(InvalidAqiError.InfiniteAqi);
       }
     } else {
-      // Not enough recent readings
-      // TODO: write invalid reason to sensor doc, or propagate
+      // There weren't enough valid readings in the last 3 hours, so we propagate
+      // the errors from the data cleaning step.
+      invalidAqiErrors = dataCleaningErrors;
     }
 
     // Set data in map of sensor's PurpleAir ID to the sensor's most recent data
@@ -226,20 +232,21 @@ async function calculateAqi(): Promise<void> {
     sensorDocUpdate.lastUpdated = FieldValue.serverTimestamp();
     sensorDocUpdate.lastValidAqiTime = currentSensorData.lastValidAqiTime;
     sensorDocUpdate.isValid = currentSensorData.isValid;
+    sensorDocUpdate.invalidAqiErrors = invalidAqiErrors;
 
     // Update the AQI circular buffer for this element
-    const status = sensorDocData.aqiBufferStatus ?? bufferStatus.DoesNotExist;
-    if (status === bufferStatus.Exists) {
+    const status = sensorDocData.aqiBufferStatus ?? BufferStatus.DoesNotExist;
+    if (status === BufferStatus.Exists) {
       // The buffer exists, proceed with normal update
       const aqiBuffer: AqiBufferElement[] = sensorDocData.aqiBuffer;
       aqiBuffer[sensorDocData.aqiBufferIndex] = aqiBufferElement;
       sensorDocUpdate.aqiBufferIndex =
         (sensorDocData.aqiBufferIndex + 1) % aqiBuffer.length;
       sensorDocUpdate.aqiBuffer = aqiBuffer;
-    } else if (status === bufferStatus.DoesNotExist) {
+    } else if (status === BufferStatus.DoesNotExist) {
       // Initialize populating the buffer with default values, don't update
       // any values until the buffer status is Exists
-      sensorDocUpdate.aqiBufferStatus = bufferStatus.InProgress;
+      sensorDocUpdate.aqiBufferStatus = BufferStatus.InProgress;
     }
 
     // Send the updated data to the database
@@ -251,7 +258,7 @@ async function calculateAqi(): Promise<void> {
     // If the buffer didn't exist, use another write to initialize the buffer.
     // Since the buffer is large, this can be timely and this function ensures
     // that the buffer is not re-created while the buffer is being created.
-    if (status === bufferStatus.DoesNotExist) {
+    if (status === BufferStatus.DoesNotExist) {
       // This function updates the bufferStatus once the buffer has been
       // fully initialized, which uses an additional write to the database
       populateDefaultBuffer(true, sensorDoc.id);

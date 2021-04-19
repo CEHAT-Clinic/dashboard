@@ -1,5 +1,5 @@
 import React from 'react';
-import {firestore} from '../../firebase';
+import {firestore} from '../../firebase/firebase';
 import {createSensorIcon} from './markerStyle';
 import {Box} from '@chakra-ui/react';
 import {ColorScheme} from '../Util/Colors';

@@ -19,15 +19,15 @@ export function createSensorIcon(
   let color = colors.good; // Initialize color
   if (isValid) {
     const aqi = Number(aqiReading);
-    if (aqi < aqiCutoffs.good) {
+    if (aqi <= aqiCutoffs.good) {
       color = colors.good;
-    } else if (aqi < aqiCutoffs.moderate) {
+    } else if (aqi <= aqiCutoffs.moderate) {
       color = colors.moderate;
-    } else if (aqi < aqiCutoffs.sensitive) {
+    } else if (aqi <= aqiCutoffs.sensitive) {
       color = colors.sensitive;
-    } else if (aqi < aqiCutoffs.unhealthy) {
+    } else if (aqi <= aqiCutoffs.unhealthy) {
       color = colors.unhealthy;
-    } else if (aqi < aqiCutoffs.veryUnhealthy) {
+    } else if (aqi <= aqiCutoffs.veryUnhealthy) {
       color = colors.veryUnhealthy;
     } else {
       color = colors.hazardous;

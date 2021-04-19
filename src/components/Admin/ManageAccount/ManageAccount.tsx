@@ -3,10 +3,11 @@ import {Box, Heading, Text, Flex, Button, Divider} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import ChangePasswordModal from './ChangePassword';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
+import {AccountDeleted} from '../AccountDeleted';
 
 /**
  * Component for a user to manage their own account information.
@@ -19,6 +20,7 @@ const ManageAccount: () => JSX.Element = () => {
     isLoading: fetchingAuthContext,
     name,
     email,
+    isDeleted,
   } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [passwordUser, setPasswordUser] = useState(false);
@@ -56,12 +58,14 @@ const ManageAccount: () => JSX.Element = () => {
     return <Loading />;
   } else if (!isAuthenticated) {
     return <AccessDenied reason={t('notSignedIn')} />;
+  } else if (isDeleted) {
+    return <AccountDeleted />;
   } else {
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
           padding={8}
-          margin={8}
+          marginX={8}
           width="full"
           maxWidth="500px"
           borderWidth={1}
@@ -70,16 +74,16 @@ const ManageAccount: () => JSX.Element = () => {
           textAlign="center"
         >
           <Heading marginBottom={2}>{t('manageAccount.heading')}</Heading>
-          <Text textAlign="left" fontSize="lg" fontWeight="bold">
+          <Heading textAlign="left" fontSize="lg" as="h2">
             {t('email')}
-          </Text>
+          </Heading>
           <Text textAlign="left" fontSize="md">
             {email}
           </Text>
           <Divider marginY={2} />
-          <Text textAlign="left" fontSize="lg" fontWeight="bold">
+          <Heading textAlign="left" fontSize="lg" as="h2">
             {t('name')}
-          </Text>
+          </Heading>
           <Text
             color={name ? 'black.500' : 'red.500'}
             textAlign="left"
@@ -89,9 +93,9 @@ const ManageAccount: () => JSX.Element = () => {
           </Text>
           <ChangeNameModal passwordUser={passwordUser} />
           <Divider marginY={2} />
-          <Text marginTop={2} fontSize="lg" fontWeight="bold" textAlign="left">
+          <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
-          </Text>
+          </Heading>
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Divider marginY={2} />

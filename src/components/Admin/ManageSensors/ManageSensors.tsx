@@ -4,7 +4,7 @@ import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import Loading from '../../Util/Loading';
 import {useTranslation} from 'react-i18next';
-import {firestore} from '../../../firebase';
+import {firestore} from '../../../firebase/firebase';
 import {DownloadCSVModal} from './DownloadData/DownloadCSVModal';
 import {AddSensorModal} from './AddSensorModal';
 import {DeleteSensorModal} from './DeleteSensorModal';
@@ -45,6 +45,8 @@ const ManageSensors: () => JSX.Element = () => {
                 isValid: sensorData.isValid ?? false,
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
                 lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null,
+                sensorReadingErrors: sensorData.sensorReadingErrors ?? [],
+                invalidAqiErrors: sensorData.invalidAqiErrors ?? [],
                 docId: doc.id,
               });
             }
@@ -68,20 +70,19 @@ const ManageSensors: () => JSX.Element = () => {
     const inactiveSensors = sensors.filter(sensor => !sensor.isActive);
 
     return (
-      <Flex width="full" align="center" justifyContent="center">
+      <Flex align="center" justifyContent="center">
         <Box
           padding={8}
-          margin={8}
+          marginX={8}
           width="full"
           maxWidth="1400px"
           borderWidth={1}
           borderRadius={8}
-          boxShadow="lg"
           textAlign="center"
         >
           <Heading marginY={2}>{t('heading')}</Heading>
           <Button as="a" href="/admin" margin={1} marginBottom={3}>
-            {t('returnAdmin')}
+            {t('administration:returnAdmin')}
           </Button>
           <Grid
             justifyContent="center"
