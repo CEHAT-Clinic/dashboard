@@ -20,7 +20,7 @@ import {useAuth} from '../../../contexts/AuthContext';
 /**
  * Creates a button that when clicked, creates a confirmation popup to delete a
  * user. Only non-admin users can be deleted.
- * @param user - The current user for a row
+ * @param user - the user to delete
  * @returns button that when clicked, creates a popover where an admin user can click to mark a user's account for deletion
  */
 const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
@@ -34,17 +34,16 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
    * Marks a user's document in the `USERS_COLLECTION` and the user's
    * Firebase Authentication account for deletion
    * @param event - click button event
-   * @param user - user to mark for deletion
+   * @returns a promise that when resolved means a user's doc has been marked as deleted and the user account has been marked for deletion by the Cloud Functions
    */
   function handleDeletion(
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    user: User
   ): Promise<void> {
     event.preventDefault();
 
     if (isAdmin) {
-      return markUserDocAsDeleted(user)
-        .then(() => markUserForDeletion(user))
+      return markUserDocAsDeleted()
+        .then(markUserForDeletion)
         .catch(() => {
           setError(t('deleteUser.error'));
         });
@@ -56,12 +55,11 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
   /**
    * Marks a user's Firebase Authentication account and user document for
    * deletion.
-   * @param user - user to mark for deletion
    * @returns a promise that when resolved means that the user's account and document have been marked for deletion
    *
    * @remarks We don't delete the user's document immediately since if the user signs into their account before the Cloud Function deletes their account, their user document will be automatically recreated.
    */
-  function markUserForDeletion(user: User): Promise<void> {
+  function markUserForDeletion(): Promise<void> {
     if (isAdmin) {
       return firestore
         .collection('deletion')
@@ -80,10 +78,9 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
    * ManageUser's page and so that if the deleted user signs into their account
    * before their account is deleted by the Cloud Functions, they will know that
    * their account has been marked for deletion
-   * @param user - user doc to mark as deleted
    * @returns a promise that when resolved means a user's doc has been marked as `isDeleted`
    */
-  function markUserDocAsDeleted(user: User): Promise<void> {
+  function markUserDocAsDeleted(): Promise<void> {
     if (isAdmin) {
       return firestore.collection('users').doc(user.userId).update({
         isDeleted: true,
@@ -115,7 +112,7 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
               <Button
                 paddingY={2}
                 colorScheme="red"
-                onClick={event => handleDeletion(event, user)}
+                onClick={handleDeletion}
                 minWidth="50%"
               >
                 {t('common:confirm')}
