@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {Button, Box} from '@chakra-ui/react';
 

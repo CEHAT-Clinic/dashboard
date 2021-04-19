@@ -1,5 +1,5 @@
 import {firestore, FieldValue, auth} from './admin';
-import {readingsSubcollection} from './util';
+import {readingsSubcollection} from './firestore';
 
 /**
  * Deletes readings before date marked for sensors in the deletion list.
@@ -13,7 +13,9 @@ async function deleteMarkedData(): Promise<void> {
   const batchSize = 500;
 
   const readingsDeletionData =
-    (await firestore.collection('deletion').doc('todo').get()).data() ?? {};
+    (await firestore.collection('deletion').doc('readings').get()).data() ?? {};
+
+  const deletionMap = readingsDeletionData.deletionMap ?? Object.create(null);
 
   const readingsMap = readingsDeletionData.deletionMap ?? Object.create(null);
 
@@ -48,8 +50,8 @@ async function deleteMarkedData(): Promise<void> {
 }
 
 /**
- * Handles deletion of Firebase authentication accounts
- * @param userIds - user IDs of the Firebase authentication accounts to delete
+ * Handles deletion of Firebase Authentication accounts
+ * @param userIds - user IDs of the Firebase Authentication accounts to delete
  */
 async function deleteFirebaseUsers(userIds: string[]): Promise<void> {
   for (const userId of userIds) {
@@ -83,7 +85,7 @@ async function deleteSensorSubcollectionBatch(
     const updates = Object.create(null);
     updates['lastUpdated'] = FieldValue.serverTimestamp();
     updates[`deletionMap.${sensorDocId}`] = FieldValue.delete();
-    await firestore.collection('deletion').doc('todo').update(updates);
+    await firestore.collection('deletion').doc('readings').update(updates);
   };
 
   await deleteQueryBatch(query, resolve, maxBatchSize);

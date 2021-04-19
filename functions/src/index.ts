@@ -17,7 +17,7 @@ const runLongOptions: functions.RuntimeOptions = {
   timeoutSeconds: 540,
 };
 
-exports.deleteMarkedReadings = functions
+exports.deleteMarkedData = functions
   .runWith(runLongOptions)
   .pubsub.schedule('every 24 hours')
   .onRun(deleteMarkedData);

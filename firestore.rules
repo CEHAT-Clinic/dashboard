@@ -52,8 +52,8 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Used for scheduled data deletion of readings
-    match /deletion/todo {
+    // Used for scheduled deletion of sensor readings
+    match /deletion/readings {
       // Admins can read the document for the purpose of merging data
       allow read: if isAdmin();
 
@@ -61,6 +61,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    // Used for deletion of user data
     match /deletion/users {
       function markingCurrentUserDoc() {
         // Verify that the current user is adding their user ID to the userDocs field

@@ -1,5 +1,5 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
-import {firebaseAuth, firestore} from '../firebase';
+import {firebaseAuth, firestore} from '../firebase/firebase';
 import {Props} from './AppProviders';
 
 /**
