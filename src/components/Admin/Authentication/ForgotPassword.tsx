@@ -18,6 +18,7 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {EmailFormInput, SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
+import {LinkColor} from '../../Util/Colors';
 
 /**
  * Component for users to reset their password by email on the sign in page.
@@ -96,7 +97,7 @@ function ForgotPasswordModal(): JSX.Element {
     <Box>
       <Text>
         {t('passwordModalLaunch.forgot.text')}
-        <Link color="teal.500" onClick={onOpen}>
+        <Link color={LinkColor} onClick={onOpen}>
           {t('passwordModalLaunch.forgot.link')}
         </Link>
       </Text>

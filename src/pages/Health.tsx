@@ -15,6 +15,7 @@ import {useTranslation} from 'react-i18next';
 import AqiTable from '../components/Health/AqiTable';
 import pm25En from '../media/pm25-size-comparison-en.jpg';
 import pm25Es from '../media/pm25-size-comparison-es.jpg';
+import {LinkColor} from '../components/Util/Colors';
 
 const Health: React.FC = () => {
   const {t, i18n} = useTranslation(['health', 'common']);
@@ -69,16 +70,16 @@ const Health: React.FC = () => {
             gap={1}
             textAlign="center"
           >
-            <Link gridRow={1} href="#pollution" color="#32bfd1">
+            <Link gridRow={1} href="#pollution" color={LinkColor}>
               {t('pollution.heading')}
             </Link>
-            <Link gridRow={2} href="#aqi" color="#32bfd1">
+            <Link gridRow={2} href="#aqi" color={LinkColor}>
               {t('aqi.heading')}
             </Link>
-            <Link gridRow={1} href="#protection" color="#32bfd1">
+            <Link gridRow={1} href="#protection" color={LinkColor}>
               {t('protection.heading')}
             </Link>
-            <Link gridRow={2} href="#references" color="#32bfd1">
+            <Link gridRow={2} href="#references" color={LinkColor}>
               {t('references.heading')}
             </Link>
           </Grid>
@@ -115,7 +116,7 @@ const Health: React.FC = () => {
             <Text>
               {t('pollution.image.caption')}
               <Link
-                color="#32bfd1"
+                color={LinkColor}
                 href={t('pollution.image.source.link')}
                 isExternal
               >
@@ -127,7 +128,7 @@ const Health: React.FC = () => {
         </Flex>
         <Text>
           {t('pollution.paragraph2.part1')}{' '}
-          <Link color="#32bfd1" href={t('references.health.link')} isExternal>
+          <Link color={LinkColor} href={t('references.health.link')} isExternal>
             {t('pollution.paragraph2.link')} <ExternalLinkIcon />
           </Link>
           {t('pollution.paragraph2.part2')}
@@ -191,25 +192,29 @@ const Health: React.FC = () => {
         </Heading>
         <UnorderedList paddingLeft={4}>
           <ListItem>
-            <Link color="#32bfd1" href={t('references.pm25.link')} isExternal>
+            <Link color={LinkColor} href={t('references.pm25.link')} isExternal>
               {t('references.pm25.text')}
               <ExternalLinkIcon />
             </Link>
           </ListItem>
           <ListItem>
-            <Link color="#32bfd1" href={t('references.health.link')} isExternal>
+            <Link
+              color={LinkColor}
+              href={t('references.health.link')}
+              isExternal
+            >
               {t('references.health.text')}
               <ExternalLinkIcon />
             </Link>
           </ListItem>
           <ListItem>
-            <Link color="#32bfd1" href={t('references.aqi.link')} isExternal>
+            <Link color={LinkColor} href={t('references.aqi.link')} isExternal>
               {t('references.aqi.text')}
               <ExternalLinkIcon />
             </Link>
           </ListItem>
           <ListItem>
-            <Link color="#32bfd1" href={t('references.fire.link')} isExternal>
+            <Link color={LinkColor} href={t('references.fire.link')} isExternal>
               {t('references.fire.text')}
               <ExternalLinkIcon />
             </Link>
