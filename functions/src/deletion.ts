@@ -15,11 +15,11 @@ async function deleteMarkedData(): Promise<void> {
   const readingsDeletionData =
     (await firestore.collection('deletion').doc('readings').get()).data() ?? {};
 
-  const readingsMap = readingsDeletionData.deletionMap ?? Object.create(null);
+  const deletionMap = readingsDeletionData.deletionMap ?? Object.create(null);
 
-  for (const sensorDocId in readingsMap) {
+  for (const sensorDocId in deletionMap) {
     const deleteBeforeDate: FirebaseFirestore.Timestamp =
-      readingsMap[sensorDocId];
+      deletionMap[sensorDocId];
 
     const query = firestore
       .collection(readingsSubcollection(sensorDocId))
