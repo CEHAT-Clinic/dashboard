@@ -14,7 +14,10 @@ import {useTranslation} from 'react-i18next';
 import {numberToString, timestampToDateString} from '../Util/Util';
 import {Sensor} from '../Util/Types';
 import {MoreInfoHeading} from './MoreInfoHeading';
-import {InvalidAqiError, SensorReadingError} from '../../../../firebase/ErrorTypes';
+import {
+  InvalidAqiError,
+  SensorReadingError,
+} from '../../../../firebase/ErrorTypes';
 import {ErrorTag} from './ErrorTag';
 
 /**
