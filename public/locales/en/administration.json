@@ -117,12 +117,6 @@
         "deleteNow": "Finish Account Deletion Now",
         "explanation": "Your account has been marked for deletion by an administrator of the website, and the account will be completely deleted within the next 24 hours. If you believe this is a mistake, reach out to an administrator of the website and recreate your account after this account has been deleted. You may choose to finish deleting your account now by clicking the 'Finish Account Deletion Now' button."
     },
-    "deleteAccount": {
-        "heading": "Delete Account",
-        "error": "Unable to finish account deletion. Please try again later.",
-        "noAdminDelete": "You must remove yourself as an admin user before deleting your account.",
-        "confirmQuestion": "Are you sure that you want to delete your account? This action is permanent."
-    },
     "deleteUser": {
         "heading": "Delete User",
         "error": "Unable to mark user for deletion",

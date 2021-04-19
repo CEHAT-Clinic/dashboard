@@ -147,7 +147,7 @@ const ManageUsers: () => JSX.Element = () => {
                   <Th>{t('users.name')}</Th>
                   <Th>{t('email')}</Th>
                   <Th>{t('users.makeAdmin.button')}</Th>
-                  <Th>Delete User</Th>
+                  <Th>{t('deleteUser.heading')}</Th>
                 </Tr>
               </Thead>
               <Tbody>
