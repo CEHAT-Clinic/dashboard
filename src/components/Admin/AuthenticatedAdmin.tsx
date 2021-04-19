@@ -27,17 +27,17 @@ const AuthenticatedAdmin: () => JSX.Element = () => {
         textAlign="center"
       >
         <Heading>{t('header')}</Heading>
-        <Button as="a" href="/admin/account" width="70%" marginY={1}>
+        <Button as="a" href="/admin/account" minWidth="70%" marginY={1}>
           {/* Needs a different name because of overlap */}
           {t('manageAccountButtonText')}
         </Button>
         {isAdmin && (
-          <Button as="a" href="/admin/sensors" width="70%" marginY={1}>
+          <Button as="a" href="/admin/sensors" minWidth="70%" marginY={1}>
             {t('manageSensors')}
           </Button>
         )}
         {isAdmin && (
-          <Button as="a" href="/admin/users" width="70%" marginY={1}>
+          <Button as="a" href="/admin/users" minWidth="70%" marginY={1}>
             {t('manageUsers')}
           </Button>
         )}
