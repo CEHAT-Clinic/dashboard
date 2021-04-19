@@ -45,6 +45,8 @@ const ManageSensors: () => JSX.Element = () => {
                 isValid: sensorData.isValid ?? false,
                 lastValidAqiTime: sensorData.lastValidAqiTime ?? null,
                 lastSensorReadingTime: sensorData.lastSensorReadingTime ?? null,
+                sensorReadingErrors: sensorData.sensorReadingErrors ?? [],
+                invalidAqiErrors: sensorData.invalidAqiErrors ?? [],
                 docId: doc.id,
               });
             }
