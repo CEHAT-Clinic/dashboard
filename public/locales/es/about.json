@@ -32,6 +32,8 @@
     "acknowledge": {
         "heading": "Agradecimientos",
         "clinic": "Este sitio web fue creado en colaboración con El Programa Clínico de Harvey Mudd College, una experiencia de toque final para los estudiantes de The Claremont Colleges en la que equipos de 4 a 5 estudiantes colaboran para solucionar problemas tecnológicos de empresas y organizaciones.",
+        "githubPart1": "Si está interesado en cómo se hizo este sitio web, consulte nuestro ",
+        "githubPart2": " con el código fuente.",
         "grant": "Los sensores de este proyecto fueron posible por una beca del UCLA Kaiser Permanente Center for Health Equity y del UCLA Jonsson Comprehensive Cancer Center."
     },
     "admin": {

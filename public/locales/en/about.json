@@ -32,6 +32,8 @@
     "acknowledge": {
         "heading": "Acknowledgements",
         "clinic": "This website was created in partnership with the Harvey Mudd College Clinic Program, a capstone experience for students at The Claremont Colleges in which teams of 4-5 students work together to solve technical problems for companies and organizations.",
+        "githubPart1": "If you're interested in how this website was made, check out our ",
+        "githubPart2": " with the source code.",
         "grant": "The sensors for this project were made possible by a grant from the UCLA Kaiser Permanente Center for Health Equity and the UCLA Jonsson Comprehensive Cancer Center."
     },
     "admin": {

@@ -147,8 +147,11 @@ const About: React.FC = () => {
         <Heading fontFamily="Merriweather Sans">
           {t('acknowledge.heading')}
         </Heading>
-        <Text>{t('acknowledge.clinic')}</Text>
-        <Text>{t('acknowledge.grant')}</Text>
+        <Text paddingY={1}>
+          {t('acknowledge.clinic')} {t('acknowledge.githubPart1')}
+          <Link>Github</Link> {t('acknowledge.githubPart2')}
+        </Text>
+        <Text paddingY={1}>{t('acknowledge.grant')}</Text>
       </Box>
       <Box
         padding={2}
