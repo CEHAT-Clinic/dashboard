@@ -71,10 +71,12 @@ const DeleteAccountPopover: ({
    */
   function markUserDocAsDeleted(): Promise<void> {
     if (firebaseAuth.currentUser) {
-      return firestore.collection('users').doc(firebaseAuth.currentUser.uid)
-      .update({
-        isDeleted: true
-      });
+      return firestore
+        .collection('users')
+        .doc(firebaseAuth.currentUser.uid)
+        .update({
+          isDeleted: true,
+        });
     } else {
       return firebaseAuth.signOut();
     }
