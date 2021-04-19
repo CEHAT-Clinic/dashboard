@@ -24,18 +24,20 @@ import {PasswordFormInput} from '../ComponentUtil';
 import {useAuth} from '../../../contexts/AuthContext';
 
 /**
- * Props for DeletePopover component. Used for type safety.
+ * Props for DeleteAccountPopover component. Used for type safety.
  */
-interface DeletePopoverProps {
+interface DeleteAccountPopoverProps {
   passwordUser: boolean;
 }
 
 /**
  * @returns
  */
-const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
+const DeleteAccountPopover: ({
   passwordUser,
-}: DeletePopoverProps) => {
+}: DeleteAccountPopoverProps) => JSX.Element = ({
+  passwordUser,
+}: DeleteAccountPopoverProps) => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordError, setPasswordError] = useState('');
@@ -43,12 +45,22 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
   const {isAdmin} = useAuth();
 
   const [error, setError] = useState('');
-  const {t} = useTranslation('administration'); // TODO: add translations
+  const {t} = useTranslation(['administration', 'common']);
 
+  // For a password user, do not allow submission until they have entered a
+  // a password and there is no current password error. If the user enters the
+  // wrong password, the reauthenticate function will set the password error.
+  const passwordUserReadyToSubmit: boolean =
+    password !== '' && passwordError === '';
+
+  // Admins are not allowed to delete their account, so an admin user must
+  // remove themself as an admin before deleting their account. This prevents
+  // the last admin user from deleting their account since an admin cannot
+  // remove their admin status if they are the last admin.
   const readyToDelete: boolean =
-    error === '' && !isAdmin && passwordUser
-      ? password !== '' && passwordError === ''
-      : true;
+    error === '' &&
+    !isAdmin &&
+    (passwordUser ? passwordUserReadyToSubmit : true);
 
   /**
    * Mark a user's doc for deletion in the `DELETION` collection.
@@ -65,7 +77,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
             firebaseAuth.currentUser.uid
           ),
         })
-        .catch(() => setError('Unable to mark user document for deletion'));
+        .catch(() => setError(t('deleteAccount.error')));
     } else {
       return firebaseAuth.signOut();
     }
@@ -84,7 +96,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
         }
       })
       .catch(() => {
-        setError('Unable to complete account deletion');
+        setError(t('deleteAccount.error'));
       });
   }
 
@@ -118,7 +130,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
   return (
     <Popover>
       <PopoverTrigger>
-        <Button colorScheme="red">{'Delete Account'}</Button>
+        <Button colorScheme="red">{t('deleteAccount.heading')}</Button>
       </PopoverTrigger>
       <Portal>
         <PopoverContent>
@@ -128,7 +140,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
               <HStack>
                 <WarningTwoIcon color="red.500" />
                 <Heading size="md" textAlign="center">
-                  {'Delete Account'}
+                  {t('deleteAccount.heading')}
                 </Heading>
                 <WarningTwoIcon color="red.500" />
               </HStack>
@@ -138,9 +150,7 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
           <PopoverBody>
             {isAdmin ? (
               <Text textColor="red.500">
-                {
-                  'You must remove yourself as an admin before deleting your account'
-                }
+                {t('deleteAccount.noAdminDelete')}
               </Text>
             ) : (
               <Box>
@@ -162,17 +172,15 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
                   />
                 )}
                 <Text marginY={2} fontWeight="bold">
-                  {
-                    'Are you sure that you want to delete your account? This action is permanent.'
-                  }
+                  {t('deleteAccount.confirmQuestion')}
                 </Text>
                 <Center>
                   <Button
-                    isDisabled={readyToDelete}
+                    isDisabled={!readyToDelete}
                     colorScheme="red"
                     onClick={handleDeleteAccount}
                   >
-                    {'Confirm account deletion'}
+                    {t('common:confirm')}
                   </Button>
                 </Center>
                 <Text textColor="red.500">{error}</Text>
@@ -185,4 +193,4 @@ const DeletePopover: ({passwordUser}: DeletePopoverProps) => JSX.Element = ({
   );
 };
 
-export {DeletePopover};
+export {DeleteAccountPopover};

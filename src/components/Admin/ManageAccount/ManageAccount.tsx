@@ -8,7 +8,7 @@ import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {AccountDeleted} from '../AccountDeleted';
-import {DeletePopover} from './DeletePopover';
+import {DeleteAccountPopover} from './DeleteAccountPopover';
 
 /**
  * Component for a user to manage their own account information.
@@ -101,9 +101,9 @@ const ManageAccount: () => JSX.Element = () => {
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Divider marginY={2} />
           <Heading fontSize="lg" as="h2" textAlign="left">
-            {'Delete Account'}
+            {t('deleteAccount.heading')}
           </Heading>
-          <DeletePopover passwordUser={passwordUser} />
+          <DeleteAccountPopover passwordUser={passwordUser} />
           <Divider marginY={2} />
           <Text color="red.500">{error}</Text>
           <Button as="a" href="/admin" margin={1}>
