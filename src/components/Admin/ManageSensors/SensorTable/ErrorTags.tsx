@@ -40,7 +40,7 @@ const ErrorTag: ({name, explanation}: ErrorTagProps) => JSX.Element = ({
   return (
     <Popover>
       <PopoverTrigger>
-        <Button colorScheme="red" size="xs">
+        <Button colorScheme="orange" size="xs">
           {name}
         </Button>
       </PopoverTrigger>
@@ -48,10 +48,10 @@ const ErrorTag: ({name, explanation}: ErrorTagProps) => JSX.Element = ({
         <PopoverContent>
           <PopoverArrow />
           <PopoverHeader>
-            <Flex alignItems="center" justifyContent="center" marginTop="1em">
+            <Flex alignItems="center" justifyContent="center">
               <HStack>
                 <WarningTwoIcon color="red.500" />
-                <Heading size="md" color="red.500" textAlign="center">
+                <Heading size="md" textAlign="center">
                   {name}
                 </Heading>
                 <WarningTwoIcon color="red.500" />
