@@ -50,7 +50,4 @@ enum InvalidAqiError {
   NotEnoughRecentValidReadings,
 }
 
-export {
-  InvalidAqiError,
-  SensorReadingError,
-};
+export {InvalidAqiError, SensorReadingError};

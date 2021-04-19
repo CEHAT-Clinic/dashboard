@@ -1,4 +1,4 @@
-import { InvalidAqiError, SensorReadingError } from '../../../../ErrorsTypes';
+import {InvalidAqiError, SensorReadingError} from '../../../../ErrorsTypes';
 import firebase from '../../../../firebase';
 
 /**

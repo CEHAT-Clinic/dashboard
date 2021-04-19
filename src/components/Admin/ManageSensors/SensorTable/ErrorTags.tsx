@@ -12,6 +12,7 @@ import {
   Text,
   Heading,
   Flex,
+  HStack,
 } from '@chakra-ui/react';
 import {WarningTwoIcon} from '@chakra-ui/icons';
 
@@ -48,11 +49,13 @@ const ErrorTag: ({name, explanation}: ErrorTagProps) => JSX.Element = ({
           <PopoverArrow />
           <PopoverHeader>
             <Flex alignItems="center" justifyContent="center" marginTop="1em">
-              <WarningTwoIcon color="red.500" />
-              <Heading size="md" color="red.500">
-                {name}
-              </Heading>
-              <WarningTwoIcon color="red.500" />
+              <HStack>
+                <WarningTwoIcon color="red.500" />
+                <Heading size="md" color="red.500" textAlign="center">
+                  {name}
+                </Heading>
+                <WarningTwoIcon color="red.500" />
+              </HStack>
             </Flex>
           </PopoverHeader>
           <PopoverCloseButton />

@@ -78,7 +78,7 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
         ];
       default:
         // Unknown error
-        return ['', ''];
+        throw new Error('Unknown SensorReadingError');
     }
   }
 
@@ -122,7 +122,7 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
         ];
       default:
         // Unknown error
-        throw new Error('Uknown InvalidAqiError');
+        throw new Error('Unknown InvalidAqiError');
     }
   }
 
