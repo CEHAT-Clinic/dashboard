@@ -148,7 +148,8 @@
           "Checkbox",
           "Merriweather",
           "semibold",
-          "booleans"
+          "booleans",
+          "Reauthenticate"
         ],
         "skipWords": [
           "Pv"

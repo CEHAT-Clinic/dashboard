@@ -60,5 +60,10 @@ service cloud.firestore {
       // Admins can write to the todo document, which tells the backend what to delete
       allow write: if isAdmin();
     }
+
+    match /deletion/users {
+      // TODO: do data validation to make sure that a user can only delete themself
+      allow write: if isSignedIn();
+    }
   }
 }

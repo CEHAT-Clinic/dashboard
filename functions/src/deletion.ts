@@ -1,21 +1,23 @@
-import {firestore, FieldValue} from './admin';
+import {firestore, FieldValue, auth} from './admin';
 import {readingsSubcollection} from './util';
 
 /**
  * Deletes readings before date marked for sensors in the deletion list.
+ * Deletes any users that an admin user has deleted.
  * This function deletes documents in batches of 500 documents.
  */
-async function deleteMarkedReadings(): Promise<void> {
+async function deleteMarked(): Promise<void> {
   // The max batch size for batched writes according to Firestore is 500
   const batchSize = 500;
 
-  const deletionMap =
-    (await firestore.collection('deletion').doc('todo').get()).data()
-      ?.deletionMap ?? Object.create(null);
+  const deletionDocData = (await firestore.collection('deletion').doc('todo').get()).data() ?? {};
 
-  for (const sensorDocId in deletionMap) {
+  // TODO: change this name to readingsMap in Firestore
+  const readingsMap = deletionDocData.deletionMap ?? Object.create(null);
+
+  for (const sensorDocId in readingsMap) {
     const deleteBeforeDate: FirebaseFirestore.Timestamp =
-      deletionMap[sensorDocId];
+      readingsMap[sensorDocId];
 
     const query = firestore
       .collection(readingsSubcollection(sensorDocId))
@@ -23,6 +25,11 @@ async function deleteMarkedReadings(): Promise<void> {
       .limit(batchSize);
 
     await deleteSensorSubcollectionBatch(query, batchSize, sensorDocId);
+  }
+
+  const userIds: string[] = deletionDocData.userIds ?? [];
+  for (const userId of userIds) {
+    await auth.deleteUser(userId);
   }
 }
 
@@ -77,4 +84,4 @@ async function deleteQueryBatch(
   process.nextTick(() => deleteQueryBatch(query, resolve, maxBatchSize));
 }
 
-export default deleteMarkedReadings;
+export default deleteMarked;

@@ -7,6 +7,7 @@ import {firebaseAuth} from '../../../firebase';
 import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
+import {DeletePopover} from './DeletePopover';
 
 /**
  * Component for a user to manage their own account information.
@@ -96,6 +97,9 @@ const ManageAccount: () => JSX.Element = () => {
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Divider marginY={2} />
           <Text color="red.500">{error}</Text>
+          <Divider marginY={2} />
+          <DeletePopover passwordUser={passwordUser} />
+          <Divider marginY={2} />
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>
