@@ -3,6 +3,7 @@ import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import cehatLogo from '../media/CEHATLogo.png';
+import {LinkColor} from '../components/Util/Colors';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
@@ -57,19 +58,19 @@ const About: React.FC = () => {
             gap={1}
             textAlign="center"
           >
-            <Link gridRow={1} href="#cehat" color="#32bfd1">
+            <Link gridRow={1} href="#cehat" color={LinkColor}>
               {t('cehat.heading')}
             </Link>
-            <Link gridRow={2} href="#involved" color="#32bfd1">
+            <Link gridRow={2} href="#involved" color={LinkColor}>
               {t('involved.heading')}
             </Link>
-            <Link gridRow={3} href="#sensorsDown" color="#32bfd1">
+            <Link gridRow={3} href="#sensorsDown" color={LinkColor}>
               {t('sensorsDown.heading')}
             </Link>
-            <Link gridRow={1} href="#acknowledge" color="#32bfd1">
+            <Link gridRow={1} href="#acknowledge" color={LinkColor}>
               {t('acknowledge.heading')}
             </Link>
-            <Link gridRow={2} href="#admin" color="#32bfd1">
+            <Link gridRow={2} href="#admin" color={LinkColor}>
               {t('admin.heading')}
             </Link>
           </Grid>
@@ -87,7 +88,7 @@ const About: React.FC = () => {
         <Heading fontFamily="Merriweather Sans">{t('cehat.heading')}</Heading>
         <Text>
           {t('cehat.part1')}
-          <Link color="#32bfd1" href={t('cehat.pace-eh.link')} isExternal>
+          <Link color={LinkColor} href={t('cehat.pace-eh.link')} isExternal>
             {t('cehat.pace-eh.text')}
             <ExternalLinkIcon />
           </Link>
@@ -108,11 +109,15 @@ const About: React.FC = () => {
         </Heading>
         <Text>
           {t('involved.part1')}
-          <Link color="#32bfd1" href={t('involved.email.link')}>
+          <Link color={LinkColor} href={t('involved.email.link')}>
             {t('involved.email.text')}
           </Link>
           {t('involved.part2')}
-          <Link color="#32bfd1" href={t('involved.instagram.link')} isExternal>
+          <Link
+            color={LinkColor}
+            href={t('involved.instagram.link')}
+            isExternal
+          >
             {t('involved.instagram.text')}
             <ExternalLinkIcon />
           </Link>
@@ -164,7 +169,7 @@ const About: React.FC = () => {
       >
         <Heading fontFamily="Merriweather Sans">{t('admin.heading')}</Heading>
         <Text>
-          <Link color="#32bfd1" href={t('admin.action.link')}>
+          <Link color={LinkColor} href={t('admin.action.link')}>
             {t('admin.action.text')}
           </Link>
           {t('admin.purpose')}
