@@ -6,7 +6,7 @@ import {Box} from '@chakra-ui/react';
 
 const App: React.FC = () => (
   // Box attributes used to help prevent horizontal scrolling
-  <Box overflowX="hidden" position="relative" maxWidth="100vw">
+  <Box overflowX="hidden" position="relative">
     <Suspense fallback={<LoadingNavBar />}>
       <NavigationBar />
     </Suspense>
