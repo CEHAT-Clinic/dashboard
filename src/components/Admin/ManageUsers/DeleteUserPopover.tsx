@@ -67,6 +67,7 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
         .update({
           userDocs: firebase.firestore.FieldValue.arrayUnion(user.userId),
           firebaseUsers: firebase.firestore.FieldValue.arrayUnion(user.userId),
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         });
     } else {
       return firebaseAuth.signOut();
