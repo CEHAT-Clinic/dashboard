@@ -37,7 +37,7 @@ async function deleteMarkedData(): Promise<void> {
   await deleteUserDocs(userDocs);
 
   const firebaseUsers: string[] = userDeletionData.firebaseUsers ?? [];
-  await deleteFirebaseUsers(firebaseUsers);
+  await auth.deleteUsers(firebaseUsers);
 
   // Reset arrays after docs have been deleted
   await firestore.collection('deletion').doc('users').update({
@@ -45,16 +45,6 @@ async function deleteMarkedData(): Promise<void> {
     firebaseUsers: [],
     lastUpdated: FieldValue.serverTimestamp(),
   });
-}
-
-/**
- * Handles deletion of Firebase Authentication accounts
- * @param userIds - user IDs of the Firebase Authentication accounts to delete
- */
-async function deleteFirebaseUsers(userIds: string[]): Promise<void> {
-  for (const userId of userIds) {
-    await auth.deleteUser(userId);
-  }
 }
 
 /**
