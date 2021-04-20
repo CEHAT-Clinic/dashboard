@@ -7,7 +7,10 @@
             "link": "https://www.cdc.gov/nceh/ehs/ceha/pace_eh.htm",
             "text": "Protocol for Assessing Community Excellence in Environmental Health assessment"
         },
-        "part2": " to evaluate environmental health and justice. Other projects have included educational workshops, collaborating with schools on an air quality flag program, and working on Assembly Bill 617 measures to reduce emissions in and around South Gate."
+        "part2": " to evaluate environmental health and justice. Other projects have included educational workshops, collaborating with schools on an air quality flag program, and working on ",
+        "ab617": "Assembly Bill 617",
+        "part3": " measures to reduce emissions in and around South Gate."
+    
     },
     "involved": {
         "heading": "Get Involved",
