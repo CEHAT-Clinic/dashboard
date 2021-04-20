@@ -173,7 +173,7 @@ const Home: () => JSX.Element = () => {
                 ) : (
                   <Box marginTop={[null, null, '20%', null]}>
                     <MoreInfoLabel
-                      // FontFamily="Oxygen"
+                      fontFamily="Oxygen"
                       fontWeight="bold"
                       fontSize="lg"
                       text={t('noSensorGauge')}
