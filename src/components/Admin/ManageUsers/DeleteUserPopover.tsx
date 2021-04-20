@@ -42,8 +42,8 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
     event.preventDefault();
 
     if (isAdmin) {
-      return markUserDocAsDeleted()
-        .then(markUserForDeletion)
+      return markUserForDeletion()
+        .then(markUserDocAsDeleted)
         .catch(() => {
           setError(t('deleteUser.error'));
         });
