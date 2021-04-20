@@ -70,15 +70,14 @@ const ManageSensors: () => JSX.Element = () => {
     const inactiveSensors = sensors.filter(sensor => !sensor.isActive);
 
     return (
-      <Flex width="full" align="center" justifyContent="center">
+      <Flex align="center" justifyContent="center">
         <Box
           padding={8}
-          margin={8}
+          marginX={8}
           width="full"
           maxWidth="1400px"
           borderWidth={1}
           borderRadius={8}
-          boxShadow="lg"
           textAlign="center"
         >
           <Heading marginY={2}>{t('heading')}</Heading>

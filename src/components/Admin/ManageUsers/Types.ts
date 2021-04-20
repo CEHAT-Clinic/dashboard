@@ -10,10 +10,22 @@ interface User {
 
 /**
  * Interface for ToggleUserPopover used for type safety
+ * - `user` - the user to toggle admin status for
+ * - `isLastAdmin` - if the signed in admin user is the last admin
+ * - `setError` - setter for error state
  */
 interface ToggleUserPopoverProps {
   user: User;
   isLastAdmin: boolean;
+  setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export type {User, ToggleUserPopoverProps};
+/**
+ * Interface for DeleteUserPopover used for type safety
+ * - `user` - the user to delete
+ */
+interface DeleteUserPopoverProps {
+  user: User;
+}
+
+export type {User, ToggleUserPopoverProps, DeleteUserPopoverProps};
