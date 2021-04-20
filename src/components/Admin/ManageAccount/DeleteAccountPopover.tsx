@@ -24,27 +24,15 @@ import {PasswordFormInput} from '../ComponentUtil';
 import {useAuth} from '../../../contexts/AuthContext';
 
 /**
- * Props for DeleteAccountPopover component. Used for type safety.
- * - `passwordUser` - whether or not the user is password-based
- */
-interface DeleteAccountPopoverProps {
-  passwordUser: boolean;
-}
-
-/**
  * Creates a button that when clicked allows a non-admin user to delete their account.
  * @returns a button that when clicked allows a user to delete their account
  */
-const DeleteAccountPopover: ({
-  passwordUser,
-}: DeleteAccountPopoverProps) => JSX.Element = ({
-  passwordUser,
-}: DeleteAccountPopoverProps) => {
+const DeleteAccountPopover: () => JSX.Element = () => {
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [passwordError, setPasswordError] = useState('');
 
-  const {isAdmin} = useAuth();
+  const {isAdmin, passwordUser} = useAuth();
 
   const [error, setError] = useState('');
   const {t} = useTranslation(['administration', 'common']);
