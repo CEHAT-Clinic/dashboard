@@ -71,7 +71,7 @@ service cloud.firestore {
       // Verify that a (1) user is signed in, (2) the only modified field is
       // userDocs, (3) the userDocs array is increased in size by only 1,
       // and (4) the added item from the userDocs array is the user's uid.
-      function markingCurrentUserDoc() {
+      function addUidToUserDocs() {
         let onlyUserDocsUpdated = request.resource.data.keys().hasOnly('userDocs');
         let oneItemRemoved = request.resource.data.users.size() == resource.data.users.size() + 1;
         let addedUid = request.resource.data.users.removeAll(resource.data.users)[0] == request.auth.uid;
@@ -84,7 +84,7 @@ service cloud.firestore {
       // Verify that a (1) user is signed in, (2) the only modified field is
       // firebaseUsers, (3) the firebaseUsers array is reduced in size by only 1,
       // and (4) the removed item from the firebaseUsers array is the user's uid.
-      function removingCurrentUserId() {
+      function removeUidFromFirebaseUsers() {
         let onlyFirebaseUsersUpdated = request.resource.data.keys().hasOnly('firebaseUsers');
         let oneItemRemoved = request.resource.data.users.size() == resource.data.users.size() - 1;
         let removedUid = resource.data.users.removeAll(request.resource.data.users)[0] == request.auth.uid;
@@ -96,7 +96,7 @@ service cloud.firestore {
 
       // Admins can mark an account for deletion. General users can only mark
       // their own account for deletion.
-      allow write: if isAdmin() || markingCurrentUserDoc() || removingCurrentUserId();
+      allow write: if isAdmin() || addUidToUserDocs() || removeUidFromFirebaseUsers();
 
       // Only the Cloud Functions can read the deletion document
       allow read: if false;
