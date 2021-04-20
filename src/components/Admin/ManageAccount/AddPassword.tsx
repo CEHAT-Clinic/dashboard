@@ -11,19 +11,34 @@ import {
   Text,
   Button,
   Box,
-  Flex,
 } from '@chakra-ui/react';
 import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
-import {handleReauthenticationWithGoogle} from './Util';
+import {Reauthentication} from './Reauthentication';
+
+/**
+ * Props for AddPasswordModal component.
+ * - `passwordUser` - if the user uses a password for authentication
+ * - `googleUser` - if the user's account is connected to Google
+ */
+interface AddPasswordModalProps {
+  passwordUser: boolean;
+  googleUser: boolean;
+}
 
 /**
  * Component for adding a password to a Google based user's account. Includes
  * a button that opens modal to add a password. This component is only for users
  * who are not password-based users.
  */
-function AddPasswordModal(): JSX.Element {
+const AddPasswordModal: ({
+  passwordUser,
+  googleUser,
+}: AddPasswordModalProps) => JSX.Element = ({
+  passwordUser,
+  googleUser,
+}: AddPasswordModalProps) => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
@@ -41,7 +56,6 @@ function AddPasswordModal(): JSX.Element {
 
   // Reauthentication state
   const [reauthenticated, setReauthenticated] = useState(false);
-  const [reauthenticatedError, setReauthenticatedError] = useState('');
 
   // General state
   const [error, setError] = useState('');
@@ -89,20 +103,6 @@ function AddPasswordModal(): JSX.Element {
     } else {
       return firebaseAuth.currentUser.updatePassword(newPassword);
     }
-  }
-
-  function handleReauthentication(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ): Promise<void> {
-    event.preventDefault();
-
-    return handleReauthenticationWithGoogle(t).then(reauthenticationError => {
-      if (reauthenticationError) {
-        setReauthenticatedError(reauthenticationError);
-      } else {
-        setReauthenticated(true);
-      }
-    });
   }
 
   /**
@@ -157,18 +157,12 @@ function AddPasswordModal(): JSX.Element {
           <ModalCloseButton />
           <ModalBody>
             <Text>{t('addPassword.explanation')}</Text>
-            {!reauthenticated && (
-              <Flex justifyContent="center">
-                <Button
-                  onClick={handleReauthentication}
-                  marginY={2}
-                  colorScheme="red"
-                >
-                  Reauthenticate with Google
-                </Button>
-                <Text textColor="red.500">{reauthenticatedError}</Text>
-              </Flex>
-            )}
+            <Reauthentication
+              googleUser={googleUser}
+              passwordUser={passwordUser}
+              reauthenticated={reauthenticated}
+              setReauthenticated={setReauthenticated}
+            />
             <form onSubmit={handleAddPassword}>
               <PasswordFormInput
                 label={t('newPassword')}
@@ -212,6 +206,6 @@ function AddPasswordModal(): JSX.Element {
       </Modal>
     </Box>
   );
-}
+};
 
 export {AddPasswordModal};
