@@ -149,7 +149,8 @@
           "Merriweather",
           "semibold",
           "booleans",
-          "Subcollection"
+          "Subcollection",
+          "Reauthenticate"
         ],
         "skipWords": [
           "Pv"
