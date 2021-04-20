@@ -23,26 +23,13 @@ import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {handleReauthenticationWithPassword} from './Util';
-
-/**
- * Props for ChangeNameModal component. Used for type safety.
- */
-interface ChangeNameModalProps {
-  passwordUser: boolean;
-}
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Component for changing an authenticated user's name. Includes button that
  * opens modal to update (or set for the first time) the user's name.
- * @param props - passwordUser
- * - `passwordUser`: if user uses a password for authentication, used to
- *                   reauthenticate if necessary before updating the user's name
  */
-const ChangeNameModal: ({
-  passwordUser,
-}: ChangeNameModalProps) => JSX.Element = ({
-  passwordUser,
-}: ChangeNameModalProps) => {
+const ChangeNameModal: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
@@ -58,6 +45,8 @@ const ChangeNameModal: ({
   // --------------- End state maintenance variables ------------------------
 
   const {t} = useTranslation(['administration', 'common']);
+
+  const {passwordUser} = useAuth();
 
   /**
    * Resets modal state values before closing the modal.
