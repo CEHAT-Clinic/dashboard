@@ -40,4 +40,34 @@ function handleReauthenticationWithPassword(
     });
 }
 
-export {handleReauthenticationWithPassword};
+/**
+ * Handles reauthentication with Google using a popup
+ * @param t - translation function
+ * @returns a promise of a string, where the string is either an error message for the user or the empty string if no error occurred
+ */
+function handleReauthenticationWithGoogle(t: TFunction): Promise<string> {
+  return firebaseAuth
+    .signInWithPopup(new firebase.auth.GoogleAuthProvider())
+    .then(() => '')
+    .catch(error => {
+      // Error codes from Firebase documentation
+      switch (error.code) {
+        case 'auth/cancelled-popup-request': {
+          // No error TODO: this is not finished
+          return '';
+        }
+        case 'auth/popup-closed-by-user': {
+          // No error
+          return '';
+        }
+        case 'auth/popup-blocked': {
+          return t('popUpsBlocked');
+        }
+        default: {
+          return t('common:error');
+        }
+      }
+    });
+}
+
+export {handleReauthenticationWithPassword, handleReauthenticationWithGoogle};

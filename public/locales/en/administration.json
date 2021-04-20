@@ -24,7 +24,11 @@
     "passwordModalSuccess": {
         "change": "Password updated",
         "forgot": "Password reset email sent"
-    }, 
+    },
+    "addPassword": {
+        "heading": "Add Password",
+        "explanation": "If you add a password to your account, you can use your email and password or Google to sign in."
+    },
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",

@@ -8,6 +8,7 @@ import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {AccountDeleted} from '../AccountDeleted';
+import {AddPasswordModal} from './AddPassword';
 
 /**
  * Component for a user to manage their own account information.
@@ -98,6 +99,7 @@ const ManageAccount: () => JSX.Element = () => {
           </Heading>
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
+          {googleUser && !passwordUser && <AddPasswordModal />}
           <Divider marginY={2} />
           <Text color="red.500">{error}</Text>
           <Button as="a" href="/admin" margin={1}>
