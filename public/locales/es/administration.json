@@ -127,5 +127,10 @@
         "heading": "Borrar usario",
         "error": "No se puede marcar al usario para su supresión",
         "message": "Una vez que confirmes la supresión del usario, esta acción no se puede deshacer. El usuario se borrará en las próximas 24 horas. Hasta entonces, el usuario aún podrá iniciar sesión en su cuenta."
+    },
+    "reauthenticate": {
+        "heading": "Vuelva a ingresar tus credenciales",
+        "explanation": "Es necesario volver a autenticar tus credenciales antes de actualizar tu cuenta. ",
+        "choose": "Puede optar por volver a autenticarte utilizando tu cuenta de Google o tu contraseña."
     }
 }
