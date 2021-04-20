@@ -1,5 +1,14 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Link,
+  Image,
+  Grid,
+  VStack,
+} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import cehatLogo from '../media/CEHATLogo.png';
@@ -149,42 +158,40 @@ const About: React.FC = () => {
         <Heading fontFamily="Merriweather Sans">
           {t('purpleAir.heading')}
         </Heading>
-        <Text paddingY={1}> {t('purpleAir.part1a')}</Text>
-        <Link
-          color="#32bfd1"
-          href={t('purpleAir.purpleAirLink.link')}
-          isExternal
-        >
-          {/* TODO: make this link inline */}
-          {t('purpleAir.purpleAirLink.text')}
-          <ExternalLinkIcon />
-        </Link>
-        <Text paddingY={1}> {t('purpleAir.part1b')}</Text>
-        {/* TODO: make the link inline */}
-        <Link
-          color="#32bfd1"
-          href={t('purpleAir.healthInfoLink.link')}
-          isExternal
-        >
-          {t('purpleAir.healthInfoLink.text')}
-        </Link>
-        <Flex
-          width="500px"
-          direction="column"
-          justifySelf="center"
-          justifyContent="center"
-          boxShadow="lg"
-          borderRadius={8}
-        >
-          {/* TODO: Fix the image formatting */}
-          <Image
-            src={purpleAirSensor}
-            alt={t('purpleAir.image.alt')}
-            maxWidth="420px"
-          />
-          <Text>{t('purpleAir.image.caption')}</Text>
+        <Text paddingY={1}>
+          {t('purpleAir.part1a')}
+          <Link color={LinkColor} href="https://www.purpleair.com/" isExternal>
+            {t('purpleAir.purpleAirLink')}
+            <ExternalLinkIcon />
+          </Link>
+          {t('purpleAir.part1b')}
+          <Link color={LinkColor} href="/health" isExternal>
+            {t('purpleAir.healthInfoLink')}
+          </Link>
+        </Text>
+        <Flex direction="column" align="center">
+          <Box boxShadow="lg" padding={3} borderRadius={2}>
+            <VStack>
+              <Image
+                src={purpleAirSensor}
+                alt={t('purpleAir.image.alt')}
+                minBlockSize="200px"
+              />
+              <Text textAlign="center">
+                {t('purpleAir.image.caption')}
+                <Link
+                  color={LinkColor}
+                  href="https://www2.purpleair.com/products/purpleair-pa-ii"
+                  isExternal
+                >
+                  {t('purpleAir.purpleAirLink')}
+                  <ExternalLinkIcon />
+                </Link>
+              </Text>
+            </VStack>
+          </Box>
         </Flex>
-        <Text paddingY={1}> {t('purpleAir.part2')}</Text>
+        <Text paddingY={1}>{t('purpleAir.part2')}</Text>
       </Box>
       <Box
         padding={2}
