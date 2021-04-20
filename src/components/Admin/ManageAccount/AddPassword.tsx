@@ -16,29 +16,14 @@ import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {Reauthentication} from './Reauthentication';
-
-/**
- * Props for AddPasswordModal component.
- * - `passwordUser` - if the user uses a password for authentication
- * - `googleUser` - if the user's account is connected to Google
- */
-interface AddPasswordModalProps {
-  passwordUser: boolean;
-  googleUser: boolean;
-}
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Component for adding a password to a Google based user's account. Includes
  * a button that opens modal to add a password. This component is only for users
  * who are not password-based users.
  */
-const AddPasswordModal: ({
-  passwordUser,
-  googleUser,
-}: AddPasswordModalProps) => JSX.Element = ({
-  passwordUser,
-  googleUser,
-}: AddPasswordModalProps) => {
+const AddPasswordModal: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
@@ -63,6 +48,7 @@ const AddPasswordModal: ({
   // --------------- End state maintenance variables ------------------------
 
   const {t} = useTranslation(['administration', 'common']);
+  const {googleUser, passwordUser, setPasswordUser} = useAuth();
 
   const cannotSubmitPassword =
     newPassword === '' || error !== '' || !reauthenticated;
@@ -124,7 +110,12 @@ const AddPasswordModal: ({
       return Promise.resolve();
     } else {
       return addPassword()
-        .then(handleClose)
+        .then(() => {
+          resetErrors();
+          resetFormFields();
+          setIsLoading(false);
+        })
+        .then(() => setPasswordUser(true))
         .catch(error => {
           // Error codes from Firebase documentation
           switch (error.code) {

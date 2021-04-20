@@ -72,11 +72,11 @@ const Reauthentication: ({
   /**
    * Handles reauthentication of a password-based user before account update
    * operations.
-   * @param event - click button event
+   * @param event - submit form event
    * @returns error message or empty string if no error
    */
   function handleReauthenticationWithPassword(
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+    event: React.FormEvent<HTMLFormElement>
   ): Promise<void> {
     event.preventDefault();
     setPasswordIsLoading(true);
@@ -155,34 +155,33 @@ const Reauthentication: ({
           )}
           {passwordUser && (
             <Box>
-              <PasswordFormInput
-                value={password}
-                showPassword={passwordVisible}
-                handlePasswordVisibility={() => {
-                  setPasswordVisible(!passwordVisible);
-                }}
-                handlePasswordChange={event => {
-                  setPassword(event.target.value);
-                  setPasswordError('');
-                }}
-                error={passwordError}
-              />
-              <Center>
-                <Button
-                  onClick={handleReauthenticationWithPassword}
-                  colorScheme="teal"
-                >
-                  {passwordIsLoading ? (
-                    <CircularProgress
-                      isIndeterminate
-                      size="24px"
-                      color="teal"
-                    />
-                  ) : (
-                    t('common:submit')
-                  )}
-                </Button>
-              </Center>
+              <form onSubmit={handleReauthenticationWithPassword}>
+                <PasswordFormInput
+                  value={password}
+                  showPassword={passwordVisible}
+                  handlePasswordVisibility={() => {
+                    setPasswordVisible(!passwordVisible);
+                  }}
+                  handlePasswordChange={event => {
+                    setPassword(event.target.value);
+                    setPasswordError('');
+                  }}
+                  error={passwordError}
+                />
+                <Center>
+                  <Button type="submit" colorScheme="teal">
+                    {passwordIsLoading ? (
+                      <CircularProgress
+                        isIndeterminate
+                        size="24px"
+                        color="teal"
+                      />
+                    ) : (
+                      t('common:submit')
+                    )}
+                  </Button>
+                </Center>
+              </form>
             </Box>
           )}
           {passwordUser && googleUser && <Divider marginY={4} />}
