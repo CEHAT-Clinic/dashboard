@@ -22,31 +22,14 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
+import {useAuth} from '../../../contexts/AuthContext';
 import {Reauthentication} from './Reauthentication';
-
-/**
- * Props for ChangeNameModal component.
- * - `passwordUser` - if the user uses a password for authentication
- * - `googleUser` - if the user's account is connected to Google
- */
-interface ChangeNameModalProps {
-  passwordUser: boolean;
-  googleUser: boolean;
-}
 
 /**
  * Component for changing an authenticated user's name. Includes button that
  * opens modal to update (or set for the first time) the user's name.
- * @param passwordUser - if the user uses a password for authentication
- * @param googleUser - if the user's account is connected to Google
  */
-const ChangeNameModal: ({
-  passwordUser,
-  googleUser,
-}: ChangeNameModalProps) => JSX.Element = ({
-  passwordUser,
-  googleUser,
-}: ChangeNameModalProps) => {
+const ChangeNameModal: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
@@ -60,6 +43,8 @@ const ChangeNameModal: ({
   const readyToSubmit = reauthenticated && error === '' && newName !== '';
 
   const {t} = useTranslation(['administration', 'common']);
+
+  const {passwordUser, googleUser} = useAuth();
 
   /**
    * Resets modal state values before closing the modal.
