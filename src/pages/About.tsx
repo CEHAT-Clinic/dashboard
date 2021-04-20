@@ -1,10 +1,20 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Link,
+  Image,
+  Grid,
+  VStack,
+} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import cehatLogo from '../media/CEHATLogo.png';
 import {LinkColor} from '../components/Util/Colors';
 import {Section} from '../components/Static/Section';
+import purpleAirSensor from '../media/PurpleAir-sensor-installation.jpg';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
@@ -65,6 +75,9 @@ const About: React.FC = () => {
               gap={1}
               textAlign="center"
             >
+              <Link gridRow={1} href="#purpleAir" color={LinkColor}>
+                {t('purpleAir.heading')}
+              </Link>
               <Link gridRow={1} href="#cehat" color={LinkColor}>
                 {t('cehat.heading')}
               </Link>
@@ -120,6 +133,46 @@ const About: React.FC = () => {
             {t('involved.part3')}
           </Text>
         </Section>
+        <Section id="purpleAir" title={t('purpleAir.heading')}>
+          <Text paddingY={1}>
+            {t('purpleAir.part1a')}
+            <Link
+              color={LinkColor}
+              href="https://www.purpleair.com/"
+              isExternal
+            >
+              {t('purpleAir.purpleAirLink')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('purpleAir.part1b')}
+            <Link color={LinkColor} href="/health" isExternal>
+              {t('purpleAir.healthInfoLink')}
+            </Link>
+          </Text>
+          <Flex direction="column" align="center">
+            <Box boxShadow="md" padding={3} borderRadius={2}>
+              <VStack>
+                <Image
+                  src={purpleAirSensor}
+                  alt={t('purpleAir.image.alt')}
+                  minBlockSize="200px"
+                />
+                <Text textAlign="center">
+                  {t('purpleAir.image.caption')}
+                  <Link
+                    color={LinkColor}
+                    href="https://www2.purpleair.com/products/purpleair-pa-ii"
+                    isExternal
+                  >
+                    {t('purpleAir.purpleAirLink')}
+                    <ExternalLinkIcon />
+                  </Link>
+                </Text>
+              </VStack>
+            </Box>
+          </Flex>
+          <Text paddingY={1}>{t('purpleAir.part2')}</Text>
+        </Section>
         <Section id="sensorsDown" title={t('sensorsDown.heading')}>
           <Text paddingY={1}> {t('sensorsDown.part1')} </Text>
           <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
@@ -148,7 +201,9 @@ const About: React.FC = () => {
             {t('admin.purpose')}
           </Text>
         </Section>
-        <Image src={cehatLogo} alt="Logo"></Image>
+        <Flex justifyContent="center">
+          <Image src={cehatLogo} alt="Logo"></Image>
+        </Flex>
       </Box>
     </Flex>
   );
