@@ -20,4 +20,12 @@ interface ToggleUserPopoverProps {
   setError: React.Dispatch<React.SetStateAction<string>>;
 }
 
-export type {User, ToggleUserPopoverProps};
+/**
+ * Interface for DeleteUserPopover used for type safety
+ * - `user` - the user to delete
+ */
+interface DeleteUserPopoverProps {
+  user: User;
+}
+
+export type {User, ToggleUserPopoverProps, DeleteUserPopoverProps};

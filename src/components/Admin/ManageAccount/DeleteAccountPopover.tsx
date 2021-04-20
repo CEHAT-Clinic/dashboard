@@ -96,6 +96,7 @@ const DeleteAccountPopover: ({
           userDocs: firebase.firestore.FieldValue.arrayUnion(
             firebaseAuth.currentUser.uid
           ),
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
         })
         .catch(() => setError(t('deleteAccount.error')));
     } else {
