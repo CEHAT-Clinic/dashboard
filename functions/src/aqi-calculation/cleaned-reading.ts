@@ -1,4 +1,5 @@
 import {Pm25BufferElement, BufferStatus} from '../buffer';
+import {InvalidAqiError} from './invalid-aqi-errors';
 
 /**
  * Basic sensor reading used in data cleaning
@@ -39,7 +40,7 @@ function averageReadings(readings: Pm25BufferElement[]): BasicReading {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is null
+ * @returns A tuple where the first value is a BasicReading array of length 12 with the average PM2.5 value for each of the last 12 hours. If an hour lacks enough readings, then the entry for that hour is null. The second value of the tuple is an array of errors detected in the most recent three hours of readings.
  *
  * @remarks
  * In the event that a sensor is moved, this function will report meaningless data for
@@ -65,10 +66,16 @@ function getHourlyAverages(
   status: BufferStatus,
   bufferIndex: number,
   buffer: Pm25BufferElement[]
-): (BasicReading | null)[] {
+): [(BasicReading | null)[], InvalidAqiError[]] {
   const LOOKBACK_PERIOD_HOURS = 12;
   const ELEMENTS_PER_HOUR = 30;
-  const averages = new Array<BasicReading | null>(LOOKBACK_PERIOD_HOURS);
+  const averages: (BasicReading | null)[] = new Array<BasicReading | null>(
+    LOOKBACK_PERIOD_HOURS
+  );
+
+  // Initialize the invalid AQI errors as a set to avoid duplicate errors if
+  // multiple hours have errors
+  const invalidAqiErrors: Set<InvalidAqiError> = new Set<InvalidAqiError>();
 
   // If we have the relevant fields:
   if (status === BufferStatus.Exists && buffer && bufferIndex) {
@@ -127,24 +134,41 @@ function getHourlyAverages(
       // https://cfpub.epa.gov/si/si_public_file_download.cfm?p_download_id=540979&Lab=CEMM
       // Expressed this way to avoid imprecision of floating point arithmetic.
       const MEASUREMENT_COUNT_THRESHOLD = 23;
+      const THREE_HOURS = 3;
       if (validReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
         averages[hoursAgo] = averageReadings(validReadings);
       } else if (nonNullReadings.length >= MEASUREMENT_COUNT_THRESHOLD) {
         // This case means that meanPercentThreshold was the final straw to make
-        // this hour lack enough valid readings
+        // this hour lack enough valid readings, since there were enough non-null
+        // readings but not enough readings with a low enough mean percent difference.
         averages[hoursAgo] = null;
-        // TODO: write invalid reason to sensor doc, or propagate
+
+        // We only propagate the error if the error occurred in the most recent
+        // three hours, since any null hour that occurred more than 3 hours ago
+        // can safely be discarded without affecting the validity of the AQI.
+        if (hoursAgo < THREE_HOURS) {
+          invalidAqiErrors.add(InvalidAqiError.NotEnoughRecentValidReadings);
+        }
       } else {
         // In this case, not enough readings were received from PurpleAir
         averages[hoursAgo] = null;
-        // TODO: write invalid reason to sensor doc, or propagate
+
+        // We only propagate the error if the error occurred in the most recent
+        // three hours, since any null hour that occurred more than 3 hours ago
+        // can safely be discarded without affecting the validity of the AQI.
+        if (hoursAgo < THREE_HOURS) {
+          invalidAqiErrors.add(InvalidAqiError.NotEnoughNewReadings);
+        }
       }
     }
   } else {
     // If no buffer exists, there are no valid readings for any hour
     averages.fill(null);
+
+    // If there is no buffer, then there's not enough new readings
+    invalidAqiErrors.add(InvalidAqiError.NotEnoughNewReadings);
   }
-  return averages;
+  return [averages, Array.from(invalidAqiErrors)];
 }
 
 /**
@@ -156,7 +180,9 @@ function getHourlyAverages(
  *
  */
 function cleanAverages(averages: (BasicReading | null)[]): number[] {
-  const cleanedAverages = new Array<number>(averages.length).fill(Number.NaN);
+  const cleanedAverages: number[] = new Array<number>(averages.length).fill(
+    Number.NaN
+  );
   for (let i = 0; i < cleanedAverages.length; i++) {
     const reading = averages[i];
     // If less than 23 data points were available for that hour, the reading
@@ -178,22 +204,23 @@ function cleanAverages(averages: (BasicReading | null)[]): number[] {
  * @param status - the status of the pm25Buffer (exists, does not exist, in progress)
  * @param bufferIndex - the next index to write to in the buffer
  * @param buffer - the pm25Buffer with the last 12 hours of data
- * @returns an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid
+ * @returns a tuple with an array of numbers representing the corrected PM2.5 values pursuant to the EPA formula, `NaN` if the readings for an hour are not valid, and an array of errors detected in the most recent three hours of readings.
  */
 function getCleanedAverages(
   status: BufferStatus,
   bufferIndex: number,
   buffer: Pm25BufferElement[]
-): number[] {
+): [number[], InvalidAqiError[]] {
   // Get hourly averages from the PM2.5 Buffer, and mark any hours without enough
   // valid readings as invalid
-  const hourlyAverages: (BasicReading | null)[] = getHourlyAverages(
+  const [hourlyAverages, invalidAqiErrors] = getHourlyAverages(
     status,
     bufferIndex,
     buffer
   );
   // Apply EPA correction factor to the PurpleAir readings
-  return cleanAverages(hourlyAverages);
+  const cleanedAverages: number[] = cleanAverages(hourlyAverages);
+  return [cleanedAverages, invalidAqiErrors];
 }
 
 /**

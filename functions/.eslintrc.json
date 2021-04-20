@@ -92,7 +92,10 @@
           "Breakpoint",
           "purpleair",
           "Recurse",
-          "readonly"
+          "readonly",
+          "outlier",
+          "uid",
+          "Ds"
         ]
       }
     ]

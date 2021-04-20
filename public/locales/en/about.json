@@ -7,7 +7,10 @@
             "link": "https://www.cdc.gov/nceh/ehs/ceha/pace_eh.htm",
             "text": "Protocol for Assessing Community Excellence in Environmental Health assessment"
         },
-        "part2": " to evaluate environmental health and justice. Other projects have included educational workshops, collaborating with schools on an air quality flag program, and working on Assembly Bill 617 measures to reduce emissions in and around South Gate."
+        "part2": " to evaluate environmental health and justice. Other projects have included educational workshops, collaborating with schools on an air quality flag program, and working on ",
+        "ab617": "Assembly Bill 617",
+        "part3": " measures to reduce emissions in and around South Gate."
+    
     },
     "involved": {
         "heading": "Get Involved",
@@ -32,6 +35,8 @@
     "acknowledge": {
         "heading": "Acknowledgements",
         "clinic": "This website was created in partnership with the Harvey Mudd College Clinic Program, a capstone experience for students at The Claremont Colleges in which teams of 4-5 students work together to solve technical problems for companies and organizations.",
+        "githubPart1": "If you're interested in how this website was made, check out our ",
+        "githubPart2": " with the source code.",
         "grant": "The sensors for this project were made possible by a grant from the UCLA Kaiser Permanente Center for Health Equity and the UCLA Jonsson Comprehensive Cancer Center."
     },
     "admin": {
@@ -41,5 +46,17 @@
             "text": "Visit the administrative pane"
         },
         "purpose": " to perform administrator functions."
+    },
+    "purpleAir": {
+        "heading": "PurpleAir Sensors",
+        "part1a": "This website uses data from air quality sensors manufactured by ",
+        "purpleAirLink": "PurpleAir",
+        "part1b": ". PurpleAir sensors are an affordable air quality sensor option, costing $249 as of April 2021. In contrast, higher quality sensors can cost upwards of $50,000. PurpleAir sensors can be installed anywhere with a power source and a WiFi connection, and they report particulate matter size 1, 2.5, and 10. For more information about particulate matter, check out the ",
+        "healthInfoLink": "Health Information page.",
+        "image": {
+            "caption": "Example of a PurpleAir sensor installation. Image from ",
+            "alt": "PurpleAir sensor installation"
+        },
+        "part2": "While not as high quality as more expensive sensors, PurpleAir sensors cheaply and easily provide data that communities like South Gate can use. These sensors allow the CEHAT to get air quality data across South Gate despite the lack of EPA regulatory sensors in the city. If you are interested in hosting a sensor at your home or workplace, check out the Get Involved section on this page."
     }
 }

@@ -1,6 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Note that request.resource.data contains the incoming data update while
+    // resource.data is a map of all of the fields and values stored in the
+    // document.
+
+    // Check if a user is signed in
     function isSignedIn() {
       return request.auth != null;
     }
@@ -52,13 +57,55 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Used for scheduled data deletion
-    match /deletion/{docs} {
-      // Admins can read the document for the purpose of merging data
-      allow read: if isAdmin();
+    // Used for data deletion
+    match /deletion {
+      // Used for deletion of sensor readings
+      match /readings {
+        // Only admins and the Cloud Functions are allowed to modify readings
+        allow read, write: if isAdmin();
+      }
 
-      // Admins can write to the todo document, which tells the backend what to delete
-      allow write: if isAdmin();
+      // Used for deletion of user data
+      match /users {
+
+        // Check that a field is not being updated.
+        function notUpdated(newData, oldData, field) {
+          return !(field in newData) || oldData[field] == newData[field]
+        }
+
+        // Verify that (1) user is signed in, (2) the only modified field is
+        // userDocs, (3) the userDocs array is increased in size by only 1,
+        // and (4) the added item from the userDocs array is the user's uid.
+        function addUidToUserDocs(newData, oldData) {
+          let firebaseUsersNotUpdated = notUpdated(newData, oldData, 'firebaseUsers');
+          let oneItemAdded = newData['userDocs'].size() == oldData['userDocs'].size() + 1;
+          let addedUid = newData['userDocs'].removeAll(oldData['userDocs'])[0] == request.auth.uid;
+          return isSignedIn()
+                  && firebaseUsersNotUpdated
+                  && oneItemAdded
+                  && addedUid;
+        }
+
+        // Verify that (1) user is signed in, (2) the only modified field is
+        // firebaseUsers, (3) the firebaseUsers array is reduced in size by only 1,
+        // and (4) the removed item from the firebaseUsers array is the user's uid.
+        function removeUidFromFirebaseUsers(newData, oldData) {
+          let userDocsNotUpdated = notUpdated(newData, oldData, 'userDocs');
+          let oneItemRemoved = newData['firebaseUsers'].size() == oldData['firebaseUsers'].size() - 1;
+          let removedUid = oldData['firebaseUsers'].removeAll(newData['firebaseUsers'])[0] == request.auth.uid;
+          return isSignedIn()
+                  && userDocsNotUpdated
+                  && oneItemRemoved
+                  && removedUid;
+        }
+
+        // Admins can mark an account for deletion. General users can only mark
+        // their own account for deletion.
+        allow write: if isAdmin() || addUidToUserDocs(request.resource.data, resource.data) || removeUidFromFirebaseUsers(request.resource.data, resource.data);
+
+        // Only the Cloud Functions can read the users document
+        allow read: if false;
+      }
     }
   }
 }

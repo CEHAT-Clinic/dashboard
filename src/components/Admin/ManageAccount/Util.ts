@@ -1,5 +1,5 @@
 import {TFunction} from 'i18next';
-import firebase, {firebaseAuth} from '../../../firebase';
+import firebase, {firebaseAuth} from '../../../firebase/firebase';
 
 /**
  * Handles reauthentication of a password-based user before account update operations.

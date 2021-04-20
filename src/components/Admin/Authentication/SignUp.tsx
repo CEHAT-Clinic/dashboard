@@ -5,10 +5,11 @@ import {
   EmailFormInput,
   PasswordFormInput,
 } from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase';
+import {firebaseAuth} from '../../../firebase/firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import {useTranslation} from 'react-i18next';
 import {signInWithGoogle} from './Util';
+import {LinkColor} from '../../Util/Colors';
 
 /**
  * Component to sign up.
@@ -142,7 +143,7 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       <Divider my={4} orientation="horizontal" />
       <Text fontSize="md">
         {t('haveAccount.text')}
-        <Link color="teal.500" onClick={() => setIsNewUser(false)}>
+        <Link color={LinkColor} onClick={() => setIsNewUser(false)}>
           {t('haveAccount.link')}
         </Link>
       </Text>
