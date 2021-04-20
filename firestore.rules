@@ -1,6 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Note that request.resource.data contains the incoming data update while
+    // resource.data is a map of all of the fields and values stored in the
+    // document.
+
+    // Check if a user is signed in
     function isSignedIn() {
       return request.auth != null;
     }
@@ -90,7 +95,7 @@ service cloud.firestore {
         // their own account for deletion.
         allow write: if isAdmin() || addUidToUserDocs(request.resource.data, resource.data) || removeUidFromFirebaseUsers(request.resource.data, resource.data);
 
-        // Only the Cloud Functions can read the deletion document
+        // Only the Cloud Functions can read the users document
         allow read: if false;
     }
   }
