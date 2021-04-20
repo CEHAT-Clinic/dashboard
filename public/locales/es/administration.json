@@ -122,5 +122,10 @@
         "error": "No se pudo finalizar el borrado de cuenta. Por favor, inténtalo de nuevo más tarde.",
         "noAdminDelete": "Debes eliminarte como usuario administrador antes de eliminar tu cuenta.",
         "confirmQuestion": "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es permanente."
+    },
+    "deleteUser": {
+        "heading": "Borrar usario",
+        "error": "No se puede marcar al usario para su supresión",
+        "message": "Una vez que confirmes la supresión del usario, esta acción no se puede deshacer. El usuario se borrará en las próximas 24 horas. Hasta entonces, el usuario aún podrá iniciar sesión en su cuenta."
     }
 }
