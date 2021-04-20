@@ -27,6 +27,9 @@
     },
     "sensorsDown": {
         "heading": "¿El sensor no muestra el AQI?",
+        "part1a": "Nuestro sitio web utiliza ",
+        "part1Link": "el algoritmo EPA NowCast",
+        "part1b": " para calcular los valores de AQI en tiempo real utilizando datos de lose sensores PurpleAir que tenemos en South Gate. Seguimos el algoritmo de la EPA para garantizar que nuestros sensores sean precisos. ",
         "part1": "Hay que dar muchos pasos para calcular el AQI usando la información reportada por los sensores de PurpleAir que usamos en South Gate. La EPA tiene un esquema de este algoritmo y nosotros seguimos sus pautas para garantizar que nuestros sensores sean precisos.",
         "part2": "Los sensores PurpleAir nos caen bien porque son económicos y relativamente precisos considerando su precio. Dicho esto, no son tan confiables como algunos sensores más caros, lo que significa que a veces los valores que producen los sensores son insuficientes para calcular el AQI. Esto podría ser muy temporal (una cuestión de minutos u horas) o podría durar más tiempo. Si un sensor ha estado inactivo durante mucho tiempo, probablemente significa que el sensor ya no está conectado al Internet o que tiene un problema de hardware más grave.",
         "part3": "Si un sensor en tu área ha estado inactivo durante mucho tiempo, por favor contáctanos y nos comunicaremos con el anfitrión del sensor para tratar de resolver el problema."
