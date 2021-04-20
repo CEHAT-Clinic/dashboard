@@ -1,9 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Heading,
+  Text,
+  Link,
+  Image,
+  Grid,
+  VStack,
+} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import cehatLogo from '../media/CEHATLogo.png';
 import {LinkColor} from '../components/Util/Colors';
+import {Section} from '../components/Static/Section';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
@@ -43,156 +53,107 @@ const About: React.FC = () => {
 
   const {t} = useTranslation(['about', 'common']);
   return (
-    <Flex width="full" align="center" direction="column" padding={8}>
-      <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
-        {t('pageHeading')}
-      </Heading>
-      {isMobile && (
-        <Box>
-          <Text textAlign="center" fontStyle="italic">
-            {t('common:jumpTo')}
+    <Flex justifyContent="center" alignContent="center">
+      <VStack direction="column" padding={2} width="full" maxWidth="1000px">
+        <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
+          {t('pageHeading')}
+        </Heading>
+        {isMobile && (
+          <Box>
+            <Text textAlign="center" fontStyle="italic">
+              {t('common:jumpTo')}
+            </Text>
+            <Grid
+              width="100%"
+              templateColumns="repeat(2,1fr)"
+              gap={1}
+              textAlign="center"
+            >
+              <Link gridRow={1} href="#cehat" color={LinkColor}>
+                {t('cehat.heading')}
+              </Link>
+              <Link gridRow={2} href="#involved" color={LinkColor}>
+                {t('involved.heading')}
+              </Link>
+              <Link gridRow={3} href="#sensorsDown" color={LinkColor}>
+                {t('sensorsDown.heading')}
+              </Link>
+              <Link gridRow={1} href="#acknowledge" color={LinkColor}>
+                {t('acknowledge.heading')}
+              </Link>
+              <Link gridRow={2} href="#admin" color={LinkColor}>
+                {t('admin.heading')}
+              </Link>
+            </Grid>
+          </Box>
+        )}
+        <Section id="cehat" title={t('cehat.heading')}>
+          <Text>
+            {t('cehat.part1')}
+            <Link color={LinkColor} href={t('cehat.pace-eh.link')} isExternal>
+              {t('cehat.pace-eh.text')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('cehat.part2')}
+            <Link
+              color={LinkColor}
+              href="http://www.aqmd.gov/nav/about/initiatives/environmental-justice/ab617-134"
+              isExternal
+            >
+              {t('cehat.ab617')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('cehat.part3')}
           </Text>
-          <Grid
-            width="100%"
-            templateColumns="repeat(2,1fr)"
-            gap={1}
-            textAlign="center"
-          >
-            <Link gridRow={1} href="#cehat" color={LinkColor}>
-              {t('cehat.heading')}
+        </Section>
+        <Section id="involved" title={t('involved.heading')}>
+          <Text>
+            {t('involved.part1')}
+            <Link color={LinkColor} href={t('involved.email.link')}>
+              {t('involved.email.text')}
             </Link>
-            <Link gridRow={2} href="#involved" color={LinkColor}>
-              {t('involved.heading')}
+            {t('involved.part2')}
+            <Link
+              color={LinkColor}
+              href={t('involved.instagram.link')}
+              isExternal
+            >
+              {t('involved.instagram.text')}
+              <ExternalLinkIcon />
             </Link>
-            <Link gridRow={3} href="#sensorsDown" color={LinkColor}>
-              {t('sensorsDown.heading')}
+            {t('involved.part3')}
+          </Text>
+        </Section>
+        <Section id="sensorsDown" title={t('sensorsDown.heading')}>
+          <Text paddingY={1}> {t('sensorsDown.part1')} </Text>
+          <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
+          <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
+        </Section>
+        <Section id="acknowledge" title={t('acknowledge.heading')}>
+          <Text paddingY={1}>
+            {t('acknowledge.clinic')} {t('acknowledge.githubPart1')}
+            <Link
+              color={LinkColor}
+              href="https://github.com/CEHAT-Clinic/dashboard"
+              isExternal
+            >
+              GitHub
+              <ExternalLinkIcon />
             </Link>
-            <Link gridRow={1} href="#acknowledge" color={LinkColor}>
-              {t('acknowledge.heading')}
+            {t('acknowledge.githubPart2')}
+          </Text>
+          <Text paddingY={1}>{t('acknowledge.grant')}</Text>
+        </Section>
+        <Section id="admin" title={t('admin.heading')}>
+          <Text>
+            <Link color={LinkColor} href={t('admin.action.link')}>
+              {t('admin.action.text')}
             </Link>
-            <Link gridRow={2} href="#admin" color={LinkColor}>
-              {t('admin.heading')}
-            </Link>
-          </Grid>
-        </Box>
-      )}
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="cehat"
-      >
-        <Heading fontFamily="Merriweather Sans">{t('cehat.heading')}</Heading>
-        <Text>
-          {t('cehat.part1')}
-          <Link color={LinkColor} href={t('cehat.pace-eh.link')} isExternal>
-            {t('cehat.pace-eh.text')}
-            <ExternalLinkIcon />
-          </Link>
-          {t('cehat.part2')}
-          <Link
-            color={LinkColor}
-            href="http://www.aqmd.gov/nav/about/initiatives/environmental-justice/ab617-134"
-            isExternal
-          >
-            {t('cehat.ab617')}
-            <ExternalLinkIcon />
-          </Link>
-          {t('cehat.part3')}
-        </Text>
-      </Box>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="involved"
-      >
-        <Heading fontFamily="Merriweather Sans">
-          {t('involved.heading')}
-        </Heading>
-        <Text>
-          {t('involved.part1')}
-          <Link color={LinkColor} href={t('involved.email.link')}>
-            {t('involved.email.text')}
-          </Link>
-          {t('involved.part2')}
-          <Link
-            color={LinkColor}
-            href={t('involved.instagram.link')}
-            isExternal
-          >
-            {t('involved.instagram.text')}
-            <ExternalLinkIcon />
-          </Link>
-          {t('involved.part3')}
-        </Text>
-      </Box>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="sensorsDown"
-      >
-        <Heading fontFamily="Merriweather Sans">
-          {t('sensorsDown.heading')}
-        </Heading>
-        <Text paddingY={1}> {t('sensorsDown.part1')} </Text>
-        <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
-        <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
-      </Box>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="acknowledge"
-      >
-        <Heading fontFamily="Merriweather Sans">
-          {t('acknowledge.heading')}
-        </Heading>
-        <Text paddingY={1}>
-          {t('acknowledge.clinic')} {t('acknowledge.githubPart1')}
-          <Link
-            color={LinkColor}
-            href="https://github.com/CEHAT-Clinic/dashboard"
-            isExternal
-          >
-            GitHub
-            <ExternalLinkIcon />
-          </Link>
-          {t('acknowledge.githubPart2')}
-        </Text>
-        <Text paddingY={1}>{t('acknowledge.grant')}</Text>
-      </Box>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="admin"
-      >
-        <Heading fontFamily="Merriweather Sans">{t('admin.heading')}</Heading>
-        <Text>
-          <Link color={LinkColor} href={t('admin.action.link')}>
-            {t('admin.action.text')}
-          </Link>
-          {t('admin.purpose')}
-        </Text>
-      </Box>
-      <Image src={cehatLogo} alt="Logo"></Image>
+            {t('admin.purpose')}
+          </Text>
+        </Section>
+        <Image src={cehatLogo} alt="Logo"></Image>
+      </VStack>
     </Flex>
   );
 };

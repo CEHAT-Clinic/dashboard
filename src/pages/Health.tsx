@@ -10,12 +10,14 @@ import {
   Image,
   Flex,
   Grid,
+  VStack,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
-import AqiTable from '../components/Health/AqiTable';
+import AqiTable from '../components/Static/AqiTable';
 import pm25En from '../media/pm25-size-comparison-en.jpg';
 import pm25Es from '../media/pm25-size-comparison-es.jpg';
 import {LinkColor} from '../components/Util/Colors';
+import {Section} from '../components/Static/Section';
 
 const Health: React.FC = () => {
   const {t, i18n} = useTranslation(['health', 'common']);
@@ -55,86 +57,74 @@ const Health: React.FC = () => {
   // -----------------  End detect screen size ----------------- //
 
   return (
-    <Flex width="full" align="center" direction="column" padding={8}>
-      <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
-        {t('pageHeading')}
-      </Heading>
-      {isMobile && (
-        <Box>
-          <Text textAlign="center" fontStyle="italic">
-            {t('common:jumpTo')}
-          </Text>
-          <Grid
-            width="100%"
-            templateColumns="repeat(2,1fr)"
-            gap={1}
-            textAlign="center"
-          >
-            <Link gridRow={1} href="#pollution" color={LinkColor}>
-              {t('pollution.heading')}
-            </Link>
-            <Link gridRow={2} href="#aqi" color={LinkColor}>
-              {t('aqi.heading')}
-            </Link>
-            <Link gridRow={1} href="#protection" color={LinkColor}>
-              {t('protection.heading')}
-            </Link>
-            <Link gridRow={2} href="#references" color={LinkColor}>
-              {t('references.heading')}
-            </Link>
-          </Grid>
-        </Box>
-      )}
-      <Flex
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        direction="column"
-      >
-        <Heading fontFamily="Merriweather Sans">
-          {t('pollution.heading')}
+    <Flex justifyContent="center" alignContent="center">
+      <VStack direction="column" padding={2} width="full" maxWidth="1000px">
+        <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
+          {t('pageHeading')}
         </Heading>
-        <Text>{t('pollution.paragraph1')}</Text>
-        <Flex
-          padding={4}
-          margin={['2', 'auto', '2', 'auto']}
-          borderWidth={1}
-          borderRadius={8}
-          boxShadow="lg"
-          width={['100%', null, '525px', null]}
-          id="pollution"
-        >
-          <Flex direction="column" align="center">
-            <Image
-              src={i18n.language === 'en' ? pm25En : pm25Es}
-              alt={t('pollution.image.caption')}
-              maxWidth={['95%', null, '500px', null]}
-            />
-            <Text>
-              {t('pollution.image.caption')}
-              <Link
-                color={LinkColor}
-                href={t('pollution.image.source.link')}
-                isExternal
-              >
-                {t('pollution.image.source.text')}
-                <ExternalLinkIcon />
-              </Link>
+        {isMobile && (
+          <Box>
+            <Text textAlign="center" fontStyle="italic">
+              {t('common:jumpTo')}
             </Text>
+            <Grid
+              width="100%"
+              templateColumns="repeat(2,1fr)"
+              gap={1}
+              textAlign="center"
+            >
+              <Link gridRow={1} href="#pollution" color={LinkColor}>
+                {t('pollution.heading')}
+              </Link>
+              <Link gridRow={2} href="#aqi" color={LinkColor}>
+                {t('aqi.heading')}
+              </Link>
+              <Link gridRow={1} href="#protection" color={LinkColor}>
+                {t('protection.heading')}
+              </Link>
+              <Link gridRow={2} href="#references" color={LinkColor}>
+                {t('references.heading')}
+              </Link>
+            </Grid>
+          </Box>
+        )}
+        <Section id="pollution" title={t('pollution.heading')}>
+          <Text paddingY={1}>{t('pollution.paragraph1')}</Text>
+          <Flex direction="column" align="center" margin={2}>
+            <Box boxShadow="md" padding={3} borderRadius={2}>
+              <VStack>
+                <Image
+                  src={i18n.language === 'en' ? pm25En : pm25Es}
+                  alt={t('pollution.image.caption')}
+                  minBlockSize="200px"
+                  maxBlockSize="400px"
+                />
+                <Text textAlign="center">
+                  {t('pollution.image.caption')}
+                  <Link
+                    color={LinkColor}
+                    href={t('pollution.image.source.link')}
+                    isExternal
+                  >
+                    {t('pollution.image.source.text')}
+                    <ExternalLinkIcon />
+                  </Link>
+                </Text>
+              </VStack>
+            </Box>
           </Flex>
-        </Flex>
-        <Text>
-          {t('pollution.paragraph2.part1')}{' '}
-          <Link color={LinkColor} href={t('references.health.link')} isExternal>
-            {t('pollution.paragraph2.link')} <ExternalLinkIcon />
-          </Link>
-          {t('pollution.paragraph2.part2')}
-        </Text>
-        <Box>
-          <UnorderedList paddingLeft={4}>
+          <Text paddingY={1}>
+            {t('pollution.paragraph2.part1')}{' '}
+            <Link
+              color={LinkColor}
+              href={t('references.health.link')}
+              isExternal
+            >
+              {t('pollution.paragraph2.link')} <ExternalLinkIcon />
+            </Link>
+            {t('pollution.paragraph2.part2')}
+          </Text>
+          <UnorderedList paddingLeft={4} paddingY={1}>
             <ListItem>{t('pollution.paragraph2.list.death')}</ListItem>
             <ListItem>{t('pollution.paragraph2.list.heartAttacks')}</ListItem>
             <ListItem>{t('pollution.paragraph2.list.arrhythmia')}</ListItem>
@@ -142,85 +132,66 @@ const Health: React.FC = () => {
             <ListItem>{t('pollution.paragraph2.list.lungs')}</ListItem>
             <ListItem>{t('pollution.paragraph2.list.symptoms')}</ListItem>
           </UnorderedList>
-          {t('pollution.paragraph2.part3')}
-        </Box>
-      </Flex>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="aqi"
-      >
-        <Heading fontFamily="Merriweather Sans">{t('aqi.heading')}</Heading>
-        <Text>{t('aqi.paragraph1')}</Text>
-        <Text>
-          {t('aqi.paragraph2.part1')}
-          <strong>{t('aqi.paragraph2.part2')}</strong>
-          {t('aqi.paragraph2.part3')}
-        </Text>
-        <AqiTable />
-      </Box>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="protection"
-      >
-        <Heading fontFamily="Merriweather Sans">
-          {t('protection.heading')}
-        </Heading>
-        <Text>{t('protection.paragraph1')}</Text>
-        <Text>{t('protection.paragraph2')}</Text>
-      </Box>
-      <Box
-        padding={2}
-        margin={2}
-        width="full"
-        borderWidth={1}
-        borderRadius={8}
-        boxShadow="lg"
-        id="references"
-      >
-        <Heading fontFamily="Merriweather Sans">
-          {t('references.heading')}
-        </Heading>
-        <UnorderedList paddingLeft={4}>
-          <ListItem>
-            <Link color={LinkColor} href={t('references.pm25.link')} isExternal>
-              {t('references.pm25.text')}
-              <ExternalLinkIcon />
-            </Link>
-          </ListItem>
-          <ListItem>
-            <Link
-              color={LinkColor}
-              href={t('references.health.link')}
-              isExternal
-            >
-              {t('references.health.text')}
-              <ExternalLinkIcon />
-            </Link>
-          </ListItem>
-          <ListItem>
-            <Link color={LinkColor} href={t('references.aqi.link')} isExternal>
-              {t('references.aqi.text')}
-              <ExternalLinkIcon />
-            </Link>
-          </ListItem>
-          <ListItem>
-            <Link color={LinkColor} href={t('references.fire.link')} isExternal>
-              {t('references.fire.text')}
-              <ExternalLinkIcon />
-            </Link>
-          </ListItem>
-        </UnorderedList>
-      </Box>
+          <Text paddingY={1}>{t('pollution.paragraph2.part3')}</Text>
+        </Section>
+        <Section title={t('aqi.heading')} id="aqi">
+          <Text paddingY={1}>{t('aqi.paragraph1')}</Text>
+          <Text paddingY={1}>
+            {t('aqi.paragraph2.part1')}
+            <strong>{t('aqi.paragraph2.part2')}</strong>
+            {t('aqi.paragraph2.part3')}
+          </Text>
+          <AqiTable />
+        </Section>
+        <Section title={t('protection.heading')} id="protection">
+          <Text paddingY={1}>{t('protection.paragraph1')}</Text>
+          <Text paddingY={1}>{t('protection.paragraph2')}</Text>
+        </Section>
+        <Section title={t('references.heading')} id="references">
+          <UnorderedList paddingLeft={4}>
+            <ListItem>
+              <Link
+                color={LinkColor}
+                href={t('references.pm25.link')}
+                isExternal
+              >
+                {t('references.pm25.text')}
+                <ExternalLinkIcon />
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link
+                color={LinkColor}
+                href={t('references.health.link')}
+                isExternal
+              >
+                {t('references.health.text')}
+                <ExternalLinkIcon />
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link
+                color={LinkColor}
+                href={t('references.aqi.link')}
+                isExternal
+              >
+                {t('references.aqi.text')}
+                <ExternalLinkIcon />
+              </Link>
+            </ListItem>
+            <ListItem>
+              <Link
+                color={LinkColor}
+                href={t('references.fire.link')}
+                isExternal
+              >
+                {t('references.fire.text')}
+                <ExternalLinkIcon />
+              </Link>
+            </ListItem>
+          </UnorderedList>
+        </Section>
+      </VStack>
     </Flex>
   );
 };
