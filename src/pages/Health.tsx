@@ -57,9 +57,14 @@ const Health: React.FC = () => {
   // -----------------  End detect screen size ----------------- //
 
   return (
-    <Flex justifyContent="center" alignContent="center">
-      <VStack direction="column" padding={2} width="full" maxWidth="1000px">
-        <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
+    <Flex justifyContent="center" alignContent="center" padding={2}>
+      <Box direction="column" width="full" maxWidth="1000px">
+        <Heading
+          textAlign="center"
+          fontSize="4xl"
+          as="h1"
+          fontFamily="Merriweather Sans"
+        >
           {t('pageHeading')}
         </Heading>
         {isMobile && (
@@ -191,7 +196,7 @@ const Health: React.FC = () => {
             </ListItem>
           </UnorderedList>
         </Section>
-      </VStack>
+      </Box>
     </Flex>
   );
 };

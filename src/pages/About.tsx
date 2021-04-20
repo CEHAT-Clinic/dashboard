@@ -1,14 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {
-  Box,
-  Flex,
-  Heading,
-  Text,
-  Link,
-  Image,
-  Grid,
-  VStack,
-} from '@chakra-ui/react';
+import {Box, Flex, Heading, Text, Link, Image, Grid} from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
 import cehatLogo from '../media/CEHATLogo.png';
@@ -53,9 +44,14 @@ const About: React.FC = () => {
 
   const {t} = useTranslation(['about', 'common']);
   return (
-    <Flex justifyContent="center" alignContent="center">
-      <VStack direction="column" padding={2} width="full" maxWidth="1000px">
-        <Heading fontSize="4xl" as="h1" fontFamily="Merriweather Sans">
+    <Flex justifyContent="center" alignContent="center" padding={2}>
+      <Box direction="column" width="full" maxWidth="1000px">
+        <Heading
+          textAlign="center"
+          fontSize="4xl"
+          as="h1"
+          fontFamily="Merriweather Sans"
+        >
           {t('pageHeading')}
         </Heading>
         {isMobile && (
@@ -153,7 +149,7 @@ const About: React.FC = () => {
           </Text>
         </Section>
         <Image src={cehatLogo} alt="Logo"></Image>
-      </VStack>
+      </Box>
     </Flex>
   );
 };
