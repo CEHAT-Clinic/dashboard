@@ -68,26 +68,33 @@ service cloud.firestore {
 
     // Used for deletion of user data
     match /deletion/users {
-      // Verify that a (1) user is signed in, (2) the only modified field is
+      let newData = request.resource.data;
+      let oldData = resource.data;
+
+      // Verify that (1) user is signed in, (2) the only modified field is
       // userDocs, (3) the userDocs array is increased in size by only 1,
       // and (4) the added item from the userDocs array is the user's uid.
       function addUidToUserDocs() {
-        let onlyUserDocsUpdated = request.resource.data.keys().hasOnly('userDocs');
-        let oneItemRemoved = request.resource.data.users.size() == resource.data.users.size() + 1;
-        let addedUid = request.resource.data.users.removeAll(resource.data.users)[0] == request.auth.uid;
+        // The diff() function combined with affectedKeys() returns a list of
+        // keys that were changed in an update operation
+        let onlyUserDocsUpdated = newData.diff(oldData).affectedKeys().hasOnly('userDocs');
+        let oneItemAdded = newData.userDocs.size() == oldData.userDocs.size() + 1;
+        let addedUid = newData.userDocs.removeAll(oldData.userDocs)[0] == request.auth.uid;
         return isSignedIn()
                 && onlyUserDocsUpdated
-                && oneItemRemoved
+                && oneItemAdded
                 && addedUid;
       }
 
-      // Verify that a (1) user is signed in, (2) the only modified field is
+      // Verify that (1) user is signed in, (2) the only modified field is
       // firebaseUsers, (3) the firebaseUsers array is reduced in size by only 1,
       // and (4) the removed item from the firebaseUsers array is the user's uid.
       function removeUidFromFirebaseUsers() {
-        let onlyFirebaseUsersUpdated = request.resource.data.keys().hasOnly('firebaseUsers');
-        let oneItemRemoved = request.resource.data.users.size() == resource.data.users.size() - 1;
-        let removedUid = resource.data.users.removeAll(request.resource.data.users)[0] == request.auth.uid;
+        // The diff() function combined with affectedKeys() returns a list of
+        // keys that were changed in an update operation
+        let onlyFirebaseUsersUpdated = newData.diff(oldData).affectedKeys().hasOnly('firebaseUsers');
+        let oneItemRemoved = newData.firebaseUsers.size() == oldData.firebaseUsers.size() - 1;
+        let removedUid = oldData.firebaseUsers.removeAll(newData.firebaseUsers)[0] == request.auth.uid;
         return isSignedIn()
                 && onlyFirebaseUsersUpdated
                 && oneItemRemoved
