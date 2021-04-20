@@ -47,9 +47,9 @@ const MoreInfoLabel: ({
 }: MoreInfoLabelProps) => JSX.Element = ({
   message,
   text,
-  fontWeight,
-  fontSize,
-  fontFamily,
+  fontWeight = 'regular',
+  fontSize = 'lg',
+  fontFamily = 'Oxygen',
   popoverLabel,
 }: MoreInfoLabelProps) => {
   // Default values for optional parameters:
