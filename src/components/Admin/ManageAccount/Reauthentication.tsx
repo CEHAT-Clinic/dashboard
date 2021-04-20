@@ -11,17 +11,14 @@ import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import firebase, {firebaseAuth} from '../../../firebase/firebase';
 import {PasswordFormInput} from '../ComponentUtil';
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Props for ReauthenticationProps component. Used for type safety.
- * - `passwordUser` - whether or not the user is password-based
- * - `googleUser` - whether or not a Google account is connected to the user
  * - `reauthenticated` - if a user has been reauthenticated
  * - `setReauthenticated` - state setter for `reauthenticated`
  */
 interface ReauthenticationProps {
-  passwordUser: boolean;
-  googleUser: boolean;
   reauthenticated: boolean;
   setReauthenticated: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -29,8 +26,6 @@ interface ReauthenticationProps {
 /**
  * Creates a component for a user for reauthentication. This is used before
  * security sensitive operations such as password updates or account deletion.
- * @param passwordUser - whether or not the user is password-based
- * @param googleUser - whether or not a Google account is connected to the user
  * @param reauthenticated - if a user has been reauthenticated
  * @param setReauthenticated - state setter for `reauthenticated`
  * @returns depending if the user is password-based or Google-based, either a password field input or a button to click that creates a popup to sign in with Google
@@ -40,21 +35,15 @@ interface ReauthenticationProps {
  * @example
  * ```
  * <Reauthenticated
- *   passwordUser={passwordUser}
- *   googleUser={googleUser}
  *   reauthenticated={reauthenticated}
  *   setReauthenticated={setReauthenticated}
  * />
  * ```
  */
 const Reauthentication: ({
-  passwordUser,
-  googleUser,
   reauthenticated,
   setReauthenticated,
 }: ReauthenticationProps) => JSX.Element = ({
-  passwordUser,
-  googleUser,
   reauthenticated,
   setReauthenticated,
 }: ReauthenticationProps) => {
@@ -68,6 +57,7 @@ const Reauthentication: ({
   const [googleIsLoading, setGoogleIsLoading] = useState(false);
 
   const {t} = useTranslation(['administration', 'common']);
+  const {passwordUser, googleUser} = useAuth();
 
   /**
    * Handles reauthentication of a password-based user before account update

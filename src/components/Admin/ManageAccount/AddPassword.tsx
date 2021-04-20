@@ -48,7 +48,7 @@ const AddPasswordModal: () => JSX.Element = () => {
   // --------------- End state maintenance variables ------------------------
 
   const {t} = useTranslation(['administration', 'common']);
-  const {googleUser, passwordUser, setPasswordUser} = useAuth();
+  const {setPasswordUser} = useAuth();
 
   const cannotSubmitPassword =
     newPassword === '' || error !== '' || !reauthenticated;
@@ -149,8 +149,6 @@ const AddPasswordModal: () => JSX.Element = () => {
           <ModalBody>
             <Text>{t('addPassword.explanation')}</Text>
             <Reauthentication
-              googleUser={googleUser}
-              passwordUser={passwordUser}
               reauthenticated={reauthenticated}
               setReauthenticated={setReauthenticated}
             />
