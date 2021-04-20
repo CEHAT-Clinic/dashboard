@@ -44,9 +44,7 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
     if (isAdmin) {
       return markUserForDeletion()
         .then(markUserDocAsDeleted)
-        .catch(() => {
-          setError(t('deleteUser.error'));
-        });
+        .catch(() => setError(t('deleteUser.error')));
     } else {
       return firebaseAuth.signOut();
     }
