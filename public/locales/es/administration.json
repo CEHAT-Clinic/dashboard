@@ -116,5 +116,11 @@
         "heading": "Aviso: cuenta eliminada",
         "deleteNow": "Finalizar la supresión de la cuenta ahora",
         "explanation": "Un administrador del sitio web ha borrado tu cuenta y la cuenta se borrará en las próximas 24 horas. Si crees que se trata de un error, comunícate con un administrador del sitio web y vuelve a crear tu cuenta después de que esta se haya borrado. Puedes optar por finalizar de borrar tu cuenta ahora haciendo clic en el botón 'Finalizar supresión de cuenta ahora'."
+    },
+    "deleteAccount": {
+        "heading": "Borrar cuenta",
+        "error": "No se pudo finalizar el borrado de cuenta. Por favor, inténtalo de nuevo más tarde.",
+        "noAdminDelete": "Debes eliminarte como usuario administrador antes de eliminar tu cuenta.",
+        "confirmQuestion": "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción es permanente."
     }
 }
