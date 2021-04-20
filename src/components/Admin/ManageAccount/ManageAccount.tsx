@@ -71,9 +71,8 @@ const ManageAccount: () => JSX.Element = () => {
           <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
           </Heading>
-          {passwordUser && <ChangePasswordModal />}
+          {passwordUser ? <ChangePasswordModal /> : <AddPasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
-          {!passwordUser && <AddPasswordModal />}
           <Divider marginY={2} />
           <Heading fontSize="lg" as="h2" textAlign="left">
             {t('deleteAccount.heading')}
