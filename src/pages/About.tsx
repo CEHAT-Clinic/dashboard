@@ -150,7 +150,7 @@ const About: React.FC = () => {
             </Link>
           </Text>
           <Flex direction="column" align="center">
-            <Box boxShadow="lg" padding={3} borderRadius={2}>
+            <Box boxShadow="md" padding={3} borderRadius={2}>
               <VStack>
                 <Image
                   src={purpleAirSensor}
@@ -201,7 +201,9 @@ const About: React.FC = () => {
             {t('admin.purpose')}
           </Text>
         </Section>
-        <Image src={cehatLogo} alt="Logo"></Image>
+        <Flex justifyContent="center">
+          <Image src={cehatLogo} alt="Logo"></Image>
+        </Flex>
       </Box>
     </Flex>
   );

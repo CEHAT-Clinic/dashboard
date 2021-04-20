@@ -51,7 +51,7 @@
         "heading": "PurpleAir Sensors",
         "part1a": "This website uses data from air quality sensors manufactured by ",
         "purpleAirLink": "PurpleAir",
-        "part1b": ". PurpleAir sensors are an affordable air quality sensor option, costing $249 as of April 2021. In contrast, higher quality sensors can range in price from $15,000 to $50,000. PurpleAir sensors can be installed anywhere with a power source and a WiFi connection, and they report particulate matter size 1, 2.5, and 10. For more information about particulate matter, check out the ",
+        "part1b": ". PurpleAir sensors are an affordable air quality sensor option, costing $249 as of April 2021. In contrast, higher quality sensors can cost upwards of $50,000. PurpleAir sensors can be installed anywhere with a power source and a WiFi connection, and they report particulate matter size 1, 2.5, and 10. For more information about particulate matter, check out the ",
         "healthInfoLink": "Health Information page.",
         "image": {
             "caption": "Example of a PurpleAir sensor installation. Image from ",
