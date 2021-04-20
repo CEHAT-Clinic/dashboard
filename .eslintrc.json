@@ -150,7 +150,9 @@
           "semibold",
           "booleans",
           "Subcollection",
-          "Reauthenticated"
+          "Reauthenticate",
+          "Reauthenticated",
+          "reauthenticating"
         ],
         "skipWords": [
           "Pv"

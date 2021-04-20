@@ -93,6 +93,15 @@ const About: React.FC = () => {
             <ExternalLinkIcon />
           </Link>
           {t('cehat.part2')}
+          <Link
+            color={LinkColor}
+            href="http://www.aqmd.gov/nav/about/initiatives/environmental-justice/ab617-134"
+            isExternal
+          >
+            {t('cehat.ab617')}
+            <ExternalLinkIcon />
+          </Link>
+          {t('cehat.part3')}
         </Text>
       </Box>
       <Box
@@ -152,8 +161,19 @@ const About: React.FC = () => {
         <Heading fontFamily="Merriweather Sans">
           {t('acknowledge.heading')}
         </Heading>
-        <Text>{t('acknowledge.clinic')}</Text>
-        <Text>{t('acknowledge.grant')}</Text>
+        <Text paddingY={1}>
+          {t('acknowledge.clinic')} {t('acknowledge.githubPart1')}
+          <Link
+            color={LinkColor}
+            href="https://github.com/CEHAT-Clinic/dashboard"
+            isExternal
+          >
+            GitHub
+            <ExternalLinkIcon />
+          </Link>
+          {t('acknowledge.githubPart2')}
+        </Text>
+        <Text paddingY={1}>{t('acknowledge.grant')}</Text>
       </Box>
       <Box
         padding={2}

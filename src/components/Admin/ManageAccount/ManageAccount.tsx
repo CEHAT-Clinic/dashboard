@@ -8,6 +8,7 @@ import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {AccountDeleted} from '../AccountDeleted';
+import {DeleteAccountPopover} from './DeleteAccountPopover';
 import {AddPasswordModal} from './AddPassword';
 
 /**
@@ -92,7 +93,10 @@ const ManageAccount: () => JSX.Element = () => {
           >
             {name ? name : t('noName')}
           </Text>
-          <ChangeNameModal passwordUser={passwordUser} />
+          <ChangeNameModal
+            passwordUser={passwordUser}
+            googleUser={googleUser}
+          />
           <Divider marginY={2} />
           <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
@@ -100,6 +104,11 @@ const ManageAccount: () => JSX.Element = () => {
           {passwordUser && <ChangePasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           {googleUser && !passwordUser && <AddPasswordModal />}
+          <Divider marginY={2} />
+          <Heading fontSize="lg" as="h2" textAlign="left">
+            {t('deleteAccount.heading')}
+          </Heading>
+          <DeleteAccountPopover passwordUser={passwordUser} />
           <Divider marginY={2} />
           <Text color="red.500">{error}</Text>
           <Button as="a" href="/admin" margin={1}>
