@@ -60,7 +60,7 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
           break;
         }
         case 'auth/user-not-found': {
-          setEmailError(t('userNotFound' + email));
+          setEmailError(t('userNotFound') + email);
           break;
         }
         case 'auth/wrong-password': {

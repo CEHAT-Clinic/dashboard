@@ -57,6 +57,14 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Used for data deletion
+    match /deletion {
+      // Used for deletion of sensor readings
+      match /readings {
+        // Only admins and the Cloud Functions are allowed to modify readings
+        allow read, write: if isAdmin();
+      }
+
       // Used for deletion of user data
       match /users {
 
@@ -97,6 +105,7 @@ service cloud.firestore {
 
         // Only the Cloud Functions can read the users document
         allow read: if false;
+      }
     }
   }
 }

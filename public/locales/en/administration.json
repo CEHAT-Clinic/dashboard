@@ -127,5 +127,11 @@
         "heading": "Delete User",
         "error": "Unable to mark user for deletion",
         "message": "Once you confirm deletion, this action cannot be undone. The user will be deleted in the next 24 hours. Until then, the user will still be able to sign into their account."
+    },
+    "reauthenticate": {
+        "heading": "Re-enter Your Credentials",
+        "explanation": "Reauthentication of your credentials is necessary before account updates.",
+        "choose": "You can choose to reauthenticate using your Google account or your password.",
+        "success": "You have been reauthenticated."
     }
 }
