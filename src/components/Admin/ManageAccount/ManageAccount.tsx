@@ -92,7 +92,10 @@ const ManageAccount: () => JSX.Element = () => {
           >
             {name ? name : t('noName')}
           </Text>
-          <ChangeNameModal passwordUser={passwordUser} />
+          <ChangeNameModal
+            passwordUser={passwordUser}
+            googleUser={googleUser}
+          />
           <Divider marginY={2} />
           <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}

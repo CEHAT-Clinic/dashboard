@@ -5,6 +5,7 @@ import {
   Button,
   Divider,
   CircularProgress,
+  Center,
 } from '@chakra-ui/react';
 import React, {useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -15,7 +16,7 @@ import {PasswordFormInput} from '../ComponentUtil';
  * Props for ReauthenticationProps component. Used for type safety.
  * - `passwordUser` - whether or not the user is password-based
  * - `googleUser` - whether or not a Google account is connected to the user
- * - `reauthenticated` - whether or not a user has been reauthenticated
+ * - `reauthenticated` - if a user has been reauthenticated
  * - `setReauthenticated` - state setter for `reauthenticated`
  */
 interface ReauthenticationProps {
@@ -30,9 +31,21 @@ interface ReauthenticationProps {
  * security sensitive operations such as password updates or account deletion.
  * @param passwordUser - whether or not the user is password-based
  * @param googleUser - whether or not a Google account is connected to the user
- * @param reauthenticated - whether or not a user has been reauthenticated
+ * @param reauthenticated - if a user has been reauthenticated
  * @param setReauthenticated - state setter for `reauthenticated`
  * @returns depending if the user is password-based or Google-based, either a password field input or a button to click that creates a popup to sign in with Google
+ *
+ * @remarks Use this as a standalone component before any account update operations. Create a state variable for `reauthenticated` and don't let a user submit any changes to their account until `reauthenticated` has been set to `true` by this component.
+ *
+ * @example
+ * ```
+ * <Reauthenticated
+ *   passwordUser={passwordUser}
+ *   googleUser={googleUser}
+ *   reauthenticated={reauthenticated}
+ *   setReauthenticated={setReauthenticated}
+ * />
+ * ```
  */
 const Reauthentication: ({
   passwordUser,
@@ -132,42 +145,61 @@ const Reauthentication: ({
   return (
     <Box>
       <Heading fontSize="lg">{t('reauthenticate.heading')}</Heading>
-      <Text marginY={2}>{t('reauthenticate.explanation')}</Text>
-      {passwordUser && googleUser && (
-        <Text marginY={2}>{t('reauthenticate.choose')}</Text>
-      )}
-      {passwordUser && (
+      {reauthenticated ? (
+        <Text>{t('reauthenticate.success')}</Text>
+      ) : (
         <Box>
-          <PasswordFormInput
-            value={password}
-            showPassword={passwordVisible}
-            handlePasswordVisibility={() => {
-              setPasswordVisible(!passwordVisible);
-            }}
-            handlePasswordChange={event => {
-              setPassword(event.target.value);
-              setPasswordError('');
-            }}
-            error={passwordError}
-          />
-          <Button
-            onClick={handleReauthenticationWithPassword}
-            colorScheme="teal"
-          >
-            {passwordIsLoading ? (
-              <CircularProgress isIndeterminate size="24px" color="teal" />
-            ) : (
-              t('common:submit')
-            )}
-          </Button>
-          {passwordUser && googleUser && <Divider />}
-          <Button onClick={handleReauthenticateWithGoogle} colorScheme="red">
-            {googleIsLoading ? (
-              <CircularProgress isIndeterminate size="24px" color="red" />
-            ) : (
-              t('signIn.google')
-            )}
-          </Button>
+          <Text marginY={2}>{t('reauthenticate.explanation')}</Text>
+          {passwordUser && googleUser && (
+            <Text marginY={2}>{t('reauthenticate.choose')}</Text>
+          )}
+          {passwordUser && (
+            <Box>
+              <PasswordFormInput
+                value={password}
+                showPassword={passwordVisible}
+                handlePasswordVisibility={() => {
+                  setPasswordVisible(!passwordVisible);
+                }}
+                handlePasswordChange={event => {
+                  setPassword(event.target.value);
+                  setPasswordError('');
+                }}
+                error={passwordError}
+              />
+              <Center>
+                <Button
+                  onClick={handleReauthenticationWithPassword}
+                  colorScheme="teal"
+                >
+                  {passwordIsLoading ? (
+                    <CircularProgress
+                      isIndeterminate
+                      size="24px"
+                      color="teal"
+                    />
+                  ) : (
+                    t('common:submit')
+                  )}
+                </Button>
+              </Center>
+            </Box>
+          )}
+          {passwordUser && googleUser && <Divider marginY={4} />}
+          {googleUser && (
+            <Center>
+              <Button
+                onClick={handleReauthenticateWithGoogle}
+                colorScheme="red"
+              >
+                {googleIsLoading ? (
+                  <CircularProgress isIndeterminate size="24px" color="red" />
+                ) : (
+                  t('signIn.google')
+                )}
+              </Button>
+            </Center>
+          )}
           <Text textColor="red.500">{googleError}</Text>
         </Box>
       )}

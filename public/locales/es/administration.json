@@ -131,6 +131,7 @@
     "reauthenticate": {
         "heading": "Vuelva a ingresar tus credenciales",
         "explanation": "Es necesario volver a autenticar tus credenciales antes de actualizar tu cuenta. ",
-        "choose": "Puede optar por volver a autenticarte utilizando tu cuenta de Google o tu contraseña."
+        "choose": "Puede optar por volver a autenticarte utilizando tu cuenta de Google o tu contraseña.",
+        "success": "Tú has sido autenticado."
     }
 }

@@ -151,7 +151,7 @@
           "booleans",
           "Subcollection",
           "Reauthenticate",
-          "reauthenticating",
+          "reauthenticating"
         ],
         "skipWords": [
           "Pv"

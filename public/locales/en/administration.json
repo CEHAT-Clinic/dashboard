@@ -131,6 +131,7 @@
     "reauthenticate": {
         "heading": "Re-enter Your Credentials",
         "explanation": "Reauthentication of your credentials is necessary before account updates.",
-        "choose": "You can choose to reauthenticate using your Google account or your password."
+        "choose": "You can choose to reauthenticate using your Google account or your password.",
+        "success": "You have been reauthenticated."
     }
 }
