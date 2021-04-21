@@ -65,9 +65,11 @@ const Home: () => JSX.Element = () => {
   // On mobile, jump to the AQI gauge when a new sensor is clicked
   useEffect(() => {
     if (isMobile) {
-      setShowGaugeUi(true);
-      const href = '#aqiGauge';
-      window.location.replace(href);
+      if (selectedSensor.sensorDocId !== '') {
+        setShowGaugeUi(true);
+        const href = '#aqiGauge';
+        window.location.replace(href);
+      }
     }
   }, [selectedSensor, isMobile]);
 
