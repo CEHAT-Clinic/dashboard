@@ -83,6 +83,10 @@ const AddPasswordModal: () => JSX.Element = () => {
     setError('');
   }
 
+  /**
+   * Adds a password to a user's account
+   * @returns a promise that when resolved means that a user's password has been added
+   */
   function addPassword(): Promise<void> {
     if (!firebaseAuth.currentUser) {
       return firebaseAuth.signOut();
@@ -147,7 +151,7 @@ const AddPasswordModal: () => JSX.Element = () => {
           <ModalHeader>{t('addPassword.heading')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Text>{t('addPassword.explanation')}</Text>
+            <Text marginBottom={4}>{t('addPassword.explanation')}</Text>
             <Reauthentication
               reauthenticated={reauthenticated}
               setReauthenticated={setReauthenticated}

@@ -18,7 +18,7 @@ const ManageAccount: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {
     isAuthenticated,
-    isLoading: fetchingAuthContext,
+    isLoading,
     name,
     email,
     isDeleted,
@@ -29,7 +29,7 @@ const ManageAccount: () => JSX.Element = () => {
 
   const {t} = useTranslation('administration');
 
-  if (fetchingAuthContext) {
+  if (isLoading) {
     return <Loading />;
   } else if (!isAuthenticated) {
     return <AccessDenied reason={t('notSignedIn')} />;
