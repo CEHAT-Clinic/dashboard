@@ -75,22 +75,25 @@ const About: React.FC = () => {
               gap={1}
               textAlign="center"
             >
-              <Link gridRow={1} href="#purpleAir" color={LinkColor}>
-                {t('purpleAir.heading')}
-              </Link>
               <Link gridRow={1} href="#cehat" color={LinkColor}>
                 {t('cehat.heading')}
               </Link>
-              <Link gridRow={2} href="#involved" color={LinkColor}>
+              <Link gridRow={1} href="#involved" color={LinkColor}>
                 {t('involved.heading')}
               </Link>
-              <Link gridRow={3} href="#sensorsDown" color={LinkColor}>
+              <Link gridRow={2} href="#purpleAir" color={LinkColor}>
+                {t('purpleAir.heading')}
+              </Link>
+              <Link gridRow={2} href="#sensorsDown" color={LinkColor}>
                 {t('sensorsDown.heading')}
               </Link>
-              <Link gridRow={1} href="#acknowledge" color={LinkColor}>
+              <Link gridRow={3} href="#noSensor" color={LinkColor}>
+                {t('noSensorInArea.heading')}
+              </Link>
+              <Link gridRow={3} href="#acknowledge" color={LinkColor}>
                 {t('acknowledge.heading')}
               </Link>
-              <Link gridRow={2} href="#admin" color={LinkColor}>
+              <Link gridRow={4} href="#admin" color={LinkColor}>
                 {t('admin.heading')}
               </Link>
             </Grid>
@@ -188,6 +191,24 @@ const About: React.FC = () => {
           </Text>
           <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
           <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
+        </Section>
+        <Section id="noSensor" title={t('noSensorInArea.heading')}>
+          <Text paddingY={1}>
+            {t('noSensorInArea.part1')}
+            <Link color={LinkColor} href={t('involved.email.link')}>
+              {t('involved.email.text')}
+            </Link>
+            {t('noSensorInArea.or')}
+            <Link
+              color={LinkColor}
+              href={t('involved.instagram.link')}
+              isExternal
+            >
+              {t('involved.instagram.text')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('noSensorInArea.part2')}
+          </Text>
         </Section>
         <Section id="acknowledge" title={t('acknowledge.heading')}>
           <Text paddingY={1}>
