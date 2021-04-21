@@ -223,10 +223,10 @@ const About: React.FC = () => {
           <OrderedList paddingLeft={4}>
             <ListItem>{t('app.iPhone.step1')}</ListItem>
             <ListItem>
-              <Flex flexDir="row" alignItems="center">
-                <Text>{t('app.iPhone.step2a')}</Text>
-                <FiShare />
-                <Text>{t('app.iPhone.step2b')}</Text>
+              <Flex display="inline">
+                <Text>
+                  {t('app.iPhone.step2')}(<FiShare />)
+                </Text>
               </Flex>
             </ListItem>
             <ListItem>{t('app.step3')}</ListItem>

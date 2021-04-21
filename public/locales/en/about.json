@@ -40,8 +40,7 @@
         "iPhone" : {
             "heading":"On an iPhone:",
             "step1": "Open this website in Safari",
-            "step2a": "Tap the share icon (",
-            "step2b": ") at the bottom of the screen"
+            "step2": "Tap the share icon at the bottom of the screen"
         },
         "android" : {
             "heading":"On an Android:",

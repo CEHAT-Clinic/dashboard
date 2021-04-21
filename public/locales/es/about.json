@@ -39,16 +39,15 @@
         "iPhone" : {
             "heading": "En un iPhone:",
             "step1": "Abra este sitio web en Safari",
-            "step2a": "Toque el compartir icono (",
-            "step2b": ") en la parte inferior de la pantalla."
+            "step2": "Toque el icono de compartir en la parte inferior de la pantalla"
         },
         "android" : {
             "heading":"En un Android:",
             "step1": "Abra este sitio web en Google Chrome",
-            "step2": "Toca el menú de Chrome ("
+            "step2": "Toque el menú de Chrome ("
         },
         "step3": "Seleccione <<Agregar a Inicio>>",
-        "step4": "Toca <<Agregar>> en la esquina superior derecha"
+        "step4": "Toque <<Agregar>> en la esquina superior derecha"
     },
     "noSensorInArea": {
         "heading": "¿No hay sensores en su área?",
