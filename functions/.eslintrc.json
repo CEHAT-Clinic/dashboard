@@ -93,7 +93,9 @@
           "purpleair",
           "Recurse",
           "readonly",
-          "outlier"
+          "outlier",
+          "uid",
+          "Ds"
         ]
       }
     ]

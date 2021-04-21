@@ -148,7 +148,11 @@
           "Checkbox",
           "Merriweather",
           "semibold",
-          "booleans"
+          "booleans",
+          "Subcollection",
+          "Reauthenticate",
+          "Reauthenticated",
+          "reauthenticating"
         ],
         "skipWords": [
           "Pv"

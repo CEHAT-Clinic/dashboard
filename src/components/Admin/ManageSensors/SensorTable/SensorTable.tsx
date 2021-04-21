@@ -14,8 +14,11 @@ import {useTranslation} from 'react-i18next';
 import {numberToString, timestampToDateString} from '../Util/Util';
 import {Sensor} from '../Util/Types';
 import {MoreInfoHeading} from './MoreInfoHeading';
-import {InvalidAqiError, SensorReadingError} from '../../../../ErrorsTypes';
-import {ErrorTag} from './ErrorTags';
+import {
+  InvalidAqiError,
+  SensorReadingError,
+} from '../../../../firebase/ErrorTypes';
+import {ErrorTag} from './ErrorTag';
 
 /**
  * Interface for props for SensorTable

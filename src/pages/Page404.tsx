@@ -2,6 +2,7 @@ import React from 'react';
 import {Flex, Heading, Image, Text, Link} from '@chakra-ui/react';
 import cehatLogo from '../media/CEHATLogo.png';
 import {useTranslation} from 'react-i18next';
+import {LinkColor} from '../components/Util/Colors';
 
 /**
  * @returns 404 Page Not Found page
@@ -13,11 +14,11 @@ const Page404: React.FC = () => {
       <Heading marginBottom={1}>{t('heading')}</Heading>
       <Text>
         {t('whoops')}
-        <Link color="#32bfd1" href="/">
+        <Link color={LinkColor} href="/">
           {t('here')}
         </Link>
         {t('redirect')}
-        <Link color="#32bfd1" href="/">
+        <Link color={LinkColor} href="/">
           {t('home')}
         </Link>
       </Text>

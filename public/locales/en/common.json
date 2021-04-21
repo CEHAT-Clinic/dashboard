@@ -7,5 +7,7 @@
     "yes": "Yes",
     "no": "No",
     "moreInformation": "More Information",
-    "jumpTo": "Jump to"
+    "jumpTo": "Jump to",
+    "aqiHelpHeading": "What Is AQI?",
+    "aqiHelpMessage": "AQI stands for Air Quality Index. It is the national standard for indicating how good or bad the air is. Lower numbers indicate safer air, while higher numbers indicate more hazardous air."
 }

@@ -7,7 +7,9 @@
             "link": "https://www.cdc.gov/nceh/ehs/ceha/pace_eh.htm",
             "text": "la evaluación Protocolo para Evaluar la Excelencia Comunitaria en la Salud Ambiental"
         },
-        "part2": " (Protocol for Assessing Community Excellence in Environmental Health, el enlace solo está disponible en inglés). Otros proyectos han incluido talleres educativos, colaboraciónes con escuelas en un programa para comunicar la calidad del aire, y trabajando en medidas, particularmente la Ley 617 de la Asamblea, para reducir emisiones en South Gate y sus alrededores."
+        "part2": " (Protocol for Assessing Community Excellence in Environmental Health, el enlace solo está disponible en inglés). Otros proyectos han incluido talleres educativos, colaboraciónes con escuelas en un programa para comunicar la calidad del aire, y trabajando en medidas, particularmente ",
+        "ab617": "la Ley 617 de la Asamblea",
+        "part3": ", para reducir emisiones en South Gate y sus alrededores."
     },
     "involved": {
         "heading": "Cómo Involucrarte",
@@ -25,13 +27,23 @@
     },
     "sensorsDown": {
         "heading": "¿El sensor no muestra el AQI?",
-        "part1": "Hay que dar muchos pasos para calcular el AQI usando la información reportada por los sensores de PurpleAir que usamos en South Gate. La EPA tiene un esquema de este algoritmo y nosotros seguimos sus pautas para garantizar que nuestros sensores sean precisos.",
+        "part1a": "Nuestro sitio web utiliza ",
+        "part1Link": "el algoritmo EPA NowCast",
+        "part1b": " para calcular los valores de AQI en tiempo real utilizando datos de los sensores PurpleAir que tenemos en South Gate. Usamos el algoritmo de la EPA para garantizar que nuestros sensores sean precisos.",
         "part2": "Los sensores PurpleAir nos caen bien porque son económicos y relativamente precisos considerando su precio. Dicho esto, no son tan confiables como algunos sensores más caros, lo que significa que a veces los valores que producen los sensores son insuficientes para calcular el AQI. Esto podría ser muy temporal (una cuestión de minutos u horas) o podría durar más tiempo. Si un sensor ha estado inactivo durante mucho tiempo, probablemente significa que el sensor ya no está conectado al Internet o que tiene un problema de hardware más grave.",
         "part3": "Si un sensor en tu área ha estado inactivo durante mucho tiempo, por favor contáctanos y nos comunicaremos con el anfitrión del sensor para tratar de resolver el problema."
+    },
+    "noSensorInArea": {
+        "heading": "¿No hay sensores en su área?",
+        "part1": "Algunos zonas en South Gate están más representadas en nuestro mapa que otras. Cada sensor en el mapa está ubicado físicamente en algún lugar, normalmente en el patio de un residente generoso de South Gate. Si hay un área de la ciudad que le gustaría ver en el mapa, ¡contáctenos en ",
+        "or": " o ",
+        "part2": " y háganoslo saber! Es especialmente útil si conoce a alguien en el área que esté dispuesto a instalar un sensor en su patio (el sensor requiere wifi y un enchufe)."
     },
     "acknowledge": {
         "heading": "Agradecimientos",
         "clinic": "Este sitio web fue creado en colaboración con El Programa Clínico de Harvey Mudd College, una experiencia de toque final para los estudiantes de The Claremont Colleges en la que equipos de 4 a 5 estudiantes colaboran para solucionar problemas tecnológicos de empresas y organizaciones.",
+        "githubPart1": "Si estás interesado en cómo se hizo este sitio web, consulta nuestro ",
+        "githubPart2": " con el código.",
         "grant": "Los sensores de este proyecto fueron posible por una beca del UCLA Kaiser Permanente Center for Health Equity y del UCLA Jonsson Comprehensive Cancer Center."
     },
     "admin": {
@@ -41,5 +53,17 @@
             "text": "Visita el panel administrativo"
         },
         "purpose": " para actuar como administrador."
+    },
+    "purpleAir": {
+        "heading": "Sensores de PurpleAir",
+        "part1a": "Este sitio web utiliza datos de sensores de calidad del aire fabricados por ",
+        "purpleAirLink": "PurpleAir",
+        "part1b": ". Los sensores PurpleAir son una opción de sensor de calidad del aire asequible, con un costo de 249 dólares a partir de abril de 2021. Por el contrario, los sensores de mayor calidad pueden costar más de 50.000 dólares. Los sensores PurpleAir se pueden instalar en cualquier lugar con una fuente de alimentación y una conexión WiFi, e informan el tamaño de las partículas 1, 2,5 y 10. Para obtener más información sobre las partículas, consulta la página de ",
+        "healthInfoLink": "la página de Información de salud.",
+        "image": {
+            "caption": "Ejemplo de una instalación de sensor PurpleAir. Imagen de ",
+            "alt": "Una instalación de sensor PurpleAir"
+        },
+        "part2": "Si bien no son de tan alta calidad como los sensores más costosos, los sensores PurpleAir proporcionan datos de manera económica y fácil que pueden usar comunidades como South Gate. Estos sensores permiten al CEHAT obtener datos de la calidad del aire a través de South Gate a pesar de la falta de sensores regulatorios de la EPA en la ciudad. Si estás interesado en alojar un sensor en tu hogar o lugar de trabajo, consulta la sección Cómo Involucrarte en esta página."
     }
 }

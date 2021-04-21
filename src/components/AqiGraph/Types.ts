@@ -1,4 +1,4 @@
-import firebase from '../../firebase';
+import firebase from '../../firebase/firebase';
 
 /**
  * Interface for a single element in the AQI buffer
