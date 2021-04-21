@@ -8,6 +8,7 @@ import AqiGraph from '../components/AqiGraph/AqiGraph';
 import {ColorContext} from '../contexts/ColorContext';
 import {ColorToggle} from '../components/Util/Colors';
 import {SelectedSensor} from '../util';
+import {MoreInfoLabel} from '../components/Util/MoreInfoLabel';
 
 /**
  * Home screen component
@@ -29,7 +30,7 @@ const Home: () => JSX.Element = () => {
   const [showGaugeUi, setShowGaugeUi] = useState(true);
   const [showMapUi, setShowMapUi] = useState(true);
 
-  const {t} = useTranslation('home');
+  const {t} = useTranslation(['home', 'common']);
 
   // -------- Detect screen size for conditional formatting --------- //
   /**
@@ -182,13 +183,16 @@ const Home: () => JSX.Element = () => {
                 {selectedSensor.sensorDocId ? (
                   <AqiDial selectedSensor={selectedSensor} />
                 ) : (
-                  <Heading
-                    fontFamily="Oxygen"
-                    fontSize="lg"
-                    marginTop={[null, null, '20%', null]}
-                  >
-                    {t('noSensorGauge')}
-                  </Heading>
+                  <Box marginTop={[null, null, '20%', null]}>
+                    <MoreInfoLabel
+                      fontFamily="Oxygen"
+                      fontWeight="bold"
+                      fontSize="lg"
+                      text={t('noSensorGauge')}
+                      popoverLabel={t('common:aqiHelpHeading')}
+                      message={t('common:aqiHelpMessage')}
+                    />
+                  </Box>
                 )}
               </Flex>
             )}
