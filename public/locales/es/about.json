@@ -34,7 +34,7 @@
         "part3": "Si un sensor en tu área ha estado inactivo durante mucho tiempo, por favor contáctanos y nos comunicaremos con el anfitrión del sensor para tratar de resolver el problema."
     },
     "app":{
-        "heading": "Descargue este sitio web como una aplicación",
+        "heading": "Instale este sitio web como una aplicación",
         "body": "Si tiene un smartphone Android o un iPhone, puede descargar este sitio web como una aplicación en su pantalla de inicio siguiendo estas instrucciones.",
         "iPhone" : {
             "heading": "En un iPhone:",
