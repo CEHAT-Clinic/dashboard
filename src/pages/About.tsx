@@ -182,7 +182,22 @@ const About: React.FC = () => {
           <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
         </Section>
         <Section id="noSensor" title={t('noSensorInArea.heading')}>
-          <Text paddingY={1}>{t('noSensorInArea.body')}</Text>
+          <Text paddingY={1}>
+            {t('noSensorInArea.part1')}
+            <Link color={LinkColor} href={t('involved.email.link')}>
+              {t('involved.email.text')}
+            </Link>
+            {t('noSensorInArea.or')}
+            <Link
+              color={LinkColor}
+              href={t('involved.instagram.link')}
+              isExternal
+            >
+              {t('involved.instagram.text')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('noSensorInArea.part2')}
+          </Text>
         </Section>
         <Section id="acknowledge" title={t('acknowledge.heading')}>
           <Text paddingY={1}>
