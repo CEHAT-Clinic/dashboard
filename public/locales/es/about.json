@@ -33,7 +33,7 @@
     },
     "noSensorInArea": {
         "heading": "¿No hay sensores en su área?",
-        "body": "Algunas áreas de South Gate están mejor representadas en nuestro mapa que otras. Cada sensor en el mapa está ubicado físicamente en algún lugar, generalmente en el patio de un residente generoso de South Gate. Si hay un área de la ciudad que le gustaría ver en el mapa, ¡contáctenos y háganoslo saber! Es especialmente útil si conoce a alguien en el área que esté dispuesto a instalar un sensor en su jardín."
+        "body": "Algunos zonas en South Gate están más representadas en nuestro mapa que otras. Cada sensor en el mapa está ubicado físicamente en algún lugar, normalmente en el patio de un residente generoso de South Gate. Si hay un área de la ciudad que le gustaría ver en el mapa, ¡contáctenos y háganoslo saber! Es especialmente útil si conoce a alguien en el área que esté dispuesto a instalar un sensor en su patio (el sensor requiere wifi y un enchufe)."
     },
     "acknowledge": {
         "heading": "Agradecimientos",
