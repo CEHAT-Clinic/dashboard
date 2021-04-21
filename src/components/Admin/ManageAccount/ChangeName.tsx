@@ -22,7 +22,6 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
-import {useAuth} from '../../../contexts/AuthContext';
 import {Reauthentication} from './Reauthentication';
 
 /**
@@ -43,8 +42,6 @@ const ChangeNameModal: () => JSX.Element = () => {
   const readyToSubmit = reauthenticated && error === '' && newName !== '';
 
   const {t} = useTranslation(['administration', 'common']);
-
-  const {passwordUser, googleUser} = useAuth();
 
   /**
    * Resets modal state values before closing the modal.
@@ -130,8 +127,6 @@ const ChangeNameModal: () => JSX.Element = () => {
                 <Reauthentication
                   setReauthenticated={setReauthenticated}
                   reauthenticated={reauthenticated}
-                  googleUser={googleUser}
-                  passwordUser={passwordUser}
                 />
                 <form onSubmit={handleDisplayNameUpdate}>
                   <Box marginY={1}>

@@ -24,7 +24,11 @@
     "passwordModalSuccess": {
         "change": "Contraseña actualizada",
         "forgot": "Correo electrónico enviado"
-    }, 
+    },
+    "addPassword": {
+        "heading": "Agregar contraseña",
+        "explanation": "Si agregas una contraseña a tu cuenta, puedes usar tu correo electrónico y contraseña o Google para iniciar sesión."
+    },
     "currentPassword": "Contraseña actual",
     "newPassword": "Contraseña nueva",
     "confirmNewPassword": "Confirma la contraseña nueva",
