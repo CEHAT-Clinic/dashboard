@@ -151,6 +151,7 @@
           "booleans",
           "Subcollection",
           "Reauthenticate",
+          "Reauthenticated",
           "reauthenticating"
         ],
         "skipWords": [
