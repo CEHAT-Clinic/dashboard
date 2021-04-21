@@ -30,7 +30,6 @@ const ChangeEmailModal: () => JSX.Element = () => {
   const [newEmail, setNewEmail] = useState('');
   const [error, setError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
-  // TODO: after reauth, the modal closes
   const [reauthenticated, setReauthenticated] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
@@ -41,7 +40,7 @@ const ChangeEmailModal: () => JSX.Element = () => {
   /**
    * Resets modal state values before closing the modal.
    */
-  function handleClose() {
+  function handleClose(): void {
     setNewEmail('');
     setError('');
     setModalIsLoading(false);
@@ -85,9 +84,14 @@ const ChangeEmailModal: () => JSX.Element = () => {
     return updateEmailInFirebase()
       .then(updateUserDoc)
       .then(handleClose)
-      .catch(error =>
-        setError(t('common:generalErrorTemplate') + error.message)
-      );
+      .catch(error => {
+        console.log(error);
+        if (error.code === 'auth/email-already-in-use') {
+          // TODO: Translate
+          setError('An account already exists for this email address.');
+        }
+        setError(t('common:generalErrorTemplate') + error.message);
+      });
   }
 
   return (
@@ -101,12 +105,12 @@ const ChangeEmailModal: () => JSX.Element = () => {
           <ModalHeader>{t('emailModal.header')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <form onSubmit={updateEmail}>
-              <Box marginY={1}>
-                <Reauthentication
-                  reauthenticated={reauthenticated}
-                  setReauthenticated={setReauthenticated}
-                />
+            <Box marginY={1}>
+              <Reauthentication
+                reauthenticated={reauthenticated}
+                setReauthenticated={setReauthenticated}
+              />
+              <form onSubmit={updateEmail}>
                 <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
                   <FormLabel>{t('email')}</FormLabel>
                   <Input
@@ -127,8 +131,8 @@ const ChangeEmailModal: () => JSX.Element = () => {
                   error={error}
                   isDisabled={!readyToSubmit}
                 />
-              </Box>
-            </form>
+              </form>
+            </Box>
           </ModalBody>
         </ModalContent>
       </Modal>
