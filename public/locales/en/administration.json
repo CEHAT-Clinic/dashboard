@@ -24,7 +24,11 @@
     "passwordModalSuccess": {
         "change": "Password updated",
         "forgot": "Password reset email sent"
-    }, 
+    },
+    "addPassword": {
+        "heading": "Add Password",
+        "explanation": "If you add a password to your account, you can use your email and password or Google to sign in."
+    },
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
@@ -116,5 +120,22 @@
         "heading": "Notice: Account Deleted",
         "deleteNow": "Finish Account Deletion Now",
         "explanation": "Your account has been marked for deletion by an administrator of the website, and the account will be completely deleted within the next 24 hours. If you believe this is a mistake, reach out to an administrator of the website and recreate your account after this account has been deleted. You may choose to finish deleting your account now by clicking the 'Finish Account Deletion Now' button."
+    },
+    "deleteAccount": {
+        "heading": "Delete Account",
+        "error": "Unable to finish account deletion. Please try again later.",
+        "noAdminDelete": "You must remove yourself as an admin user before deleting your account.",
+        "confirmQuestion": "Are you sure that you want to delete your account? This action is permanent."
+    },
+    "deleteUser": {
+        "heading": "Delete User",
+        "error": "Unable to mark user for deletion",
+        "message": "Once you confirm deletion, this action cannot be undone. The user will be deleted in the next 24 hours. Until then, the user will still be able to sign into their account."
+    },
+    "reauthenticate": {
+        "heading": "Re-enter Your Credentials",
+        "explanation": "Reauthentication of your credentials is necessary before account updates.",
+        "choose": "You can choose to reauthenticate using your Google account or your password.",
+        "success": "You have been reauthenticated."
     }
 }

@@ -11,6 +11,10 @@ import {Props} from './AppProviders';
  * - `name` user's name or empty string
  * - `email` user's email
  * - `isDeleted` if a user's account is scheduled for deletion
+ * - `googleUser` if a user's account is attached to Google
+ * - `setGoogleUser` setter for `googleUser`
+ * - `passwordUser` if a user's account has a password
+ * - `setPasswordUser` setter for `passwordUser`
  */
 interface AuthInterface {
   isAuthenticated: boolean;
@@ -19,6 +23,10 @@ interface AuthInterface {
   name: string;
   email: string;
   isDeleted: boolean;
+  googleUser: boolean;
+  setGoogleUser: React.Dispatch<React.SetStateAction<boolean>>;
+  passwordUser: boolean;
+  setPasswordUser: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 /**
@@ -39,6 +47,8 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isDeleted, setIsDeleted] = useState(false);
+  const [googleUser, setGoogleUser] = useState(false);
+  const [passwordUser, setPasswordUser] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
   /**
@@ -120,6 +130,23 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     return;
   }, [isAuthenticated]);
 
+  // Runs on mount and on authentication status change
+  useEffect(() => {
+    if (isAuthenticated && firebaseAuth.currentUser) {
+      // Fetch sign in methods
+      if (email) {
+        setIsLoading(true);
+        firebaseAuth
+          .fetchSignInMethodsForEmail(email)
+          .then(methods => {
+            if (methods.includes('password')) setPasswordUser(true);
+            if (methods.includes('google.com')) setGoogleUser(true);
+          })
+          .finally(() => setIsLoading(false));
+      }
+    }
+  }, [isAuthenticated, email]);
+
   return (
     <AuthContext.Provider
       value={{
@@ -129,6 +156,10 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         name: name,
         email: email,
         isDeleted: isDeleted,
+        googleUser: googleUser,
+        setGoogleUser: setGoogleUser,
+        passwordUser: passwordUser,
+        setPasswordUser: setPasswordUser,
       }}
     >
       {children}
@@ -138,7 +169,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use authentication status
- * @returns `{isAuthenticated, isLoading, isAdmin, name, email, isDeleted}`
+ * @returns `{isAuthenticated, isLoading, isAdmin, name, email, isDeleted, passwordUser, setPasswordUser, googleUser, setGoogleUser}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Heading, Flex} from '@chakra-ui/react';
+import {Heading, Flex, Box} from '@chakra-ui/react';
 import {
   ScatterChart,
   XAxis,
@@ -14,6 +14,7 @@ import {GraphData, GraphElement, GraphProps, AqiBufferElement} from './Types';
 import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
 import {formatTime} from '../Util/Dates';
+import {MoreInfoLabel} from '../Util/MoreInfoLabel';
 
 /**
  * AQI Graph Display Component
@@ -44,7 +45,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   const [yAxisTicks, setYAxisTicks] = useState<number[]>([]);
   const [horizontalFill, setHorizontalFill] = useState<string[]>([]);
   const {currentColorScheme} = useColor();
-  const {t} = useTranslation(['graph', 'aqiTable']);
+  const {t} = useTranslation(['graph', 'aqiTable', 'common']);
 
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
@@ -202,9 +203,16 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
         flexDir="column"
         fontFamily="Oxygen"
       >
-        <Heading fontFamily="Oxygen" fontSize="lg" marginBottom={2}>
-          {t('graphTitle')}
-        </Heading>
+        <Box marginBottom={2}>
+          <MoreInfoLabel
+            fontFamily="Oxygen"
+            fontWeight="bold"
+            fontSize="lg"
+            text={t('graphTitle')}
+            message={t('common:aqiHelpMessage')}
+            popoverLabel={t('common:aqiHelpHeading')}
+          />
+        </Box>
         <ResponsiveContainer height={250} width="90%">
           <ScatterChart>
             <CartesianGrid horizontalFill={horizontalFill} fillOpacity={0.2} />
