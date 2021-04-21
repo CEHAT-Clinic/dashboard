@@ -103,7 +103,16 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
       >
         <Box>
           <Center flexDir="column">
-            <Text fontWeight="semibold">Sensor: {selectedSensor.name}</Text>
+            <MoreInfoLabel
+              fontFamily="Oxygen"
+              fontSize="lg"
+              text={t('common:noSensorGauge')}
+              popoverLabel={t('common:aqiHelpHeading')}
+              message={t('common:aqiHelpMessage')}
+            />
+            <Text marginTop={1} fontWeight="semibold">
+              Sensor: {selectedSensor.name}
+            </Text>
             <GaugeSvg currentAqi={selectedSensor.aqi} />
             <MoreInfoLabel
               fontWeight="bold"
@@ -134,7 +143,16 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
         fontFamily="Oxygen"
         flexDir="column"
       >
-        <Text fontWeight="semibold">Sensor: {selectedSensor.name}</Text>
+        <MoreInfoLabel
+          fontFamily="Oxygen"
+          fontSize="lg"
+          text={t('common:noSensorGauge')}
+          popoverLabel={t('common:aqiHelpHeading')}
+          message={t('common:aqiHelpMessage')}
+        />
+        <Text marginTop={1} fontWeight="semibold">
+          Sensor: {selectedSensor.name}
+        </Text>
         <InvalidSensor selectedSensor={selectedSensor} />
       </Flex>
     );

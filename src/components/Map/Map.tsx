@@ -188,65 +188,96 @@ class Map extends React.Component<MapProps> {
       }
     };
 
+    /**
+     * This function is called after all the markers have been placed on the map.
+     * It uses the `updateSelectedSensor` function from the props to set a default
+     * starting sensor for the home page to display.
+     */
+    const setDefaultSensor = () => {
+      // By default, select a sensor to display:
+      if (map) {
+        const markers = map.getObjects();
+        // If there is an object in the list
+        if (markers.length > 0) {
+          const firstSensor = markers[0];
+          if (firstSensor instanceof H.map.Marker) {
+            const data = firstSensor.getData();
+            const selectedSensor: SelectedSensor = {
+              purpleAirId: data.purpleAirId,
+              sensorDocId: data.sensorDocId,
+              name: data.name,
+              aqi: data.aqi,
+              isValid: data.isValid,
+              lastValidAqiTime: data.lastValidAqiTime,
+            };
+            this.props.updateSelectedSensor(selectedSensor);
+          }
+        }
+      }
+    };
+
     // Add the Sensor Markers to the map
     const docRef = firestore.collection('current-reading').doc('sensors');
-    docRef.get().then(doc => {
-      if (doc.exists) {
-        const data = doc.data();
-        if (data) {
-          // Map of sensorID to readings and properties stored in data field
-          const sensorMap = data.data;
+    docRef
+      .get()
+      .then(doc => {
+        if (doc.exists) {
+          const data = doc.data();
+          if (data) {
+            // Map of sensorID to readings and properties stored in data field
+            const sensorMap = data.data;
 
-          for (const sensorID in sensorMap) {
-            const sensorVal = sensorMap[sensorID];
-            // Default values for invalid sensors
-            let aqi = '';
-            let icon = createSensorIcon(
-              aqi,
-              false,
-              false,
-              this.props.currentColorScheme,
-              false
-            );
-            const sensorDocId: string = sensorVal.readingDocId;
-            if (sensorVal.isValid) {
-              // The label for this sensor is the most recent hour average
-              // We strip to round to the ones place
-              aqi = sensorVal.aqi.toString().split('.')[0];
-              icon = createSensorIcon(
+            for (const sensorID in sensorMap) {
+              const sensorVal = sensorMap[sensorID];
+              // Default values for invalid sensors
+              let aqi = '';
+              let icon = createSensorIcon(
                 aqi,
                 false,
                 false,
                 this.props.currentColorScheme,
-                true
+                false
               );
-            }
-            // Create marker
-            const marker = new H.map.Marker(
-              {
-                lat: sensorVal.latitude,
-                lng: sensorVal.longitude,
-              },
-              {icon: icon}
-            );
-            marker.setData({
-              purpleAirId: sensorVal.purpleAirId,
-              sensorDocId: sensorDocId,
-              name: sensorVal.name,
-              aqi: aqi,
-              isValid: sensorVal.isValid,
-              lastValidAqiTime: sensorVal.lastValidAqiTime,
-            }); // Data for marker events
-            marker.addEventListener('tap', registerClick); // Tap event
-            marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
-            marker.addEventListener('pointerleave', registerHoverEnd); // End hover
+              const sensorDocId: string = sensorVal.readingDocId;
+              if (sensorVal.isValid) {
+                // The label for this sensor is the most recent hour average
+                // We strip to round to the ones place
+                aqi = sensorVal.aqi.toString().split('.')[0];
+                icon = createSensorIcon(
+                  aqi,
+                  false,
+                  false,
+                  this.props.currentColorScheme,
+                  true
+                );
+              }
+              // Create marker
+              const marker = new H.map.Marker(
+                {
+                  lat: sensorVal.latitude,
+                  lng: sensorVal.longitude,
+                },
+                {icon: icon}
+              );
+              marker.setData({
+                purpleAirId: sensorVal.purpleAirId,
+                sensorDocId: sensorDocId,
+                name: sensorVal.name,
+                aqi: aqi,
+                isValid: sensorVal.isValid,
+                lastValidAqiTime: sensorVal.lastValidAqiTime,
+              }); // Data for marker events
+              marker.addEventListener('tap', registerClick); // Tap event
+              marker.addEventListener('pointerenter', registerHoverStart); // Begin hover
+              marker.addEventListener('pointerleave', registerHoverEnd); // End hover
 
-            // Add marker to the map
-            map.addObject(marker);
+              // Add marker to the map
+              map.addObject(marker);
+            }
           }
         }
-      }
-    });
+      })
+      .finally(setDefaultSensor);
 
     // Create the default UI which allows for zooming
     new H.mapevents.Behavior(new H.mapevents.MapEvents(map));

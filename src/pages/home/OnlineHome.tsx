@@ -188,7 +188,7 @@ const OnlineHome: () => JSX.Element = () => {
                       fontFamily="Oxygen"
                       fontWeight="bold"
                       fontSize="lg"
-                      text={t('noSensorGauge')}
+                      text={t('common:noSensorGauge')}
                       popoverLabel={t('common:aqiHelpHeading')}
                       message={t('common:aqiHelpMessage')}
                     />
