@@ -10,6 +10,7 @@ import {
   VStack,
   OrderedList,
   ListItem,
+  HStack,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
@@ -224,9 +225,10 @@ const About: React.FC = () => {
             <ListItem>{t('app.iPhone.step1')}</ListItem>
             <ListItem>
               <Flex display="inline">
-                <Text>
-                  {t('app.iPhone.step2')}(<FiShare />)
-                </Text>
+                <HStack spacinig={1}>
+                  <Text>{t('app.iPhone.step2')}</Text>
+                  <FiShare />
+                </HStack>
               </Flex>
             </ListItem>
             <ListItem>{t('app.step3')}</ListItem>
