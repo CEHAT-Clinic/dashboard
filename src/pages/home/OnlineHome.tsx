@@ -27,7 +27,7 @@ const OnlineHome: () => JSX.Element = () => {
     window.matchMedia('(max-width: 47.9em)')?.matches ?? false
   );
   const [showGraphUi, setShowGraphUi] = useState(false);
-  const [showGaugeUi, setShowGaugeUi] = useState(false);
+  const [showGaugeUi, setShowGaugeUi] = useState(true);
   const [showMapUi, setShowMapUi] = useState(true);
 
   const {t} = useTranslation(['home', 'common']);
@@ -62,6 +62,17 @@ const OnlineHome: () => JSX.Element = () => {
     };
   }, []);
   // -----------------  End detect screen size ----------------- //
+
+  // On mobile, jump to the AQI gauge when a new sensor is clicked
+  useEffect(() => {
+    if (isMobile) {
+      if (selectedSensor.sensorDocId !== '') {
+        setShowGaugeUi(true);
+        const href = '#aqiGauge';
+        window.location.replace(href);
+      }
+    }
+  }, [selectedSensor, isMobile]);
 
   return (
     <Box>
@@ -167,6 +178,7 @@ const OnlineHome: () => JSX.Element = () => {
                 width="100%"
                 justifyContent="center"
                 alignContent="center"
+                id="aqiGauge"
               >
                 {selectedSensor.sensorDocId ? (
                   <AqiDial selectedSensor={selectedSensor} />
