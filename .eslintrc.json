@@ -152,6 +152,7 @@
           "Subcollection",
           "Reauthenticate",
           "reauthenticating",
+          "Reauthenticated",
           "Fi"
         ],
         "skipWords": [

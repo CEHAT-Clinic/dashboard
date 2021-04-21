@@ -50,6 +50,12 @@
         "step3": "Seleccione <<Agregar a Inicio>>",
         "step4": "Toca <<Agregar>> en la esquina superior derecha"
     },
+    "noSensorInArea": {
+        "heading": "¿No hay sensores en su área?",
+        "part1": "Algunos zonas en South Gate están más representadas en nuestro mapa que otras. Cada sensor en el mapa está ubicado físicamente en algún lugar, normalmente en el patio de un residente generoso de South Gate. Si hay un área de la ciudad que le gustaría ver en el mapa, ¡contáctenos en ",
+        "or": " o ",
+        "part2": " y háganoslo saber! Es especialmente útil si conoce a alguien en el área que esté dispuesto a instalar un sensor en su patio (el sensor requiere wifi y un enchufe)."
+    },
     "acknowledge": {
         "heading": "Agradecimientos",
         "clinic": "Este sitio web fue creado en colaboración con El Programa Clínico de Harvey Mudd College, una experiencia de toque final para los estudiantes de The Claremont Colleges en la que equipos de 4 a 5 estudiantes colaboran para solucionar problemas tecnológicos de empresas y organizaciones.",

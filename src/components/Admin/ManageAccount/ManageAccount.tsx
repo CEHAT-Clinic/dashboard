@@ -8,6 +8,7 @@ import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {AccountDeleted} from '../AccountDeleted';
 import {DeleteAccountPopover} from './DeleteAccountPopover';
+import {AddPasswordModal} from './AddPassword';
 
 /**
  * Component for a user to manage their own account information.
@@ -17,7 +18,7 @@ const ManageAccount: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {
     isAuthenticated,
-    isLoading: fetchingAuthContext,
+    isLoading,
     name,
     email,
     isDeleted,
@@ -28,7 +29,7 @@ const ManageAccount: () => JSX.Element = () => {
 
   const {t} = useTranslation('administration');
 
-  if (fetchingAuthContext) {
+  if (isLoading) {
     return <Loading />;
   } else if (!isAuthenticated) {
     return <AccessDenied reason={t('notSignedIn')} />;
@@ -70,7 +71,7 @@ const ManageAccount: () => JSX.Element = () => {
           <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
           </Heading>
-          {passwordUser && <ChangePasswordModal />}
+          {passwordUser ? <ChangePasswordModal /> : <AddPasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Divider marginY={2} />
           <Heading fontSize="lg" as="h2" textAlign="left">
