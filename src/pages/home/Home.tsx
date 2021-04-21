@@ -13,8 +13,8 @@ const Home: () => JSX.Element = () => {
     if (status) {
       // When moving online, delay so the rest of the home page can react
       // to the network status change
-      const twoSeconds = 2000;
-      setTimeout(() => setOnlineStatus(status), twoSeconds);
+      const tenSeconds = 10000;
+      setTimeout(() => setOnlineStatus(status), tenSeconds);
     } else {
       setOnlineStatus(status);
     }
