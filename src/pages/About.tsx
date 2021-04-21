@@ -177,7 +177,18 @@ const About: React.FC = () => {
           <Text paddingY={1}>{t('purpleAir.part2')}</Text>
         </Section>
         <Section id="sensorsDown" title={t('sensorsDown.heading')}>
-          <Text paddingY={1}> {t('sensorsDown.part1')} </Text>
+          <Text paddingY={1}>
+            {t('sensorsDown.part1a')}
+            <Link
+              color={LinkColor}
+              href="https://usepa.servicenowservices.com/airnow?id=kb_article_view&sysparm_article=KB0011856&sys_kb_id=fed0037b1b62545040a1a7dbe54bcbd4&spa=1"
+              isExternal
+            >
+              {t('sensorsDown.part1Link')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('sensorsDown.part1b')}
+          </Text>
           <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
           <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
         </Section>
