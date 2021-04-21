@@ -152,7 +152,7 @@ const ChangeNameModal: () => JSX.Element = () => {
                       </FormHelperText>
                     </FormControl>
                     <SubmitButton
-                      label={t('nameModal.submitButton')}
+                      label={t('common:submit')}
                       isLoading={modalIsLoading}
                       error={error}
                       isDisabled={!readyToSubmit}

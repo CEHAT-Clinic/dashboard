@@ -4,70 +4,48 @@ import {
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Text,
   Button,
   Box,
-  Flex,
   FormControl,
   FormLabel,
   Input,
   FormErrorMessage,
 } from '@chakra-ui/react';
-import {CheckCircleIcon} from '@chakra-ui/icons';
-import {handleReauthenticationWithPassword} from './Util';
-import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
+import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
-
-/**
- * Props for ChangeEmailModal component
- * - `passwordUser` - if the signed in user is a password-based user
- */
-interface ChangeEmailModalProps {
-  passwordUser: boolean;
-}
+import {Reauthentication} from './Reauthentication';
 
 /**
  * Component for changing an authenticated user's email. Includes button that
  * opens modal to update the user's email.
- * @param passwordUser - if user uses a password for authentication, used to reauthenticate if necessary before updating the user's email
  */
-const ChangeEmailModal: ({
-  passwordUser,
-}: ChangeEmailModalProps) => JSX.Element = ({
-  passwordUser,
-}: ChangeEmailModalProps) => {
+const ChangeEmailModal: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
-
-  // Current password state variables
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const [newEmail, setNewEmail] = useState('');
   const [error, setError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
-  const [emailChangeComplete, setEmailChangeComplete] = useState(false);
+  // TODO: after reauth, the modal closes
+  const [reauthenticated, setReauthenticated] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
   const {t} = useTranslation(['administration', 'common']);
+
+  const readyToSubmit = error === '' && newEmail !== '' && reauthenticated;
 
   /**
    * Resets modal state values before closing the modal.
    */
   function handleClose() {
-    setPassword('');
-    setPasswordError('');
-    setPasswordVisible(false);
     setNewEmail('');
     setError('');
     setModalIsLoading(false);
-    setEmailChangeComplete(false);
+    setReauthenticated(false);
     onClose();
   }
 
@@ -100,51 +78,16 @@ const ChangeEmailModal: ({
 
   /**
    * Updates the user's email in Firebase and in their Firestore user doc
+   * @param event - submit form event
    */
-  function updateEmail(): Promise<void> {
-    // TODO: What happens to the user's password?
-    // What happens if the user is a Google user only and they update their password?
+  function updateEmail(event: React.FormEvent<HTMLFormElement>): Promise<void> {
+    event.preventDefault();
     return updateEmailInFirebase()
       .then(updateUserDoc)
-      .then(() => setEmailChangeComplete(true))
+      .then(handleClose)
       .catch(error =>
         setError(t('common:generalErrorTemplate') + error.message)
       );
-  }
-
-  /**
-   * Updates an authenticated user using Firebase authentication
-   * @param event - submit form event
-   */
-  function handleEmailUpdate(
-    event: React.FormEvent<HTMLFormElement>
-  ): Promise<void> {
-    event.preventDefault();
-    setModalIsLoading(true);
-
-    // Verify that the inputted password is correct before proceeding
-    if (passwordUser) {
-      return handleReauthenticationWithPassword(password, t)
-        .then(error => {
-          if (error) {
-            // This error can be handled by the user
-            setPasswordError(error);
-            setModalIsLoading(false);
-            return Promise.resolve();
-          } else {
-            // No error, so proceed with name update
-            return updateEmail().finally(() => setModalIsLoading(false));
-          }
-        })
-        .catch(error => {
-          // Propagate the error, since this error cannot be handled by the user
-          throw new Error(error);
-        })
-        .finally(() => setModalIsLoading(false));
-    } else {
-      // If user is not a password-based user, proceed with updating the name
-      return updateEmail().finally(() => setModalIsLoading(false));
-    }
   }
 
   return (
@@ -157,63 +100,36 @@ const ChangeEmailModal: ({
         <ModalContent>
           <ModalHeader>{t('emailModal.header')}</ModalHeader>
           <ModalCloseButton />
-          <form onSubmit={handleEmailUpdate}>
-            {emailChangeComplete ? (
-              <Flex alignItems="center" justifyContent="center" marginTop="1em">
-                <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">{t('nameModal.success')}</Text>
-              </Flex>
-            ) : (
-              <ModalBody>
-                <Box marginY={1}>
-                  {passwordUser && (
-                    <PasswordFormInput
-                      label={t('password')}
-                      handlePasswordChange={event => {
-                        setPassword(event.target.value);
-                        setError('');
-                        setPasswordError('');
-                      }}
-                      showPassword={passwordVisible}
-                      handlePasswordVisibility={() => {
-                        setPasswordVisible(!passwordVisible);
-                      }}
-                      error={passwordError}
-                      value={password}
-                      helpMessage={t('passwordHelpMessage')}
-                    />
-                  )}
-                  <FormControl
-                    isRequired
-                    marginTop={4}
-                    isInvalid={error !== ''}
-                  >
-                    <FormLabel>{t('email')}</FormLabel>
-                    <Input
-                      type="email"
-                      placeholder="bob@example.com"
-                      size="md"
-                      onChange={event => {
-                        setNewEmail(event.target.value);
-                        setError('');
-                      }}
-                      value={newEmail}
-                    />
-                    <FormErrorMessage>{error}</FormErrorMessage>
-                  </FormControl>
-                </Box>
-              </ModalBody>
-            )}
-            <ModalFooter justifyContent="center">
-              {!emailChangeComplete && (
+          <ModalBody>
+            <form onSubmit={updateEmail}>
+              <Box marginY={1}>
+                <Reauthentication
+                  reauthenticated={reauthenticated}
+                  setReauthenticated={setReauthenticated}
+                />
+                <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
+                  <FormLabel>{t('email')}</FormLabel>
+                  <Input
+                    type="email"
+                    placeholder="bob@example.com"
+                    size="md"
+                    onChange={event => {
+                      setNewEmail(event.target.value);
+                      setError('');
+                    }}
+                    value={newEmail}
+                  />
+                  <FormErrorMessage>{error}</FormErrorMessage>
+                </FormControl>
                 <SubmitButton
                   label={t('common:submit')}
                   isLoading={modalIsLoading}
                   error={error}
+                  isDisabled={!readyToSubmit}
                 />
-              )}
-            </ModalFooter>
-          </form>
+              </Box>
+            </form>
+          </ModalBody>
         </ModalContent>
       </Modal>
     </Box>

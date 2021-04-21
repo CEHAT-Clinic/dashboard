@@ -1,5 +1,13 @@
 import React, {useState} from 'react';
-import {Box, Heading, Text, Flex, Button, Divider} from '@chakra-ui/react';
+import {
+  Box,
+  Heading,
+  Text,
+  Flex,
+  Button,
+  Divider,
+  CircularProgress,
+} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import ChangePasswordModal from './ChangePassword';
@@ -33,18 +41,30 @@ const ManageAccount: () => JSX.Element = () => {
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
+  // TODO: add translations
   const {t} = useTranslation(['administration', 'common']);
 
-  // TODO: make this happen on click
-  function sendEmailVerificationEmail() {
+  /**
+   * Sends an email verification email to the user. If the user clicks on the
+   * link they receive in the email, they will be verified.
+   * @param event - click button event
+   * @returns a promise that when resolved means the email verification has been sent to a user
+   */
+  function sendEmailVerificationEmail(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): Promise<void> {
+    event.preventDefault();
     if (isAuthenticated && firebaseAuth.currentUser && !verificationEmailSent) {
-      const user = firebaseAuth.currentUser;
-      user
+      setSendingEmail(true);
+      return firebaseAuth.currentUser
         .sendEmailVerification()
-        .then(() => setVerificationEmailSent(true))
-        .catch(error => {
-          setError('Unable to send confirmation email');
-        });
+        .then(() => {
+          setSendingEmail(false);
+          setVerificationEmailSent(true);
+        })
+        .catch(() => setError('Unable to send confirmation email'));
+    } else {
+      return firebaseAuth.signOut();
     }
   }
 
@@ -55,6 +75,10 @@ const ManageAccount: () => JSX.Element = () => {
   } else if (isDeleted) {
     return <AccountDeleted />;
   } else {
+    const success =
+      'Verification email sent. Refresh the page to be able to re-send the email, or to check that you successfully verified your email.';
+
+    const please = 'Please verify your email';
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
@@ -71,16 +95,33 @@ const ManageAccount: () => JSX.Element = () => {
           <Heading textAlign="left" fontSize="lg" as="h2">
             {t('email')}
           </Heading>
-          <Text textAlign="left" fontSize="md">
+          <Text textAlign="left" fontSize="md" marginY={1}>
             {email}
           </Text>
-          {!emailVerified && !verificationEmailSent && (
-            <Button onClick={sendEmailVerificationEmail}>
-              {t('manageAccount.sendEmailVerificationEmail')}
-            </Button>
+          {!emailVerified && (
+            <Text
+              textAlign="left"
+              fontSize="md"
+              textColor="red.500"
+              marginY={2}
+            >
+              {please}
+            </Text>
           )}
-          {/* TODO: add message for "Verification email sent. Refresh the page to send the email again" */}
-          <ChangeEmailModal passwordUser={passwordUser} />
+          {!emailVerified &&
+            (verificationEmailSent ? (
+              <Text>{success}</Text>
+            ) : (
+              <Button onClick={sendEmailVerificationEmail} colorScheme="teal">
+                {sendingEmail ? (
+                  <CircularProgress isIndeterminate size="24px" color="teal" />
+                ) : (
+                  t('manageAccount.sendEmailVerificationEmail')
+                )}
+              </Button>
+            ))}
+          <Text textColor="red.500">{error}</Text>
+          <ChangeEmailModal />
           <Divider marginY={2} />
           <Heading textAlign="left" fontSize="lg" as="h2">
             {t('name')}
