@@ -7,6 +7,7 @@ import {aqiCutoffs} from '../../util';
 import {InvalidSensor} from './InvalidSensor';
 import {SelectedSensor} from '../../util';
 import {LinkColor} from '../Util/Colors';
+import {MoreInfoLabel} from '../Util/MoreInfoLabel';
 
 /**
  * AqiLabelProps
@@ -90,7 +91,7 @@ interface DialProps {
 const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
   selectedSensor,
 }: DialProps) => {
-  const {t} = useTranslation(['dial', 'menu']);
+  const {t} = useTranslation(['dial', 'menu', 'common']);
   if (selectedSensor.isValid) {
     return (
       <Flex
@@ -104,10 +105,14 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
           <Center flexDir="column">
             <Text fontWeight="semibold">Sensor: {selectedSensor.name}</Text>
             <GaugeSvg currentAqi={selectedSensor.aqi} />
+            <MoreInfoLabel
+              fontWeight="bold"
+              fontSize="3xl"
+              text={t('aqi') + selectedSensor.aqi}
+              popoverLabel={t('common:aqiHelpHeading')}
+              message={t('common:aqiHelpMessage')}
+            />
           </Center>
-          <Text fontWeight="bold" fontSize={30}>
-            {t('aqi') + selectedSensor.aqi}
-          </Text>
           <Text fontStyle="italic" fontSize={14} mb={2}>
             {t('moreInfo')}
             <Link fontSize={14} color={LinkColor} href="/health">

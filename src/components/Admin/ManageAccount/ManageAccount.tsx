@@ -1,14 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {Box, Heading, Text, Flex, Button, Divider} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import ChangePasswordModal from './ChangePassword';
-import {firebaseAuth} from '../../../firebase/firebase';
 import Loading from '../../Util/Loading';
 import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {AccountDeleted} from '../AccountDeleted';
+import {DeleteAccountPopover} from './DeleteAccountPopover';
+import {AddPasswordModal} from './AddPassword';
 import ChangeEmailModal from './ChangeEmail';
+import {firebaseAuth} from '../../../firebase/firebase';
 
 /**
  * Component for a user to manage their own account information.
@@ -18,16 +20,16 @@ const ManageAccount: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {
     isAuthenticated,
-    isLoading: fetchingAuthContext,
+    isLoading,
     name,
     email,
     isDeleted,
     emailVerified,
+    googleUser,
+    passwordUser,
   } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
-  const [passwordUser, setPasswordUser] = useState(false);
-  const [googleUser, setGoogleUser] = useState(false);
   const [error, setError] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
@@ -41,36 +43,12 @@ const ManageAccount: () => JSX.Element = () => {
         .sendEmailVerification()
         .then(() => setVerificationEmailSent(true))
         .catch(error => {
-          setError(t('common:generalErrorTemplate') + error.message);
+          setError('Unable to send confirmation email');
         });
     }
   }
 
-  // Runs on mount and on authentication status change
-  useEffect(() => {
-    if (isAuthenticated && firebaseAuth.currentUser) {
-      // Fetch sign in methods
-      if (email) {
-        setIsLoading(true);
-        firebaseAuth
-          .fetchSignInMethodsForEmail(email)
-          .then(methods => {
-            if (methods.includes('password')) setPasswordUser(true);
-            if (methods.includes('google.com')) setGoogleUser(true);
-          })
-          .catch(error => {
-            if (error.code === 'auth/invalid-email' && email) {
-              setError(t('invalidEmailShort') + email);
-            } else {
-              setError(`${t('manageAccount.methodFetchError')}: ${error}`);
-            }
-          })
-          .finally(() => setIsLoading(false));
-      }
-    }
-  }, [isAuthenticated, email, t]);
-
-  if (isLoading || fetchingAuthContext) {
+  if (isLoading) {
     return <Loading />;
   } else if (!isAuthenticated) {
     return <AccessDenied reason={t('notSignedIn')} />;
@@ -114,15 +92,19 @@ const ManageAccount: () => JSX.Element = () => {
           >
             {name ? name : t('noName')}
           </Text>
-          <ChangeNameModal passwordUser={passwordUser} />
+          <ChangeNameModal />
           <Divider marginY={2} />
           <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
           </Heading>
-          {passwordUser && <ChangePasswordModal />}
+          {passwordUser ? <ChangePasswordModal /> : <AddPasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
           <Divider marginY={2} />
-          <Text color="red.500">{error}</Text>
+          <Heading fontSize="lg" as="h2" textAlign="left">
+            {t('deleteAccount.heading')}
+          </Heading>
+          <DeleteAccountPopover />
+          <Divider marginY={2} />
           <Button as="a" href="/admin" margin={1}>
             {t('returnAdmin')}
           </Button>
