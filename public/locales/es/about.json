@@ -33,6 +33,22 @@
         "part2": "Los sensores PurpleAir nos caen bien porque son económicos y relativamente precisos considerando su precio. Dicho esto, no son tan confiables como algunos sensores más caros, lo que significa que a veces los valores que producen los sensores son insuficientes para calcular el AQI. Esto podría ser muy temporal (una cuestión de minutos u horas) o podría durar más tiempo. Si un sensor ha estado inactivo durante mucho tiempo, probablemente significa que el sensor ya no está conectado al Internet o que tiene un problema de hardware más grave.",
         "part3": "Si un sensor en tu área ha estado inactivo durante mucho tiempo, por favor contáctanos y nos comunicaremos con el anfitrión del sensor para tratar de resolver el problema."
     },
+    "app":{
+        "heading": "Instale este sitio web como una aplicación",
+        "body": "Si tiene un smartphone Android o un iPhone, puede descargar este sitio web como una aplicación en su pantalla de inicio siguiendo estas instrucciones.",
+        "iPhone" : {
+            "heading": "En un iPhone:",
+            "step1": "Abra este sitio web en Safari",
+            "step2": "Toque el icono de compartir en la parte inferior de la pantalla"
+        },
+        "android" : {
+            "heading":"En un Android:",
+            "step1": "Abra este sitio web en Google Chrome",
+            "step2": "Toque el menú de Chrome ("
+        },
+        "step3": "Seleccione <<Agregar a Inicio>>",
+        "step4": "Toque <<Agregar>> en la esquina superior derecha"
+    },
     "noSensorInArea": {
         "heading": "¿No hay sensores en su área?",
         "part1": "Algunos zonas en South Gate están más representadas en nuestro mapa que otras. Cada sensor en el mapa está ubicado físicamente en algún lugar, normalmente en el patio de un residente generoso de South Gate. Si hay un área de la ciudad que le gustaría ver en el mapa, ¡contáctenos en ",
