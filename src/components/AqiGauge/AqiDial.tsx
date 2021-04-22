@@ -106,7 +106,7 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
             <MoreInfoLabel
               fontFamily="Oxygen"
               fontSize="lg"
-              text={t('common:noSensorGauge')}
+              text={t('common:instructions')}
               popoverLabel={t('common:aqiHelpHeading')}
               message={t('common:aqiHelpMessage')}
             />
@@ -146,7 +146,7 @@ const AqiDial: ({selectedSensor}: DialProps) => JSX.Element = ({
         <MoreInfoLabel
           fontFamily="Oxygen"
           fontSize="lg"
-          text={t('common:noSensorGauge')}
+          text={t('common:instructions')}
           popoverLabel={t('common:aqiHelpHeading')}
           message={t('common:aqiHelpMessage')}
         />

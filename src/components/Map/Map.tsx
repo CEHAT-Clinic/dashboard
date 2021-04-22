@@ -210,7 +210,17 @@ class Map extends React.Component<MapProps> {
               isValid: data.isValid,
               lastValidAqiTime: data.lastValidAqiTime,
             };
+            // Set selected sensor
             this.props.updateSelectedSensor(selectedSensor);
+            // Update icon of currently selected sensor
+            const updatedIcon = createSensorIcon(
+              data.aqi,
+              false,
+              true,
+              this.props.currentColorScheme,
+              data.isValid
+            );
+            firstSensor.setIcon(updatedIcon);
           }
         }
       }
