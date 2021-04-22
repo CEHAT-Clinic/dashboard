@@ -43,24 +43,24 @@ const ErrorTag: ({name, explanation}: ErrorTagProps) => JSX.Element = ({
           {name}
         </Button>
       </PopoverTrigger>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverHeader>
-            <Flex alignItems="center" justifyContent="center">
-              <HStack>
-                <WarningTwoIcon color="red.500" />
-                <Heading size="md" textAlign="center">
-                  {name}
-                </Heading>
-                <WarningTwoIcon color="red.500" />
-              </HStack>
-            </Flex>
-          </PopoverHeader>
-          <PopoverCloseButton />
-          <PopoverBody>
-            <Text>{explanation}</Text>
-          </PopoverBody>
-        </PopoverContent>
+      <PopoverContent>
+        <PopoverArrow />
+        <PopoverHeader>
+          <Flex alignItems="center" justifyContent="center">
+            <HStack>
+              <WarningTwoIcon color="red.500" />
+              <Heading size="md" textAlign="center">
+                {name}
+              </Heading>
+              <WarningTwoIcon color="red.500" />
+            </HStack>
+          </Flex>
+        </PopoverHeader>
+        <PopoverCloseButton />
+        <PopoverBody>
+          <Text>{explanation}</Text>
+        </PopoverBody>
+      </PopoverContent>
     </Popover>
   );
 };
