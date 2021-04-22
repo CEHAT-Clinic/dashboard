@@ -10,5 +10,5 @@
     "jumpTo": "Salta a",
     "aqiHelpHeading": "¿Qué es AQI?",
     "aqiHelpMessage": "AQI es el índice de la calidad del aire. Es el estándar nacional para indicar si el aire está bien o mal. Los números más bajos indican aire más saludable, mientras que los números más altos indican aire más peligroso.",
-    "instructions": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire AQI aquí!"
+    "instructions": "¡Haz clic en un sensor en el mapa para ver el AQI aquí!"
 }
