@@ -1,22 +1,17 @@
 import React, {useState} from 'react';
 import {
-  Popover,
-  PopoverTrigger,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  useDisclosure,
+  ModalBody,
+  ModalCloseButton,
   Button,
-  Portal,
-  PopoverArrow,
-  PopoverContent,
-  PopoverHeader,
-  PopoverCloseButton,
-  PopoverBody,
   Text,
-  Heading,
-  Flex,
-  HStack,
   Center,
   Box,
 } from '@chakra-ui/react';
-import {WarningTwoIcon} from '@chakra-ui/icons';
 import firebase, {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
@@ -29,10 +24,20 @@ import {Reauthentication} from './Reauthentication';
  */
 const UnlinkGooglePopover: () => JSX.Element = () => {
   const {passwordUser, googleUser, setGoogleUser} = useAuth();
+  const {isOpen, onOpen, onClose} = useDisclosure();
 
   const [error, setError] = useState('');
   const [reauthenticated, setReauthenticated] = useState(false);
   const {t} = useTranslation(['administration', 'common']);
+
+  /**
+   * Resets state and closes the modal
+   */
+  function handleClose(): void {
+    setError('');
+    setReauthenticated(false);
+    onClose();
+  }
 
   /**
    * Unlinks a user's account from Google when their email is changed, if their
@@ -51,26 +56,16 @@ const UnlinkGooglePopover: () => JSX.Element = () => {
   }
 
   return (
-    <Popover placement="auto">
-      <PopoverTrigger>
-        <Button colorScheme="red">{t('unlinkGoogle.heading')}</Button>
-      </PopoverTrigger>
-      <Portal>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverHeader>
-            <Flex alignItems="center" justifyContent="center">
-              <HStack>
-                <WarningTwoIcon color="red.500" />
-                <Heading size="md" textAlign="center">
-                  {t('unlinkGoogle.heading')}
-                </Heading>
-                <WarningTwoIcon color="red.500" />
-              </HStack>
-            </Flex>
-          </PopoverHeader>
-          <PopoverCloseButton />
-          <PopoverBody>
+    <Box>
+      <Button onClick={onOpen} colorScheme="red">
+        {t('unlinkGoogle.heading')}
+      </Button>
+      <Modal isOpen={isOpen} onClose={handleClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{t('unlinkGoogle.heading')}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
             {!passwordUser ? (
               <Text textColor="red.500">
                 {'Add a password to your account first'}
@@ -96,10 +91,10 @@ const UnlinkGooglePopover: () => JSX.Element = () => {
                 <Text textColor="red.500">{error}</Text>
               </Box>
             )}
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
-    </Popover>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </Box>
   );
 };
 

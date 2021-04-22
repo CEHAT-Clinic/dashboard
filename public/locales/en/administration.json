@@ -88,6 +88,7 @@
     },
     "manageAccount":{
         "connectedToGoogle": "Account connected to Google",
+        "connectToGoogle": "If your email is a Google email, connect your account to Google by signing in with Google on the Sign In page.",
         "heading": "Manage Your Account",
         "manageSignInMethodsHeader": "Manage Sign In Methods",
         "sendVerificationEmail": "Send Verification Email",

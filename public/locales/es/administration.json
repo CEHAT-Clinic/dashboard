@@ -88,6 +88,7 @@
     },
     "manageAccount":{
         "connectedToGoogle": "Cuenta conectada con Google",
+        "connectToGoogle": "Si tu correo electrónico es un correo electrónico de Google, conecte tu cuenta a Google iniciando sesión con Google en la página Iniciar Sesión.",
         "heading": "Administra tu cuenta",
         "manageSignInMethodsHeader": "Administra métodos de inicio de sesión",
         "sendVerificationEmail": "Enviar correo electrónico de verificación",
