@@ -63,34 +63,37 @@ function ForgotPasswordModal(): JSX.Element {
    * sent, then this will create a password and the user will be able to sign in
    * via Google authentication or email/password authentication in the future.
    */
-  async function handlePasswordReset(event: React.FormEvent<HTMLFormElement>) {
+  function handlePasswordReset(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
     setModalIsLoading(true);
-    try {
-      await firebaseAuth.sendPasswordResetEmail(modalEmail);
-      setEmailSent(true);
-      setModalEmail('');
-    } catch (error) {
-      // Error codes from Firebase documentation
-      switch (error.code) {
-        case 'auth/invalid-email': {
-          setModalError('Email address is not valid');
-          break;
+    return firebaseAuth
+      .sendPasswordResetEmail(modalEmail)
+      .then(() => {
+        setEmailSent(true);
+        setModalEmail('');
+      })
+      .catch(error => {
+        // Error codes from Firebase documentation
+        switch (error.code) {
+          case 'auth/invalid-email': {
+            setModalError('Email address is not valid');
+            break;
+          }
+          case 'auth/user-not-found': {
+            setModalError(t('userNotFound') + modalEmail);
+            break;
+          }
+          default: {
+            setModalError(t('emailSendFailure'));
+            break;
+          }
         }
-        case 'auth/user-not-found': {
-          setModalError(t('userNotFound') + modalEmail);
-          break;
-        }
-        default: {
-          setModalError(t('emailSendFailure'));
-          break;
-        }
-      }
-    } finally {
-      setModalIsLoading(false);
-    }
+      })
+      .finally(() => setModalIsLoading(false));
   }
 
   return (

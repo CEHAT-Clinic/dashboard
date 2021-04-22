@@ -91,7 +91,9 @@ function ChangePasswordModal(): JSX.Element {
    * Updates an authenticated user using Firebase authentication
    * @param event - submit form event
    */
-  async function handlePasswordUpdate(event: React.FormEvent<HTMLFormElement>) {
+  function handlePasswordUpdate(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
@@ -101,36 +103,41 @@ function ChangePasswordModal(): JSX.Element {
     if (newPassword !== confirmNewPassword) {
       setConfirmNewPasswordError(t('passwordMismatch'));
       setModalIsLoading(false);
+      return Promise.resolve();
     } else {
-      const error = await handleReauthenticationWithPassword(
-        currentPassword,
-        t
-      );
-      if (error) {
-        setCurrentPasswordError(error);
-      } else {
-        // Now that user is successfully reauthenticated, attempt to update password
-        try {
-          await firebaseAuth.currentUser.updatePassword(newPassword);
-          resetFormFields();
-          resetErrors();
-          setPasswordResetComplete(true);
-        } catch (error) {
-          // Error codes from Firebase documentation
-          switch (error.code) {
-            case 'auth/weak-password': {
-              setNewPasswordError(t('notStrongEnough'));
-              break;
-            }
-            default: {
-              setGeneralModalError(t('unknownError') + error.message);
-              break;
-            }
+      return handleReauthenticationWithPassword(currentPassword, t).then(
+        error => {
+          if (error) {
+            setCurrentPasswordError(error);
+            return Promise.resolve();
+          } else {
+            if (!firebaseAuth.currentUser) throw Error(t('userUndefined'));
+            // Now that user is successfully reauthenticated, attempt to update password
+            return firebaseAuth.currentUser
+              .updatePassword(newPassword)
+              .then(() => {
+                resetFormFields();
+                resetErrors();
+                setPasswordResetComplete(true);
+              })
+              .catch(error => {
+                // Error codes from Firebase documentation
+                switch (error.code) {
+                  case 'auth/weak-password': {
+                    setNewPasswordError(t('notStrongEnough'));
+                    break;
+                  }
+                  default: {
+                    setGeneralModalError(t('unknownError') + error.message);
+                    break;
+                  }
+                }
+                resetFormFields();
+                setModalIsLoading(false);
+              });
           }
         }
-      }
-      resetFormFields();
-      setModalIsLoading(false);
+      );
     }
   }
 
