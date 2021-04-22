@@ -24,7 +24,7 @@ const OnlineHome: () => JSX.Element = () => {
     lastValidAqiTime: null,
   });
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 52em)')?.matches ?? false
+    window.matchMedia('(max-width: 55em)')?.matches ?? false
   );
   const [showGraphUi, setShowGraphUi] = useState(false);
   const [showGaugeUi, setShowGaugeUi] = useState(true);
@@ -50,7 +50,7 @@ const OnlineHome: () => JSX.Element = () => {
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 52em)');
+    const screenSize = window.matchMedia('(max-width: 55em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
