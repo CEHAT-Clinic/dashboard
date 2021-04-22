@@ -109,7 +109,7 @@ const ChangeNameModal: () => JSX.Element = () => {
   return (
     <Box marginY={2}>
       <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
-        {t('nameModal.launchButton')}
+        {t('nameModal.header')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
@@ -152,7 +152,7 @@ const ChangeNameModal: () => JSX.Element = () => {
                       </FormHelperText>
                     </FormControl>
                     <SubmitButton
-                      label={t('nameModal.submitButton')}
+                      label={t('common:submit')}
                       isLoading={modalIsLoading}
                       error={error}
                       isDisabled={!readyToSubmit}

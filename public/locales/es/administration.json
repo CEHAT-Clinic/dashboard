@@ -40,11 +40,14 @@
         "forgot": "Envia el correo electrónico"
     },
     "nameModal": {
-        "launchButton": "Actualiza tu nombre",
         "header": "Actualiza tu nombre",
-        "submitButton": "Actualiza tu nombre",
         "success": "Nombre actualizado",
         "formHelperMessage": "Tu nombre se usa para que los administradores del sitio puedan identificar tu cuenta"
+    },
+    "emailModal": {
+        "header": "Actualiza tu correo electrónico",
+        "addPassword": "Para poder cambiar tu correo electrónico, agrega una contraseña a tu cuenta y desconecta tu cuenta de Google.",
+        "sameEmail": "Tu correo electrónico nuevo es el mismo que tu correo electrónico actual."
     },
     "signIn": {
         "google": "Inicia sesión con Google",
@@ -84,10 +87,14 @@
         "shouldHaveAccess": "Si crees que debes de tener acceso a esta págino, por favor, contacta a un administrador o un miembro del CEHAT de South Gate."
     },
     "manageAccount":{
-        "methodFetchError": "Occurió un error al recoger metódos de inciar sesión",
         "connectedToGoogle": "Cuenta conectada con Google",
+        "connectToGoogle": "Si tu correo electrónico es un correo electrónico de Google, conecte tu cuenta a Google iniciando sesión con Google en la página Iniciar Sesión.",
         "heading": "Administra tu cuenta",
-        "manageSignInMethodsHeader": "Administra métodos de inicio de sesión"
+        "manageSignInMethodsHeader": "Administra métodos de inicio de sesión",
+        "sendVerificationEmail": "Enviar correo electrónico de verificación",
+        "verificationEmailSent": "El mensaje de verificación ha sido enviado. Regarga la página para poder reenviar el correo electrónico o para verificar que hayas verificado correctamente tu correo electrónico.",
+        "verifyEmail": "Por favor verifica tu correo electrónico",
+        "verificationEmailError": "No se pudo enviar el correo electrónico de verificación"
     },
     "returnAdmin": "Regresa a la página administrativa",
     "notSignedIn": "no has iniciado la sesión",
@@ -137,5 +144,10 @@
         "explanation": "Es necesario volver a autenticar tus credenciales antes de actualizar tu cuenta. ",
         "choose": "Puede optar por volver a autenticarte utilizando tu cuenta de Google o tu contraseña.",
         "success": "Tú has sido autenticado."
+    },
+    "unlinkGoogle": {
+        "heading": "Desvincular cuenta de Google",
+        "password": "Para poder desvincular tu cuenta de Google, primero agrega una contraseña a tu cuenta.",
+        "error": "No se puede desvincular la cuenta de Google"
     }
 }
