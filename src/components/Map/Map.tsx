@@ -221,6 +221,8 @@ class Map extends React.Component<MapProps> {
               data.isValid
             );
             firstSensor.setIcon(updatedIcon);
+            // Update the state of the selected Sensor
+            this.setState({selectedSensor: firstSensor});
           }
         }
       }
