@@ -41,7 +41,7 @@ const OnlineHome: () => JSX.Element = () => {
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
     if (this.matches) {
-      // True when the screen-width is at most 52em
+      // True when the screen-width is at most 55em
       setIsMobile(true);
     } else {
       setIsMobile(false);
