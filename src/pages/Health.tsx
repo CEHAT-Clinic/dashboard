@@ -22,7 +22,7 @@ import {Section} from '../components/Static/Section';
 const Health: React.FC = () => {
   const {t, i18n} = useTranslation(['health', 'common']);
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
+    window.matchMedia('(max-width: 55em)')?.matches ?? false
   );
   // -------- Detect screen size for conditional formatting --------- //
   /**
@@ -43,7 +43,7 @@ const Health: React.FC = () => {
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 47.9em)');
+    const screenSize = window.matchMedia('(max-width: 55em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
