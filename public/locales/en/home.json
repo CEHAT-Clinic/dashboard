@@ -1,5 +1,4 @@
 {
-    "noSensorGauge": "Click a sensor on the map to see its AQI value here!",
     "dataVizBox": "Data Visualization Box",
     "expandMap": "Expand to see the sensor map",
     "expandAqiGauge": "Expand to see information about the selected sensor",
