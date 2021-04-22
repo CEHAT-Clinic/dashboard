@@ -80,7 +80,7 @@ function ForgotPasswordModal(): JSX.Element {
         // Error codes from Firebase documentation
         switch (error.code) {
           case 'auth/invalid-email': {
-            setModalError('Email address is not valid');
+            setModalError(t('invalidEmailShort') + modalEmail);
             break;
           }
           case 'auth/user-not-found': {
