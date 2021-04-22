@@ -87,15 +87,20 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     if (isAuthenticated && firebaseAuth.currentUser) {
       setIsLoading(true);
       const user = firebaseAuth.currentUser;
-      setEmailVerified(user.emailVerified);
+
+      // Email verification info is not stored in a user's document, so if email
+      // verification status changes while a user is on their Manage Account
+      // page, they will need to refresh the page to see their updated email
+      // verification status.
+      setEmailVerified(firebaseAuth.currentUser.emailVerified);
 
       // This creates a listener for changes on the document so that if a user
-      // updates their account information, this change is reflected on the user's
-      // account page.
+      // updates their account information, this change is reflected on the
+      // user's account page.
       const unsubscribe = firestore
         .collection('users')
         .doc(user.uid)
-        .onSnapshot(snapshot => {
+        .onSnapshot(async snapshot => {
           if (snapshot.exists) {
             const userData = snapshot.data();
 
@@ -103,8 +108,12 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               if (typeof userData.admin === 'boolean') {
                 setIsAdmin(userData.admin);
               }
-              if (typeof userData.name === 'string') setName(userData.name);
-              if (typeof userData.email === 'string') setEmail(userData.email);
+              if (typeof userData.name === 'string') {
+                setName(userData.name);
+              }
+              if (typeof userData.email === 'string') {
+                setEmail(userData.email);
+              }
               if (typeof userData.isDeleted === 'boolean') {
                 setIsDeleted(userData.isDeleted);
               }
@@ -120,7 +129,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               isDeleted: false,
               emailVerified: user.emailVerified,
             };
-            firestore
+            await firestore
               .collection('users')
               .doc(user.uid)
               .set(newUserData)
@@ -152,6 +161,12 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
       }
     }
   }, [isAuthenticated, email]);
+
+  useEffect(() => {
+    if (firebaseAuth.currentUser) {
+      setEmailVerified(firebaseAuth.currentUser.emailVerified);
+    }
+  }, [email, emailVerified]);
 
   return (
     <AuthContext.Provider

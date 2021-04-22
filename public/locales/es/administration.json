@@ -46,7 +46,7 @@
     },
     "emailModal": {
         "header": "Actualiza tu correo electrónico",
-        "success": "Correo electrónico actualizado"
+        "addPassword": "Para poder cambiar tu correo electrónico, agrega una contraseña a tu cuenta."
     },
     "signIn": {
         "google": "Inicia sesión con Google",
@@ -86,11 +86,12 @@
         "shouldHaveAccess": "Si crees que debes de tener acceso a esta págino, por favor, contacta a un administrador o un miembro del CEHAT de South Gate."
     },
     "manageAccount":{
-        "methodFetchError": "Occurió un error al recoger metódos de inciar sesión",
         "connectedToGoogle": "Cuenta conectada con Google",
         "heading": "Administra tu cuenta",
         "manageSignInMethodsHeader": "Administra métodos de inicio de sesión",
-        "sendEmailVerificationEmail": "Enviar correo electrónico de verificación"
+        "sendEmailVerificationEmail": "Enviar correo electrónico de verificación",
+        "verificationEmailSent": "El mensaje de verificación ha sido enviado. Regarga la página para poder reenviar el correo electrónico o para verificar que hayas verificado correctamente tu correo electrónico.",
+        "verifyEmail": "Por favor verifica tu correo electrónico"
     },
     "returnAdmin": "Regresa a la página administrativa",
     "notSignedIn": "no has iniciado la sesión",

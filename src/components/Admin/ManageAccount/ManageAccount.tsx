@@ -41,7 +41,6 @@ const ManageAccount: () => JSX.Element = () => {
   const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  // TODO: add translations
   const {t} = useTranslation(['administration', 'common']);
 
   /**
@@ -75,10 +74,6 @@ const ManageAccount: () => JSX.Element = () => {
   } else if (isDeleted) {
     return <AccountDeleted />;
   } else {
-    const success =
-      'Verification email sent. Refresh the page to be able to re-send the email, or to check that you successfully verified your email.';
-
-    const please = 'Please verify your email';
     return (
       <Flex width="full" align="center" justifyContent="center">
         <Box
@@ -105,12 +100,12 @@ const ManageAccount: () => JSX.Element = () => {
               textColor="red.500"
               marginY={2}
             >
-              {please}
+              {t('manageAccount.verifyEmail')}
             </Text>
           )}
           {!emailVerified &&
             (verificationEmailSent ? (
-              <Text>{success}</Text>
+              <Text>{t('manageAccount.verificationEmailSent')}</Text>
             ) : (
               <Button onClick={sendEmailVerificationEmail} colorScheme="teal">
                 {sendingEmail ? (

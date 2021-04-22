@@ -46,7 +46,7 @@
     },
     "emailModal": {
         "header": "Update Email",
-        "success": "Email updated"
+        "addPassword": "To be able to change your email, please add a password to your account."
     },
     "signIn": {
         "google": "Sign in with Google",
@@ -86,11 +86,12 @@
         "shouldHaveAccess": "If you think you should have access to this page, please contact a site administrator or a member of the South Gate CEHAT."
     },
     "manageAccount":{
-        "methodFetchError": "Error occurred when fetching user sign in methods",
         "connectedToGoogle": "Account connected to Google",
         "heading": "Manage Your Account",
         "manageSignInMethodsHeader": "Manage Sign In Methods",
-        "sendEmailVerificationEmail": "Send email verification email"
+        "sendEmailVerificationEmail": "Send Email Verification Email",
+        "verificationEmailSent": "Verification email sent. Refresh the page to be able to re-send the email or to check that you successfully verified your email.",
+        "verifyEmail": "Please verify your email."
     },
     "returnAdmin": "Return to Admin Home",
     "notSignedIn": "you are not signed in",

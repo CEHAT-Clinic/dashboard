@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Modal,
   ModalOverlay,
@@ -12,12 +12,13 @@ import {
   FormControl,
   FormLabel,
   Input,
-  FormErrorMessage,
+  Text,
 } from '@chakra-ui/react';
 import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {Reauthentication} from './Reauthentication';
+import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Component for changing an authenticated user's email. Includes button that
@@ -35,7 +36,18 @@ const ChangeEmailModal: () => JSX.Element = () => {
 
   const {t} = useTranslation(['administration', 'common']);
 
-  const readyToSubmit = error === '' && newEmail !== '' && reauthenticated;
+  // If a user is not a password user, they cannot change their email
+  const {passwordUser, email} = useAuth();
+
+  const readyToSubmit =
+    error === '' && newEmail !== '' && reauthenticated && email !== newEmail;
+  const sameEmail = email === newEmail;
+
+  useEffect(() => {
+    if (sameEmail) {
+      setError('You entered the same email as your current email');
+    }
+  }, [sameEmail]);
 
   /**
    * Resets modal state values before closing the modal.
@@ -83,12 +95,9 @@ const ChangeEmailModal: () => JSX.Element = () => {
     event.preventDefault();
     return updateEmailInFirebase()
       .then(updateUserDoc)
-      .then(handleClose)
       .catch(error => {
-        console.log(error);
         if (error.code === 'auth/email-already-in-use') {
-          // TODO: Translate
-          setError('An account already exists for this email address.');
+          setError('accountExists');
         }
         setError(t('common:generalErrorTemplate') + error.message);
       });
@@ -105,34 +114,41 @@ const ChangeEmailModal: () => JSX.Element = () => {
           <ModalHeader>{t('emailModal.header')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Box marginY={1}>
-              <Reauthentication
-                reauthenticated={reauthenticated}
-                setReauthenticated={setReauthenticated}
-              />
-              <form onSubmit={updateEmail}>
-                <FormControl isRequired marginTop={4} isInvalid={error !== ''}>
-                  <FormLabel>{t('email')}</FormLabel>
-                  <Input
-                    type="email"
-                    placeholder="bob@example.com"
-                    size="md"
-                    onChange={event => {
-                      setNewEmail(event.target.value);
-                      setError('');
-                    }}
-                    value={newEmail}
-                  />
-                  <FormErrorMessage>{error}</FormErrorMessage>
-                </FormControl>
-                <SubmitButton
-                  label={t('common:submit')}
-                  isLoading={modalIsLoading}
-                  error={error}
-                  isDisabled={!readyToSubmit}
+            {passwordUser ? (
+              <Box marginY={1}>
+                <Reauthentication
+                  reauthenticated={reauthenticated}
+                  setReauthenticated={setReauthenticated}
                 />
-              </form>
-            </Box>
+                <form onSubmit={updateEmail}>
+                  <FormControl
+                    isRequired
+                    marginTop={4}
+                    isInvalid={error !== ''}
+                  >
+                    <FormLabel>{t('email')}</FormLabel>
+                    <Input
+                      type="email"
+                      placeholder="bob@example.com"
+                      size="md"
+                      onChange={event => {
+                        setNewEmail(event.target.value);
+                        setError('');
+                      }}
+                      value={newEmail}
+                    />
+                  </FormControl>
+                  <SubmitButton
+                    label={t('common:submit')}
+                    isLoading={modalIsLoading}
+                    error={error}
+                    isDisabled={!readyToSubmit}
+                  />
+                </form>
+              </Box>
+            ) : (
+              <Text>{t('emailModal.addPassword')}</Text>
+            )}
           </ModalBody>
         </ModalContent>
       </Modal>
