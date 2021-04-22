@@ -101,8 +101,16 @@ const ManageSensors: () => JSX.Element = () => {
             <DeleteSensorModal sensors={inactiveSensors} />
             <DeleteOldDataModal />
           </Grid>
-          <SensorTable title={t('activeHeading')} sensors={activeSensors} />
-          <SensorTable title={t('inactiveHeading')} sensors={inactiveSensors} />
+          <SensorTable
+            title={t('activeHeading')}
+            isActive={true}
+            sensors={activeSensors}
+          />
+          <SensorTable
+            title={t('inactiveHeading')}
+            isActive={false}
+            sensors={inactiveSensors}
+          />
           <Button as="a" href="/admin" margin={1}>
             {t('administration:returnAdmin')}
           </Button>
