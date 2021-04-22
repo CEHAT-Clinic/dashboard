@@ -1,10 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalHeader,
-  ModalFooter,
   ModalBody,
   ModalCloseButton,
   useDisclosure,
@@ -17,7 +16,7 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
 import {firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
-import {handleReauthenticationWithPassword} from './Util';
+import {Reauthentication} from './Reauthentication';
 
 /**
  * Component for changing an authenticated user's password. Includes button that
@@ -27,10 +26,7 @@ function ChangePasswordModal(): JSX.Element {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
-  // Current password state variables
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [currentPasswordError, setCurrentPasswordError] = useState('');
-  const [currentPasswordVisible, setCurrentPasswordVisible] = useState(false);
+  const [reauthenticated, setReauthenticated] = useState(false);
 
   // New password state
   const [newPassword, setNewPassword] = useState('');
@@ -50,7 +46,15 @@ function ChangePasswordModal(): JSX.Element {
   const [passwordResetComplete, setPasswordResetComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
+  const passwordsMatch = newPassword === confirmNewPassword;
+  const readyToSubmit = reauthenticated && passwordsMatch && newPassword !== '';
   const {t} = useTranslation(['administration', 'common']);
+
+  useEffect(() => {
+    if (!passwordsMatch) {
+      setConfirmNewPasswordError(t('passwordsMismatch'));
+    }
+  }, [passwordsMatch, t]);
 
   /**
    * Resets modal state values before closing the modal.
@@ -67,9 +71,6 @@ function ChangePasswordModal(): JSX.Element {
    * Resets all form fields and visibility to default values
    */
   function resetFormFields() {
-    setCurrentPassword('');
-    setCurrentPasswordVisible(false);
-
     setNewPassword('');
     setNewPasswordVisible(false);
 
@@ -81,7 +82,6 @@ function ChangePasswordModal(): JSX.Element {
    * Resets all possible errors to no error.
    */
   function resetErrors() {
-    setCurrentPasswordError('');
     setNewPasswordError('');
     setConfirmNewPasswordError('');
     setGeneralModalError('');
@@ -91,47 +91,37 @@ function ChangePasswordModal(): JSX.Element {
    * Updates an authenticated user using Firebase authentication
    * @param event - submit form event
    */
-  async function handlePasswordUpdate(event: React.FormEvent<HTMLFormElement>) {
+  function handlePasswordUpdate(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
     setModalIsLoading(true);
     if (!firebaseAuth.currentUser) throw Error(t('userUndefined'));
 
-    if (newPassword !== confirmNewPassword) {
-      setConfirmNewPasswordError(t('passwordMismatch'));
-      setModalIsLoading(false);
-    } else {
-      const error = await handleReauthenticationWithPassword(
-        currentPassword,
-        t
-      );
-      if (error) {
-        setCurrentPasswordError(error);
-      } else {
-        // Now that user is successfully reauthenticated, attempt to update password
-        try {
-          await firebaseAuth.currentUser.updatePassword(newPassword);
-          resetFormFields();
-          resetErrors();
-          setPasswordResetComplete(true);
-        } catch (error) {
-          // Error codes from Firebase documentation
-          switch (error.code) {
-            case 'auth/weak-password': {
-              setNewPasswordError(t('notStrongEnough'));
-              break;
-            }
-            default: {
-              setGeneralModalError(t('unknownError') + error.message);
-              break;
-            }
+    return firebaseAuth.currentUser
+      .updatePassword(newPassword)
+      .then(() => {
+        resetFormFields();
+        resetErrors();
+        setPasswordResetComplete(true);
+      })
+      .catch(error => {
+        // Error codes from Firebase documentation
+        switch (error.code) {
+          case 'auth/weak-password': {
+            setNewPasswordError(t('notStrongEnough'));
+            break;
+          }
+          default: {
+            setGeneralModalError(t('unknownError') + error.message);
+            break;
           }
         }
-      }
-      resetFormFields();
-      setModalIsLoading(false);
-    }
+        resetFormFields();
+        setModalIsLoading(false);
+      });
   }
 
   return (
@@ -144,26 +134,17 @@ function ChangePasswordModal(): JSX.Element {
         <ModalContent>
           <ModalHeader>{t('passwordModalHeader.change')}</ModalHeader>
           <ModalCloseButton />
-          <form onSubmit={handlePasswordUpdate}>
+          <ModalBody>
             {passwordResetComplete ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
                 <Text fontSize="lg">{t('passwordModalSuccess.change')}</Text>
               </Flex>
             ) : (
-              <ModalBody>
-                <PasswordFormInput
-                  label={t('currentPassword')}
-                  handlePasswordChange={event => {
-                    setCurrentPassword(event.target.value);
-                    resetErrors();
-                  }}
-                  showPassword={currentPasswordVisible}
-                  handlePasswordVisibility={() => {
-                    setCurrentPasswordVisible(!currentPasswordVisible);
-                  }}
-                  error={currentPasswordError}
-                  value={currentPassword}
+              <form onSubmit={handlePasswordUpdate}>
+                <Reauthentication
+                  setReauthenticated={setReauthenticated}
+                  reauthenticated={reauthenticated}
                 />
                 <PasswordFormInput
                   label={t('newPassword')}
@@ -191,21 +172,15 @@ function ChangePasswordModal(): JSX.Element {
                   error={confirmNewPasswordError}
                   value={confirmNewPassword}
                 />
-              </ModalBody>
-            )}
-            <ModalFooter>
-              {!passwordResetComplete && (
                 <SubmitButton
                   label={t('passwordSubmitLabel.change')}
                   isLoading={modalIsLoading}
                   error={generalModalError}
+                  isDisabled={!readyToSubmit}
                 />
-              )}
-              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
-                {t('common:close')}
-              </Button>
-            </ModalFooter>
-          </form>
+              </form>
+            )}
+          </ModalBody>
         </ModalContent>
       </Modal>
     </Box>
