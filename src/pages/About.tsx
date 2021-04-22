@@ -8,6 +8,9 @@ import {
   Image,
   Grid,
   VStack,
+  OrderedList,
+  ListItem,
+  HStack,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
@@ -15,6 +18,8 @@ import cehatLogo from '../media/CEHATLogo.png';
 import {LinkColor} from '../components/Util/Colors';
 import {Section} from '../components/Static/Section';
 import purpleAirSensor from '../media/PurpleAir-sensor-installation.jpg';
+import {FiShare} from 'react-icons/fi';
+import {BiDotsVerticalRounded} from 'react-icons/bi';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
@@ -90,7 +95,10 @@ const About: React.FC = () => {
               <Link gridRow={3} href="#noSensor" color={LinkColor}>
                 {t('noSensorInArea.heading')}
               </Link>
-              <Link gridRow={3} href="#acknowledge" color={LinkColor}>
+              <Link gridRow={3} href="#app" color={LinkColor}>
+                {t('app.heading')}
+              </Link>
+              <Link gridRow={4} href="#acknowledge" color={LinkColor}>
                 {t('acknowledge.heading')}
               </Link>
               <Link gridRow={4} href="#admin" color={LinkColor}>
@@ -209,6 +217,36 @@ const About: React.FC = () => {
             </Link>
             {t('noSensorInArea.part2')}
           </Text>
+        </Section>
+        <Section id="app" title={t('app.heading')}>
+          <Text paddingY={1}>{t('app.body')}</Text>
+          <Text paddingY={1}>{t('app.iPhone.heading')}</Text>
+          <OrderedList paddingLeft={4}>
+            <ListItem>{t('app.iPhone.step1')}</ListItem>
+            <ListItem>
+              <Flex display="inline">
+                <HStack spacinig={1}>
+                  <Text>{t('app.iPhone.step2')}</Text>
+                  <FiShare />
+                </HStack>
+              </Flex>
+            </ListItem>
+            <ListItem>{t('app.step3')}</ListItem>
+            <ListItem>{t('app.step4')}</ListItem>
+          </OrderedList>
+          <Text paddingY={1}>{t('app.android.heading')}</Text>
+          <OrderedList paddingLeft={4}>
+            <ListItem>{t('app.android.step1')}</ListItem>
+            <ListItem>
+              <Flex flexDir="row" alignItems="center">
+                <Text>{t('app.android.step2')}</Text>
+                <BiDotsVerticalRounded />
+                <Text>)</Text>
+              </Flex>
+            </ListItem>
+            <ListItem>{t('app.step3')}</ListItem>
+            <ListItem>{t('app.step4')}</ListItem>
+          </OrderedList>
         </Section>
         <Section id="acknowledge" title={t('acknowledge.heading')}>
           <Text paddingY={1}>
