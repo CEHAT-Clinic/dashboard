@@ -41,8 +41,8 @@ function ChangePasswordModal(): JSX.Element {
   );
 
   // General state
-  const [generalModalError, setGeneralModalError] = useState('');
-  const [modalIsLoading, setModalIsLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [passwordResetComplete, setPasswordResetComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
@@ -62,7 +62,8 @@ function ChangePasswordModal(): JSX.Element {
   function handleClose() {
     resetErrors();
     resetFormFields();
-    setModalIsLoading(false);
+    setReauthenticated(false);
+    setIsLoading(false);
     setPasswordResetComplete(false);
     onClose();
   }
@@ -84,7 +85,7 @@ function ChangePasswordModal(): JSX.Element {
   function resetErrors() {
     setNewPasswordError('');
     setConfirmNewPasswordError('');
-    setGeneralModalError('');
+    setError('');
   }
 
   /**
@@ -97,7 +98,7 @@ function ChangePasswordModal(): JSX.Element {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
-    setModalIsLoading(true);
+    setIsLoading(true);
     if (!firebaseAuth.currentUser) throw Error(t('userUndefined'));
 
     return firebaseAuth.currentUser
@@ -115,12 +116,12 @@ function ChangePasswordModal(): JSX.Element {
             break;
           }
           default: {
-            setGeneralModalError(t('unknownError') + error.message);
+            setError(t('unknownError') + error.message);
             break;
           }
         }
         resetFormFields();
-        setModalIsLoading(false);
+        setIsLoading(false);
       });
   }
 
@@ -136,49 +137,53 @@ function ChangePasswordModal(): JSX.Element {
           <ModalCloseButton />
           <ModalBody>
             {passwordResetComplete ? (
-              <Flex alignItems="center" justifyContent="center" marginTop="1em">
+              <Flex alignItems="center" justifyContent="center" marginY={2}>
                 <CheckCircleIcon color="green.500" />
-                <Text fontSize="lg">{t('passwordModalSuccess.change')}</Text>
+                <Text marginLeft={2} fontSize="lg">
+                  {t('passwordModalSuccess.change')}
+                </Text>
               </Flex>
             ) : (
-              <form onSubmit={handlePasswordUpdate}>
+              <Box>
                 <Reauthentication
                   setReauthenticated={setReauthenticated}
                   reauthenticated={reauthenticated}
                 />
-                <PasswordFormInput
-                  label={t('newPassword')}
-                  handlePasswordChange={event => {
-                    setNewPassword(event.target.value);
-                    resetErrors();
-                  }}
-                  showPassword={newPasswordVisible}
-                  handlePasswordVisibility={() =>
-                    setNewPasswordVisible(!newPasswordVisible)
-                  }
-                  error={newPasswordError}
-                  value={newPassword}
-                />
-                <PasswordFormInput
-                  label={t('confirmNewPassword')}
-                  handlePasswordChange={event => {
-                    setConfirmNewPassword(event.target.value);
-                    resetErrors();
-                  }}
-                  showPassword={confirmNewPasswordVisible}
-                  handlePasswordVisibility={() =>
-                    setConfirmNewPasswordVisible(!confirmNewPasswordVisible)
-                  }
-                  error={confirmNewPasswordError}
-                  value={confirmNewPassword}
-                />
-                <SubmitButton
-                  label={t('passwordSubmitLabel.change')}
-                  isLoading={modalIsLoading}
-                  error={generalModalError}
-                  isDisabled={!readyToSubmit}
-                />
-              </form>
+                <form onSubmit={handlePasswordUpdate}>
+                  <PasswordFormInput
+                    label={t('newPassword')}
+                    handlePasswordChange={event => {
+                      setNewPassword(event.target.value);
+                      resetErrors();
+                    }}
+                    showPassword={newPasswordVisible}
+                    handlePasswordVisibility={() =>
+                      setNewPasswordVisible(!newPasswordVisible)
+                    }
+                    error={newPasswordError}
+                    value={newPassword}
+                  />
+                  <PasswordFormInput
+                    label={t('confirmNewPassword')}
+                    handlePasswordChange={event => {
+                      setConfirmNewPassword(event.target.value);
+                      resetErrors();
+                    }}
+                    showPassword={confirmNewPasswordVisible}
+                    handlePasswordVisibility={() =>
+                      setConfirmNewPasswordVisible(!confirmNewPasswordVisible)
+                    }
+                    error={confirmNewPasswordError}
+                    value={confirmNewPassword}
+                  />
+                  <SubmitButton
+                    label={t('passwordSubmitLabel.change')}
+                    isLoading={isLoading}
+                    error={error}
+                    isDisabled={!readyToSubmit}
+                  />
+                </form>
+              </Box>
             )}
           </ModalBody>
         </ModalContent>
