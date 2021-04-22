@@ -91,7 +91,40 @@
         "downloadAll": "Download data for all sensors",
         "whichSensor": "Which sensor would you like to download data for?",
         "chooseSensor": "Choose sensor",
-        "anotherSensor": "Download data for another sensor"
+        "anotherSensor": "Download data for another sensor",
+        "description": {
+            "heading": "See File Description",
+            "part1": "This modal downloads data starting at midnight Pacific Time of the start date and ending at midnight Pacific Time of the end date. The data is in CSV format with seven headings:",
+            "timestamp": {
+                "heading": "Timestamp",
+                "description": "The timestamp of the reading in UTC time"
+            },
+            "name": {
+                "heading": "Name",
+                "description": "The name of the sensor"
+            },
+            "pm25": {
+                "heading": "PM2.5",
+                "description": "The PM2.5 reading of the sensor. This is the average of the reading from Channel A and Channel B of the PurpleAir sensor"
+            },
+            "percentDiff": {
+                "heading": "Percent Difference",
+                "description": "The mean percent difference between the pseudo average values of Channel A and Channel B, ranging between 0 (good) and 2 (bad)"
+            },
+            "humidity": {
+                "heading": "Humidity",
+                "description": "The humidity reading for the sensor"
+            },
+            "latitude": {
+                "heading": "Latitude",
+                "description": "The latitude of the sensor"
+            },
+            "longitude": {
+                "heading": "Longitude",
+                "description": "The longitude of the sensor"
+            },
+            "part2": "The file name is: '{start time and date in UTC}_to_{end time and date in UTC}.csv', with the sensor's PurpleAir ID appended to the front of the file name if you only download data for one sensor."
+        }
     },
     "deleteSensor": {
         "delete": "Delete Sensor",

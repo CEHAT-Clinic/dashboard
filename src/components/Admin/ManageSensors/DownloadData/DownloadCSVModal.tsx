@@ -25,6 +25,7 @@ import {useTranslation} from 'react-i18next';
 import DownloadCSVButton from './DownloadCSVButton';
 import {MonthInput, DayInput, CSVModalProps} from './Util';
 import {SensorInput} from '../Util/SensorInput';
+import {FileDescriptionPopover} from './FileDescriptionPopover';
 
 /**
  * Component for the download data modal that appears on the manage sensor page
@@ -121,6 +122,9 @@ const DownloadCSVModal: ({sensors}: CSVModalProps) => JSX.Element = ({
           <ModalCloseButton />
           <ModalBody>
             <Box>
+              <Center>
+                <FileDescriptionPopover />
+              </Center>
               <FormControl isRequired>
                 {/* Start start date input fields */}
                 <FormLabel>{t('downloadData.startDate')}</FormLabel>

@@ -91,7 +91,40 @@
         "downloadAll": "Descargar datos de todos los sensores",
         "whichSensor": "¿Cuál sensor le gustaría descargar datos?",
         "chooseSensor": "Escoge sensor",
-        "anotherSensor": "Descargar datos para otro sensor"
+        "anotherSensor": "Descargar datos para otro sensor",
+        "description": {
+            "heading": "Ver descripción del archivo",
+            "part1": "Este modal descarga datos a partir de la medianoche (hora del Pacífico) de la fecha de inicio y finaliza a la medianoche (hora del Pacífico) de la fecha de finalización. Los datos están en formato CSV con siete títulos:",
+            "timestamp": {
+                "heading": "Timestamp",
+                "description": "La marca de tiempo de la lectura en hora UTC"
+            },
+            "name": {
+                "heading": "Name",
+                "description": "El nombre del sensor"
+            },
+            "pm25": {
+                "heading": "PM2.5",
+                "description": "La lectura de PM2.5 del sensor. Este es el promedio de la lectura del canal A y el canal B del sensor PurpleAir"
+            },
+            "percentDiff": {
+                "heading": "Percent Difference",
+                "description": "La diferencia porcentual media entre los valores pseudopromedio del Canal A y el Canal B, que varía entre 0 (bueno) y 2 (malo)"
+            },
+            "humidity": {
+                "heading": "Humidity",
+                "description": "La lectura de humedad para el sensor."
+            },
+            "latitude": {
+                "heading": "Latitude",
+                "description": "La latitud del sensor"
+            },
+            "longitude": {
+                "heading": "Longitude",
+                "description": "La longitud del sensor"
+            },
+            "part2": "El nombre del archivo es: '{fecha y hora de inicio en UTC}_to_{fecha y hora de finalización en UTC} .csv', con el ID de PurpleAir del sensor al principio del nombre del archivo si solo descargas datos para un sensor."
+        }
     },
     "deleteSensor": {
         "delete": "Borrar sensor",
