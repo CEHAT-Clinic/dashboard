@@ -106,7 +106,7 @@ const DeleteAccountPopover: () => JSX.Element = () => {
   }
 
   return (
-    <Popover>
+    <Popover placement="auto">
       <PopoverTrigger>
         <Button colorScheme="red">{t('deleteAccount.heading')}</Button>
       </PopoverTrigger>
