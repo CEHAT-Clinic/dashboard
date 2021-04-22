@@ -13,12 +13,12 @@ function signInWithGoogle(
   setError: React.Dispatch<React.SetStateAction<string>>,
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>,
   translate: TFunction
-): void {
+): Promise<void | firebase.auth.UserCredential> {
   // Prevents submission before sign in is complete
   event.preventDefault();
 
   setIsLoading(true);
-  firebaseAuth
+  return firebaseAuth
     .signInWithPopup(new firebase.auth.GoogleAuthProvider())
     .catch(error => {
       // Error codes from Firebase documentation
