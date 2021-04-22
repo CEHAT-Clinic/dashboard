@@ -46,7 +46,7 @@
     },
     "emailModal": {
         "header": "Update Email",
-        "addPassword": "To be able to change your email, please add a password to your account."
+        "addPassword": "To be able to change your email, please add a password to your account and disconnect your account from Google."
     },
     "signIn": {
         "google": "Sign in with Google",
@@ -89,9 +89,10 @@
         "connectedToGoogle": "Account connected to Google",
         "heading": "Manage Your Account",
         "manageSignInMethodsHeader": "Manage Sign In Methods",
-        "sendEmailVerificationEmail": "Send Email Verification Email",
+        "sendVerificationEmail": "Send Verification Email",
         "verificationEmailSent": "Verification email sent. Refresh the page to be able to re-send the email or to check that you successfully verified your email.",
-        "verifyEmail": "Please verify your email."
+        "verifyEmail": "Please verify your email.",
+        "verificationEmailError": "Unable to send verification email"
     },
     "returnAdmin": "Return to Admin Home",
     "notSignedIn": "you are not signed in",
@@ -141,5 +142,10 @@
         "explanation": "Reauthentication of your credentials is necessary before account updates.",
         "choose": "You can choose to reauthenticate using your Google account or your password.",
         "success": "You have been reauthenticated."
+    },
+    "unlinkGoogle": {
+        "heading": "Unlink Account From Google",
+        "password": "To be able to unlink your account from Google, add a password to your account.",
+        "error": "Unable to unlink account from Google."
     }
 }

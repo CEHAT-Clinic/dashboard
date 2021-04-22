@@ -36,8 +36,10 @@ const ChangeEmailModal: () => JSX.Element = () => {
 
   const {t} = useTranslation(['administration', 'common']);
 
-  // If a user is not a password user, they cannot change their email
-  const {passwordUser, email} = useAuth();
+  // If a user is not a password user or is a Google user, they cannot change
+  // their email without first adding a password or unlinking their account from
+  // Google, respectively.
+  const {passwordUser, googleUser, email} = useAuth();
 
   const readyToSubmit =
     error === '' && newEmail !== '' && reauthenticated && email !== newEmail;
@@ -114,7 +116,7 @@ const ChangeEmailModal: () => JSX.Element = () => {
           <ModalHeader>{t('emailModal.header')}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            {passwordUser ? (
+            {passwordUser && !googleUser ? (
               <Box marginY={1}>
                 <Reauthentication
                   reauthenticated={reauthenticated}

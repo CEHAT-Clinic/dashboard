@@ -160,7 +160,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
           .finally(() => setIsLoading(false));
       }
     }
-  }, [isAuthenticated, email]);
+  }, [isAuthenticated, email, googleUser, passwordUser]);
 
   useEffect(() => {
     if (firebaseAuth.currentUser) {

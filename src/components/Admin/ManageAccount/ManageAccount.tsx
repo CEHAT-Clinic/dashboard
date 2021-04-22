@@ -19,6 +19,7 @@ import {DeleteAccountPopover} from './DeleteAccountPopover';
 import {AddPasswordModal} from './AddPassword';
 import ChangeEmailModal from './ChangeEmail';
 import {firebaseAuth} from '../../../firebase/firebase';
+import {UnlinkGooglePopover} from './UnlinkGoogle';
 
 /**
  * Component for a user to manage their own account information.
@@ -61,7 +62,7 @@ const ManageAccount: () => JSX.Element = () => {
           setSendingEmail(false);
           setVerificationEmailSent(true);
         })
-        .catch(() => setError('Unable to send confirmation email'));
+        .catch(() => setError('manageAccount.verificationEmailError'));
     } else {
       return firebaseAuth.signOut();
     }
@@ -111,7 +112,7 @@ const ManageAccount: () => JSX.Element = () => {
                 {sendingEmail ? (
                   <CircularProgress isIndeterminate size="24px" color="teal" />
                 ) : (
-                  t('manageAccount.sendEmailVerificationEmail')
+                  t('manageAccount.sendVerificationEmail')
                 )}
               </Button>
             ))}
@@ -135,6 +136,7 @@ const ManageAccount: () => JSX.Element = () => {
           </Heading>
           {passwordUser ? <ChangePasswordModal /> : <AddPasswordModal />}
           {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
+          {googleUser && <UnlinkGooglePopover />}
           <Divider marginY={2} />
           <Heading fontSize="lg" as="h2" textAlign="left">
             {t('deleteAccount.heading')}

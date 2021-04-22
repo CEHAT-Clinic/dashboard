@@ -153,7 +153,11 @@
           "Reauthenticate",
           "reauthenticating",
           "Reauthenticated",
-          "Fi"
+          "Fi",
+          "Unlink",
+          "unlink",
+          "Unlinks",
+          "unlinks"
         ],
         "skipWords": [
           "Pv"
