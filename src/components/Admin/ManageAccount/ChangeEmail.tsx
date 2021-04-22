@@ -141,7 +141,6 @@ const ChangeEmailModal: () => JSX.Element = () => {
                     />
                   </FormControl>
                   <SubmitButton
-                    label={t('common:submit')}
                     isLoading={modalIsLoading}
                     error={error}
                     isDisabled={!readyToSubmit}
