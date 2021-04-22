@@ -10,7 +10,7 @@ import {useTranslation} from 'react-i18next';
  */
 function NavigationBar(): JSX.Element {
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
+    window.matchMedia('(max-width: 55em)')?.matches ?? false
   );
   const [isOpen, setIsOpen] = useState(!isMobile);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -49,7 +49,7 @@ function NavigationBar(): JSX.Element {
    * the window size is changed.
    */
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 47.9em)');
+    const screenSize = window.matchMedia('(max-width: 55em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
@@ -71,7 +71,7 @@ function NavigationBar(): JSX.Element {
     function handleScroll(): void {
       let scrollThreshold = 120;
       if (isMobile) {
-        /* eslint-disable-next-line no-magic-numbers */
+        // eslint-disable-next-line no-magic-numbers
         scrollThreshold = 800;
       }
       const offset = window.scrollY;
