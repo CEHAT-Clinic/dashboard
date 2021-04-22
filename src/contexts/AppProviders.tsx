@@ -2,18 +2,16 @@ import {ChakraProvider} from '@chakra-ui/react';
 import React from 'react';
 import {AuthProvider} from './AuthContext';
 import {ColorProvider} from './ColorContext';
-// 1. Import the utilities
 import {extendTheme} from '@chakra-ui/react';
 import {createBreakpoints} from '@chakra-ui/theme-tools';
 
-// 2. Update the breakpoints as key-value pairs
+// Create custom breakpoints for Chakra UI responsive styles
 const breakpoints = createBreakpoints({
   sm: '30em',
   md: '55em',
   lg: '62em',
   xl: '80em',
 });
-// 3. Extend the theme
 const theme = extendTheme({breakpoints});
 
 /**
