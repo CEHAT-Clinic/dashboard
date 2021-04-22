@@ -46,7 +46,8 @@
     },
     "emailModal": {
         "header": "Actualiza tu correo electrónico",
-        "addPassword": "Para poder cambiar tu correo electrónico, agrega una contraseña a tu cuenta y desconecta tu cuenta de Google."
+        "addPassword": "Para poder cambiar tu correo electrónico, agrega una contraseña a tu cuenta y desconecta tu cuenta de Google.",
+        "sameEmail": "Tu correo electrónico nuevo es el mismo que tu correo electrónico actual."
     },
     "signIn": {
         "google": "Inicia sesión con Google",

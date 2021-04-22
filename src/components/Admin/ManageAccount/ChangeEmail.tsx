@@ -47,9 +47,9 @@ const ChangeEmailModal: () => JSX.Element = () => {
 
   useEffect(() => {
     if (sameEmail) {
-      setError('You entered the same email as your current email');
+      setError(t('emailModal.sameEmail'));
     }
-  }, [sameEmail]);
+  }, [sameEmail, t]);
 
   /**
    * Resets modal state values before closing the modal.

@@ -113,6 +113,18 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               }
               if (typeof userData.email === 'string') {
                 setEmail(userData.email);
+                // If a user cancels an email update, the user document and
+                // Firebase Authentication might have different emails. Firebase
+                // Authentication is ground truth.
+                if (
+                  firebaseAuth.currentUser &&
+                  userData.email !== firebaseAuth.currentUser.email
+                ) {
+                  await firestore
+                    .collection('users')
+                    .doc(firebaseAuth.currentUser.uid)
+                    .update({email: firebaseAuth.currentUser.email ?? ''});
+                }
               }
               if (typeof userData.isDeleted === 'boolean') {
                 setIsDeleted(userData.isDeleted);
@@ -145,9 +157,9 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     return;
   }, [isAuthenticated]);
 
-  // Runs on mount and on authentication status change
   useEffect(() => {
     if (isAuthenticated && firebaseAuth.currentUser) {
+      setEmailVerified(firebaseAuth.currentUser.emailVerified);
       // Fetch sign in methods
       if (email) {
         setIsLoading(true);
@@ -160,13 +172,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
           .finally(() => setIsLoading(false));
       }
     }
-  }, [isAuthenticated, email, googleUser, passwordUser]);
-
-  useEffect(() => {
-    if (firebaseAuth.currentUser) {
-      setEmailVerified(firebaseAuth.currentUser.emailVerified);
-    }
-  }, [email, emailVerified]);
+  }, [isAuthenticated, email]);
 
   return (
     <AuthContext.Provider

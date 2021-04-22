@@ -46,7 +46,8 @@
     },
     "emailModal": {
         "header": "Update Email",
-        "addPassword": "To be able to change your email, please add a password to your account and disconnect your account from Google."
+        "addPassword": "To be able to change your email, please add a password to your account and disconnect your account from Google.",
+        "sameEmail": "Your new email is the same as your current email"
     },
     "signIn": {
         "google": "Sign in with Google",
