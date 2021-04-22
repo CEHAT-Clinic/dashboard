@@ -5,7 +5,7 @@ import {
   EmailFormInput,
   PasswordFormInput,
 } from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase/firebase';
+import firebase, {firebaseAuth} from '../../../firebase/firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import {useTranslation} from 'react-i18next';
 import {signInWithGoogle} from './Util';
@@ -42,7 +42,9 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
    * Signs up a user with email in Firebase and handles any errors
    * @param event - submit form event
    */
-  function handleSignUpWithEmail(event: React.FormEvent<HTMLFormElement>) {
+  function handleSignUpWithEmail(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void | firebase.auth.UserCredential> {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
 
@@ -52,8 +54,9 @@ const SignUp: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
       setPassword('');
       setConfirmPassword('');
       setIsLoadingEmail(false);
+      return Promise.resolve();
     } else {
-      firebaseAuth
+      return firebaseAuth
         .createUserWithEmailAndPassword(email, password)
         .catch(error => {
           // Error codes from Firebase documentation

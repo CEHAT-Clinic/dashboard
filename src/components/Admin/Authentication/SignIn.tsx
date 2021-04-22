@@ -5,7 +5,7 @@ import {
   EmailFormInput,
   PasswordFormInput,
 } from '../ComponentUtil';
-import {firebaseAuth} from '../../../firebase/firebase';
+import firebase, {firebaseAuth} from '../../../firebase/firebase';
 import {UnauthenticatedPageProps} from '../UnauthenticatedAdmin';
 import ForgotPasswordModal from './ForgotPassword';
 import {useTranslation} from 'react-i18next';
@@ -39,42 +39,42 @@ const SignIn: ({setIsNewUser}: UnauthenticatedPageProps) => JSX.Element = ({
    * Signs in a user with email and password using Firebase authentication
    * @param event - submit form event
    */
-  async function handleSignInWithEmail(
+  function handleSignInWithEmail(
     event: React.FormEvent<HTMLFormElement>
-  ) {
+  ): Promise<void | firebase.auth.UserCredential> {
     // Prevents submission before call to Firebase is complete
     event.preventDefault();
     setIsLoadingEmail(true);
 
-    try {
-      await firebaseAuth.signInWithEmailAndPassword(email, password);
-    } catch (error) {
-      // Error codes from Firebase documentation
-      switch (error.code) {
-        case 'auth/invalid-email': {
-          setEmailError(t('invalidEmail'));
-          break;
+    return firebaseAuth
+      .signInWithEmailAndPassword(email, password)
+      .catch(error => {
+        // Error codes from Firebase documentation
+        switch (error.code) {
+          case 'auth/invalid-email': {
+            setEmailError(t('invalidEmail'));
+            break;
+          }
+          case 'auth/user-disabled': {
+            setGeneralEmailError(t('accountDisabled'));
+            break;
+          }
+          case 'auth/user-not-found': {
+            setEmailError(t('userNotFound') + email);
+            break;
+          }
+          case 'auth/wrong-password': {
+            setPasswordError(t('incorrectPassword'));
+            break;
+          }
+          default: {
+            setGeneralEmailError(t('common:generalError'));
+            break;
+          }
         }
-        case 'auth/user-disabled': {
-          setGeneralEmailError(t('accountDisabled'));
-          break;
-        }
-        case 'auth/user-not-found': {
-          setEmailError(t('userNotFound') + email);
-          break;
-        }
-        case 'auth/wrong-password': {
-          setPasswordError(t('incorrectPassword'));
-          break;
-        }
-        default: {
-          setGeneralEmailError(t('common:generalError'));
-          break;
-        }
-      }
-      setPassword('');
-      setIsLoadingEmail(false);
-    }
+        setPassword('');
+        setIsLoadingEmail(false);
+      });
   }
 
   return (

@@ -18,39 +18,26 @@ import {
 } from '@chakra-ui/react';
 import {WarningTwoIcon} from '@chakra-ui/icons';
 import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
-import {handleReauthenticationWithPassword} from './Util';
 import {useTranslation} from 'react-i18next';
-import {PasswordFormInput} from '../ComponentUtil';
 import {useAuth} from '../../../contexts/AuthContext';
+import {Reauthentication} from './Reauthentication';
 
 /**
  * Creates a button that when clicked allows a non-admin user to delete their account.
  * @returns a button that when clicked allows a user to delete their account
  */
 const DeleteAccountPopover: () => JSX.Element = () => {
-  const [password, setPassword] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-  const [passwordError, setPasswordError] = useState('');
+  const {isAdmin} = useAuth();
 
-  const {isAdmin, passwordUser} = useAuth();
-
+  const [reauthenticated, setReauthenticated] = useState(false);
   const [error, setError] = useState('');
   const {t} = useTranslation(['administration', 'common']);
-
-  // For a password user, do not allow submission until they have entered a
-  // a password and there is no current password error. If the user enters the
-  // wrong password, the reauthenticate function will set the password error.
-  const passwordUserReadyToSubmit: boolean =
-    password !== '' && passwordError === '';
 
   // Admins are not allowed to delete their account, so an admin user must
   // remove themself as an admin before deleting their account. This prevents
   // the last admin user from deleting their account since an admin cannot
   // remove their admin status if they are the last admin.
-  const readyToDelete: boolean =
-    error === '' &&
-    !isAdmin &&
-    (passwordUser ? passwordUserReadyToSubmit : true);
+  const readyToDelete: boolean = error === '' && !isAdmin && reauthenticated;
 
   /**
    * Marks a user's `isDeleted` field as true in a user's doc so that the user
@@ -118,35 +105,8 @@ const DeleteAccountPopover: () => JSX.Element = () => {
       });
   }
 
-  /**
-   * Reauthenticate a user by password if the user is password based and then delete the user's account
-   * @returns a promise that when resolved, reauthenticates a user by password if needed and then deletes the user's account
-   */
-  function handleDeleteAccount(): Promise<void> {
-    // Verify that the inputted password is correct before proceeding
-    if (passwordUser) {
-      return handleReauthenticationWithPassword(password, t)
-        .then(error => {
-          if (error) {
-            // This error can be handled by the user
-            setPasswordError(error);
-          } else {
-            // No error, so proceed with account deletion
-            deleteAccount();
-          }
-        })
-        .catch(error => {
-          // Propagate the error, since this error cannot be handled by the user
-          throw new Error(error);
-        });
-    } else {
-      // If user is not a password-based user, proceed with deleting the account
-      return deleteAccount();
-    }
-  }
-
   return (
-    <Popover>
+    <Popover placement="auto">
       <PopoverTrigger>
         <Button colorScheme="red">{t('deleteAccount.heading')}</Button>
       </PopoverTrigger>
@@ -172,23 +132,10 @@ const DeleteAccountPopover: () => JSX.Element = () => {
               </Text>
             ) : (
               <Box>
-                {passwordUser && (
-                  <PasswordFormInput
-                    label={t('password')}
-                    handlePasswordChange={event => {
-                      setPassword(event.target.value);
-                      setError('');
-                      setPasswordError('');
-                    }}
-                    showPassword={passwordVisible}
-                    handlePasswordVisibility={() => {
-                      setPasswordVisible(!passwordVisible);
-                    }}
-                    error={passwordError}
-                    value={password}
-                    helpMessage={t('passwordHelpMessage')}
-                  />
-                )}
+                <Reauthentication
+                  setReauthenticated={setReauthenticated}
+                  reauthenticated={reauthenticated}
+                />
                 <Text marginY={2} fontWeight="bold">
                   {t('deleteAccount.confirmQuestion')}
                 </Text>
@@ -196,7 +143,7 @@ const DeleteAccountPopover: () => JSX.Element = () => {
                   <Button
                     isDisabled={!readyToDelete}
                     colorScheme="red"
-                    onClick={handleDeleteAccount}
+                    onClick={deleteAccount}
                   >
                     {t('common:confirm')}
                   </Button>
