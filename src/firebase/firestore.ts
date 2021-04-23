@@ -195,7 +195,8 @@ const READINGS_DELETION_DOC = 'readings';
 
 /**
  * Name of the document in `DELETION_COLLECTION` where the information about
- * which sensor readings should be deleted by the Cloud Functions is stored.
+ * which user documents and Firebase Authentication users should be deleted by
+ * the Cloud Functions is stored.
  */
 const USER_DELETION_DOC = 'users';
 
