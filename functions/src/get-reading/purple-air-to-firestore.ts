@@ -6,7 +6,7 @@ import {
   getDefaultPm25BufferElement,
 } from '../buffer';
 import {HistoricalSensorReading, PurpleAirReading} from './types';
-import {readingsSubcollection} from '../firestore';
+import {readingsSubcollection, SENSORS_COLLECTION} from '../firestore';
 import {getLastSensorReadingTime} from './util';
 import {getReadingsMap} from './purple-air-response';
 import {SensorReadingError} from './sensor-errors';
@@ -20,7 +20,7 @@ async function purpleAirToFirestore(): Promise<void> {
 
   // Add each of the new readings to the readings subcollection and the pm25buffers
   const activeSensorDocsSnapshot = await firestore
-    .collection('sensors')
+    .collection(SENSORS_COLLECTION)
     .where('isActive', '==', true)
     .get();
 
@@ -120,7 +120,7 @@ async function purpleAirToFirestore(): Promise<void> {
 
     // Send the updated data to the database
     await firestore
-      .collection('sensors')
+      .collection(SENSORS_COLLECTION)
       .doc(sensorDoc.id)
       .update(sensorDocUpdate);
 

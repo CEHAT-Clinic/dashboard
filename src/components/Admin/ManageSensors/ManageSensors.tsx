@@ -12,6 +12,7 @@ import DeleteOldDataModal from './DeleteOldDataModal';
 import {Sensor} from './Util/Types';
 import {SensorTable} from './SensorTable/SensorTable';
 import {ToggleActiveModal} from './ToggleActiveModal';
+import {SENSORS_COLLECTION} from '../../../firebase/firestore';
 
 /**
  * Component for administrative page to manage the sensors.
@@ -30,7 +31,7 @@ const ManageSensors: () => JSX.Element = () => {
 
       // Create listener that updates on any data changes
       const unsubscribe = firestore
-        .collection('sensors')
+        .collection(SENSORS_COLLECTION)
         .onSnapshot(querySnapshot => {
           const sensorList: Sensor[] = [];
           querySnapshot.docs.forEach(doc => {
