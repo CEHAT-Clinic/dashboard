@@ -130,7 +130,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
   /**
    * Deletes a given member from the PurpleAir group
-   * @param memberId - the member ID of the sensor to be deleted in PurpleAir group, or `NaN` if the sensor was not in the group
+   * @param memberId - the member ID of the sensor to be deleted in the PurpleAir group, or `NaN` if the sensor was not in the group
    * @returns Either an empty Promise if the sensor does not need to be deleted or the axios response from PurpleAir, which returns no data from PurpleAir upon success to delete the member from the group
    */
   function deleteFromPurpleAirGroup(
