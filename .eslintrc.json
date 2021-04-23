@@ -157,7 +157,8 @@
           "Unlink",
           "unlink",
           "Unlinks",
-          "unlinks"
+          "unlinks",
+          "Ds"
         ],
         "skipWords": [
           "Pv"

@@ -23,15 +23,7 @@ import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {USERS_COLLECTION} from '../../../firebase/firestore';
-import {useAuth} from '../../../contexts/AuthContext';
 import {Reauthentication} from './Reauthentication';
-
-/**
- * Props for ChangeNameModal component. Used for type safety.
- */
-interface ChangeNameModalProps {
-  passwordUser: boolean;
-}
 
 /**
  * Component for changing an authenticated user's name. Includes button that

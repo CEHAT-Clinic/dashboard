@@ -19,7 +19,7 @@ import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {Reauthentication} from './Reauthentication';
 import {useAuth} from '../../../contexts/AuthContext';
-import { USERS_COLLECTION } from '../../../firebase/firestore';
+import {USERS_COLLECTION} from '../../../firebase/firestore';
 
 /**
  * Component for changing an authenticated user's email. Includes button that

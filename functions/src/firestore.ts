@@ -185,9 +185,9 @@ const READINGS_DELETION_DOC = 'readings';
 
 /**
  * Name of the document in `DELETION_COLLECTION` where the information about
- * which ssensor readings should be deleted by the Cloud Functions is stored.
+ * which sensor readings should be deleted by the Cloud Functions is stored.
  */
- const USER_DELETION_DOC = 'readings';
+const USER_DELETION_DOC = 'users';
 
 /**
  * The map of the documents to be deleted in `READINGS_DELETION_DOC` in the
@@ -214,7 +214,7 @@ interface ReadingDeletionDoc {
  * Interface for the structure of `USER_DELETION_DOC` in `DELETION_COLLECTION`.
  * - `firebaseUsers` - array of user IDs that should be deleted from Firebase
  *   Authentication
- * - `userDocs` - array of user IDs that should be deleted from 
+ * - `userDocs` - array of user IDs that should be deleted from
  *   `USERS_COLLECTION`, where each user ID is the doc ID of that user's doc in
  *   `USERS_COLLECTION`
  * - `lastUpdated` - when `USER_DELETION_DOC` was last updated

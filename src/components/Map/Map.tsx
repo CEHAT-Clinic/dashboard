@@ -4,6 +4,10 @@ import {createSensorIcon} from './markerStyle';
 import {Box} from '@chakra-ui/react';
 import {ColorScheme} from '../Util/Colors';
 import {SelectedSensor} from '../../util';
+import {
+  CURRENT_READING_COLLECTION,
+  SENSORS_DOC,
+} from '../../../functions/src/firestore';
 
 /**
  * Interface for the props of the Map component
@@ -229,7 +233,9 @@ class Map extends React.Component<MapProps> {
     };
 
     // Add the Sensor Markers to the map
-    const docRef = firestore.collection('current-reading').doc('sensors');
+    const docRef = firestore
+      .collection(CURRENT_READING_COLLECTION)
+      .doc(SENSORS_DOC);
     docRef
       .get()
       .then(doc => {

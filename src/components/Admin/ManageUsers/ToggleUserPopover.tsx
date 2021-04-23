@@ -16,7 +16,7 @@ import {User, ToggleUserPopoverProps} from './Types';
 import {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import { USERS_COLLECTION } from '../../../firebase/firestore';
+import {USERS_COLLECTION} from '../../../firebase/firestore';
 
 /**
  * Creates a button that when clicked, creates a confirmation popup to change

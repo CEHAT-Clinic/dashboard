@@ -20,6 +20,7 @@ import {numberToString} from './Util/Util';
 import {useAuth} from '../../../contexts/AuthContext';
 import firebase, {firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
+import {SENSORS_COLLECTION} from '../../../firebase/firestore';
 
 /**
  * Interface for ToggleActiveModalProps used for type safety
@@ -94,7 +95,7 @@ const ToggleActiveModal: ({
 
       // Toggle the isActive and remove the buffers
       firestore
-        .collection('sensors')
+        .collection(SENSORS_COLLECTION)
         .doc(sensorDocId)
         .update({
           isActive: !isActive,

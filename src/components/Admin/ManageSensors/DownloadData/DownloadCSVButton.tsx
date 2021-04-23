@@ -4,6 +4,10 @@ import firebase, {firestore} from '../../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {CSVButtonProps, HeaderElement, BodyElement} from './Util';
 import {CSVLink} from 'react-csv';
+import {
+  READINGS_COLLECTION,
+  SENSORS_COLLECTION,
+} from '../../../../firebase/firestore';
 
 /**
  * Component for the button that can be clicked to download sensor data. Used
@@ -73,7 +77,7 @@ const DownloadCSVButton: ({
     endDate: Date
   ) {
     setFetchingData(true);
-    const sensorsRef = firestore.collection('sensors');
+    const sensorsRef = firestore.collection(SENSORS_COLLECTION);
     let sensorDocs: (
       | firebase.firestore.QueryDocumentSnapshot<firebase.firestore.DocumentData>
       | firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
@@ -98,9 +102,9 @@ const DownloadCSVButton: ({
       const docId = sensorDocs[i].id;
 
       const readingsRef = firestore
-        .collection('sensors')
+        .collection(SENSORS_COLLECTION)
         .doc(docId)
-        .collection('readings');
+        .collection(READINGS_COLLECTION);
 
       // Get docs from readings subcollection that fall between the start
       // and end times

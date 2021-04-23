@@ -16,7 +16,11 @@ import {DeleteUserPopoverProps} from './Types';
 import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
-import { DELETION_COLLECTION, USERS_COLLECTION, USER_DELETION_DOC } from '../../../firebase/firestore';
+import {
+  DELETION_COLLECTION,
+  USERS_COLLECTION,
+  USER_DELETION_DOC,
+} from '../../../firebase/firestore';
 
 /**
  * Creates a button that when clicked, creates a confirmation popup to delete a

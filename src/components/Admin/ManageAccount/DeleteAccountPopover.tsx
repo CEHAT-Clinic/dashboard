@@ -21,7 +21,11 @@ import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Reauthentication} from './Reauthentication';
-import { DELETION_COLLECTION, USERS_COLLECTION, USER_DELETION_DOC } from '../../../firebase/firestore';
+import {
+  DELETION_COLLECTION,
+  USERS_COLLECTION,
+  USER_DELETION_DOC,
+} from '../../../firebase/firestore';
 
 /**
  * Creates a button that when clicked allows a non-admin user to delete their account.
