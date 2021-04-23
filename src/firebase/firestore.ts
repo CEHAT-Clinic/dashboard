@@ -1,5 +1,6 @@
 import {AqiBufferElement, Pm25BufferElement, BufferStatus} from './buffer';
 import firebase from './firebase';
+import {InvalidAqiError, SensorReadingError} from './ErrorTypes';
 
 /**
  * Name of the collection in Firestore where sensor data is stored for each
@@ -32,6 +33,12 @@ const SENSORS_COLLECTION = 'sensors';
  *   `pm25Buffer`, i.e. the next index of the `pm25Buffer` to write to.
  * - `pm25BufferStatus` - if the `pm25Buffer` exists, does not exist, or is in
  *   the process of being initialized
+ * - `sensorReadingErrors` - array of `SensorReadingError` that represent errors
+ *   from the most recent time the Cloud Functions attempted to receive an error
+ *   from PurpleAir
+ * - `invalidAqiErrors` - array of `InvalidAqiError` that represent errors that
+ *   can indicate why a sensor does not have a valid AQI, or why the sensor is
+ *   invalid.
  * - `lastUpdated` - the last time the sensor doc was updated
  */
 interface SensorDoc {
@@ -49,6 +56,8 @@ interface SensorDoc {
   pm25Buffer?: Pm25BufferElement[];
   pm25BufferIndex?: number;
   pm25BufferStatus: BufferStatus;
+  sensorReadingErrors: SensorReadingError[];
+  invalidAqiErrors: InvalidAqiError[];
   lastUpdated: firebase.firestore.Timestamp;
 }
 
