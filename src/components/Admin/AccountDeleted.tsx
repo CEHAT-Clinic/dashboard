@@ -3,6 +3,7 @@ import {Box, Flex, Button, Text, Heading} from '@chakra-ui/react';
 import firebase, {firebaseAuth, firestore} from '../../firebase/firebase';
 import SignOut from './Authentication/SignOut';
 import {useTranslation} from 'react-i18next';
+import {DELETION_COLLECTION, USER_DELETION_DOC} from '../../firebase/firestore';
 
 const AccountDeleted: () => JSX.Element = () => {
   const {t} = useTranslation('administration');
@@ -17,8 +18,8 @@ const AccountDeleted: () => JSX.Element = () => {
   function removeFromDeletion(): Promise<void> {
     if (firebaseAuth.currentUser) {
       return firestore
-        .collection('deletion')
-        .doc('users')
+        .collection(DELETION_COLLECTION)
+        .doc(USER_DELETION_DOC)
         .update({
           firebaseUsers: firebase.firestore.FieldValue.arrayRemove(
             firebaseAuth.currentUser.uid

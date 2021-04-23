@@ -1,6 +1,5 @@
 import {AqiBufferElement, Pm25BufferElement, BufferStatus} from './buffer';
 import firebase from './firebase';
-import {InvalidAqiError, SensorReadingError} from './ErrorTypes';
 
 /**
  * Name of the collection in Firestore where sensor data is stored for each
@@ -33,12 +32,6 @@ const SENSORS_COLLECTION = 'sensors';
  *   `pm25Buffer`, i.e. the next index of the `pm25Buffer` to write to.
  * - `pm25BufferStatus` - if the `pm25Buffer` exists, does not exist, or is in
  *   the process of being initialized
- * - `sensorReadingErrors` - array of `SensorReadingError` that represent errors
- *   from the most recent time the Cloud Functions attempted to receive an error
- *   from PurpleAir
- * - `invalidAqiErrors` - array of `InvalidAqiError` that represent errors that
- *   can indicate why a sensor does not have a valid AQI, or why the sensor is
- *   invalid.
  * - `lastUpdated` - the last time the sensor doc was updated
  */
 interface SensorDoc {
@@ -56,8 +49,6 @@ interface SensorDoc {
   pm25Buffer?: Pm25BufferElement[];
   pm25BufferIndex?: number;
   pm25BufferStatus: BufferStatus;
-  sensorReadingErrors: SensorReadingError[];
-  invalidAqiErrors: InvalidAqiError[];
   lastUpdated: firebase.firestore.Timestamp;
 }
 
@@ -189,28 +180,49 @@ const DELETION_COLLECTION = 'deletion';
 
 /**
  * Name of the document in `DELETION_COLLECTION` where the information about
- * which data should be deleted by the Cloud Functions is stored.
+ * which sensor readings should be deleted by the Cloud Functions is stored.
  */
-const TODO_DOC = 'todo';
+const READINGS_DELETION_DOC = 'readings';
 
 /**
- * The map of the documents to be deleted in `TODO_DOC` in the
+ * Name of the document in `DELETION_COLLECTION` where the information about
+ * which ssensor readings should be deleted by the Cloud Functions is stored.
+ */
+ const USER_DELETION_DOC = 'readings';
+
+/**
+ * The map of the documents to be deleted in `READINGS_DELETION_DOC` in the
  * `DELETION_COLLECTION`. Each entry in the map is a sensor's document ID in
  * `SENSORS_COLLECTION` to the timestamp for which data before that timestamp
  * should be deleted.
  */
-interface DeletionMap {
+interface ReadingDeletion {
   [sensorDocId: string]: firebase.firestore.Timestamp;
 }
 
 /**
- * Interface for the structure of `TODO_DOC` in `DELETION_COLLECTION`.
+ * Interface for the structure of `READING_DELETION_DOC` in `DELETION_COLLECTION`.
  * - `deletionMap` - map of a sensor's doc ID in `SENSORS_COLLECTION` to the
  *   timestamp for which data before that timestamp should be deleted
- * - `lastUpdated` - when `TODO_DOC` was last updated
+ * - `lastUpdated` - when `READING_DELETION_DOC` was last updated
  */
-interface DeletionTodoDoc {
-  deletionMap: DeletionMap;
+interface ReadingDeletionDoc {
+  deletionMap: ReadingDeletion;
+  lastUpdated: firebase.firestore.Timestamp;
+}
+
+/**
+ * Interface for the structure of `USER_DELETION_DOC` in `DELETION_COLLECTION`.
+ * - `firebaseUsers` - array of user IDs that should be deleted from Firebase
+ *   Authentication
+ * - `userDocs` - array of user IDs that should be deleted from 
+ *   `USERS_COLLECTION`, where each user ID is the doc ID of that user's doc in
+ *   `USERS_COLLECTION`
+ * - `lastUpdated` - when `USER_DELETION_DOC` was last updated
+ */
+interface UserDeletionDoc {
+  firebaseUsers: string[];
+  userDocs: string[];
   lastUpdated: firebase.firestore.Timestamp;
 }
 
@@ -222,7 +234,8 @@ export {
   CURRENT_READING_COLLECTION,
   SENSORS_DOC,
   DELETION_COLLECTION,
-  TODO_DOC,
+  READINGS_DELETION_DOC,
+  USER_DELETION_DOC,
 };
 
 export type {
@@ -230,6 +243,7 @@ export type {
   ReadingsDoc,
   CurrentSensorData,
   CurrentReadingSensorDoc,
-  DeletionTodoDoc,
+  ReadingDeletionDoc,
+  UserDeletionDoc,
   UserDoc,
 };

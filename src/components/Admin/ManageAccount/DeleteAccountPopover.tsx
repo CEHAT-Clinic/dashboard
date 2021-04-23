@@ -21,6 +21,7 @@ import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
 import {Reauthentication} from './Reauthentication';
+import { DELETION_COLLECTION, USERS_COLLECTION, USER_DELETION_DOC } from '../../../firebase/firestore';
 
 /**
  * Creates a button that when clicked allows a non-admin user to delete their account.
@@ -47,7 +48,7 @@ const DeleteAccountPopover: () => JSX.Element = () => {
   function markUserDocAsDeleted(): Promise<void> {
     if (firebaseAuth.currentUser) {
       return firestore
-        .collection('users')
+        .collection(USERS_COLLECTION)
         .doc(firebaseAuth.currentUser.uid)
         .update({
           isDeleted: true,
@@ -65,8 +66,8 @@ const DeleteAccountPopover: () => JSX.Element = () => {
   function markUserDocForDeletion(): Promise<void> {
     if (firebaseAuth.currentUser) {
       return firestore
-        .collection('deletion')
-        .doc('users')
+        .collection(DELETION_COLLECTION)
+        .doc(USER_DELETION_DOC)
         .update({
           userDocs: firebase.firestore.FieldValue.arrayUnion(
             firebaseAuth.currentUser.uid

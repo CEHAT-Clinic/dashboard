@@ -122,7 +122,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
                   userData.email !== firebaseAuth.currentUser.email
                 ) {
                   await firestore
-                    .collection('users')
+                    .collection(USERS_COLLECTION)
                     .doc(firebaseAuth.currentUser.uid)
                     .update({email: firebaseAuth.currentUser.email ?? ''});
                 }

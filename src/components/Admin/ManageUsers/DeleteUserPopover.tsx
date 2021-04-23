@@ -16,6 +16,7 @@ import {DeleteUserPopoverProps} from './Types';
 import firebase, {firebaseAuth, firestore} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {useAuth} from '../../../contexts/AuthContext';
+import { DELETION_COLLECTION, USERS_COLLECTION, USER_DELETION_DOC } from '../../../firebase/firestore';
 
 /**
  * Creates a button that when clicked, creates a confirmation popup to delete a
@@ -60,8 +61,8 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
   function markUserForDeletion(): Promise<void> {
     if (isAdmin) {
       return firestore
-        .collection('deletion')
-        .doc('users')
+        .collection(DELETION_COLLECTION)
+        .doc(USER_DELETION_DOC)
         .update({
           userDocs: firebase.firestore.FieldValue.arrayUnion(user.userId),
           firebaseUsers: firebase.firestore.FieldValue.arrayUnion(user.userId),
@@ -81,7 +82,7 @@ const DeleteUserPopover: ({user}: DeleteUserPopoverProps) => JSX.Element = ({
    */
   function markUserDocAsDeleted(): Promise<void> {
     if (isAdmin) {
-      return firestore.collection('users').doc(user.userId).update({
+      return firestore.collection(USERS_COLLECTION).doc(user.userId).update({
         isDeleted: true,
       });
     } else {

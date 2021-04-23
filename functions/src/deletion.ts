@@ -1,5 +1,5 @@
 import {firestore, FieldValue, auth} from './admin';
-import {readingsSubcollection} from './firestore';
+import {DELETION_COLLECTION, readingsSubcollection, USERS_COLLECTION, USER_DELETION_DOC} from './firestore';
 
 /**
  * Deletes readings before date marked for sensors in the deletion list.
@@ -13,7 +13,7 @@ async function deleteMarkedData(): Promise<void> {
   const batchSize = 500;
 
   const readingsDeletionData =
-    (await firestore.collection('deletion').doc('readings').get()).data() ?? {};
+    (await firestore.collection(DELETION_COLLECTION).doc('readings').get()).data() ?? {};
 
   const deletionMap = readingsDeletionData.deletionMap ?? Object.create(null);
 
@@ -31,7 +31,7 @@ async function deleteMarkedData(): Promise<void> {
 
   // Handle any user deletion tasks
   const userDeletionData =
-    (await firestore.collection('deletion').doc('users').get()).data() ?? {};
+    (await firestore.collection(DELETION_COLLECTION).doc(USER_DELETION_DOC).get()).data() ?? {};
 
   const userDocs: string[] = userDeletionData.userDocs ?? [];
   await deleteUserDocs(userDocs);
@@ -40,7 +40,7 @@ async function deleteMarkedData(): Promise<void> {
   await auth.deleteUsers(firebaseUsers);
 
   // Reset arrays after docs have been deleted
-  await firestore.collection('deletion').doc('users').update({
+  await firestore.collection(DELETION_COLLECTION).doc(USER_DELETION_DOC).update({
     userDocs: [],
     firebaseUsers: [],
     lastUpdated: FieldValue.serverTimestamp(),
@@ -53,7 +53,7 @@ async function deleteMarkedData(): Promise<void> {
  */
 async function deleteUserDocs(userIds: string[]): Promise<void> {
   for (const userId of userIds) {
-    await firestore.collection('users').doc(userId).delete();
+    await firestore.collection(USERS_COLLECTION).doc(userId).delete();
   }
 }
 
@@ -73,7 +73,7 @@ async function deleteSensorSubcollectionBatch(
     const updates = Object.create(null);
     updates['lastUpdated'] = FieldValue.serverTimestamp();
     updates[`deletionMap.${sensorDocId}`] = FieldValue.delete();
-    await firestore.collection('deletion').doc('readings').update(updates);
+    await firestore.collection(DELETION_COLLECTION).doc('readings').update(updates);
   };
 
   await deleteQueryBatch(query, resolve, maxBatchSize);

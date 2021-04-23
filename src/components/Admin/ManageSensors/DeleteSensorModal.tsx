@@ -28,6 +28,7 @@ import {SensorInput} from './Util/SensorInput';
 import {FaTrash} from 'react-icons/fa';
 import axios, {AxiosResponse} from 'axios';
 import {LabelValue} from './Util/LabelValue';
+import { DELETION_COLLECTION } from '../../../firebase/firestore';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
@@ -167,7 +168,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
     newDeletionMap[sensorDocId] = new Date();
 
-    return firestore.collection('deletion').doc('readings').update({
+    return firestore.collection(DELETION_COLLECTION).doc('readings').update({
       deletionMap: newDeletionMap,
       lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
     });
@@ -181,7 +182,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   function getDeletionToDoDoc(): Promise<
     firebase.firestore.DocumentSnapshot<firebase.firestore.DocumentData>
   > {
-    return firestore.collection('deletion').doc('readings').get();
+    return firestore.collection(DELETION_COLLECTION).doc('readings').get();
   }
 
   /**
