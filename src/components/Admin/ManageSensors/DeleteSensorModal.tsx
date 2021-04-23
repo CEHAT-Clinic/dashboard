@@ -116,7 +116,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
       const purpleAirData = purpleAirResponse.data;
       const groupMembers: PurpleAirGroupMember[] = purpleAirData.members;
 
-      // Find the member ID of the group of the sensor to be deleted
+      // Find the member ID of the sensor to be deleted in the the PurpleAir group
       for (const member of groupMembers) {
         if (member.sensor_index === purpleAirId) {
           return member.id;
