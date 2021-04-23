@@ -7,7 +7,7 @@ import {SelectedSensor} from '../../util';
 import {
   CURRENT_READING_COLLECTION,
   SENSORS_DOC,
-} from '../../../functions/src/firestore';
+} from '../../firebase/firestore';
 
 /**
  * Interface for the props of the Map component
