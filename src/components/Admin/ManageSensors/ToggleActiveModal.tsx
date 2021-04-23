@@ -81,7 +81,7 @@ const ToggleActiveModal: ({
    *
    * @remarks
    * Note that when a sensor is activated or deactivated, we do not change it in
-   * our PurpleAir group: 490. We will still get data from PurpleAir in our API
+   * our PurpleAir group. We will still get data from PurpleAir in our API
    * call, but the resulting data will not be used anywhere.
    */
   function toggleActiveSensorStatus(
