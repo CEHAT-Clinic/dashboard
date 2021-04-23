@@ -101,7 +101,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
 
   /**
    * Gets the member ID for a sensor in the PurpleAir group
-   * @returns the member ID of the sensor to be deleted in PurpleAir group, or `NaN` if the sensor was not in the group
+   * @returns the member ID of the sensor to be deleted in the PurpleAir group, or `NaN` if the sensor was not in the group
    */
   function getPurpleAirMemberId(): Promise<number> {
     const purpleAirGroupApiUrl = `https://api.purpleair.com/v1/groups/${GROUP_ID}`;
