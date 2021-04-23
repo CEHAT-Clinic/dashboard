@@ -1,4 +1,5 @@
 import React, {createContext, useState, useContext, useEffect} from 'react';
+import {USERS_COLLECTION} from '../firebase/firestore';
 import {firebaseAuth, firestore} from '../firebase/firebase';
 import {Props} from './AppProviders';
 
@@ -98,7 +99,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
       // updates their account information, this change is reflected on the
       // user's account page.
       const unsubscribe = firestore
-        .collection('users')
+        .collection(USERS_COLLECTION)
         .doc(user.uid)
         .onSnapshot(async snapshot => {
           if (snapshot.exists) {
@@ -121,7 +122,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
                   userData.email !== firebaseAuth.currentUser.email
                 ) {
                   await firestore
-                    .collection('users')
+                    .collection(USERS_COLLECTION)
                     .doc(firebaseAuth.currentUser.uid)
                     .update({email: firebaseAuth.currentUser.email ?? ''});
                 }
@@ -142,7 +143,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               emailVerified: user.emailVerified,
             };
             await firestore
-              .collection('users')
+              .collection(USERS_COLLECTION)
               .doc(user.uid)
               .set(newUserData)
               .catch(error => {

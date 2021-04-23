@@ -27,6 +27,7 @@ import firebase, {firestore} from '../../../firebase/firebase';
 import {useAuth} from '../../../contexts/AuthContext';
 import axios from 'axios';
 import {LabelValue} from './Util/LabelValue';
+import {SENSORS_COLLECTION} from '../../../firebase/firestore';
 
 /**
  * Component to add a new sensor. Includes a button to make the modal pop up
@@ -96,7 +97,7 @@ function AddSensorModal(): JSX.Element {
         const purpleAirId = +purpleAirIdString;
         // Make sure that no sensor with this ID already exists in Firestore
         const querySnapshot = await firestore
-          .collection('sensors')
+          .collection(SENSORS_COLLECTION)
           .where('purpleAirId', '==', purpleAirId)
           .get();
 
@@ -181,7 +182,7 @@ function AddSensorModal(): JSX.Element {
         const bufferDoesNotExist = 2;
 
         // Create a sensor doc for the added sensor
-        await firestore.collection('sensors').add({
+        await firestore.collection(SENSORS_COLLECTION).add({
           name: sensorName,
           purpleAirId: purpleAirId,
           latitude: latitude,

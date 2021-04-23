@@ -12,6 +12,11 @@ import {
   getCleanedAverages,
   cleanedReadingsToNowCastPm25,
 } from './cleaned-reading';
+import {
+  CURRENT_READING_COLLECTION,
+  SENSORS_COLLECTION,
+  SENSORS_DOC,
+} from '../firestore';
 
 /**
  * Computes the AQI for PM2.5 given the appropriate AQI breakpoints.
@@ -141,7 +146,7 @@ async function calculateAqi(): Promise<void> {
 
   // Get all currently active sensors
   const activeSensorDocsSnapshot = await firestore
-    .collection('sensors')
+    .collection(SENSORS_COLLECTION)
     .where('isActive', '==', true)
     .get();
 
@@ -251,7 +256,7 @@ async function calculateAqi(): Promise<void> {
 
     // Send the updated data to the database
     await firestore
-      .collection('sensors')
+      .collection(SENSORS_COLLECTION)
       .doc(sensorDoc.id)
       .update(sensorDocUpdate);
 
@@ -266,7 +271,7 @@ async function calculateAqi(): Promise<void> {
   }
 
   // Send AQI readings to current-reading to be displayed on the map
-  await firestore.collection('current-reading').doc('sensors').set({
+  await firestore.collection(CURRENT_READING_COLLECTION).doc(SENSORS_DOC).set({
     lastUpdated: FieldValue.serverTimestamp(),
     data: currentData,
   });

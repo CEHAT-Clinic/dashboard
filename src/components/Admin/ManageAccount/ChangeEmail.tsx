@@ -19,6 +19,7 @@ import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
 import {Reauthentication} from './Reauthentication';
 import {useAuth} from '../../../contexts/AuthContext';
+import {USERS_COLLECTION} from '../../../firebase/firestore';
 
 /**
  * Component for changing an authenticated user's email. Includes button that
@@ -69,7 +70,7 @@ const ChangeEmailModal: () => JSX.Element = () => {
   function updateUserDoc(): Promise<void> {
     if (firebaseAuth.currentUser) {
       return firestore
-        .collection('users')
+        .collection(USERS_COLLECTION)
         .doc(firebaseAuth.currentUser.uid)
         .update({email: newEmail});
     } else {

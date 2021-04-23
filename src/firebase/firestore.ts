@@ -63,7 +63,7 @@ interface SensorDoc {
 
 /**
  * Name of the collection in Firestore where a sensor's readings are stored.
- * `READINGS` exists as a subcollection for each `SENSORS_COLLECTION`'s
+ * `READINGS_COLLECTION` exists as a subcollection for each `SENSORS_COLLECTION`'s
  * document, so use `readingsSubcollection` to get the full subcollection name
  * for a sensor.
  */
@@ -189,28 +189,50 @@ const DELETION_COLLECTION = 'deletion';
 
 /**
  * Name of the document in `DELETION_COLLECTION` where the information about
- * which data should be deleted by the Cloud Functions is stored.
+ * which sensor readings should be deleted by the Cloud Functions is stored.
  */
-const TODO_DOC = 'todo';
+const READINGS_DELETION_DOC = 'readings';
 
 /**
- * The map of the documents to be deleted in `TODO_DOC` in the
+ * Name of the document in `DELETION_COLLECTION` where the information about
+ * which user documents and Firebase Authentication users should be deleted by
+ * the Cloud Functions is stored.
+ */
+const USER_DELETION_DOC = 'users';
+
+/**
+ * The map of the documents to be deleted in `READINGS_DELETION_DOC` in the
  * `DELETION_COLLECTION`. Each entry in the map is a sensor's document ID in
  * `SENSORS_COLLECTION` to the timestamp for which data before that timestamp
  * should be deleted.
  */
-interface DeletionMap {
+interface ReadingDeletion {
   [sensorDocId: string]: firebase.firestore.Timestamp;
 }
 
 /**
- * Interface for the structure of `TODO_DOC` in `DELETION_COLLECTION`.
+ * Interface for the structure of `READING_DELETION_DOC` in `DELETION_COLLECTION`.
  * - `deletionMap` - map of a sensor's doc ID in `SENSORS_COLLECTION` to the
  *   timestamp for which data before that timestamp should be deleted
- * - `lastUpdated` - when `TODO_DOC` was last updated
+ * - `lastUpdated` - when `READING_DELETION_DOC` was last updated
  */
-interface DeletionTodoDoc {
-  deletionMap: DeletionMap;
+interface ReadingDeletionDoc {
+  deletionMap: ReadingDeletion;
+  lastUpdated: firebase.firestore.Timestamp;
+}
+
+/**
+ * Interface for the structure of `USER_DELETION_DOC` in `DELETION_COLLECTION`.
+ * - `firebaseUsers` - array of user IDs that should be deleted from Firebase
+ *   Authentication
+ * - `userDocs` - array of user IDs that should be deleted from
+ *   `USERS_COLLECTION`, where each user ID is the doc ID of that user's doc in
+ *   `USERS_COLLECTION`
+ * - `lastUpdated` - when `USER_DELETION_DOC` was last updated
+ */
+interface UserDeletionDoc {
+  firebaseUsers: string[];
+  userDocs: string[];
   lastUpdated: firebase.firestore.Timestamp;
 }
 
@@ -222,7 +244,8 @@ export {
   CURRENT_READING_COLLECTION,
   SENSORS_DOC,
   DELETION_COLLECTION,
-  TODO_DOC,
+  READINGS_DELETION_DOC,
+  USER_DELETION_DOC,
 };
 
 export type {
@@ -230,6 +253,7 @@ export type {
   ReadingsDoc,
   CurrentSensorData,
   CurrentReadingSensorDoc,
-  DeletionTodoDoc,
+  ReadingDeletionDoc,
+  UserDeletionDoc,
   UserDoc,
 };

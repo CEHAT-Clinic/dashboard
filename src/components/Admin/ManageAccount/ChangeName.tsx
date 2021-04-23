@@ -22,6 +22,7 @@ import {CheckCircleIcon} from '@chakra-ui/icons';
 import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
+import {USERS_COLLECTION} from '../../../firebase/firestore';
 import {Reauthentication} from './Reauthentication';
 
 /**
@@ -76,7 +77,7 @@ const ChangeNameModal: () => JSX.Element = () => {
   function updateUserDoc(): Promise<void> {
     if (firebaseAuth.currentUser) {
       return firestore
-        .collection('users')
+        .collection(USERS_COLLECTION)
         .doc(firebaseAuth.currentUser.uid)
         .update({
           name: newName,

@@ -25,6 +25,11 @@ import {useTranslation} from 'react-i18next';
 import {FaTrash} from 'react-icons/fa';
 import {useAuth} from '../../../contexts/AuthContext';
 import firebase, {firestore} from '../../../firebase/firebase';
+import {
+  DELETION_COLLECTION,
+  READINGS_DELETION_DOC,
+  SENSORS_COLLECTION,
+} from '../../../firebase/firestore';
 import {MonthInput, DayInput} from './DownloadData/Util';
 
 /**
@@ -117,8 +122,10 @@ function DeleteOldDataModal(): JSX.Element {
    */
   async function markOldDataForDeletion(): Promise<void> {
     if (allDisclosuresChecked && validDate && isAdmin) {
-      const sensorsList = await firestore.collection('sensors').get();
-      const deletionDocRef = firestore.collection('deletion').doc('readings');
+      const sensorsList = await firestore.collection(SENSORS_COLLECTION).get();
+      const deletionDocRef = firestore
+        .collection(DELETION_COLLECTION)
+        .doc(READINGS_DELETION_DOC);
 
       // Get current mapping or set to empty
       const mapping =

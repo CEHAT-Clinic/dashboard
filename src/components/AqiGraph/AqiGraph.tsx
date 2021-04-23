@@ -15,6 +15,7 @@ import {aqiCutoffs} from '../../util';
 import {useColor} from '../../contexts/ColorContext';
 import {formatTime} from '../Util/Dates';
 import {MoreInfoLabel} from '../Util/MoreInfoLabel';
+import {SENSORS_COLLECTION} from '../../firebase/firestore';
 
 /**
  * AQI Graph Display Component
@@ -50,7 +51,7 @@ const AqiGraph: ({sensorDocId}: GraphProps) => JSX.Element = ({
   useEffect(() => {
     // Get last 24 hours AQI buffer from sensor doc
     if (sensorDocId) {
-      const docRef = firestore.collection('sensors').doc(sensorDocId);
+      const docRef = firestore.collection(SENSORS_COLLECTION).doc(sensorDocId);
 
       docRef.get().then(doc => {
         if (doc.exists) {
