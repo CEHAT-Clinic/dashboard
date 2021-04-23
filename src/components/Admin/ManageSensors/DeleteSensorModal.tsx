@@ -28,6 +28,7 @@ import {SensorInput} from './Util/SensorInput';
 import {FaTrash} from 'react-icons/fa';
 import axios, {AxiosResponse} from 'axios';
 import {LabelValue} from './Util/LabelValue';
+import {GROUP_ID} from '../../../purpleair';
 
 /**
  * Props for `DeleteSensorModal`, used for type safety
@@ -94,11 +95,11 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   }
 
   /**
-   * Gets the member ID for a sensor in PurpleAir group 490
-   * @returns the member ID of the sensor to be deleted in PurpleAir group 490, or `NaN` if the sensor was not in the group
+   * Gets the member ID for a sensor in the PurpleAir group
+   * @returns the member ID of the sensor to be deleted in PurpleAir group, or `NaN` if the sensor was not in the group
    */
   function getPurpleAirMemberId(): Promise<number> {
-    const purpleAirGroupApiUrl = 'https://api.purpleair.com/v1/groups/490';
+    const purpleAirGroupApiUrl = `https://api.purpleair.com/v1/groups/${GROUP_ID}`;
 
     return axios({
       method: 'GET',
@@ -110,7 +111,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
       const purpleAirData = purpleAirResponse.data;
       const groupMembers: PurpleAirGroupMember[] = purpleAirData.members;
 
-      // Find the member ID of group 490 for the sensor to be deleted
+      // Find the member ID of the group of the sensor to be deleted
       for (const member of groupMembers) {
         if (member.sensor_index === purpleAirId) {
           return member.id;
@@ -123,19 +124,19 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
   }
 
   /**
-   * Deletes a given member from the PurpleAir group 490
-   * @param memberId - the member ID of the sensor to be deleted in PurpleAir group 490, or `NaN` if the sensor was not in the group
-   * @returns Either an empty Promise if the sensor does not need to be deleted or the axios response from PurpleAir, which returns no data from PurpleAir upon success to delete the member from the group.
+   * Deletes a given member from the PurpleAir group
+   * @param memberId - the member ID of the sensor to be deleted in PurpleAir group, or `NaN` if the sensor was not in the group
+   * @returns Either an empty Promise if the sensor does not need to be deleted or the axios response from PurpleAir, which returns no data from PurpleAir upon success to delete the member from the group
    */
   function deleteFromPurpleAirGroup(
     memberId: number
   ): Promise<AxiosResponse | void> {
     if (Number.isNaN(memberId)) {
-      // If memberId is `NaN`, then the sensor to be deleted is already not a member
-      // of the PurpleAir group 490
+      // If memberId is `NaN`, then the sensor to be deleted is already not a
+      // member of the PurpleAir group
       return Promise.resolve();
     } else {
-      const purpleAirApiDeleteGroupMemberUrl = `https://api.purpleair.com/v1/groups/490/members/${memberId}`;
+      const purpleAirApiDeleteGroupMemberUrl = `https://api.purpleair.com/v1/groups/${GROUP_ID}/members/${memberId}`;
 
       return axios({
         method: 'DELETE',
@@ -188,7 +189,7 @@ const DeleteSensorModal: ({sensors}: DeleteSensorModalProps) => JSX.Element = ({
    * This function adds the sensor to the deletion map with the current time,
    * meaning that all readings in the readings subcollection will be deleted.
    * If the deletion map is successfully updated, the sensor is removed from
-   * PurpleAir group 490 so we stop getting data for the sensor, and the
+   * the PurpleAir group so we stop getting data for the sensor, and the
    * sensor's doc is deleted in the sensors collection.
    * @param event - click button event
    */

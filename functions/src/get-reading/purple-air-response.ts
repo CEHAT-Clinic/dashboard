@@ -3,16 +3,14 @@ import {config} from '../admin';
 import {PurpleAirReading} from './types';
 import {getMeanPercentDifference} from './util';
 import {SensorReadingError} from './sensor-errors';
+import {GROUP_ID} from '../purpleAir';
 
 /**
- * Make the PurpleAir API to using the group query. For our API key, the current
- * sensor for the South Gate CEHAT are in group 490.
+ * Gets the most recent sensor readings from the PurpleAir group
  * @returns PurpleAir API response
  */
 async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
-  // The Group ID for the CEHAT's sensors is 490
-  const purpleAirGroupApiUrl =
-    'https://api.purpleair.com/v1/groups/490/members';
+  const purpleAirGroupApiUrl = `https://api.purpleair.com/v1/groups/${GROUP_ID}/members`;
 
   // Fetch these data fields for each sensor. Available fields are documented
   // by the PurpleAir API
@@ -28,7 +26,10 @@ async function fetchPurpleAirResponse(): Promise<AxiosResponse> {
     'channel_flags',
   ];
 
-  // Only get readings from sensors that have an updated reading in the last 4 minutes
+  // Only get readings from sensors that have an updated reading in the last 4
+  // minutes. The Cloud Functions get new readings every 2 minutes, so it's
+  // possible that this returns a reading that we already have, but we make the
+  // max age 4 minutes in case of Cloud Function delays.
   const maxSensorAge = 240;
 
   // If an error is thrown, then it will be logged in Firestore

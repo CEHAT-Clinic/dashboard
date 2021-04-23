@@ -27,6 +27,7 @@ import firebase, {firestore} from '../../../firebase/firebase';
 import {useAuth} from '../../../contexts/AuthContext';
 import axios from 'axios';
 import {LabelValue} from './Util/LabelValue';
+import {GROUP_ID} from '../../../purpleair';
 
 /**
  * Component to add a new sensor. Includes a button to make the modal pop up
@@ -161,11 +162,10 @@ function AddSensorModal(): JSX.Element {
       setIsLoading(true);
       const purpleAirId = +purpleAirIdString;
       // Add to PurpleAir Group
-      const purpleAirGroupApiUrl =
-        'https://api.purpleair.com/v1/groups/490/members';
+      const purpleAirGroupApiUrl = `https://api.purpleair.com/v1/groups/${GROUP_ID}/members`;
 
       try {
-        // Add the sensor to the sensor group 490
+        // Add the sensor to the sensor group
         await axios({
           method: 'POST',
           url: purpleAirGroupApiUrl,
