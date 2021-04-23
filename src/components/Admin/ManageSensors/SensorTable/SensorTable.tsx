@@ -24,19 +24,26 @@ import {ErrorTag} from './ErrorTag';
  * Interface for props for SensorTable
  * - `title` - title of the table
  * - `sensors` - sensors to be displayed in the table
+ * - `isActive` - if the sensors are active or inactive
  */
 interface SensorTableProps {
   title: string;
   sensors: Sensor[];
+  isActive: boolean;
 }
 
 /**
  * Table of sensors. Includes a heading for the table and a message to describe
  * what active/inactive means.
  */
-const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
+const SensorTable: ({
   title,
   sensors,
+  isActive,
+}: SensorTableProps) => JSX.Element = ({
+  title,
+  sensors,
+  isActive,
 }: SensorTableProps) => {
   const {t} = useTranslation('sensors');
 
@@ -166,18 +173,22 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
                 message={t('lastReadingTimeNote')}
               />
             </Th>
-            <Th>
-              <MoreInfoHeading
-                heading={t('sensorErrors.heading')}
-                message={t('sensorErrors.explanation')}
-              />
-            </Th>
-            <Th>
-              <MoreInfoHeading
-                heading={t('aqiErrors.heading')}
-                message={t('aqiErrors.explanation')}
-              />
-            </Th>
+            {isActive && (
+              <Th>
+                <MoreInfoHeading
+                  heading={t('sensorErrors.heading')}
+                  message={t('sensorErrors.explanation')}
+                />
+              </Th>
+            )}
+            {isActive && (
+              <Th>
+                <MoreInfoHeading
+                  heading={t('aqiErrors.heading')}
+                  message={t('aqiErrors.explanation')}
+                />
+              </Th>
+            )}
           </Tr>
         </Thead>
         <Tbody>
@@ -199,12 +210,16 @@ const SensorTable: ({title, sensors}: SensorTableProps) => JSX.Element = ({
                   t('unknown')
                 )}
               </Td>
-              <Td>
-                <VStack>{getSensorErrorTags(sensor)}</VStack>
-              </Td>
-              <Td>
-                <VStack>{getInvalidAqiErrorTags(sensor)}</VStack>
-              </Td>
+              {isActive && (
+                <Td>
+                  <VStack>{getSensorErrorTags(sensor)}</VStack>
+                </Td>
+              )}
+              {isActive && (
+                <Td>
+                  <VStack>{getInvalidAqiErrorTags(sensor)}</VStack>
+                </Td>
+              )}
             </Tr>
           ))}
         </Tbody>

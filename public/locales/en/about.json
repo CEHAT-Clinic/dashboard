@@ -28,9 +28,33 @@
     },
     "sensorsDown": {
         "heading": "Sensor Not Reporting AQI?",
-        "part1": "There are many steps involved in calculating the AQI using the information reported by the PurpleAir sensors that we host in South Gate. The EPA outlines the steps of this algorithm, and we follow their guidelines to ensure our sensors accurately report the AQI.",
+        "part1a": "Our website uses the ", 
+        "part1Link": "EPA NowCast algorithm", 
+        "part1b": " to calculate real-time AQI values using data from PurpleAir sensors that we host around South Gate. We follow the EPA’s algorithm closely to ensure our sensors are accurately reporting the AQI.",
         "part2": "PurpleAir sensors are great for our work because they are affordable and relatively accurate given their cost. That being said, they are not as reliable as some more expensive sensors, which means that sometimes the values they record aren’t sufficient for calculating the AQI. This could be very temporary (a matter of minutes or hours) or might last longer. If a sensor has been down for a long time, it probably means that either the sensor is no longer connected to the internet or that it has encountered a more serious hardware issue.",
         "part3": "If a sensor in your area has been down for a long time, feel free to contact us and we’ll communicate with the sensor host to see if we can resolve the issue."
+    },
+    "app":{
+        "heading": "Download This Website as an App",
+        "body": "If you have an Android smartphone or an iPhone you can download this website as an app on your home screen using the following instructions.",
+        "iPhone" : {
+            "heading":"On an iPhone:",
+            "step1": "Open this website in Safari",
+            "step2": "Tap the share icon at the bottom of the screen"
+        },
+        "android" : {
+            "heading":"On an Android:",
+            "step1": "Open this website in Google Chrome",
+            "step2": "Tap the Chrome menu ("
+        },
+        "step3": "Select \"Add to Home Screen\"",
+        "step4": "Tap \"Add\" in the top right corner"
+    },
+    "noSensorInArea": {
+        "heading": "No Sensors In Your Area?",
+        "part1": "Some areas of South Gate are better represented on our map than others. Each sensor on the map is physically located somewhere, usually in the backyard of a generous South Gate resident. If there is an area of the city that you would like to see on the map, contact us at ",
+        "or" :" or ",
+        "part2":" and let us know! It is especially helpful if you know someone in the area who would be willing to host a sensor in their yard (the sensor requires WiFi and a power outlet)."
     },
     "acknowledge": {
         "heading": "Acknowledgements",

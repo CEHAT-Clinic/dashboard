@@ -24,7 +24,11 @@
     "passwordModalSuccess": {
         "change": "Password updated",
         "forgot": "Password reset email sent"
-    }, 
+    },
+    "addPassword": {
+        "heading": "Add Password",
+        "explanation": "If you add a password to your account, you can use your email and password or Google to sign in."
+    },
     "currentPassword": "Current Password",
     "newPassword": "New Password",
     "confirmNewPassword": "Confirm New Password",
@@ -36,11 +40,14 @@
         "forgot": "Send password reset email"
     },
     "nameModal": {
-        "launchButton": "Update your name",
         "header": "Update Name",
-        "submitButton": "Update name",
         "success": "Name updated",
         "formHelperMessage": "Your name is used so that site admins can identify your account"
+    },
+    "emailModal": {
+        "header": "Update Email",
+        "addPassword": "To be able to change your email, please add a password to your account and disconnect your account from Google.",
+        "sameEmail": "Your new email is the same as your current email"
     },
     "signIn": {
         "google": "Sign in with Google",
@@ -80,10 +87,14 @@
         "shouldHaveAccess": "If you think you should have access to this page, please contact a site administrator or a member of the South Gate CEHAT."
     },
     "manageAccount":{
-        "methodFetchError": "Error occurred when fetching user sign in methods",
         "connectedToGoogle": "Account connected to Google",
+        "connectToGoogle": "If your email is a Google email, connect your account to Google by signing in with Google on the Sign In page.",
         "heading": "Manage Your Account",
-        "manageSignInMethodsHeader": "Manage Sign In Methods"
+        "manageSignInMethodsHeader": "Manage Sign In Methods",
+        "sendVerificationEmail": "Send Verification Email",
+        "verificationEmailSent": "Verification email sent. Refresh the page to be able to re-send the email or to check that you successfully verified your email.",
+        "verifyEmail": "Please verify your email.",
+        "verificationEmailError": "Unable to send verification email"
     },
     "returnAdmin": "Return to Admin Home",
     "notSignedIn": "you are not signed in",
@@ -127,5 +138,16 @@
         "heading": "Delete User",
         "error": "Unable to mark user for deletion",
         "message": "Once you confirm deletion, this action cannot be undone. The user will be deleted in the next 24 hours. Until then, the user will still be able to sign into their account."
+    },
+    "reauthenticate": {
+        "heading": "Re-enter Your Credentials",
+        "explanation": "Reauthentication of your credentials is necessary before account updates.",
+        "choose": "You can choose to reauthenticate using your Google account or your password.",
+        "success": "You have been reauthenticated."
+    },
+    "unlinkGoogle": {
+        "heading": "Unlink Account From Google",
+        "password": "To be able to unlink your account from Google, add a password to your account.",
+        "error": "Unable to unlink account from Google."
     }
 }

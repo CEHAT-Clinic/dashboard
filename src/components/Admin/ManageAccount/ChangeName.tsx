@@ -19,11 +19,12 @@ import {
   FormHelperText,
 } from '@chakra-ui/react';
 import {CheckCircleIcon} from '@chakra-ui/icons';
-import {PasswordFormInput, SubmitButton} from '../ComponentUtil';
+import {SubmitButton} from '../ComponentUtil';
 import {firestore, firebaseAuth} from '../../../firebase/firebase';
 import {useTranslation} from 'react-i18next';
-import {handleReauthenticationWithPassword} from './Util';
 import {USERS_COLLECTION} from '../../../firebase/firestore';
+import {useAuth} from '../../../contexts/AuthContext';
+import {Reauthentication} from './Reauthentication';
 
 /**
  * Props for ChangeNameModal component. Used for type safety.
@@ -31,7 +32,6 @@ import {USERS_COLLECTION} from '../../../firebase/firestore';
 interface ChangeNameModalProps {
   passwordUser: boolean;
 }
-import {useAuth} from '../../../contexts/AuthContext';
 
 /**
  * Component for changing an authenticated user's name. Includes button that
@@ -41,28 +41,22 @@ const ChangeNameModal: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {isOpen, onOpen, onClose} = useDisclosure();
 
-  // Current password state variables
-  const [password, setPassword] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const [reauthenticated, setReauthenticated] = useState(false);
   const [newName, setNewName] = useState('');
   const [error, setError] = useState('');
   const [modalIsLoading, setModalIsLoading] = useState(false);
   const [nameChangeComplete, setNameChangeComplete] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const {t} = useTranslation(['administration', 'common']);
+  const readyToSubmit = reauthenticated && error === '' && newName !== '';
 
-  const {passwordUser} = useAuth();
+  const {t} = useTranslation(['administration', 'common']);
 
   /**
    * Resets modal state values before closing the modal.
    */
   function handleClose() {
-    setPassword('');
-    setPasswordError('');
-    setPasswordVisible(false);
+    setReauthenticated(false);
     setNewName('');
     setError('');
     setModalIsLoading(false);
@@ -71,140 +65,117 @@ const ChangeNameModal: () => JSX.Element = () => {
   }
 
   /**
-   * Updates an authenticated user using Firebase authentication
-   * @param event - submit form event
+   * Updates a user's name in Firebase Authentication
+   * @returns a promise that when resolved updates a user's name in Firebase Authentication
    */
-  function handleDisplayNameUpdate(event: React.FormEvent<HTMLFormElement>) {
+  function updateFirebaseAuth(): Promise<void> {
+    if (firebaseAuth.currentUser) {
+      return firebaseAuth.currentUser.updateProfile({
+        displayName: newName,
+      });
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  /**
+   * Updates a user's name in their user doc
+   * @returns a promise that when resolved updates a user's name in their user doc
+   */
+  function updateUserDoc(): Promise<void> {
+    if (firebaseAuth.currentUser) {
+      return firestore
+        .collection(USERS_COLLECTION)
+        .doc(firebaseAuth.currentUser.uid)
+        .update({
+          name: newName,
+        });
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  /**
+   * Updates a user's name in Firebase Authentication and their user doc
+   * @param event - submit form event
+   * @returns a promise that when resolved means a user's name has been updated in their user doc and in Firebase Authentication
+   */
+  function handleDisplayNameUpdate(
+    event: React.FormEvent<HTMLFormElement>
+  ): Promise<void> {
     event.preventDefault();
     setModalIsLoading(true);
 
-    /**
-     * Updates the user's name in Firebase and in their Firestore user doc
-     */
-    function updateName(): void {
-      if (firebaseAuth.currentUser) {
-        const user = firebaseAuth.currentUser;
-        // Update Firebase account
-        user
-          .updateProfile({
-            displayName: newName,
-          })
-          .then(() => {
-            // Update Firestore user document
-            // Any errors are caught by the following catch statement
-            firestore
-              .collection(USERS_COLLECTION)
-              .doc(user.uid)
-              .update({
-                name: newName,
-              })
-              .then(() => setNameChangeComplete(true));
-          })
-          .catch(error =>
-            setError(t('common:generalErrorTemplate') + error.message)
-          )
-          .finally(() => {
-            setModalIsLoading(false);
-          });
-      }
-    }
-
-    // Verify that the inputted password is correct before proceeding
-    if (passwordUser) {
-      handleReauthenticationWithPassword(password, t)
-        .then(error => {
-          if (error) {
-            // This error can be handled by the user
-            setPasswordError(error);
-            setModalIsLoading(false);
-          } else {
-            // No error, so proceed with name update
-            updateName();
-          }
-        })
-        .catch(error => {
-          // Propagate the error, since this error cannot be handled by the user
-          throw new Error(error);
-        });
-    } else {
-      // If user is not a password-based user, proceed with updating the name
-      updateName();
-    }
+    return updateFirebaseAuth()
+      .then(updateUserDoc)
+      .then(() => setNameChangeComplete(true))
+      .catch(error => {
+        setError(t('common:generalErrorTemplate') + error.message);
+      })
+      .finally(() => setModalIsLoading(false));
   }
 
   return (
     <Box marginY={2}>
       <Button colorScheme="teal" onClick={onOpen} minWidth="50%">
-        {t('nameModal.launchButton')}
+        {t('nameModal.header')}
       </Button>
       <Modal isOpen={isOpen} onClose={handleClose}>
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{t('nameModal.header')}</ModalHeader>
           <ModalCloseButton />
-          <form onSubmit={handleDisplayNameUpdate}>
+          <ModalBody>
             {nameChangeComplete ? (
               <Flex alignItems="center" justifyContent="center" marginTop="1em">
                 <CheckCircleIcon color="green.500" />
                 <Text fontSize="lg">{t('nameModal.success')}</Text>
               </Flex>
             ) : (
-              <ModalBody>
-                <Box marginY={1}>
-                  {passwordUser && (
-                    <PasswordFormInput
-                      label={t('password')}
-                      handlePasswordChange={event => {
-                        setPassword(event.target.value);
-                        setError('');
-                        setPasswordError('');
-                      }}
-                      showPassword={passwordVisible}
-                      handlePasswordVisibility={() => {
-                        setPasswordVisible(!passwordVisible);
-                      }}
-                      error={passwordError}
-                      value={password}
-                      helpMessage={t('passwordHelpMessage')}
-                    />
-                  )}
-                  <FormControl
-                    isRequired
-                    marginTop={4}
-                    isInvalid={error !== ''}
-                  >
-                    <FormLabel>{t('name')}</FormLabel>
-                    <Input
-                      type="text"
-                      placeholder="Bob"
-                      size="md"
-                      onChange={event => {
-                        setNewName(event.target.value);
-                        setError('');
-                      }}
-                      value={newName}
-                    />
-                    <FormErrorMessage>{error}</FormErrorMessage>
-                    <FormHelperText>
-                      {t('nameModal.formHelperMessage')}
-                    </FormHelperText>
-                  </FormControl>
-                </Box>
-              </ModalBody>
-            )}
-            <ModalFooter>
-              {!nameChangeComplete && (
-                <SubmitButton
-                  label={t('nameModal.submitButton')}
-                  isLoading={modalIsLoading}
-                  error={error}
+              <Box>
+                <Reauthentication
+                  setReauthenticated={setReauthenticated}
+                  reauthenticated={reauthenticated}
                 />
-              )}
-              <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
-                {t('common:close')}
-              </Button>
-            </ModalFooter>
-          </form>
+                <form onSubmit={handleDisplayNameUpdate}>
+                  <Box marginY={1}>
+                    <FormControl
+                      isRequired
+                      marginTop={4}
+                      isInvalid={error !== ''}
+                    >
+                      <FormLabel>{t('name')}</FormLabel>
+                      <Input
+                        type="text"
+                        placeholder="Bob"
+                        size="md"
+                        onChange={event => {
+                          setNewName(event.target.value);
+                          setError('');
+                        }}
+                        value={newName}
+                      />
+                      <FormErrorMessage>{error}</FormErrorMessage>
+                      <FormHelperText>
+                        {t('nameModal.formHelperMessage')}
+                      </FormHelperText>
+                    </FormControl>
+                    <SubmitButton
+                      label={t('common:submit')}
+                      isLoading={modalIsLoading}
+                      error={error}
+                      isDisabled={!readyToSubmit}
+                    />
+                  </Box>
+                </form>
+              </Box>
+            )}
+          </ModalBody>
+          <ModalFooter>
+            <Button colorScheme="red" marginLeft={4} onClick={handleClose}>
+              {t('common:close')}
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </Box>

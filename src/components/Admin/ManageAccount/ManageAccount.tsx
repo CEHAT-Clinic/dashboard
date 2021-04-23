@@ -1,5 +1,13 @@
-import React from 'react';
-import {Box, Heading, Text, Flex, Button, Divider} from '@chakra-ui/react';
+import React, {useState} from 'react';
+import {
+  Box,
+  Heading,
+  Text,
+  Flex,
+  Button,
+  Divider,
+  CircularProgress,
+} from '@chakra-ui/react';
 import {useAuth} from '../../../contexts/AuthContext';
 import AccessDenied from '../AccessDenied';
 import ChangePasswordModal from './ChangePassword';
@@ -8,6 +16,10 @@ import ChangeNameModal from './ChangeName';
 import {useTranslation} from 'react-i18next';
 import {AccountDeleted} from '../AccountDeleted';
 import {DeleteAccountPopover} from './DeleteAccountPopover';
+import {AddPasswordModal} from './AddPassword';
+import ChangeEmailModal from './ChangeEmail';
+import {firebaseAuth} from '../../../firebase/firebase';
+import {UnlinkGooglePopover} from './UnlinkGoogle';
 
 /**
  * Component for a user to manage their own account information.
@@ -17,18 +29,46 @@ const ManageAccount: () => JSX.Element = () => {
   // --------------- State maintenance variables ------------------------
   const {
     isAuthenticated,
-    isLoading: fetchingAuthContext,
+    isLoading,
     name,
     email,
     isDeleted,
+    emailVerified,
     googleUser,
     passwordUser,
   } = useAuth();
+  const [error, setError] = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [verificationEmailSent, setVerificationEmailSent] = useState(false);
   // --------------- End state maintenance variables ------------------------
 
-  const {t} = useTranslation('administration');
+  const {t} = useTranslation(['administration', 'common']);
 
-  if (fetchingAuthContext) {
+  /**
+   * Sends an email verification email to the user. If the user clicks on the
+   * link they receive in the email, they will be verified.
+   * @param event - click button event
+   * @returns a promise that when resolved means the email verification has been sent to a user
+   */
+  function sendEmailVerificationEmail(
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
+  ): Promise<void> {
+    event.preventDefault();
+    if (isAuthenticated && firebaseAuth.currentUser && !verificationEmailSent) {
+      setSendingEmail(true);
+      return firebaseAuth.currentUser
+        .sendEmailVerification()
+        .then(() => {
+          setSendingEmail(false);
+          setVerificationEmailSent(true);
+        })
+        .catch(() => setError('manageAccount.verificationEmailError'));
+    } else {
+      return firebaseAuth.signOut();
+    }
+  }
+
+  if (isLoading) {
     return <Loading />;
   } else if (!isAuthenticated) {
     return <AccessDenied reason={t('notSignedIn')} />;
@@ -51,9 +91,33 @@ const ManageAccount: () => JSX.Element = () => {
           <Heading textAlign="left" fontSize="lg" as="h2">
             {t('email')}
           </Heading>
-          <Text textAlign="left" fontSize="md">
+          <Text textAlign="left" fontSize="md" marginY={1}>
             {email}
           </Text>
+          {!emailVerified && (
+            <Text
+              textAlign="left"
+              fontSize="md"
+              textColor="red.500"
+              marginY={2}
+            >
+              {t('manageAccount.verifyEmail')}
+            </Text>
+          )}
+          {!emailVerified &&
+            (verificationEmailSent ? (
+              <Text>{t('manageAccount.verificationEmailSent')}</Text>
+            ) : (
+              <Button onClick={sendEmailVerificationEmail} colorScheme="teal">
+                {sendingEmail ? (
+                  <CircularProgress isIndeterminate size="24px" color="teal" />
+                ) : (
+                  t('manageAccount.sendVerificationEmail')
+                )}
+              </Button>
+            ))}
+          <Text textColor="red.500">{error}</Text>
+          <ChangeEmailModal />
           <Divider marginY={2} />
           <Heading textAlign="left" fontSize="lg" as="h2">
             {t('name')}
@@ -70,8 +134,15 @@ const ManageAccount: () => JSX.Element = () => {
           <Heading marginTop={2} fontSize="lg" as="h2" textAlign="left">
             {t('manageAccount.manageSignInMethodsHeader')}
           </Heading>
-          {passwordUser && <ChangePasswordModal />}
-          {googleUser && <Text>{t('manageAccount.connectedToGoogle')}</Text>}
+          {passwordUser ? <ChangePasswordModal /> : <AddPasswordModal />}
+          {googleUser ? (
+            <Box>
+              <Text>{t('manageAccount.connectedToGoogle')}</Text>
+              <UnlinkGooglePopover />
+            </Box>
+          ) : (
+            <Text>{t('manageAccount.connectToGoogle')}</Text>
+          )}
           <Divider marginY={2} />
           <Heading fontSize="lg" as="h2" textAlign="left">
             {t('deleteAccount.heading')}

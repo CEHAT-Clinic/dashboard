@@ -3,7 +3,6 @@ import {
   Popover,
   PopoverTrigger,
   Button,
-  Portal,
   PopoverArrow,
   PopoverContent,
   PopoverHeader,
@@ -44,26 +43,24 @@ const ErrorTag: ({name, explanation}: ErrorTagProps) => JSX.Element = ({
           {name}
         </Button>
       </PopoverTrigger>
-      <Portal>
-        <PopoverContent>
-          <PopoverArrow />
-          <PopoverHeader>
-            <Flex alignItems="center" justifyContent="center">
-              <HStack>
-                <WarningTwoIcon color="red.500" />
-                <Heading size="md" textAlign="center">
-                  {name}
-                </Heading>
-                <WarningTwoIcon color="red.500" />
-              </HStack>
-            </Flex>
-          </PopoverHeader>
-          <PopoverCloseButton />
-          <PopoverBody>
-            <Text>{explanation}</Text>
-          </PopoverBody>
-        </PopoverContent>
-      </Portal>
+      <PopoverContent>
+        <PopoverArrow />
+        <PopoverHeader>
+          <Flex alignItems="center" justifyContent="center">
+            <HStack>
+              <WarningTwoIcon color="red.500" />
+              <Heading size="md" textAlign="center">
+                {name}
+              </Heading>
+              <WarningTwoIcon color="red.500" />
+            </HStack>
+          </Flex>
+        </PopoverHeader>
+        <PopoverCloseButton />
+        <PopoverBody>
+          <Text>{explanation}</Text>
+        </PopoverBody>
+      </PopoverContent>
     </Popover>
   );
 };

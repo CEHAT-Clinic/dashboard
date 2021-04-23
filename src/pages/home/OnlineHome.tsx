@@ -1,18 +1,19 @@
 import React, {useState, useEffect} from 'react';
-import Map from '../components/Map/Map';
+import Map from '../../components/Map/Map';
 import {Text, Heading, Box, Flex, Spacer, IconButton} from '@chakra-ui/react';
 import {ChevronDownIcon, ChevronUpIcon} from '@chakra-ui/icons';
-import AqiDial from '../components/AqiGauge/AqiDial';
+import AqiDial from '../../components/AqiGauge/AqiDial';
 import {useTranslation} from 'react-i18next';
-import AqiGraph from '../components/AqiGraph/AqiGraph';
-import {ColorContext} from '../contexts/ColorContext';
-import {ColorToggle} from '../components/Util/Colors';
-import {SelectedSensor} from '../util';
+import AqiGraph from '../../components/AqiGraph/AqiGraph';
+import {ColorContext} from '../../contexts/ColorContext';
+import {ColorToggle} from '../../components/Util/Colors';
+import {SelectedSensor} from '../../util';
+import {MoreInfoLabel} from '../../components/Util/MoreInfoLabel';
 
 /**
  * Home screen component
  */
-const Home: () => JSX.Element = () => {
+const OnlineHome: () => JSX.Element = () => {
   // State for the sensor currently selected from on map
   const [selectedSensor, setSelectedSensor] = useState<SelectedSensor>({
     purpleAirId: Number.NaN,
@@ -23,13 +24,13 @@ const Home: () => JSX.Element = () => {
     lastValidAqiTime: null,
   });
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
+    window.matchMedia('(max-width: 55em)')?.matches ?? false
   );
   const [showGraphUi, setShowGraphUi] = useState(false);
-  const [showGaugeUi, setShowGaugeUi] = useState(false);
+  const [showGaugeUi, setShowGaugeUi] = useState(true);
   const [showMapUi, setShowMapUi] = useState(true);
 
-  const {t} = useTranslation('home');
+  const {t} = useTranslation(['home', 'common']);
 
   // -------- Detect screen size for conditional formatting --------- //
   /**
@@ -40,7 +41,7 @@ const Home: () => JSX.Element = () => {
   function handleScreenChange(this: MediaQueryList): void {
     // Is the screen size mobile size
     if (this.matches) {
-      // True when the screen-width is at most 47.9em
+      // True when the screen-width is at most 55em
       setIsMobile(true);
     } else {
       setIsMobile(false);
@@ -49,7 +50,7 @@ const Home: () => JSX.Element = () => {
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 47.9em)');
+    const screenSize = window.matchMedia('(max-width: 55em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
@@ -61,6 +62,17 @@ const Home: () => JSX.Element = () => {
     };
   }, []);
   // -----------------  End detect screen size ----------------- //
+
+  // On mobile, jump to the AQI gauge when a new sensor is clicked
+  useEffect(() => {
+    if (isMobile) {
+      if (selectedSensor.sensorDocId !== '') {
+        setShowGaugeUi(true);
+        const href = '#aqiGauge';
+        window.location.replace(href);
+      }
+    }
+  }, [selectedSensor, isMobile]);
 
   return (
     <Box>
@@ -166,17 +178,21 @@ const Home: () => JSX.Element = () => {
                 width="100%"
                 justifyContent="center"
                 alignContent="center"
+                id="aqiGauge"
               >
                 {selectedSensor.sensorDocId ? (
                   <AqiDial selectedSensor={selectedSensor} />
                 ) : (
-                  <Heading
-                    fontFamily="Oxygen"
-                    fontSize="lg"
-                    marginTop={[null, null, '20%', null]}
-                  >
-                    {t('noSensorGauge')}
-                  </Heading>
+                  <Box marginTop={[null, null, '20%', null]}>
+                    <MoreInfoLabel
+                      fontFamily="Oxygen"
+                      fontWeight="bold"
+                      fontSize="lg"
+                      text={t('common:instructions')}
+                      popoverLabel={t('common:aqiHelpHeading')}
+                      message={t('common:aqiHelpMessage')}
+                    />
+                  </Box>
                 )}
               </Flex>
             )}
@@ -236,4 +252,4 @@ const Home: () => JSX.Element = () => {
   );
 };
 
-export default Home;
+export default OnlineHome;

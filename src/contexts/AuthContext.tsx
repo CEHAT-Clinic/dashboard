@@ -12,6 +12,7 @@ import {Props} from './AppProviders';
  * - `name` user's name or empty string
  * - `email` user's email
  * - `isDeleted` if a user's account is scheduled for deletion
+ * - `emailVerified` if a user's email has been verified
  * - `googleUser` if a user's account is attached to Google
  * - `setGoogleUser` setter for `googleUser`
  * - `passwordUser` if a user's account has a password
@@ -24,6 +25,7 @@ interface AuthInterface {
   name: string;
   email: string;
   isDeleted: boolean;
+  emailVerified: boolean;
   googleUser: boolean;
   setGoogleUser: React.Dispatch<React.SetStateAction<boolean>>;
   passwordUser: boolean;
@@ -48,6 +50,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [isDeleted, setIsDeleted] = useState(false);
+  const [emailVerified, setEmailVerified] = useState(false);
   const [googleUser, setGoogleUser] = useState(false);
   const [passwordUser, setPasswordUser] = useState(false);
   // --------------- End state maintenance variables ------------------------
@@ -60,6 +63,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     setEmail('');
     setName('');
     setIsDeleted(false);
+    setEmailVerified(false);
   }
 
   useEffect(() => {
@@ -85,13 +89,19 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
       setIsLoading(true);
       const user = firebaseAuth.currentUser;
 
+      // Email verification info is not stored in a user's document, so if email
+      // verification status changes while a user is on their Manage Account
+      // page, they will need to refresh the page to see their updated email
+      // verification status.
+      setEmailVerified(firebaseAuth.currentUser.emailVerified);
+
       // This creates a listener for changes on the document so that if a user
-      // updates their account information, this change is reflected on the user's
-      // account page.
+      // updates their account information, this change is reflected on the
+      // user's account page.
       const unsubscribe = firestore
         .collection(USERS_COLLECTION)
         .doc(user.uid)
-        .onSnapshot(snapshot => {
+        .onSnapshot(async snapshot => {
           if (snapshot.exists) {
             const userData = snapshot.data();
 
@@ -99,8 +109,24 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               if (typeof userData.admin === 'boolean') {
                 setIsAdmin(userData.admin);
               }
-              if (typeof userData.name === 'string') setName(userData.name);
-              if (typeof userData.email === 'string') setEmail(userData.email);
+              if (typeof userData.name === 'string') {
+                setName(userData.name);
+              }
+              if (typeof userData.email === 'string') {
+                setEmail(userData.email);
+                // If a user cancels an email update, the user document and
+                // Firebase Authentication might have different emails. Firebase
+                // Authentication is ground truth.
+                if (
+                  firebaseAuth.currentUser &&
+                  userData.email !== firebaseAuth.currentUser.email
+                ) {
+                  await firestore
+                    .collection('users')
+                    .doc(firebaseAuth.currentUser.uid)
+                    .update({email: firebaseAuth.currentUser.email ?? ''});
+                }
+              }
               if (typeof userData.isDeleted === 'boolean') {
                 setIsDeleted(userData.isDeleted);
               }
@@ -114,8 +140,9 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
               email: user.email ?? '',
               admin: false,
               isDeleted: false,
+              emailVerified: user.emailVerified,
             };
-            firestore
+            await firestore
               .collection(USERS_COLLECTION)
               .doc(user.uid)
               .set(newUserData)
@@ -131,9 +158,9 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
     return;
   }, [isAuthenticated]);
 
-  // Runs on mount and on authentication status change
   useEffect(() => {
     if (isAuthenticated && firebaseAuth.currentUser) {
+      setEmailVerified(firebaseAuth.currentUser.emailVerified);
       // Fetch sign in methods
       if (email) {
         setIsLoading(true);
@@ -157,6 +184,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
         name: name,
         email: email,
         isDeleted: isDeleted,
+        emailVerified: emailVerified,
         googleUser: googleUser,
         setGoogleUser: setGoogleUser,
         passwordUser: passwordUser,
@@ -170,7 +198,7 @@ const AuthProvider: React.FC<Props> = ({children}: Props) => {
 
 /**
  * Custom hook to allow other components to use authentication status
- * @returns `{isAuthenticated, isLoading, isAdmin, name, email, isDeleted, passwordUser, setPasswordUser, googleUser, setGoogleUser}`
+ * @returns `{isAuthenticated, isLoading, isAdmin, name, email, isDeleted, emailVerified, passwordUser, setPasswordUser, googleUser, setGoogleUser}`
  */
 const useAuth: () => AuthInterface = () => useContext(AuthContext);
 

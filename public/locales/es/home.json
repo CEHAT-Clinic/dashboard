@@ -1,5 +1,4 @@
 {
-    "noSensorGauge": "¡Haz clic en un sensor en el mapa para ver el Índice de la calidad de aire (Air Quality Index, AQI) aquí!",
     "dataVizBox": "Cuadro de visualización de datos",
     "expandMap": "Expandir para ver el mapa de sensores",
     "expandAqiGauge": "Expandir para ver más información sobre el sensor elegido",
@@ -12,5 +11,9 @@
     "toggleGraph": "Cambiar el Gráfico del AQI",
     "useEpa": "Usar colores de la EPA",
     "useAccessible": "Usar colores accesibles",
-    "noSensorGraph": "¡Haz clic en un sensor para ver sus datos!"
+    "noSensorGraph": "¡Haz clic en un sensor para ver sus datos!",
+    "offline":{
+        "heading": "Esta página no está disponible sin conexión",
+        "body": "Verifique su conexión de Internet y vuelva a conectarse para ver esta página. Si cree que está conectado a Internet, actualice su página."
+    }
 }

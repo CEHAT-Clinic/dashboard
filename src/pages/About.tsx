@@ -8,6 +8,9 @@ import {
   Image,
   Grid,
   VStack,
+  OrderedList,
+  ListItem,
+  HStack,
 } from '@chakra-ui/react';
 import {useTranslation} from 'react-i18next';
 import {ExternalLinkIcon} from '@chakra-ui/icons';
@@ -15,10 +18,12 @@ import cehatLogo from '../media/CEHATLogo.png';
 import {LinkColor} from '../components/Util/Colors';
 import {Section} from '../components/Static/Section';
 import purpleAirSensor from '../media/PurpleAir-sensor-installation.jpg';
+import {FiShare} from 'react-icons/fi';
+import {BiDotsVerticalRounded} from 'react-icons/bi';
 
 const About: React.FC = () => {
   const [isMobile, setIsMobile] = useState(
-    window.matchMedia('(max-width: 47.9em)')?.matches ?? false
+    window.matchMedia('(max-width: 55em)')?.matches ?? false
   );
   // -------- Detect screen size for conditional formatting --------- //
   /**
@@ -39,7 +44,7 @@ const About: React.FC = () => {
 
   // Updates the state and the dom when the window size is changed
   useEffect(() => {
-    const screenSize = window.matchMedia('(max-width: 47.9em)');
+    const screenSize = window.matchMedia('(max-width: 55em)');
     if (screenSize) {
       screenSize.addEventListener('change', handleScreenChange);
     }
@@ -75,22 +80,28 @@ const About: React.FC = () => {
               gap={1}
               textAlign="center"
             >
-              <Link gridRow={1} href="#purpleAir" color={LinkColor}>
-                {t('purpleAir.heading')}
-              </Link>
               <Link gridRow={1} href="#cehat" color={LinkColor}>
                 {t('cehat.heading')}
               </Link>
-              <Link gridRow={2} href="#involved" color={LinkColor}>
+              <Link gridRow={1} href="#involved" color={LinkColor}>
                 {t('involved.heading')}
               </Link>
-              <Link gridRow={3} href="#sensorsDown" color={LinkColor}>
+              <Link gridRow={2} href="#purpleAir" color={LinkColor}>
+                {t('purpleAir.heading')}
+              </Link>
+              <Link gridRow={2} href="#sensorsDown" color={LinkColor}>
                 {t('sensorsDown.heading')}
               </Link>
-              <Link gridRow={1} href="#acknowledge" color={LinkColor}>
+              <Link gridRow={3} href="#noSensor" color={LinkColor}>
+                {t('noSensorInArea.heading')}
+              </Link>
+              <Link gridRow={3} href="#app" color={LinkColor}>
+                {t('app.heading')}
+              </Link>
+              <Link gridRow={4} href="#acknowledge" color={LinkColor}>
                 {t('acknowledge.heading')}
               </Link>
-              <Link gridRow={2} href="#admin" color={LinkColor}>
+              <Link gridRow={4} href="#admin" color={LinkColor}>
                 {t('admin.heading')}
               </Link>
             </Grid>
@@ -174,9 +185,68 @@ const About: React.FC = () => {
           <Text paddingY={1}>{t('purpleAir.part2')}</Text>
         </Section>
         <Section id="sensorsDown" title={t('sensorsDown.heading')}>
-          <Text paddingY={1}> {t('sensorsDown.part1')} </Text>
+          <Text paddingY={1}>
+            {t('sensorsDown.part1a')}
+            <Link
+              color={LinkColor}
+              href="https://usepa.servicenowservices.com/airnow?id=kb_article_view&sysparm_article=KB0011856&sys_kb_id=fed0037b1b62545040a1a7dbe54bcbd4&spa=1"
+              isExternal
+            >
+              {t('sensorsDown.part1Link')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('sensorsDown.part1b')}
+          </Text>
           <Text paddingY={1}> {t('sensorsDown.part2')} </Text>
           <Text paddingY={1}>{t('sensorsDown.part3')} </Text>
+        </Section>
+        <Section id="noSensor" title={t('noSensorInArea.heading')}>
+          <Text paddingY={1}>
+            {t('noSensorInArea.part1')}
+            <Link color={LinkColor} href={t('involved.email.link')}>
+              {t('involved.email.text')}
+            </Link>
+            {t('noSensorInArea.or')}
+            <Link
+              color={LinkColor}
+              href={t('involved.instagram.link')}
+              isExternal
+            >
+              {t('involved.instagram.text')}
+              <ExternalLinkIcon />
+            </Link>
+            {t('noSensorInArea.part2')}
+          </Text>
+        </Section>
+        <Section id="app" title={t('app.heading')}>
+          <Text paddingY={1}>{t('app.body')}</Text>
+          <Text paddingY={1}>{t('app.iPhone.heading')}</Text>
+          <OrderedList paddingLeft={4}>
+            <ListItem>{t('app.iPhone.step1')}</ListItem>
+            <ListItem>
+              <Flex display="inline">
+                <HStack spacinig={1}>
+                  <Text>{t('app.iPhone.step2')}</Text>
+                  <FiShare />
+                </HStack>
+              </Flex>
+            </ListItem>
+            <ListItem>{t('app.step3')}</ListItem>
+            <ListItem>{t('app.step4')}</ListItem>
+          </OrderedList>
+          <Text paddingY={1}>{t('app.android.heading')}</Text>
+          <OrderedList paddingLeft={4}>
+            <ListItem>{t('app.android.step1')}</ListItem>
+            <ListItem>
+              <Flex flexDir="row" alignItems="center">
+                <Text>{t('app.android.step2')}</Text>
+                <BiDotsVerticalRounded />
+                <Text>)</Text>
+              </Flex>
+            </ListItem>
+            <ListItem>{t('app.step3')}</ListItem>
+            <ListItem>{t('app.step4')}</ListItem>
+          </OrderedList>
         </Section>
         <Section id="acknowledge" title={t('acknowledge.heading')}>
           <Text paddingY={1}>
