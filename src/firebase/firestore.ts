@@ -63,7 +63,7 @@ interface SensorDoc {
 
 /**
  * Name of the collection in Firestore where a sensor's readings are stored.
- * `READINGS` exists as a subcollection for each `SENSORS_COLLECTION`'s
+ * `READINGS_COLLECTION` exists as a subcollection for each `SENSORS_COLLECTION`'s
  * document, so use `readingsSubcollection` to get the full subcollection name
  * for a sensor.
  */
