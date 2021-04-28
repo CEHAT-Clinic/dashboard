@@ -8,7 +8,9 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 0 # Remove to re-enable dependabot
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/functions" # Location of package manifests
     schedule:
       interval: "daily"
+    open-pull-requests-limit: 0 # Remove to re-enable dependabot
