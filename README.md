@@ -1,44 +1,34 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Community Air Quality Dashboard
+This project is a collaboration between the Harvey Mudd College Clinic Program and the South Gate Community Environmental Health Action Team (CEHAT). This repository has all the code for the front and back end of a community air quality monitoring dashboard, accessible at https://sg-cehat-air-quality.web.app. All sensor data is gathered using affordable [PurpleAir](https://www2.purpleair.com) sensors owned by the CEHAT. This website is tailored for the South Gate community, but can easily be used as a template for other communities with the appropriate modifications. One important feature of the website is its availability in both English and Spanish, which is relevant to the community of South Gate, but the langauges can easily be changed.
 
-## Available Scripts
+## Disclaimer
+This repository was worked on by students at Harvey Mudd College from August 2020 until May 2021 and will not be maintained afterwards. It is not likely that this project will be expanded, though it is possible if the CEHAT pursues extensions of this work in the future. Since there are no maintaners of the repository, do not attempt to make any changes, as they will never be reviewed. If you clone this repository for your own work, note that any major changes to the frameworks used in this project will not be reflected in the code.
 
-In the project directory, you can run:
+## Scripts
+See `SCRIPTS.md` for scripts that can be run with this app.
 
-### `npm start`
+## Create React App
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app). You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started). To learn React, check out the [React documentation](https://reactjs.org/).
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## TypeScript
+The main programming language used in this project is [TypeScript](https://www.typescriptlang.org). TypeScript is an object oriented langauge built on top of JavaScript, adding static type checking at compile time. To learn TypeScript, check out the [TypeScript documentation](https://www.typescriptlang.org/docs/).
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Database
+See `DATABASE.md` for a description of how the Google Firestore database is structured.
 
-### `npm test`
+## Libaries Used
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Chakra UI
+[Chakra UI](https://chakra-ui.com) is an accessible component library for React applications. All the code in the `src` directory heavily depends on this components from this library. To learn how to use Chakra UI, check out the [documentation](https://chakra-ui.com/docs/getting-started) or the [GitHub](https://github.com/chakra-ui/chakra-ui/).
 
-### `npm run build`
+### Here Maps
+[Here Maps](https://developer.here.com) is a mapping library that is compatible with JavaScript and TypeScript. We use this library for the map of our sensors that appears on the [home page](https://sg-cehat-air-quality.web.app) of the website. The only files with code dependent on HERE maps are `src/components/Map/Map.tsx` and `public/index.html` (where the scripts are included). We use their JavaScript API using an API key.
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### i18next
+[i18next](https://www.i18next.com) is an internationalization-framework for JavaScript. In our project, we use this library to write English (en) and Spanish (es) versions of all text that appears on the site. Our translations are used throughout the `src` directory, but the translations themselves are found in `public/locales/`. To learn how to use i18next, check out their [documentation](https://www.i18next.com).
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+### Axios
+[Axios](https://axios-http.com) is a promise-based lightweight HTTP client that allows for more readable asyncronous code using the keywords `async` and `await`. We use this package in front end (`src`) and heavily in the backend (`functions`) to allow for asyncronous calls to our firestore database. For more information, check out the [documentation](https://axios-http.com/docs/intro) or the [GitHub](https://github.com/axios/axios).
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Other Packages
+For a complete list of the packages used in this project check out the `package.json` file.
