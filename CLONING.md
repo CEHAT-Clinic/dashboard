@@ -104,7 +104,7 @@ Copy each of these values into the appropriate location in your local `.env` fil
 
 ### HERE maps
 
-We use HERE maps for the mapping software on the front page. Sign up for Freemium account on the [HERE maps developer website](https://developer.here.com/). The free tier for map usage is fairly large, so the free tier was more than enough for our use case. However, if you expect heavy usage of your website, you may need to upgrade to a paid version. From your account, then generate a JavaScript app and then create your API key. This is the API key that the application will use. Add this API key to the `.env` file in the appropriate place and to the GitHub Secrets as described in the Setting up GitHub section.
+We use HERE maps for the mapping software on the front page. Sign up for Freemium account on the [HERE maps developer website](https://developer.here.com/). The free tier for map usage is fairly large, so the free tier was more than enough for our use case. However, if you expect heavy usage of your website, you may need to upgrade to a paid version. From your account, generate a JavaScript app and then create your API key. This is the API key that the application will use. Add this API key to the `.env` file in the appropriate place and to the GitHub Secrets as described in the Setting up GitHub section.
 
 ### PurpleAir
 
