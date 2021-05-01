@@ -20,7 +20,7 @@ Since we use Cloud Functions, you will need to upgrade to the Blaze plan, where 
 
 ### Firestore
 
-From the Firestore Database panel, click "Create database" and "Start in production mode". This will create the initial Firestore security rules that denies all reads and writes to the database, but the GitHub repository includes the security rules that you will need. For the Cloud Firestore location, the default value should work, but feel free to checkout the documentation.
+From the Firestore Database panel, click "Create database" and "Start in production mode". This will create the initial Firestore security rules that denies all reads and writes to the database, but the GitHub repository includes the security rules that you will need. For the Cloud Firestore location, the default value should work, but feel free to check out the documentation.
 
 To initialize Firestore, you will need to create the following collections and documents:
 
