@@ -6,7 +6,7 @@ The root of NoSQL database is a set of collections. Each named collection contai
 
 ## current-reading
 
-The 'current-reading' collection, referred to as `CURRENT_READING_COLLECTION` contains a single document with the up-to-date sensor information to display on the home page. The single document is names 'sensors' and is referred to by the variable `SENSORS_DOC`. This document contains a single field, `data`, which is a map of PurpleAir ids to their current sensor data. The curent sensor data includes:
+The 'current-reading' collection, referred to as `CURRENT_READING_COLLECTION` contains a single document with the up-to-date sensor information to display on the home page. The single document is named 'sensors' and is referred to by the variable `SENSORS_DOC`. This document contains two fields, `data` and `lastUpdated`. `data` is a map of each sensor's PurpleAir ID to its current data. The current data for each sensor includes:
 - `purpleAirId` - PurpleAir sensor ID
 - `name` - PurpleAir sensor name
 - `latitude` - latitude of sensor
