@@ -130,8 +130,6 @@ We use GitHub Secrets for two purposes: to store secrets (like API keys) for the
 - `REACT_APP_FIREBASE_APP_ID` - same value as the value in `.env`
 - `REACT_APP_FIREBASE_MEASUREMENT_ID` - same value as the value in `.env`
 - `REACT_APP_HERE_API_KEY` - same value as the value in `.env`
-- `REACT_APP_PURPLEAIR_READ_API_KEY` - same value as the value in `.env`
-- `REACT_APP_PURPLEAIR_WRITE_API_KEY` - same value as the value in `.env`
 
 ### Continuous Deployment
 
@@ -159,17 +157,17 @@ All static content is in the `public/locales/` directory.
 
 - In `src/components/NavBar/Logo.tsx`, the website name needs to be updated.
 - The logo file for the South Gate CEHAT `src/media/CEHATLogo.png`, which is used in the `src/pages/About.tsx` file, should be updated to the appropriate organization logo.
-- `public/index.html` needs the website title and the description updated. The necessary lines to change are:
+- `public/index.html` needs the website title and the description updated. In each of the following lines, update the content with the appropriate `CITY_NAME`:
+
+  ```html
+  <title>CITY_NAME Air Quality</title>
+  ```
 
   ```html
   <meta
     name="description"
-    content="Website for air quality information in South Gate, California"
+    content="Website for air quality information in CITY_NAME"
   />
-  ```
-
-  ```html
-  <title>South Gate Air Quality</title>
   ```
 
 ### HERE Maps Location
