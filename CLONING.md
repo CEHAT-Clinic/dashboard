@@ -1,6 +1,6 @@
 # How to Clone this Website
 
-When creating this website, we wanted to make the code generalizable such that other communities could use the same software for their own community. We hope this document outlines the process enough that someone with sufficient experience with programming would be able to re-create this app for another community. **Make sure you read this entire document if you are copying this website.**
+When creating this website, we wanted to make the code generalizable such that other communities could use the same software. We hope this document outlines the process enough that someone with sufficient experience with programming would be able to re-create this app for another community. **Make sure you read this entire document if you are copying this website.**
 
 There is still much work to make the website cloning process simpler, and this document will not describe each step thorougly enough, so making the cloning process simpler would be a great extension of this project.
 
