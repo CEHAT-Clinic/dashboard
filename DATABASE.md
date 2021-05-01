@@ -2,7 +2,7 @@
 
 This is a description of the structure of the database used in this project. We use a Google Cloud Firestore database, which is a flexible, scalable NoSQL cloud database. To learn more about Google Cloud Firestore, check out the [documentation](https://firebase.google.com/docs/firestore). The `src/firebase/firestore.ts` file contains the global variables with all the strings we use to reference our database in the codebase. This file is replicated in `functions/src/firestore.ts`. Those files also contain interfaces for all the fields stored in each document in our database. This markdown file is a written description of all the information contained in those two files.
 
-The root of NoSQL database is a set of collections. Each named collection contains documents, and each document can contain fields and subcollections. The following is a description of all the collections in the root of the database and all their subcollections and documents.
+The root of a NoSQL database is a set of collections. Each named collection contains documents, and each document can contain fields and subcollections. The following is a description of all the collections in the root of the database and all their subcollections and documents.
 
 ## current-reading
 
@@ -54,13 +54,13 @@ The 'readings' subcollection contains one document for every response received f
 The 'users' collection (`USERS_COLLECTION`) contains one document for every account registered from the administrative page. Account login and passwords are handled by Google Authentication. The main purpose of these documents is for managing the administrative and deletion statuses of each account as well as user names and emails for display. The fields in each user document are:
 - `admin` - if the user is an admin user or not
 - `email` - the user's email
-- `isDeleted` - if this user has been deleted or not. We do batch deletes once per day, so after deleting account there is a period of time where the account still exists, but it should be invisible to administrators. This is handled by this flag.
+- `isDeleted` - if this user has been deleted or not. We do batch deletes once per day, so after deleting an account, there is a period of time where the account still exists, but it should be invisible to administrators. This case is handled by this flag.
 - `name` - the user's name, or the empty string if the user has not yet added their name
 
 
 ## deletion
 
-The 'deletion' collection, referred to by `DELETION_COLLECTION` contains two documents 'readings' (`READINGS_DELETION_DOC`), and 'users' (`USER_DELETION_DOC`). The databse does batch deletes once per day. These two documents keep track of what needs to be deleted.
+The 'deletion' collection, referred to by `DELETION_COLLECTION` contains two documents 'readings' (`READINGS_DELETION_DOC`), and 'users' (`USER_DELETION_DOC`). The database does batch deletes once per day. These two documents keep track of what needs to be deleted.
 
 The 'readings' document has two fields:
 - `deletionMap` - a map of a sensor's doc ID in the `SENSORS_COLLECTION` to the timestamp for which data before that timestamp should be deleted.
