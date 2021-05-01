@@ -39,7 +39,7 @@ From the Functions panel, click "Get started" and follow the instructions from F
 
 #### Firebase Functions Config
 
-To use the PurpleAir read and write API keys in the Cloud Functions, you will need to set the Functions config. After installing the Firebase CLI, run the follwoing command, using your PurpleAir read and write keys:
+To use the PurpleAir read and write API keys in the Cloud Functions, you will need to set the Functions config. After installing the Firebase CLI, run the following command, using your PurpleAir read and write keys:
 
 ```bash
 firebase functions:config:set purpleair.write_key="YOUR PURPLEAIR WRITE KEY" purpleair.read_key="YOUR PURPLEAIR READ KEY"
@@ -55,7 +55,7 @@ Note that for admin functionality of the website, it assumes that an admin user 
 
 Once you have run the website and you sign in with your account through the website, you will need to go into your user doc in Firestore (`users` collection and the doc ID is your uid in Firebase Authentication) and set the `admin` field to `true`. This document will automatically be created after you sign into your account through the website, but you can also create this document. After you make yourself an admin user, you will be able to add and remove other users from the website without interacting wtih the Firestore database directly.
 
-Another good extension of this project would be to have a protocol in place when no admin users exist for a project.
+Another good extension of this project would be to create a process for when no admin users exist yet.
 
 ### Hosting
 
@@ -133,7 +133,7 @@ We use GitHub Secrets for two purposes: to store secrets (like API keys) for the
 
 ### Continuous Deployment
 
-We use [GitHub Actions for Firebase](https://github.com/w9jds/firebase-action) to automatically re-deploy our website whenever code is pushed to the `main` branch. This re-deploys Firebase Hosting and our Firebase Cloud Functions. To use this action, you need to add an authentication token for Firebase to GitHub Secrets with the secret name `FIREBASE_TOKEN`. As the documentation describes, this token can be aquired through the `firebase login:ci` command run locally on your computer after setting up the Firebase CLI.
+We use [GitHub Actions for Firebase](https://github.com/w9jds/firebase-action) to automatically re-deploy our website whenever code is pushed to the `main` branch. This re-deploys Firebase Hosting and our Firebase Cloud Functions. To use this action, you need to add an authentication token for Firebase to GitHub Secrets with the secret name `FIREBASE_TOKEN`. As the documentation describes, this token can be aquired through the `firebase login:ci` command run locally on your computer after setting up the Firebase CLI. The GitHub Secrets are also used to re-create the `.env` file for GitHub to use for deployment so that the live website has access to the API keys necessary for functionality.
 
 In GitHub, you will also need to make sure that Actions are enabled under the repository's Settings.
 
