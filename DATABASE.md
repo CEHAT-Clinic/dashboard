@@ -40,7 +40,7 @@ The 'sensors' collection, referred to as `SENSORS_COLLECTION` contains one docum
 - `invalidAqiErrors` - array of `InvalidAqiError` that represent errors that can indicate why a sensor does not have a valid AQI, or why the sensor is invalid.
 - `lastUpdated` - the last time the sensor doc was updated
 
-The 'readings' subcollection contains one document for every response recieved from PurpleAir. Calls are made to the PurpleAir API every 2 minutes, so there can be as many as 30 documents per hour in this collection for a particular sensor. This data can be downloaded as a CSV and deleted from the databse using features on the administrative page. The fields in each document are:
+The 'readings' subcollection contains one document for every response received from PurpleAir. Calls are made to the PurpleAir API every 2 minutes, so there can be as many as 30 documents per hour in this collection for a particular sensor. This data can be downloaded as a CSV and deleted from the database using features on the administrative page. The fields in each document are:
 - `latitude` - latitude of a sensor
 - `longitude` - longitude of a sensor
 - `pm25` - PM2.5 reading for a sensor. This value is the average of the PM2.5 reading for channelA and channelB
