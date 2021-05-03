@@ -36,9 +36,9 @@ See `DATABASE.md` for a description of how the Google Firestore database is stru
 
 [HERE Maps](https://developer.here.com) is a mapping library that is compatible with JavaScript and TypeScript. We use this library for the map of our sensors that appears on the [home page](https://sg-cehat-air-quality.web.app) of the website. The only files with code dependent on HERE maps are `src/components/Map/Map.tsx` and `public/index.html` (where the scripts are included). We use their JavaScript API using an API key.
 
-### i18next
+### react-i18next
 
-[i18next](https://www.i18next.com) is an internationalization-framework for JavaScript. In our project, we use this library to write English (en) and Spanish (es) versions of all text that appears on the site. Our translations are used throughout the front end code in the `src` directory, but the translations themselves are found in `public/locales/`. To learn how to use i18next, check out their [documentation](https://www.i18next.com).
+[react-i18next](https://react.i18next.com/) is an internationalization-framework for React and React Native based off of the i18next library. In our project, we use this library to write English (en) and Spanish (es) versions of all text that appears on the site. Our translations are used throughout the front end code in the `src` directory, but the translations themselves are found in `public/locales/`. To learn how to use i18next, check out their [documentation](https://react.i18next.com/).
 
 ### axios
 [Axios](https://axios-http.com) is a promise-based lightweight HTTP client that allows users to make HTTP requests including GET requests and POST requests. This framework is used to communicate with the PurpleAir API in both the front end code in the `src` directory and in the Cloud Functions code in the `functions/src` directory. For more information, check out the [documentation](https://axios-http.com/docs/intro) or the [GitHub](https://github.com/axios/axios).
