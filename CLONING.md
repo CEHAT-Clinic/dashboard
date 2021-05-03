@@ -10,7 +10,7 @@ This project uses Node.js for development. To start developing, you will need to
 
 ## Setting up Firebase
 
-We use Firebase for hosting our website, our database, authentication for admin users, and for our backend that fetches data from PurpleAir. To use Firebase, you will first need to create a Firebase project. Create an account with on the [Firebase Console](https://console.firebase.google.com/) and follow the instructions to add a project.
+We use Firebase for hosting our website, our database, authentication for admin users, and for our back end that fetches data from PurpleAir. To use Firebase, you will first need to create a Firebase project. Create an account with on the [Firebase Console](https://console.firebase.google.com/) and follow the instructions to add a project.
 
 You will also need to install the [Firebase CLI](https://firebase.google.com/docs/cli#setup_update_cli).
 
