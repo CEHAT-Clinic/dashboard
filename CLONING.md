@@ -89,14 +89,14 @@ You will need to add the API keys from your Firebase setup. These API keys can b
 
 ```typescript
 const firebaseConfig = {
-  apiKey: "AIzaSyA7bZqD_xmYBdvXeiXB46t1PR2b_sbryr8",
-  authDomain: "sg-cehat-air-quality.firebaseapp.com",
-  databaseURL: "https://sg-cehat-air-quality.firebaseio.com",
-  projectId: "sg-cehat-air-quality",
-  storageBucket: "sg-cehat-air-quality.appspot.com",
-  messagingSenderId: "958397530190",
-  appId: "1:958397530190:web:d3dd09bbbc2c24d81d831f",
-  measurementId: "G-MSNJLPHTNR"
+  apiKey: "YOUR KEY",
+  authDomain: "YOUR APP.firebaseapp.com",
+  databaseURL: "https://YOUR APP.firebaseio.com",
+  projectId: "YOUR PROJECT ID",
+  storageBucket: "YOUR BUCKET",
+  messagingSenderId: "YOUR ID",
+  appId: "YOUR ID",
+  measurementId: "YOUR ID"
 };
 ```
 
