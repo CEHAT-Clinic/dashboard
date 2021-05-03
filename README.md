@@ -20,7 +20,7 @@ The main programming language used in this project is [TypeScript](https://www.t
 
 ## Code Style
 
-This repository uses [gts](github.com/google/gts) (Google's TypeScript style code) for code style. gts enforces TypeScript code style in the repository and allows some formatting issues to be automatically fixed by running `npm run fix` (see `SCRIPTS.md` for more information). Under the covers, gts uses [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). See the linter configuration settings in the `prettierrc.js`, `.eslintignore`, `.eslintrc.json` and `tsconfig.json` files in the root directory for the front end code and in the `functions` directory for the back end code.
+This repository uses [gts](github.com/google/gts) (Google's TypeScript style code) for code style. gts enforces TypeScript code style in the repository and allows some formatting issues to be automatically fixed by running `npm run fix` (see `SCRIPTS.md` for more information). Under the hood, gts uses [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). See the linter configuration settings in the `prettierrc.js`, `.eslintignore`, `.eslintrc.json` and `tsconfig.json` files in the root directory for the front end code and in the `functions` directory for the back end code.
 
 ## Database
 
