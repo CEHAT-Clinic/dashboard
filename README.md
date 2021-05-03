@@ -18,6 +18,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 The main programming language used in this project is [TypeScript](https://www.typescriptlang.org). TypeScript is an object oriented language built on top of JavaScript, adding static type checking at compile time. To learn TypeScript, check out the [TypeScript documentation](https://www.typescriptlang.org/docs/).
 
+## Code Style
+
+This repository uses [gts](github.com/google/gts) (Google's TypeScript style code) for code style. gts enforces TypeScript code style in the repository and allows some formatting issues to be automatically fixed by running `npm run fix` (see `SCRIPTS.md` for more information). Under the hood, gts uses [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/). See the linter configuration settings in the `prettierrc.js`, `.eslintignore`, `.eslintrc.json` and `tsconfig.json` files in the root directory for the front end code and in the `functions` directory for the back end code.
+
 ## Database
 
 See `DATABASE.md` for a description of how the Google Firestore database is structured.
